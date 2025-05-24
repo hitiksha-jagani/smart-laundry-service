@@ -1,0 +1,904 @@
+openapi: 3.0.3
+info:
+  title: Delivery Agent Panel API
+  version: 1.0.0
+  description: API for managing and viewing delivery tasks by delivery agents.
+
+paths:
+  /deliveries/summary:
+    get:
+      summary: Get delivery summary for today
+      responses:
+        '200':
+          description: Summary of today's deliveries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  todays_deliveries: { type: integer }
+                  pending_requests: { type: integer }
+                  upcoming_requests: { type: integer }
+        '500':
+          description: Internal server error
+
+  /deliveries/pending:
+    get:
+      summary: Get pending delivery requests
+      responses:
+        '200':
+          description: List of pending deliveries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendingDeliveryRequest'
+        '500':
+          description: Internal server error
+
+  /deliveries/{booking_id}:
+    get:
+      summary: Get delivery detail by booking ID
+      parameters:
+        - in: path
+          name: booking_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryDetail'
+        '404':
+          description: Booking not found
+        '500':
+          description: Internal server error
+
+  /deliveries/{booking_id}/accept:
+    post:
+      summary: Accept a delivery request
+      parameters:
+        - in: path
+          name: booking_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery request accepted
+        '404':
+          description: Booking not found
+        '500':
+          description: Internal server error
+
+  /deliveries/{booking_id}/reject:
+    post:
+      summary: Reject a delivery request
+      parameters:
+        - in: path
+          name: booking_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delivery request rejected
+        '404':
+          description: Booking not found
+        '500':
+          description: Internal server error
+
+  /deliveries/search:
+    get:
+      summary: Search deliveries by order ID or customer name
+      parameters:
+        - in: query
+          name: order_id
+          schema:
+            type: string
+        - in: query
+          name: customer_name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Matching deliveries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchedDelivery'
+        '500':
+          description: Internal server error
+
+  /deliveries/{booking_id}/status:
+    post:
+      summary: Update delivery status
+      parameters:
+        - in: path
+          name: booking_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string }
+      responses:
+        '200':
+          description: Status updated
+        '400':
+          description: Invalid status
+        '404':
+          description: Booking not found
+          
+  /payment/summary:
+    get:
+      summary: Get payment summary data
+      parameters:
+        - name: filter
+          in: query
+          description: Time filter for summary
+          required: false
+          schema:
+            type: string
+            enum: [today, this_week, this_month, overall, custom]
+        - name: start_date
+          in: query
+          description: Start date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: End date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Summary of payments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_earnings:
+                    type: number
+                  pending_payouts:
+                    type: number
+                  bonuses:
+                    type: number
+                  deductions:
+                    type: number
+
+  /payment/transactions:
+    get:
+      summary: Get payment transaction history
+      parameters:
+        - name: order_id
+          in: query
+          description: Filter by order ID
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Filter by transaction type
+          required: false
+          schema:
+            type: string
+        - name: date
+          in: query
+          description: Filter by date (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: Pagination page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of records per page
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        payment_id:
+                          type: string
+                        booking_id:
+                          type: string
+                        date:
+                          type: string
+                          format: date
+                        amount:
+                          type: number
+                        type:
+                          type: string
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+
+  /payment/report:
+    get:
+      summary: Download payment report as PDF
+      parameters:
+        - name: filter
+          in: query
+          description: Time filter for the report
+          required: false
+          schema:
+            type: string
+            enum: [today, this_week, this_month, overall, custom]
+        - name: start_date
+          in: query
+          description: Start date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: End date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: PDF report file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+                
+  /feedback/summary:
+    get:
+      summary: Get feedback summary data
+      parameters:
+        - name: filter
+          in: query
+          description: Time filter for summary
+          required: false
+          schema:
+            type: string
+            enum: [today, this_week, this_month, overall, custom]
+        - name: start_date
+          in: query
+          description: Start date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: End date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Summary of feedback
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_reviews:
+                    type: integer
+                  average_rating:
+                    type: number
+                    format: float
+
+  /feedback/reviews:
+    get:
+      summary: Get list of reviews
+      parameters:
+        - name: filter
+          in: query
+          description: Time filter for reviews
+          required: false
+          schema:
+            type: string
+            enum: [today, this_week, this_month, overall, custom]
+        - name: start_date
+          in: query
+          description: Start date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: End date for custom filter (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of records per page
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        order_id:
+                          type: string
+                        customer_name:
+                          type: string
+                        rating:
+                          type: number
+                          format: float
+                        review:
+                          type: string
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                    
+  /orders/completed:
+    get:
+      summary: Get list of completed deliveries
+      parameters:
+        - name: start_date
+          in: query
+          description: Filter from date (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Filter to date (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: Pagination page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of records per page
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Completed delivery orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  completed_deliveries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        booking_id:
+                          type: string
+                        service_type:
+                          type: string
+                        pickup_contact:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            phone:
+                              type: string
+                            address:
+                              type: string
+                            route_url:
+                              type: string
+                        delivery_contact:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            phone:
+                              type: string
+                            address:
+                              type: string
+                            route_url:
+                              type: string
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              quantity:
+                                type: integer
+                        total:
+                          type: number
+                          format: float
+                        delivery_earning:
+                          type: number
+                          format: float
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+
+  /orders/cancelled:
+    get:
+      summary: Get list of cancelled deliveries
+      parameters:
+        - name: start_date
+          in: query
+          description: Filter from date (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Filter to date (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: Pagination page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of records per page
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Cancelled delivery orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cancelled_deliveries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        booking_id:
+                          type: string
+                        service_type:
+                          type: string
+                        pickup_contact:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            phone:
+                              type: string
+                            address:
+                              type: string
+                            route_url:
+                              type: string
+                        delivery_contact:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            phone:
+                              type: string
+                            address:
+                              type: string
+                            route_url:
+                              type: string
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              quantity:
+                                type: integer
+                        total:
+                          type: number
+                          format: float
+                        delivery_earning:
+                          type: number
+                          format: float
+                        reason:
+                          type: string
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                    
+  /ticket:
+    post:
+      summary: Raise a new support ticket
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - category
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Ticket successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticket_id:
+                    type: string
+                  message:
+                    type: string
+
+    get:
+      summary: Search and retrieve support tickets
+      parameters:
+        - name: title
+          in: query
+          description: Search by title (partial match)
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Filter by category
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status (e.g., open, closed, pending)
+          required: false
+          schema:
+            type: string
+            enum: [open, closed, pending]
+        - name: page
+          in: query
+          description: Pagination page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of records per page
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of support tickets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tickets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        submitted_at:
+                          type: string
+                          format: date-time
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        photo_url:
+                          type: string
+                          format: uri
+                        category:
+                          type: string
+                        responded_at:
+                          type: string
+                          format: date-time
+                        status:
+                          type: string
+                          enum: [open, closed, pending]
+                        response:
+                          type: string
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+
+  /profile:
+    get:
+      summary: Get logged-in agent's profile details
+      responses:
+        '200':
+          description: Agent profile data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  phone_no:
+                    type: string
+                  email:
+                    type: string
+                  address:
+                    type: string
+                  joined_at:
+                    type: string
+                    format: date-time
+                  status:
+                    type: string
+                  gender:
+                    type: string
+                    enum: [male, female, other]
+                  profile_photo:
+                    type: string
+                    format: uri
+                  date_of_birth:
+                    type: string
+                    format: date
+                  bank_account_number:
+                    type: string
+                  account_holder_name:
+                    type: string
+                  bank_name:
+                    type: string
+                  ifsc_code:
+                    type: string
+                  upi_id:
+                    type: string
+                  pan_card:
+                    type: string
+                    format: uri
+                  aadhar_card:
+                    type: string
+                    format: uri
+                  vehicle_type:
+                    type: string
+                  vehicle_number:
+                    type: string
+                  driving_license:
+                    type: string
+                    format: uri
+                  region:
+                    type: array
+                    items:
+                      type: string
+
+  /profile/edit:
+    put:
+      summary: Edit agent profile details
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                phone_no:
+                  type: string
+                email:
+                  type: string
+                address:
+                  type: string
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                date_of_birth:
+                  type: string
+                  format: date
+                profile_photo:
+                  type: string
+                  format: binary
+                bank_account_number:
+                  type: string
+                account_holder_name:
+                  type: string
+                bank_name:
+                  type: string
+                ifsc_code:
+                  type: string
+                upi_id:
+                  type: string
+                pan_card:
+                  type: string
+                  format: binary
+                aadhar_card:
+                  type: string
+                  format: binary
+                vehicle_type:
+                  type: string
+                vehicle_number:
+                  type: string
+                driving_license:
+                  type: string
+                  format: binary
+                region:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Agent profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /profile/change-password:
+    post:
+      summary: Change agent password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - current_password
+                - new_password
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid current password
+
+
+components:
+  schemas:
+    PendingDeliveryRequest:
+      type: object
+      properties:
+        booking_id: { type: string }
+        delivery_earning: { type: number }
+        action: 
+          type: array
+          items:
+            type: string
+            enum: [accept, reject]
+        more: { type: boolean }
+
+    DeliveryDetail:
+      type: object
+      properties:
+        booking_id: { type: string }
+        service_type: { type: string }
+        pickup_contact:
+          type: object
+          properties:
+            name: { type: string }
+            phone: { type: string }
+            address: { type: string }
+        delivery_contact:
+          type: object
+          properties:
+            name: { type: string }
+            phone: { type: string }
+            address: { type: string }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              quantity: { type: integer }
+        total: { type: number }
+        delivery_earning: { type: number }
+
+    SearchedDelivery:
+      allOf:
+        - $ref: '#/components/schemas/DeliveryDetail'
+        - type: object
+          properties:
+            call_pickup: { type: boolean }
+            call_delivery: { type: boolean }
+            update_status: { type: boolean }

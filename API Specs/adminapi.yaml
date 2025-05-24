@@ -1,0 +1,1811 @@
+openapi: 3.0.3
+info:
+  title: Admin Dashboard API
+  description: API for Admin Dashboard in Laundry App
+  version: 1.0.1
+
+servers:
+  - url: https://laundryapp.com/v1
+
+paths:
+  /revenue/summary:
+    get:
+      summary: Get revenue summary data
+      parameters:
+        - $ref: '#/components/parameters/dateFilter'
+        # - $ref: '#/components/parameters/startDate'
+        # - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: Revenue summary data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenueSummary'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /revenue/breakdown:
+    get:
+      summary: Get revenue breakdown from providers and agents
+      parameters:
+        - $ref: '#/components/parameters/dateFilter'
+        # - $ref: '#/components/parameters/startDate'
+        # - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: Revenue breakdown data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenueBreakdown'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /revenue/orders:
+    get:
+      summary: Get revenue per order details
+      parameters:
+        - $ref: '#/components/parameters/dateFilter'
+        # - $ref: '#/components/parameters/startDate'
+        # - $ref: '#/components/parameters/endDate'
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated revenue per order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenuePerOrderList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /revenue/trends:
+    get:
+      summary: Get revenue trends
+      parameters:
+        - in: query
+          name: interval
+          required: true
+          schema:
+            type: string
+            enum: [monthly, quarterly, yearly]
+        - in: query
+          name: metric
+          required: true
+          schema:
+            type: string
+            enum: [adminRevenue, grossSales, payouts]
+        - $ref: '#/components/parameters/dateFilter'
+        # - $ref: '#/components/parameters/startDate'
+        # - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: Revenue trend data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenueTrends'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /revenue/insights:
+    get:
+      summary: Get revenue insights
+      parameters:
+        - $ref: '#/components/parameters/dateFilter'
+        # - $ref: '#/components/parameters/startDate'
+        # - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: Revenue insights
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenueInsights'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /revenue/export:
+    get:
+      summary: Export revenue data
+      parameters:
+        - in: query
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [pdf, excel]
+        - $ref: '#/components/parameters/dateFilter'
+        # - $ref: '#/components/parameters/startDate'
+        # - $ref: '#/components/parameters/endDate'
+      responses:
+        '200':
+          description: Export successful
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+                        
+  /report/order/summary:
+    get:
+      summary: Get order report summary
+      description: Returns summary cards data based on selected time filter.
+      parameters:
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+            enum: [this_day, this_week, this_month, overall, custom]
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Summary data retrieved successfully.
+        '400':
+          description: Invalid query parameters.
+        '500':
+          description: Internal server error.
+
+  /report/order/trend:
+    get:
+      summary: Get order volume trend
+      description: Returns order volume trend data for given time period.
+      parameters:
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+            enum: [this_day, this_week, this_month, overall, custom]
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Order volume trend data retrieved.
+        '400':
+          description: Invalid time filter or date range.
+        '500':
+          description: Internal server error.
+
+  /report/order/cancelled-trend:
+    get:
+      summary: Get cancelled order volume trend
+      description: Returns cancelled order volume trend data.
+      parameters:
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+            enum: [this_day, this_week, this_month, overall, custom]
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Cancelled order trend data retrieved.
+        '400':
+          description: Invalid input.
+        '500':
+          description: Internal server error.
+
+  /report/order/export:
+    get:
+      summary: Export order report
+      description: Exports report data as Excel or PDF.
+      parameters:
+        - in: query
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [excel, pdf]
+        - in: query
+          name: section
+          required: true
+          schema:
+            type: string
+            enum: [summary, group, user]
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+        - in: query
+          name: user_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Export file generated.
+        '400':
+          description: Missing or invalid parameters.
+        '404':
+          description: Data not found for export.
+        '500':
+          description: Internal server error.
+
+  /report/order/group:
+    get:
+      summary: Get group reports
+      description: Returns grouped order data based on user role.
+      parameters:
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+        - in: query
+          name: user_role
+          required: true
+          schema:
+            type: string
+            enum: [provider, agent]
+      responses:
+        '200':
+          description: Group reports retrieved.
+        '400':
+          description: Invalid user role.
+        '500':
+          description: Internal server error.
+
+  /report/order/group/trend:
+    get:
+      summary: Get group order volume trend
+      description: Returns order volume trend for selected user in group.
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Group user order volume trend retrieved.
+        '400':
+          description: Missing user ID.
+        '404':
+          description: User not found.
+        '500':
+          description: Internal server error.
+
+  /report/order/group/top-users:
+    get:
+      summary: Get top users report
+      description: Returns top users by accepted and rejected orders.
+      parameters:
+        - in: query
+          name: user_role
+          required: true
+          schema:
+            type: string
+            enum: [provider, agent]
+      responses:
+        '200':
+          description: Top users report retrieved.
+        '400':
+          description: Invalid user role.
+        '500':
+          description: Internal server error.
+
+  /report/order/user:
+    get:
+      summary: Get per-user reports
+      description: Returns per-user order report with filtering options.
+      parameters:
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+        - in: query
+          name: user_role
+          schema:
+            type: string
+            enum: [provider, agent]
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by name, email, or phone.
+      responses:
+        '200':
+          description: Per-user reports retrieved.
+        '400':
+          description: Invalid parameters.
+        '500':
+          description: Internal server error.
+
+  /report/order/user/trend:
+    get:
+      summary: Get per-user order trend
+      description: Returns order trend for a specific user.
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Per-user trend data retrieved.
+        '400':
+          description: Missing or invalid user ID.
+        '404':
+          description: User not found.
+        '500':
+          description: Internal server error.
+
+  /report/order/user/status-breakdown:
+    get:
+      summary: Get accepted and rejected order stats per user
+      description: Returns accepted and rejected order stats for a user.
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Accepted and rejected order stats retrieved.
+        '400':
+          description: Missing or invalid user ID.
+        '404':
+          description: User not found.
+        '500':
+          description: Internal server error
+          
+  /report/review/summary:
+    get:
+      summary: Get review summary
+      description: Returns summary cards for reviews.
+      parameters:
+        - in: query
+          name: time_filter
+          required: false
+          schema:
+            type: string
+            enum: [this_day, this_week, this_month, overall, custom]
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Summary data retrieved.
+        '400':
+          description: Invalid date or time filter.
+        '500':
+          description: Internal server error.
+
+  /report/review/trend:
+    get:
+      summary: Get average rating trend
+      description: Returns rating trend graph data over selected period.
+      parameters:
+        - in: query
+          name: time_filter
+          required: false
+          schema:
+            type: string
+            enum: [this_day, this_week, this_month, overall, custom]
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Trend data retrieved.
+        '400':
+          description: Invalid parameters.
+        '500':
+          description: Internal server error.
+
+  /report/review/export:
+    get:
+      summary: Export review report
+      description: Exports review report as Excel or PDF.
+      parameters:
+        - in: query
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [excel, pdf]
+        - in: query
+          name: section
+          required: true
+          schema:
+            type: string
+            enum: [summary, group, user]
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+        - in: query
+          name: user_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Export file generated.
+        '400':
+          description: Invalid input.
+        '404':
+          description: No data to export.
+        '500':
+          description: Internal server error.
+
+  /report/review/group:
+    get:
+      summary: Get group review reports
+      description: Returns aggregated review data for providers or agents.
+      parameters:
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+        - in: query
+          name: user_role
+          required: true
+          schema:
+            type: string
+            enum: [provider, agent]
+      responses:
+        '200':
+          description: Group review report retrieved.
+        '400':
+          description: Invalid user role or filter.
+        '500':
+          description: Internal server error.
+
+  /report/review/group/top-users:
+    get:
+      summary: Get top reviewed users
+      description: Returns top reviewed users for selected role.
+      parameters:
+        - in: query
+          name: user_role
+          required: true
+          schema:
+            type: string
+            enum: [provider, agent]
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Top reviewed users retrieved.
+        '400':
+          description: Invalid parameters.
+        '500':
+          description: Internal server error.
+
+  /report/review/user:
+    get:
+      summary: Get per-user review reports
+      description: Returns user-level review statistics.
+      parameters:
+        - in: query
+          name: time_filter
+          schema:
+            type: string
+        - in: query
+          name: user_role
+          schema:
+            type: string
+            enum: [provider, agent]
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by name, phone, or email.
+      responses:
+        '200':
+          description: Per-user review data retrieved.
+        '400':
+          description: Invalid filter parameters.
+        '500':
+          description: Internal server error.
+
+  /report/review/user/stats:
+    get:
+      summary: Get review stats for a user
+      description: Returns total reviews and average rating for a specific user.
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User review stats retrieved.
+        '400':
+          description: Missing or invalid user ID.
+        '404':
+          description: User not found.
+        '500':
+          description: Internal server error.
+
+  /report/review/user/list:
+    get:
+      summary: Get list of reviews for a user
+      description: Returns all individual reviews for a user.
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of user reviews retrieved.
+        '400':
+          description: Invalid or missing user ID.
+        '404':
+          description: No reviews found for user.
+        '500':
+          description: Internal server error.
+          
+  /request/provider:
+    get:
+      summary: List all provider requests with full details
+      responses:
+        '200':
+          description: Array of full provider request objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderDetails'
+        '500':
+          description: Internal server error
+
+  /request/provider/{id}/approve:
+    post:
+      summary: Approve provider request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider request approved
+        '404':
+          description: Provider not found
+        '500':
+          description: Internal server error
+
+  /request/provider/{id}/reject:
+    post:
+      summary: Reject provider request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider request rejected
+        '404':
+          description: Provider not found
+        '500':
+          description: Internal server error
+
+  /request/agent:
+    get:
+      summary: List all agent requests with full details
+      responses:
+        '200':
+          description: Array of full agent request objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgentDetails'
+        '500':
+          description: Internal server error
+
+  /request/agent/{id}/approve:
+    post:
+      summary: Approve agent request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Agent request approved
+        '404':
+          description: Agent not found
+        '500':
+          description: Internal server error
+
+  /request/agent/{id}/reject:
+    post:
+      summary: Reject agent request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Agent request rejected
+        '404':
+          description: Agent not found
+        '500':
+          description: Internal server error
+          
+  /users/customers:
+    get:
+      summary: Get customers list with filters and analytics
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, inactive]
+        - in: query
+          name: start_date
+          schema: { type: string, format: date }
+        - in: query
+          name: end_date
+          schema: { type: string, format: date }
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [oldest, newest]
+      responses:
+        '200':
+          description: List of customers with analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_users_graph: { type: object }
+                  active_vs_inactive_graph: { type: object }
+                  new_users_graph: { type: object }
+                  user_growth_trend: { type: object }
+                  region_distribution: { type: object }
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomerSummary'
+        '500':
+          description: Internal server error
+          
+  /users/customers/export:
+    get:
+      summary: Export customers list
+      parameters:
+        - in: query
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [excel, pdf]
+      responses:
+        '200':
+          description: File export success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid export format
+
+  /users/customers/detail/{id}:
+    get:
+      summary: Get detailed customer info
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Customer detail info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDetails'
+        '404':
+          description: Customer not found
+
+  /users/providers:
+    get:
+      summary: Get service providers list with filters and analytics
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, inactive]
+        - in: query
+          name: start_date
+          schema: { type: string, format: date }
+        - in: query
+          name: end_date
+          schema: { type: string, format: date }
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [oldest, newest]
+      responses:
+        '200':
+          description: List of service providers with analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  analytics: { type: object }
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProviderSummary'
+                      
+  /users/providers/export:
+    get:
+      summary: Export service providers list
+      parameters:
+        - in: query
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [excel, pdf]
+      responses:
+        '200':
+          description: File export success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid export format
+
+  /users/providers/detail/{id}:
+    get:
+      summary: Get detailed service provider info
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Service provider detail info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderDetails'
+        '404':
+          description: Provider not found
+
+  /users/agents:
+    get:
+      summary: Get delivery agents list with filters and analytics
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, inactive]
+        - in: query
+          name: start_date
+          schema: { type: string, format: date }
+        - in: query
+          name: end_date
+          schema: { type: string, format: date }
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [oldest, newest]
+      responses:
+        '200':
+          description: List of delivery agents with analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  analytics: { type: object }
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AgentSummary'
+                      
+  /users/agents/export:
+    get:
+      summary: Export delivery agents list
+      parameters:
+        - in: query
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [excel, pdf]
+      responses:
+        '200':
+          description: File export success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid export format
+
+  /users/agents/detail/{id}:
+    get:
+      summary: Get detailed delivery agent info
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Delivery agent detail info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentDetails'
+        '404':
+          description: Agent not found
+          
+  /messages:
+    get:
+      summary: Get list of sent or scheduled messages
+      responses:
+        '200':
+          description: List of sent messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageSummary'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Send or schedule a new message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '201':
+          description: Message successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageSummary'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+          
+  /complaint/summary:
+    get:
+      summary: Get complaint summary cards
+      responses:
+        '200':
+          description: Complaint summary statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_complaints: { type: integer }
+                  customer_complaints: { type: integer }
+                  provider_complaints: { type: integer }
+                  agent_complaints: { type: integer }
+                  responded_complaints: { type: integer }
+                  not_responded_complaints: { type: integer }
+        '500':
+          description: Internal server error
+
+  /complaint/pending:
+    get:
+      summary: Get all pending complaints (not responded)
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [newest, oldest]
+      responses:
+        '200':
+          description: List of not-responded complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComplaintSummary'
+        '500':
+          description: Internal server error
+
+  /complaint/responded:
+    get:
+      summary: Get all responded complaints with filters
+      parameters:
+        - in: query
+          name: title
+          schema: { type: string }
+        - in: query
+          name: description
+          schema: { type: string }
+        - in: query
+          name: user
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: start_date
+          schema: { type: string, format: date }
+        - in: query
+          name: end_date
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: List of responded complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RespondedComplaintSummary'
+        '500':
+          description: Internal server error
+
+  /complaint/detail/{ticket_id}:
+    get:
+      summary: Get full complaint detail
+      parameters:
+        - in: path
+          name: ticket_id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Detailed complaint information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintDetail'
+        '404':
+          description: Complaint not found
+
+  /complaint/respond:
+    post:
+      summary: Respond to a complaint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplaintResponseRequest'
+      responses:
+        '200':
+          description: Complaint responded successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Complaint not found
+        '500':
+          description: Internal server error
+          
+  /services/summary:
+    get:
+      summary: Get summary statistics of services
+      responses:
+        '200':
+          description: Service category counts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_services: { type: integer }
+                  dry_cleaning_services: { type: integer }
+                  wash_services: { type: integer }
+                  wash_iron_services: { type: integer }
+                  iron_services: { type: integer }
+                  specialized_services: { type: integer }
+        '500':
+          description: Internal server error
+
+  /services:
+    get:
+      summary: Get list of all services
+      responses:
+        '200':
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceSummary'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Add a new service item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCreateRequest'
+      responses:
+        '201':
+          description: Service created successfully
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+
+  /services/detail/{item_id}:
+    get:
+      summary: Get full detail of a specific service item
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Full detail of service item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDetail'
+        '404':
+          description: Service item not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Edit a service item
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceEditRequest'
+      responses:
+        '200':
+          description: Service item updated
+        '400':
+          description: Invalid input
+        '404':
+          description: Item not found
+
+    delete:
+      summary: Delete a service item
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Service item deleted
+        '404':
+          description: Item not found
+        '500':
+          description: Internal server error
+          
+  /detail:
+    get:
+      summary: Get user detail
+      responses:
+        '200':
+          description: User detail fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+          
+  /detail/edit:
+    put:
+      summary: Edit user detail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUserRequest'
+      responses:
+        '200':
+          description: User details updated successfully
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /detail/change-password:
+    post:
+      summary: Change user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully
+        '400':
+          description: Invalid input or old password incorrect
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+          
+  /promotion:
+    post:
+      summary: Create a new promotion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePromotionRequest'
+      responses:
+        '201':
+          description: Promotion created successfully
+        '400':
+          description: Invalid input (e.g. missing fields, invalid date range)
+        '409':
+          description: Promo code already exists
+        '500':
+          description: Internal server error
+
+components:
+  parameters:
+    dateFilter:
+      in: query
+      name: filter
+      schema:
+        type: string
+        enum: [today, this_week, this_month, overall, custom]
+    startDate:
+      in: query
+      name: start_date
+      schema:
+        type: string
+        format: date
+    endDate:
+      in: query
+      name: end_date
+      schema:
+        type: string
+        format: date
+        
+  schemas:
+    RevenueSummary:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+        totalOrders:
+          type: integer
+        grossSales:
+          type: number
+        providerPayouts:
+          type: number
+        agentPayouts:
+          type: number
+        avgOrderValue:
+          type: number
+
+    RevenueBreakdown:
+      type: object
+      properties:
+        providerBreakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityBreakdown'
+        agentBreakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityBreakdown'
+
+    EntityBreakdown:
+      type: object
+      properties:
+        name:
+          type: string
+        revenue:
+          type: number
+        percentage:
+          type: number
+
+    RevenuePerOrderList:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderRevenue'
+
+    OrderRevenue:
+      type: object
+      properties:
+        orderId:
+          type: string
+        date:
+          type: string
+          format: date-time
+        customerName:
+          type: string
+        totalPaid:
+          type: number
+        providerPayout:
+          type: number
+        agentPayout:
+          type: number
+        adminRevenue:
+          type: number
+
+    RevenueTrends:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              value:
+                type: number
+
+    RevenueInsights:
+      type: object
+      properties:
+        bestPerformingProvider:
+          type: string
+        mostActiveAgent:
+          type: string
+        highestValueOrder:
+          type: object
+          properties:
+            orderId:
+              type: string
+            value:
+              type: number
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+          
+    SummaryResponse:
+      type: object
+      properties:
+        total_orders:
+          type: integer
+        assigned_providers:
+          type: integer
+        assigned_agents:
+          type: integer
+        rejected_orders:
+          type: integer
+        rejected_providers:
+          type: integer
+        rejected_agents:
+          type: integer
+          
+    ReviewSummary:
+      type: object
+      properties:
+        total_reviews:
+          type: integer
+        avg_agent_rating:
+          type: number
+          format: float
+        avg_provider_rating:
+          type: number
+          format: float
+
+    TopReviewUser:
+      type: object
+      properties:
+        name:
+          type: string
+        total_reviews:
+          type: integer
+        avg_rating:
+          type: number
+          format: float
+
+    UserReview:
+      type: object
+      properties:
+        feedback_id:
+          type: string
+        date:
+          type: string
+          format: date-time
+        customer_name:
+          type: string
+        rating:
+          type: number
+          format: float
+        review:
+          type: string
+          
+    CustomerSummary:
+      type: object
+      properties:
+        customer_id: { type: string }
+        joined_at: { type: string, format: date-time }
+        first_name: { type: string }
+        last_name: { type: string }
+
+    CustomerDetails:
+      type: object
+      properties:
+        first_name: { type: string }
+        last_name: { type: string }
+        phone: { type: string }
+        email: { type: string }
+        address: { type: string }
+
+    ProviderSummary:
+      type: object
+      properties:
+        provider_id: { type: string }
+        joined_at: { type: string, format: date-time }
+        first_name: { type: string }
+        last_name: { type: string }
+
+          
+    ProviderDetails:
+      type: object
+      properties:
+        first_name: { type: string }
+        last_name: { type: string }
+        phone_no: { type: string }
+        email: { type: string }
+        address: { type: string }
+        joined_at: { type: string, format: date-time }
+        status: { type: string }
+        business_name: { type: string }
+        business_license_number: { type: string }
+        gst_number: { type: string }
+        bank_account_number: { type: string }
+        account_holder_name: { type: string }
+        bank_name: { type: string }
+        ifsc_code: { type: string }
+        upi_id: { type: string }
+        pan_card: { type: string, format: binary }
+        aadhar_card: { type: string, format: binary }
+        business_document: { type: string, format: binary, description: "Utility bill or rent agreement" }
+        profile_photo: { type: string, format: binary }
+        take_agent_service: { type: boolean }
+        
+    AgentSummary:
+      type: object
+      properties:
+        agent_id: { type: string }
+        joined_at: { type: string, format: date-time }
+        first_name: { type: string }
+        last_name: { type: string }
+
+    AgentDetails:
+      type: object
+      properties:
+        first_name: { type: string }
+        last_name: { type: string }
+        phone_no: { type: string }
+        email: { type: string }
+        address: { type: string }
+        joined_at: { type: string, format: date-time }
+        gender: { type: string }
+        status: { type: string }
+        date_of_birth: { type: string, format: date }
+        bank_account_number: { type: string }
+        account_holder_name: { type: string }
+        bank_name: { type: string }
+        ifsc_code: { type: string }
+        upi_id: { type: string }
+        pan_card: { type: string, format: binary }
+        aadhar_card: { type: string, format: binary }
+        vehicle_type: { type: string }
+        vehicle_number: { type: string }
+        driving_license: { type: string, format: binary }
+        profile_photo: { type: string, format: binary }
+        region:
+          type: array
+          items:
+            type: string
+            
+    SendMessageRequest:
+      type: object
+      required: [role, title, description]
+      properties:
+        role:
+          type: string
+          enum: [customers, service_providers, delivery_agents, all]
+          description: The user group to whom the message is targeted
+        title:
+          type: string
+        description:
+          type: string
+        send_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional field to schedule the message for future
+
+    MessageSummary:
+      type: object
+      properties:
+        msg_id:
+          type: string
+        role:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        send_at:
+          type: string
+          format: date-time
+          
+    ComplaintSummary:
+      type: object
+      properties:
+        ticket_id: { type: string }
+        submitted_at: { type: string, format: date-time }
+        title: { type: string }
+        description: { type: string }
+        photo: { type: string, format: uri }
+        category: { type: string }
+        user: { type: string }
+        status: { type: string }
+
+    RespondedComplaintSummary:
+      type: object
+      properties:
+        ticket_id: { type: string }
+        submitted_at: { type: string, format: date-time }
+        title: { type: string }
+        category: { type: string }
+
+    ComplaintDetail:
+      type: object
+      properties:
+        submitted_at: { type: string, format: date-time }
+        title: { type: string }
+        description: { type: string }
+        photo: { type: string, format: uri }
+        category: { type: string }
+        responded_at: { type: string, format: date-time }
+        status: { type: string }
+        response: { type: string }
+        user: { type: string }
+
+    ComplaintResponseRequest:
+      type: object
+      required: [ticket_id, response]
+      properties:
+        ticket_id: { type: string }
+        response: { type: string }
+          
+    ServiceSummary:
+      type: object
+      properties:
+        item_id: { type: string }
+        created_at: { type: string, format: date-time }
+        name: { type: string }
+        status:
+          type: string
+          enum: [available, not-available]
+
+    ServiceCreateRequest:
+      type: object
+      required: [name, category, sub_category]
+      properties:
+        name: { type: string }
+        category:
+          type: string
+          enum: [dry cleaning, iron, wash, wash + iron, specialized]
+        sub_category:
+          type: string
+          enum: [daily wear, ethinic wear, winter wear, jacket spa, shoe cleaning, bag cleaning]
+
+    ServiceEditRequest:
+      type: object
+      properties:
+        name: { type: string }
+        category:
+          type: string
+          enum: [dry cleaning, iron, wash, wash + iron, specialized]
+        sub_category:
+          type: string
+          enum: [daily wear, ethinic wear, winter wear, jacket spa, shoe cleaning, bag cleaning]
+        status:
+          type: string
+          enum: [available, not-available]
+
+    ServiceDetail:
+      type: object
+      properties:
+        item_id: { type: string }
+        name: { type: string }
+        status:
+          type: string
+          enum: [available, not-available]
+        category: { type: string }
+        sub_category: { type: string }
+        created_at: { type: string, format: date-time }
+        
+    UserDetail:
+      type: object
+      properties:
+        first_name: { type: string }
+        last_name: { type: string }
+        phone: { type: string }
+        email: { type: string, format: email }
+        address: { type: string }
+
+    EditUserRequest:
+      type: object
+      properties:
+        first_name: { type: string }
+        last_name: { type: string }
+        phone: { type: string }
+        email: { type: string, format: email }
+        address: { type: string }
+
+    ChangePasswordRequest:
+      type: object
+      required: [old_password, new_password]
+      properties:
+        old_password: { type: string, format: password }
+        new_password: { type: string, format: password }
+        
+    CreatePromotionRequest:
+      type: object
+      required:
+        - title
+        - description
+        - promo_code
+        - discount_type
+        - discount_value
+        - max_discount
+        - min_order_amount
+        - start_date
+        - end_date
+        - applicable_services
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        promo_code:
+          type: string
+        discount_type:
+          type: string
+          enum: [percentage, final amount]
+        discount_value:
+          type: number
+          minimum: 0
+        max_discount:
+          type: number
+          minimum: 0
+        min_order_amount:
+          type: number
+          minimum: 0
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        applicable_services:
+          type: array
+          items:
+            type: string
+            enum: [iron, dry cleaning, wash, wash + iron, specialized]
+        excluded_cloths:
+          type: array
+          items:
+            type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        status_code:
+          type: integer
+      required:
+        - error
+        - message
+        - status_code
+  
+  responses:
+    UnauthorizedError:
+      description: Unauthorized – Token is invalid or missing
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Invalid or missing token
+    ValidationError:
+      description: Bad Request – Invalid query or parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Start date is required
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Unexpected error occurred. Please try again.
+                
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+            
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
