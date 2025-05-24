@@ -1714,8 +1714,799 @@ paths:
                     example: "Invalid phone number/email or OTP."
 
 
+#Service-Provider
 
- 
+
+ openapi: 3.0.3
+info:
+  title: Smart Laundry Service - Complete Profile API
+  version: 1.0.0
+  description: API for service providers to complete or update their business profile.
+
+
+paths:
+  /service-provider/workload:
+    get:
+      summary: Get workload dashboard data
+      tags:
+        - Service Provider
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providerInfo:
+                    type: object
+                    properties:
+                      providerId:
+                        type: string
+                        example: PDT1001
+                      phone:
+                        type: string
+                        example: '+91 9876543218'
+                      email:
+                        type: string
+                        example: johndoe1234@gmail.com
+                      status:
+                        type: string
+                        example: Active
+                  incomingJobRequest:
+                    type: object
+                    properties:
+                      orderId:
+                        type: string
+                        example: '#123455'
+                      serviceType:
+                        type: string
+                        example: Dry Cleaning
+                      subServiceType:
+                        type: string
+                        example: Daily Wear
+                      item:
+                        type: string
+                        example: Shirt
+                      quantity:
+                        type: integer
+                        example: 5
+                      requestedDeliveryDate:
+                        type: string
+                        format: date
+                        example: '2025-05-05'
+                      requestedDeliveryTimeSlot:
+                        type: string
+                        example: '2:00PM - 4:00PM'
+                  activeJobs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: string
+                          example: '#123452'
+                        inProgress:
+                          type: string
+                          example: 'Collected'
+                        ready:
+                          type: string
+                          example: null
+                  dailyCapacity:
+                    type: object
+                    properties:
+                      acceptedToday:
+                        type: string
+                        example: '5/8'
+
+    post:
+      summary: Accept incoming job request
+      tags:
+        - Service Provider
+      requestBody:
+        description: Order to be accepted
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  example: '#123455'
+      responses:
+        '200':
+          description: Job accepted successfully
+
+  /service-provider/job/update-status:
+    post:
+      summary: Update job status
+      tags:
+        - Service Provider
+      requestBody:
+        description: Update status for an in-progress job
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  example: '#123453'
+                newStatus:
+                  type: string
+                  example: 'Washed'
+      responses:
+        '200':
+          description: Job status updated
+
+  /service-provider/job/mark-complete:
+    post:
+      summary: Mark job as completed
+      tags:
+        - Service Provider
+      requestBody:
+        description: Mark job as ready/completed
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  example: '#123454'
+      responses:
+        '200':
+          description: Job marked as completed
+  /service-provider/payments/summary:
+    get:
+      summary: Get payment summary for service provider
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: PDT1001
+      responses:
+        '200':
+          description: Payment summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalEarnings:
+                    type: number
+                    format: float
+                    example: 25000.00
+                  pendingPayouts:
+                    type: number
+                    format: float
+                    example: 5000.00
+                  bonuses:
+                    type: number
+                    format: float
+                    example: 2000.00
+                  deductions:
+                    type: number
+                    format: float
+                    example: 1000.00
+
+  /service-provider/payments/transactions:
+    get:
+      summary: Get transaction history
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: PDT1001
+        - name: filter
+          in: query
+          required: false
+          description: Time filter for transactions
+          schema:
+            type: string
+            enum: [today, this_week, this_month, overall, custom]
+            example: this_month
+        - name: search
+          in: query
+          required: false
+          description: Search by Payment ID, type or date
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Transaction history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    paymentId:
+                      type: string
+                      example: PMT1001
+                    bookingId:
+                      type: string
+                      example: BK1001
+                    date:
+                      type: string
+                      format: date
+                      example: 2025-05-22
+                    amount:
+                      type: number
+                      format: float
+                      example: 70.00
+                    type:
+                      type: string
+                      enum: [PAYOUT, BONUS, DEDUCTION]
+                      example: PAYOUT
+  /service-provider/myprofile:
+    get:
+      summary: Get profile information
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: PDT1001
+      responses:
+        '200':
+          description: Profile data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: John Doe
+                  phone:
+                    type: string
+                    example: +91 9567839424
+                  email:
+                    type: string
+                    example: johndoe1234@gmail.com
+                  providerId:
+                    type: string
+                    example: PDT1001
+
+    put:
+      summary: Update profile information
+      tags:
+        - Service Provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated successfully
+
+  /service-provider/services:
+    get:
+      summary: Get list of provided services and pricing
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: PDT1001
+      responses:
+        '200':
+          description: Services retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    serviceType:
+                      type: string
+                      example: Dry Cleaning
+                    subServiceType:
+                      type: string
+                      example: Daily Wear
+                    item:
+                      type: string
+                      example: T-Shirt
+                    price:
+                      type: number
+                      example: 50
+
+    post:
+      summary: Add a new service
+      tags:
+        - Service Provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [serviceType, subServiceType, item, price]
+              properties:
+                serviceType:
+                  type: string
+                subServiceType:
+                  type: string
+                item:
+                  type: string
+                price:
+                  type: number
+      responses:
+        '201':
+          description: Service added successfully
+
+    put:
+      summary: Update service pricing
+      tags:
+        - Service Provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item:
+                  type: string
+                newPrice:
+                  type: number
+      responses:
+        '200':
+          description: Service price updated
+  /service-provider/order-history:
+    get:
+      summary: Get order history for a service provider
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: PDT1001
+      responses:
+        '200':
+          description: Order history fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providerId:
+                    type: string
+                    example: PDT1001
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: string
+                          example: ORD102
+                        serviceType:
+                          type: string
+                          example: Dry Cleaning
+                        subServiceType:
+                          type: string
+                          example: Daily Wear
+                        item:
+                          type: string
+                          example: Shirt
+                        quantity:
+                          type: integer
+                          example: 5
+                        status:
+                          type: string
+                          example: Completed
+  /service-provider/schedule:
+    get:
+      summary: Get schedule and pickup plan
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Schedule retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schedulePlan:
+                    type: string
+                    example: Mon-Wed-Fri
+                  pickupDays:
+                    type: string
+                    example: Tue-Thu-Sat
+
+    put:
+      summary: Update schedule and pickup plan
+      tags:
+        - Service Provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schedulePlan:
+                  type: string
+                pickupDays:
+                  type: string
+      responses:
+        '200':
+          description: Schedule updated successfully
+
+  /service-provider/availability:
+    get:
+      summary: Get unavailable (block-off) days
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Block-off days fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: date
+                  example: 2025-01-20
+
+    post:
+      summary: Mark unavailable (block-off) days
+      tags:
+        - Service Provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                blockOffDates:
+                  type: array
+                  items:
+                    type: string
+                    format: date
+      responses:
+        '200':
+          description: Block-off days updated
+  /service-provider/home:
+    get:
+      summary: Get service provider home page data
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: PDT1001
+      responses:
+        '200':
+          description: Home page data fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providerId:
+                    type: string
+                    example: PDT1001
+                  name:
+                    type: string
+                    example: John Doe
+                  phone:
+                    type: string
+                    example: +91 9567438924
+                  email:
+                    type: string
+                    example: johndoe1234@gmail.com
+                  status:
+                    type: string
+                    enum: [Active, Inactive]
+                    example: Active
+                  todayOrders:
+                    type: integer
+                    example: 1
+                  upcomingOrders:
+                    type: integer
+                    example: 7
+                  pendingRequests:
+                    type: integer
+                    example: 2
+  /service-provider/feedback:
+    get:
+      summary: Get feedbacks from customers for a service provider
+      tags:
+        - Service Provider
+      parameters:
+        - name: providerId
+          in: query
+          required: true
+          schema:
+            type: string
+          example: PDT1001
+      responses:
+        '200':
+          description: Feedback list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providerId:
+                    type: string
+                    example: PDT1001
+                  feedbacks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        customerName:
+                          type: string
+                          example: John D.
+                        rating:
+                          type: integer
+                          format: int32
+                          example: 5
+                        description:
+                          type: string
+                          example: Excellent service—clothes came back spotless, fresh, and perfectly folded.
+                        response:
+                          type: string
+                          example: Thank you for your valuable feedback.
+  /service-provider/edit-profile:
+    put:
+      summary: Update profile of a service provider
+      tags:
+        - Service Provider
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                providerId:
+                  type: string
+                  example: PDT1001
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+                phoneNo:
+                  type: string
+                  example: +91 9876543210
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                address:
+                  type: string
+                  example: 123 Laundry Street
+                noName:
+                  type: string
+                  example: No. 5
+                areaName:
+                  type: string
+                  example: Satellite
+                city:
+                  type: string
+                  example: Ahmedabad
+                pincode:
+                  type: string
+                  example: 380015
+                state:
+                  type: string
+                  example: Gujarat
+                businessName:
+                  type: string
+                  example: FreshClean Laundry Services
+                gstNumber:
+                  type: string
+                  example: 24ABCDE1234F1Z5
+                businessLicenseNumber:
+                  type: string
+                  example: LIC123456789
+                services:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      serviceType:
+                        type: string
+                        example: Dry Cleaning
+                      subServiceType:
+                        type: string
+                        example: Daily Wear
+                      item:
+                        type: string
+                        example: Shirt
+                      price:
+                        type: string
+                        example: 50₹
+                schedulePlan:
+                  type: string
+                  example: Weekly
+                bankAccountNumber:
+                  type: string
+                  example: 123456789012
+                bankName:
+                  type: string
+                  example: HDFC Bank
+                bankAccountHolderName:
+                  type: string
+                  example: John Doe
+                ifscCode:
+                  type: string
+                  example: HDFC0001234
+                upiId:
+                  type: string
+                  example: john.doe@hdfcbank
+                panCard:
+                  type: string
+                  format: binary
+                aadharCard:
+                  type: string
+                  format: binary
+                businessProof:
+                  type: string
+                  format: binary
+                photo:
+                  type: string
+                  format: binary
+                wantsDeliveryAgent:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Profile updated successfully.
+        '400':
+          description: Invalid request payload
+        '500':
+          description: Server error
+
+  /service-provider/profile:
+    post:
+      summary: Submit or update complete profile
+      description: Allows service providers to submit or update their complete business profile including services offered, bank details, pickup schedule, and document uploads.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                business_name:
+                  type: string
+                  example: Sparkle Cleaners
+                business_license_number:
+                  type: string
+                  example: LIC123456
+                gst_number:
+                  type: string
+                  example: 27ABCDE1234F1Z5
+                services:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      service_type:
+                        type: string
+                        example: Dry Cleaning
+                      sub_service_type:
+                        type: string
+                        example: Daily Wear
+                      item:
+                        type: string
+                        example: T-Shirt
+                      price:
+                        type: number
+                        example: 50
+                pickup_schedule:
+                  type: string
+                  example: Morning
+                schedule_plan:
+                  type: string
+                  example: Weekly
+                slots:
+                  type: array
+                  items:
+                    type: string
+                  example: ["9:00 AM - 11:00 AM", "5:00 PM - 7:00 PM"]
+                bank_account_holder_name:
+                  type: string
+                  example: John Doe
+                bank_account_number:
+                  type: string
+                  example: 123456789012
+                bank_name:
+                  type: string
+                  example: HDFC Bank
+                ifsc_code:
+                  type: string
+                  example: HDFC0001234
+                upi_id:
+                  type: string
+                  example: johndoe@upi
+                pan_card:
+                  type: string
+                  format: binary
+                aadhar_card:
+                  type: string
+                  format: binary
+                business_utility:
+                  type: string
+                  format: binary
+                photo:
+                  type: string
+                  format: binary
+                wants_delivery_agent:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Profile submitted successfully
+        '400':
+          description: Invalid or missing data
+        '500':
+          description: Internal server error
 
 
 
