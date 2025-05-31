@@ -64,12 +64,159 @@ paths:
                     type: string
                     example: "Unable to load homepage content. Please try again later."
  
-  /customer/register:
+  /register:
     post:
-      summary: Register a new user with role selection
-      description: >
-        Register a new user as a customer, service provider, or admin with
-        personal details, address, and agreement to terms and conditions.
+      summary: Register a new user
+      description: Registers a new user with validation for fields and uniqueness constraints.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - phone
+                - password
+                - confirmPassword
+                - role
+                - addresses
+              properties:
+                firstName:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  pattern: '^[A-Za-z\s]+$'
+                  description: First name with alphabets and spaces only
+                  example: Rahul
+                lastName:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  pattern: '^[A-Za-z\s]+$'
+                  description: Last name with alphabets and spaces only
+                  example: Verma
+                phone:
+                  type: string
+                  pattern: '^\d{10}$'
+                  description: Phone number must be exactly 10 digits
+                  example: '9123456789'
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                  description: Email address (optional)
+                  example: rahul.verma@example.com
+                password:
+                  type: string
+                  description: Password string
+                  example: Rahul@2024
+                confirmPassword:
+                  type: string
+                  description: Must match password
+                  example: Rahul@2024
+                role:
+                  type: string
+                  enum:
+                    - CUSTOMER
+                    - ADMIN
+                    - SERVICE_PROVIDER
+                    - DELIVERY_AGENT
+                  description: Role of the user
+                  example: CUSTOMER
+                addresses:
+                  type: object
+                  required:
+                    - name
+                    - areaName
+                    - pincode
+                    - cityId
+                  properties:
+                    name:
+                      type: string
+                      description: Name for the address (e.g., Home, Office)
+                      example: Office
+                    areaName:
+                      type: string
+                      description: Area name
+                      example: Sector 22
+                    pincode:
+                      type: string
+                      pattern: '^\d{6}$'
+                      description: Pincode must be exactly 6 digits
+                      example: '110022'
+                    cityId:
+                      type: integer
+                      format: int64
+                      description: Valid city ID from database
+                      example: 3
+
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  phone:
+                    type: string
+                    description: Registered phone number
+                    example: '9123456789'
+                  email:
+                    type: string
+                    nullable: true
+                    description: Registered email or null if not provided
+                    example: rahul.verma@example.com
+                  message:
+                    type: string
+                    example: Successfully Registered
+        '400':
+          description: Bad Request - validation or format errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Error code
+                    example: '400'
+                  error:
+                    type: string
+                    description: Error type
+                    example: Conflict
+                  message:
+                    type: string
+                    description: Error description message
+                    example: Phone number must be 10 digits.
+        '409':
+          description: Conflict - user already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Error code
+                    example: '400'
+                  error:
+                    type: string
+                    description: Error type
+                    example: Conflict
+                  message:
+                    type: string
+                    description: Error description message
+                    example: User with this email or phone already exists.
+                    
+  /login:
+    post:
+      summary: User login with phone number or email and OTP
+      description: Allows a customer to login by providing either phone number or email along with an OTP code.
       tags:
         - Customer
       requestBody:
@@ -79,91 +226,83 @@ paths:
             schema:
               type: object
               required:
-                - role
-                - firstname
-                - lastname
-                - phoneNo
-                - email
-                - address
-                - agreeTerms
+                - otp
               properties:
-                role:
-                  type: string
-                  description: User role selection
-                  enum:
-                    - customer
-                    - service provider
-                    - admin
-                  example: customer
-                firstname:
-                  type: string
-                  example: Rohan
-                lastname:
-                  type: string
-                  example: Patel
                 phoneNo:
-                  type: integer
-                  example: 9876543210
+                  type: string
+                  description: Phone number for login (optional if email provided)
+                  example: "9876543210"
                 email:
                   type: string
                   format: email
-                  example: abc123@gmail.com
-                address:
-                  type: object
-                  required:
-                    - No
-                    - name
-                    - areaName
-                    - city
-                    - pincode
-                    - state
-                  properties:
-                    no:
-                      type: string
-                      description: House or building number
-                      example: "123A"
-                    name:
-                      type: string
-                      description: Street name or locality
-                      example: "MG Road"
-                    areaName:
-                      type: string
-                      example: "Sector 21"
-                    city:
-                      type: string
-                      example: "Ahmedabad"
-                    pincode:
-                      type: integer
-                      example: 380015
-                    state:
-                      type: string
-                      example: "Gujarat"
-                agreeTerms:
-                  type: boolean
-                  description: Checkbox for agreeing to terms and conditions
-                  example: true
+                  description: Email address for login (optional if phoneNo provided)
+                  example: "abc123@gmail.com"
+                otp:
+                  type: string
+                  description: One Time Password sent to phone or email
+                  example: "123456"
+              oneOf:
+                - required: ["phoneNo", "otp"]
+                - required: ["email", "otp"]
       responses:
-        '201':
-          description: User registered successfully
+        '200':
+          description: Login successful
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  username:
                     type: string
-                    example: "Registration successful. Please login."
+                    description: email/phone used to login.
+                    example: "john@example.com"
+                  token:
+                    type: string
+                    description: JWT or session token to authenticate further requests
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  role:
+                    type: string
+                    description: Role of the user
+                    example: CUSTOMER
         '400':
-          description: Bad Request - Missing or invalid fields
+          description: Bad request - Missing or invalid credentials
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  status:
+                    type: integer
+                    description: Error code
+                    example: '400'
                   error:
                     type: string
-                    example: "Invalid input or missing required fields."
-                    
+                    description: Error type
+                    example: Bad Request
+                  message:
+                    type: string
+                    description: Error description message
+                    example: Username is required.
+        '401':
+          description: Unauthorized - Incorrect OTP or user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Error code
+                    example: '401'
+                  error:
+                    type: string
+                    description: Error type
+                    example: Unauthorized
+                  message:
+                    type: string
+                    description: Error description message
+                    example: Invalid username or password!
+
   /customer/book-service:
     post:
       summary: Book a laundry service
@@ -1639,69 +1778,5 @@ paths:
                   error:
                     type: string
                     example: "User must be logged in to redeem rewards."
-  /customer/login:
-    post:
-      summary: User login with phone number or email and OTP
-      description: Allows a customer to login by providing either phone number or email along with an OTP code.
-      tags:
-        - Customer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - otp
-              properties:
-                phoneNo:
-                  type: string
-                  description: Phone number for login (optional if email provided)
-                  example: "9876543210"
-                email:
-                  type: string
-                  format: email
-                  description: Email address for login (optional if phoneNo provided)
-                  example: "abc123@gmail.com"
-                otp:
-                  type: string
-                  description: One Time Password sent to phone or email
-                  example: "123456"
-              oneOf:
-                - required: ["phoneNo", "otp"]
-                - required: ["email", "otp"]
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Login successful."
-                  token:
-                    type: string
-                    description: JWT or session token to authenticate further requests
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        '400':
-          description: Bad request - Missing or invalid credentials
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Please provide phone number or email and OTP."
-        '401':
-          description: Unauthorized - Incorrect OTP or user not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid phone number/email or OTP."
+  
+                
