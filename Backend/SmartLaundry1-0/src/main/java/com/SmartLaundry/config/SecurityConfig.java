@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,25 +35,44 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(Customizer.withDefaults())
+//                .authorizeHttpRequests(request -> request
+//                        .requestMatchers("/register", "/login", "/otp/**").permitAll()  // public endpoints
+//                        .anyRequest().authenticated()  // all other requests need auth
+//                )
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // stateless
+//                .authenticationProvider(authenticationProvider())  // set custom provider
+//                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);  // add JWT filter
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Disable CSRF since you're using JWT (stateless)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        request -> request
-                                        .requestMatchers("register", "login")
-                                        .permitAll()
-                                        .anyRequest().authenticated()
+                // Enable CORS with default settings, configure separately if needed
+                .cors(Customizer.withDefaults())
+                // Authorization rules
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/register", "/login", "/otp/**", "/publish/**").permitAll() // public endpoints
+                        .anyRequest().authenticated() // all others require authentication
                 )
-//                .userDetailsService(customUserDetailsService)
-//                .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
+                // Use stateless session management for JWT-based auth
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        ;
+                // Register custom authentication provider
+                .authenticationProvider(authenticationProvider())
+                // Add your JWT filter before UsernamePasswordAuthenticationFilter
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
     @Bean
     public UserDetailsService UserDetailsService(){
@@ -84,16 +104,5 @@ public class SecurityConfig {
 
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/otp/**").permitAll() // 👈 Allow public access to OTP APIs
-                        .anyRequest().authenticated()           // 🔐 Secure all other endpoints
-                )
-                .formLogin(withDefaults()); // or use .httpBasic(withDefaults()) if you prefer basic auth
-        return http.build();
-    }
 
 }
