@@ -1,9 +1,8 @@
 package com.SmartLaundry.SendOTP;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.Test;
 
-@SpringBootTest
+@com.SmartLaundry.SendOTP.SpringBootTest
 class SendOtpApplicationTests {
 
     @Test
