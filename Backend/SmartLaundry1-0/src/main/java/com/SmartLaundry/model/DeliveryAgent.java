@@ -106,5 +106,8 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "Gender of the delivery agent.", example = "MALE")
     private GENDER gender;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "deliveryAgent")
+    private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
 }
 
