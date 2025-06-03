@@ -1,5 +1,6 @@
 package com.SmartLaundry.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -106,5 +108,8 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "Gender of the delivery agent.", example = "MALE")
     private GENDER gender;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "deliveryAgent")
+    private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
 }
 
