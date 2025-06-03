@@ -23,7 +23,7 @@ public class OrderOtp {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id", nullable = false)
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Agent_Id", nullable = false)

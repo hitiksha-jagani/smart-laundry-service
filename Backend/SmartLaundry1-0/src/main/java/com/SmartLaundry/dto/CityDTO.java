@@ -1,9 +1,8 @@
 package com.SmartLaundry.dto;
 
 import com.SmartLaundry.model.City;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 @Data
 public class CityDTO {
@@ -18,4 +17,4 @@ public class CityDTO {
         this.name = city.getCityName();
         this.state = new StateDTO(city.getState());
     }
-    }
+}

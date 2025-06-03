@@ -1,5 +1,6 @@
 package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.twilio.rest.chat.v1.service.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ public class Reward {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id", nullable = false)
-    private User user;
+    private Users user;
 
     @Column(name = "Date", nullable = false)
     private LocalDate date;

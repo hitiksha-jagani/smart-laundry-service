@@ -19,7 +19,7 @@ public class FeedbackAgents {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id", nullable = false)
-    private User user;
+    private Users user;
 
     @Column(name = "Rating", nullable = false)
     private Integer rating;
