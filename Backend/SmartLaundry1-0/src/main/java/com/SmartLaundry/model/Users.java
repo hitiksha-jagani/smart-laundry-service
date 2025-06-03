@@ -12,7 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.*;
-
+@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -93,6 +93,7 @@ public class Users implements Serializable{
                 ", role=" + role +
                 // intentionally exclude 'address' list to avoid recursion
                 '}';
+
     }
 
 }

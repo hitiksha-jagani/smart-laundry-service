@@ -11,7 +11,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -51,4 +53,6 @@ public class Services implements Serializable {
     @OneToMany(mappedBy = "services", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubService> subServices = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "services")
+    private Set<ServiceProvider> serviceProviders = new HashSet<>();
 }
