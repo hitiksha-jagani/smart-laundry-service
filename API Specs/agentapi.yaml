@@ -852,6 +852,9 @@ paths:
         '400':
           description: Invalid current password
 
+  /manage-availability:
+    
+
 
 components:
   schemas:
