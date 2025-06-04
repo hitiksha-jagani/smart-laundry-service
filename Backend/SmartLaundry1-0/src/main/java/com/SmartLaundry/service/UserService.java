@@ -10,6 +10,7 @@ import com.SmartLaundry.model.UserAddress;
 import com.SmartLaundry.repository.AddressRepository;
 import com.SmartLaundry.repository.CityRepository;
 import com.SmartLaundry.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,6 +49,7 @@ public class UserService {
 
     // Logic for registration
     // Store registration details in database.
+    @Transactional
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO request){
 
         // Validation

@@ -1,6 +1,7 @@
 package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.twilio.rest.chat.v1.service.User;
+import com.SmartLaundry.model.Users;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,8 +37,8 @@ public class FeedbackProviders {
     private String response;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Provider_Id", nullable = false)
-    private ServiceProvider serviceProvider;
+    @JoinColumn(name = "service_provider_id")
+
 
     public String getFirstName()
     {
