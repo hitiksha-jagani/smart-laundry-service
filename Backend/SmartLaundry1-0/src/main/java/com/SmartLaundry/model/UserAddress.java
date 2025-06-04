@@ -51,6 +51,13 @@ public class UserAddress {
     @Schema(description = "The pincode of the address.", example = "380024")
     private String pincode;
 
+    @Column(name = "latitude", nullable = true)
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = true)
+    private Double longitude;
+
+
     @Override
     public String toString() {
         return "UserAddress{" +
@@ -58,9 +65,15 @@ public class UserAddress {
                 ", name='" + name + '\'' +
                 ", areaName='" + areaName + '\'' +
                 ", pincode='" + pincode + '\'' +
-                // exclude 'user' field here
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
                 '}';
     }
 
+
+    public String getPincode()
+    {
+        return this.pincode;
+    }
 
 }

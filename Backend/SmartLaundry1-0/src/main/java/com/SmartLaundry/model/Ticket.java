@@ -1,15 +1,40 @@
 package com.SmartLaundry.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-
-@Data
 @Entity
+@Table(name = "ticket")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ticket {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ticket_id")
     private Long ticketId;
+
+    private String title;
+
+    private String description;
+
+    // Store file path or URL to the photo
+    private String photo;
+
+    private String category;
+
+    private String response;
+
+    private String status;
+
+    @Column(name = "submitted_at")
+    private LocalDateTime submittedAt;
+
+    @Column(name = "responded_at")
+    private LocalDateTime respondedAt;
 }
+

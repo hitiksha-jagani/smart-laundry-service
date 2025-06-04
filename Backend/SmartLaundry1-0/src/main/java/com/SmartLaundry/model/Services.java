@@ -52,7 +52,4 @@ public class Services implements Serializable {
     @JsonBackReference
     @OneToMany(mappedBy = "services", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubService> subServices = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "services")
-    private Set<ServiceProvider> serviceProviders = new HashSet<>();
 }

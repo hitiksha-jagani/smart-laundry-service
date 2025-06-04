@@ -38,7 +38,7 @@ public class SubService implements Serializable{
 
     @NotBlank(message = "Sub service name is required.")
     @Size(min = 3, max = 100, message = "Sub service name must be between 3 and 100 characters.")
-    @Pattern(regexp = "^[A-Za-z+()\\\\s]+$", message = "Service name contains invalid characters.")
+    @Pattern(regexp = "^[A-Za-z+()\\s]+$", message = "Service name contains invalid characters.")
     @Column(name = "sub_service_name", nullable = false, unique = true, length = 100)
     @Schema(description = "The name of the sub service. Must be unique.", example = "Winter Cloths")
     private String subServiceName;
