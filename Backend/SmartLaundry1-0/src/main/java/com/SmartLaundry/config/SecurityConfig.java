@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("register", "login", "/complete-agent-profile/**", "/otp/**", "/publish/**", "/service-provider/submit-profile/**")
+                                .requestMatchers("register", "login", "/complete-agent-profile/**", "/otp/", "/publish/","/customer/**","/service-provider/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -101,4 +101,3 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }
-

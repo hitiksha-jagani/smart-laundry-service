@@ -89,8 +89,8 @@ public class ServiceProvider {
     @JoinColumn(name = "Bank_Account_Id")
     private BankAccount bankAccount;
 
-//    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @ToString.Exclude
-//    private List<FeedbackProviders> feedbacks = new ArrayList<>();
+    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<FeedbackProviders> feedbacks = new ArrayList<>();
 
 }
