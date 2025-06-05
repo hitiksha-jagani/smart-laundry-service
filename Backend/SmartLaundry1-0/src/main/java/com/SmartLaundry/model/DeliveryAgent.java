@@ -1,6 +1,7 @@
 package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
+//@author Hitiksha Jagani
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,6 +49,7 @@ public class DeliveryAgent implements Serializable {
     @NotBlank(message = "Date of birth is required.")
     @Past(message = "Date of Birth must be in the past")
     @Column(name = "date_of_birth", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Schema(description = "Date of birth of the delivery agent. Must be in past.", example = "2025-05-27")
     private LocalDate dateOfBirth;
 

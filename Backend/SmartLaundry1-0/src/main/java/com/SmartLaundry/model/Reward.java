@@ -6,9 +6,9 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "REWARDS")
-@Data               // Generates getters, setters, toString, equals, hashCode
-@NoArgsConstructor  // Generates no-args constructor
-@AllArgsConstructor // Generates all-args constructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Reward {
 
@@ -19,7 +19,7 @@ public class Reward {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id", nullable = false)
-    private User user;
+    private Users users;
 
     @Column(name = "Date", nullable = false)
     private LocalDate date;

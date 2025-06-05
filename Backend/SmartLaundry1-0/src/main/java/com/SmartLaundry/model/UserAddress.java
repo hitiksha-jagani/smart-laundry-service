@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+//@author Hitiksha Jagani
 @Getter
 @Setter
 @AllArgsConstructor
@@ -50,17 +51,5 @@ public class UserAddress {
     @Column(name = "pincode", nullable = false, length = 6)
     @Schema(description = "The pincode of the address.", example = "380024")
     private String pincode;
-
-    @Override
-    public String toString() {
-        return "UserAddress{" +
-                "addressId=" + addressId +
-                ", name='" + name + '\'' +
-                ", areaName='" + areaName + '\'' +
-                ", pincode='" + pincode + '\'' +
-                // exclude 'user' field here
-                '}';
-    }
-
 
 }

@@ -6,7 +6,7 @@ import com.SmartLaundry.dto.RegistrationRequestDTO;
 import com.SmartLaundry.dto.RegistrationResponseDTO;
 import com.SmartLaundry.model.UserAddress;
 import com.SmartLaundry.repository.UserRepository;
-import com.SmartLaundry.service.UserService;
+import com.SmartLaundry.service.Customer.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,32 +27,31 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @Autowired
     private AuthenticationManager manager;
 
     @Autowired
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
-
+    //@author HitikshaJagani
+    // http://localhost:8080/register
+    // Render registration form.
     @PostMapping("/register")
     public ResponseEntity<RegistrationResponseDTO> register(@Valid @RequestBody RegistrationRequestDTO request){
-        return ResponseEntity.ok(userService.registerUser(request));
+        return ResponseEntity.ok(authService.registerUser(request));
     }
 
+    //@author HitikshaJagani
+    // http:/localhost:8080/login
+    // Render login form.
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody JwtRequest request){
-        JwtResponse response = userService.loginUser(request);
+        JwtResponse response = authService.loginUser(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("/get")
-    public ResponseEntity<List<UserAddress>> getAllUsers() {
-        List<UserAddress> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
     }
 
 }

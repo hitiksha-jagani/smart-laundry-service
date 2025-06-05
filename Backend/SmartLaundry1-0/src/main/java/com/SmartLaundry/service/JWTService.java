@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+//@author Hitiksha Jagani
 @Service
 public class JWTService {
 
@@ -33,8 +34,9 @@ public class JWTService {
         }
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String id, String username) {
        Map<String, Object> claims = new HashMap<>();
+       claims.put("id", id);
 
        return Jwts.builder()
                 .setClaims(claims)
@@ -53,6 +55,11 @@ public class JWTService {
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
+    public Object extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("id"));
+    }
+
 
     private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);

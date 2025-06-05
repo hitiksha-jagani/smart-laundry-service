@@ -18,10 +18,10 @@ public class FeedbackProviders {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id", nullable = false)
-    private User user;
+    private Users users;
 
-    public User getUser() {
-        return user;
+    public Users getUser() {
+        return users;
     }
 
 
@@ -40,6 +40,6 @@ public class FeedbackProviders {
 
     public String getFirstName()
     {
-        return user.getFirstName();
+        return users.getFirstName();
     }
 }

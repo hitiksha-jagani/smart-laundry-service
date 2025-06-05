@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/deliveries")
-public class Deliveries {
+public class DeliveriesController {
 
+    //@author HitikshaJagani
     // http://localhost:8080/deliveries/summary
     // Return numbers of total deliveries, pending requests, today's deliveries
     @GetMapping("/summary")

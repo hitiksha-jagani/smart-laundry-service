@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+//@author Hitiksha Jagani
 @Component
 public class CustomUserDetailsService implements UserDetailsService {
 

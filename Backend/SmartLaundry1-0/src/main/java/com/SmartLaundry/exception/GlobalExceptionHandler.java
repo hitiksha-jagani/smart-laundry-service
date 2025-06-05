@@ -32,6 +32,12 @@ public class GlobalExceptionHandler {
         return buildResponse(ex, HttpStatus.BAD_REQUEST, req);
     }
 
+    @ExceptionHandler(ForbiddenAccessException.class)
+    public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenAccessException ex, HttpServletRequest req) {
+//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        return buildResponse(ex, HttpStatus.FORBIDDEN, req);
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExists(UserAlreadyExistsException ex, HttpServletRequest req) {
         return buildResponse(ex, HttpStatus.CONFLICT, req);

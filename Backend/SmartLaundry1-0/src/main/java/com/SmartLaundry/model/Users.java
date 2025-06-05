@@ -13,6 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.*;
 
+//@author Hitiksha Jagani
 @Getter
 @Setter
 @AllArgsConstructor
@@ -79,20 +80,7 @@ public class Users implements Serializable{
     private LocalDateTime createdAt;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private List<UserAddress> address;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId='" + userId + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNo='" + phoneNo + '\'' +
-                ", email='" + email + '\'' +
-                ", role=" + role +
-                // intentionally exclude 'address' list to avoid recursion
-                '}';
-    }
 
 }
