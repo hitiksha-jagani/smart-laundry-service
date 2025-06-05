@@ -56,10 +56,6 @@ public class DeliveryAgentProfileController {
             @AuthenticationPrincipal UserDetails userDetails, @PathVariable String userId) throws AccessDeniedException {
 
         // Validation
-        if(request.getVehicleNumber() == null || request.getVehicleNumber().isBlank()){
-            throw new ExceptionMsg("Vehicle number is required.");
-        }
-
         if(!request.getAccountHolderName().matches("^[A-Za-z\\s]+$")){
             throw new FormatException("Account holder name contains invalid characters.");
         }
@@ -75,7 +71,7 @@ public class DeliveryAgentProfileController {
 
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
-        
+
         if (!UserRole.DELIVERY_AGENT.equals(user.getRole())) {
             throw new ForbiddenAccessException("You are not applicable for this page.");
         }

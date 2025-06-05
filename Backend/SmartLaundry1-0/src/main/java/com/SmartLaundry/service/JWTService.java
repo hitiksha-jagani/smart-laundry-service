@@ -35,10 +35,10 @@ public class JWTService {
     }
 
     public String generateToken(String id, String username) {
-       Map<String, Object> claims = new HashMap<>();
-       claims.put("id", id);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", id);
 
-       return Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))

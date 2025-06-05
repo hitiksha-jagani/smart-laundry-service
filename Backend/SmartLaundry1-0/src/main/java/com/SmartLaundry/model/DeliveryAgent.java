@@ -46,7 +46,7 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "User if of the delivery agent.", example = "US00001", accessMode = Schema.AccessMode.READ_ONLY)
     private Users users;
 
-    @NotBlank(message = "Date of birth is required.")
+    @NotNull(message = "Date of birth is required.")
     @Past(message = "Date of Birth must be in the past")
     @Column(name = "date_of_birth", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -59,7 +59,7 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "Vehicle number of the delivery agent.", example = "GJ011234")
     private String vehicleNumber;
 
-    @NotBlank(message = "aadhar card is required.")
+    @NotNull(message = "aadhar card is required.")
     @Lob
     @Column(name = "aadhar_card_photo", nullable = false)
     @Schema(description = "aadhar card of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
@@ -70,7 +70,7 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "Pan card of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
     private byte[] panCardPhoto;
 
-    @NotBlank(message = "Driving License is required.")
+    @NotNull(message = "Driving License is required.")
     @Lob
     @Column(name = "driving_license_photo", nullable = false)
     @Schema(description = "Driving License of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
@@ -84,7 +84,7 @@ public class DeliveryAgent implements Serializable {
 
     @NotBlank(message = "Account holder name is required.")
     @Column(name = "account_holder_name", nullable = false)
-    @Pattern(regexp = "^[A-Za-z\\\\s]+$", message = "Account holder name contains invalid characters.")
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Account holder name contains invalid characters.")
     @Schema(description = "Account Holder name of the delivery agent bank.", example = "John Deo")
     private String accountHolderName;
 
@@ -99,13 +99,13 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "IFSC Code of the delivery agent bank.", example = "KB01234")
     private String ifscCode;
 
-    @NotBlank(message = "Profile photo is required.")
+    @NotNull(message = "Profile photo is required.")
     @Lob
     @Column(name = "profile_photo", nullable = false)
     @Schema(description = "Profile photo of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
     private byte[] profilePhoto;
 
-    @NotBlank(message = "Gender is required.")
+    @NotNull(message = "Gender is required.")
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     @Schema(description = "Gender of the delivery agent.", example = "MALE")

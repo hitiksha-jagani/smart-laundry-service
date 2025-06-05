@@ -4,7 +4,6 @@ import com.SmartLaundry.dto.JwtRequest;
 import com.SmartLaundry.dto.JwtResponse;
 import com.SmartLaundry.dto.RegistrationRequestDTO;
 import com.SmartLaundry.dto.RegistrationResponseDTO;
-import com.SmartLaundry.model.UserAddress;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.Customer.AuthService;
 import jakarta.validation.Valid;
@@ -32,22 +31,21 @@ public class AuthController {
     @Autowired
     private AuthenticationManager manager;
 
-    @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
-    //@author HitikshaJagani
+    // @author hitiksha-jagani
     // http://localhost:8080/register
-    // Render registration form.
+    // Sign up
     @PostMapping("/register")
     public ResponseEntity<RegistrationResponseDTO> register(@Valid @RequestBody RegistrationRequestDTO request){
         return ResponseEntity.ok(authService.registerUser(request));
     }
 
-    //@author HitikshaJagani
-    // http:/localhost:8080/login
-    // Render login form.
+    // @author hitiksha-jagani
+    // http://localhost:8080/login
+    // Login
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody JwtRequest request){
         JwtResponse response = authService.loginUser(request);

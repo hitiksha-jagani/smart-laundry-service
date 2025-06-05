@@ -1,14 +1,15 @@
 package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.twilio.rest.chat.v1.service.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "REWARDS")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data               // Generates getters, setters, toString, equals, hashCode
+@NoArgsConstructor  // Generates no-args constructor
+@AllArgsConstructor // Generates all-args constructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Reward {
 
@@ -19,7 +20,7 @@ public class Reward {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id", nullable = false)
-    private Users users;
+    private Users user;
 
     @Column(name = "Date", nullable = false)
     private LocalDate date;

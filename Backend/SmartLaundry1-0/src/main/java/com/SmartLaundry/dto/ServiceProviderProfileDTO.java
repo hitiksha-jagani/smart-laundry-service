@@ -1,10 +1,12 @@
-package com.SmartLaundry.dto.ServiceProvider;
+package com.SmartLaundry.dto;
+import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
 import com.SmartLaundry.model.SchedulePlan;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -13,17 +15,34 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class ServiceProviderProfileDTO {
+    private String firstName;
+    private String lastName;
+    private String phoneNo;
+    private String email;
     private String businessName;
     private String businessLicenseNumber;
     private String gstNumber;
     private Boolean needOfDeliveryAgent;
-    private byte[] photoImage;
-    private byte[] aadharCardImage;
-    private byte[] panCardImage;
-    private byte[] businessUtilityBillImage;
+    private byte[] profilePhoto;
+    private byte[] aadharCardPhoto;
+    private byte[] panCardPhoto;
+    private byte[] businessUtilityBillPhoto;
     private Set<SchedulePlan> schedulePlans;
-    private BankAccountDTO bankAccount;
+
+    private ServiceProviderProfileDTO.AddressDTO addresses;
+    private ServiceProviderProfileDTO.BankAccountDTO bankAccount;
     private List<ItemPriceDTO> items;
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AddressDTO {
+        private String name;
+        private String areaName;
+        private String pincode;
+        private String cityName;
+    }
 
 
     @Data
@@ -48,20 +67,4 @@ public class ServiceProviderProfileDTO {
         private Long price;
     }
 
-
-    public byte[] getPhotoImageBase64() {
-        return photoImage;
-    }
-
-    public byte[] getAadharCardImageBase64() {
-        return aadharCardImage;
-    }
-
-    public byte[] getPanCardImageBase64() {
-        return panCardImage;
-    }
-
-    public byte[] getBusinessUtilityBillImageBase64() {
-        return businessUtilityBillImage;
-    }
 }

@@ -1,6 +1,7 @@
 package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Parameter;
 import jakarta.validation.constraints.*;
@@ -13,7 +14,6 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.*;
 
-//@author Hitiksha Jagani
 @Getter
 @Setter
 @AllArgsConstructor
@@ -79,8 +79,9 @@ public class Users implements Serializable{
     @Schema(description = "Timestamp of the user creation.", example = "2025-05-21 00:00:00", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createdAt;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "users")
     private List<UserAddress> address;
+
 
 }

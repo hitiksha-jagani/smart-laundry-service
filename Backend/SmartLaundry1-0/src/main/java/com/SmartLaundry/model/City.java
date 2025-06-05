@@ -38,4 +38,5 @@ public class City implements Serializable{
     @JoinColumn(name = "state_id", nullable = false)
     private State state;
 
+
 }

@@ -1,5 +1,6 @@
 package com.SmartLaundry.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,7 +8,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-//@author Hitiksha Jagani
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,7 +24,7 @@ public class UserAddress {
     @Schema(description = "Unique udentifier of the address.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long addressId;
 
-    @JsonManagedReference
+    @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "Id of the user", example = "US00001", accessMode = Schema.AccessMode.READ_ONLY)
@@ -51,5 +51,11 @@ public class UserAddress {
     @Column(name = "pincode", nullable = false, length = 6)
     @Schema(description = "The pincode of the address.", example = "380024")
     private String pincode;
+
+    @Column(name = "latitude", nullable = true)
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = true)
+    private Double longitude;
 
 }

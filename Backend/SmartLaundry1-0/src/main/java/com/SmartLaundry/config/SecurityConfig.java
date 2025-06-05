@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("register", "login", "/complete-agent-profile/**", "/otp/**", "/publish/**")
+                                .requestMatchers("register", "login", "/complete-agent-profile/**", "/otp/**", "/publish/**", "/service-provider/submit-profile/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -63,30 +63,6 @@ public class SecurityConfig {
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                // Disable CSRF since you're using JWT (stateless)
-//                .csrf(AbstractHttpConfigurer::disable)
-//                // Enable CORS with default settings, configure separately if needed
-//                .cors(Customizer.withDefaults())
-//                // Authorization rules
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/register", "/login", "/otp/**", "/publish/**").permitAll() // public endpoints
-//                        .anyRequest().authenticated() // all others require authentication
-//                )
-//                // Use stateless session management for JWT-based auth
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                // Register custom authentication provider
-//                .authenticationProvider(authenticationProvider())
-//                // Add your JWT filter before UsernamePasswordAuthenticationFilter
-//                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
-//                .authenticationEntryPoint(authenticationEntryPoint);
-//        return http.build();
-//    }
-
 
     @Bean
     public UserDetailsService UserDetailsService(){
@@ -108,13 +84,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper;
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
@@ -132,3 +101,4 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }
+

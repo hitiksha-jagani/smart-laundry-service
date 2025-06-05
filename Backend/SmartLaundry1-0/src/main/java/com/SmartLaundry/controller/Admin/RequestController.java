@@ -1,10 +1,18 @@
 package com.SmartLaundry.controller.Admin;
 
+import com.SmartLaundry.dto.Admin.ServiceProviderRequestDTO;
+import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
 import com.SmartLaundry.dto.ServiceProviderProfileDTO;
+import com.SmartLaundry.model.UserAddress;
+import com.SmartLaundry.model.Users;
+import com.SmartLaundry.repository.AddressRepository;
+import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.Admin.RequestService;
+import com.SmartLaundry.service.DeliveryAgent.DeliveryAgentProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -31,41 +39,39 @@ public class RequestController {
     // http://localhost:8080/provider-requests
     // Return all the pending requests of service provider.
     @GetMapping("/provider-requests")
-    public ResponseEntity<List<ServiceProviderProfileDTO>> getAllPendingProvidersProfiles() {
-
-        Set<String> keys = redisTemplate.keys("serviceProviderProfile:*");
-
-        if (keys == null || keys.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-
-        List<ServiceProviderProfileDTO> pendingProfiles = new ArrayList<>();
-        for (String key : keys) {
-            ServiceProviderProfileDTO dto = (ServiceProviderProfileDTO) redisTemplate.opsForValue().get(key);
-            if (dto != null) {
-                pendingProfiles.add(dto);
-            }
-        }
-
-        return ResponseEntity.ok(pendingProfiles);
+    public ResponseEntity<List<ServiceProviderRequestDTO>> getAllPendingProvidersProfiles() {
+        List<ServiceProviderRequestDTO> profiles = requestService.getAllProviderProfiles();
+        return ResponseEntity.ok(profiles);
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/provider-accept/{userId}
+    // http://localhost:8080/accept-provider/{userId}
     // Accpet service provider request.
-    @Transactional
-    @PostMapping("/provider-accept/{userId}")
+    @PostMapping("/accept-provider/{userId}")
     public ResponseEntity<String> acceptProviderRequest(@PathVariable String userId){
-        return ResponseEntity.ok(requestService.acceptProvider(userId));
+        try {
+            String message = requestService.acceptProvider(userId);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong: " + e.getMessage());
+        }
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/provider-reject/{userId}
+    // http://localhost:8080/reject-provider/{userId}
     // Reject service provider request.
-    @Transactional
-    @PostMapping("/provider-reject/{userId}")
+    @PostMapping("/reject-provider/{userId}")
     public ResponseEntity<String> rejectProviderRequest(@PathVariable String userId){
-        return ResponseEntity.ok(requestService.rejectProvider(userId));
+        try {
+            String message = requestService.rejectProvider(userId);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong: " + e.getMessage());
+        }
     }
 
     // @author Hitiksha Jagani
@@ -73,40 +79,38 @@ public class RequestController {
     // Return all the pending requests of delivery agent.
     @GetMapping("/agent-requests")
     public ResponseEntity<List<RequestProfileDTO>> getAllPendingAgentsProfiles() {
-
-        Set<String> keys = redisTemplate.keys("DeliveryAgentProfile:*");
-
-        if (keys == null || keys.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-
-        List<RequestProfileDTO> pendingProfiles = new ArrayList<>();
-        for (String key : keys) {
-            RequestProfileDTO dto = (RequestProfileDTO) redisTemplate.opsForValue().get(key);
-            if (dto != null) {
-                pendingProfiles.add(dto);
-            }
-        }
-
-        return ResponseEntity.ok(pendingProfiles);
+        List<RequestProfileDTO> profiles = requestService.getAllAgentProfiles();
+        return ResponseEntity.ok(profiles);
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/agent-accept/{userId}
+    // http://localhost:8080/accept-agent/{userId}
     // Accpet delivery agent request.
-    @Transactional
-    @PostMapping("/agent-accept/{userId}")
+    @PostMapping("/accept-agent/{userId}")
     public ResponseEntity<String> acceptAgentRequest(@PathVariable String userId){
-        return ResponseEntity.ok(requestService.acceptAgent(userId));
+        try {
+            String message = requestService.acceptAgent(userId);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong: " + e.getMessage());
+        }
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/agent-reject/{userId}
+    // http://localhost:8080/reject-agent/{userId}
     // Reject delivery agent request.
-    @Transactional
-    @PostMapping("/agent-reject/{userId}")
+    @PostMapping("/reject-agent/{userId}")
     public ResponseEntity<String> rejectAgentRequest(@PathVariable String userId){
-        return ResponseEntity.ok(requestService.rejectAgent(userId));
+        try {
+            String message = requestService.rejectAgent(userId);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong: " + e.getMessage());
+        }
     }
 
 }

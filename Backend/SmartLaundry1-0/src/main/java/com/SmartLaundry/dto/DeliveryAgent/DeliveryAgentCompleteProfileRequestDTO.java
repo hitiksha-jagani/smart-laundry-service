@@ -24,7 +24,7 @@ public class DeliveryAgentCompleteProfileRequestDTO {
     @NotNull(message = "Date of birth is required.")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Past(message = "Date of Birth must be in the past")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Size(min = 8, max = 10, message = "Vehicle number must be between 8 and 10 characters.")
     private String vehicleNumber;

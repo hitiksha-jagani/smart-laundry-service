@@ -1,4 +1,4 @@
-package com.SmartLaundry.controller;
+package com.SmartLaundry.controller.Customer;
 import com.SmartLaundry.service.EmailService;
 import com.SmartLaundry.service.OTPService;
 import com.SmartLaundry.service.SMSService;

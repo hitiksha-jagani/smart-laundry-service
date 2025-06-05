@@ -11,12 +11,14 @@ import com.SmartLaundry.repository.AddressRepository;
 import com.SmartLaundry.repository.CityRepository;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.JWTService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.SmartLaundry.exception.*;
@@ -49,6 +51,7 @@ public class AuthService {
     //@author Hitiksha Jagani
     // Logic for registration
     // Store registration details in database.
+    @Transactional
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO request){
 
         // Validation
@@ -115,9 +118,6 @@ public class AuthService {
         return new RegistrationResponseDTO(users.getPhoneNo(), users.getEmail(), "Successfully Registered");
     }
 
-    public List<UserAddress> getAllUsers(){
-        return addressRepository.findAll();
-    }
 
     //@author Hitiksha Jagani
     // Logic for login

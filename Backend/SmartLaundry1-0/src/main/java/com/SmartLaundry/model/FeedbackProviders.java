@@ -1,5 +1,7 @@
 package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.SmartLaundry.model.Users;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,10 +20,10 @@ public class FeedbackProviders {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_Id", nullable = false)
-    private Users users;
+    private Users user;
 
     public Users getUser() {
-        return users;
+        return user;
     }
 
 
@@ -35,11 +37,11 @@ public class FeedbackProviders {
     private String response;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Provider_Id", nullable = false)
-    private ServiceProvider serviceProvider;
+    @JoinColumn(name = "service_provider_id")
+
 
     public String getFirstName()
     {
-        return users.getFirstName();
+        return user.getFirstName();
     }
 }
