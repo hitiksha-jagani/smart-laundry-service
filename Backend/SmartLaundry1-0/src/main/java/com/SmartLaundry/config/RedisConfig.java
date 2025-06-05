@@ -2,15 +2,18 @@ package com.SmartLaundry.config;
 
 import com.SmartLaundry.Subscriber.RedisMessageSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
@@ -18,6 +21,10 @@ import java.time.Duration;
 @Configuration
 public class RedisConfig {
 
+    @Autowired
+    private RedisMessageSubscriber messageSubscriber;
+
+    // RedisTemplate configuration
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory){
         RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -27,10 +34,7 @@ public class RedisConfig {
         return template;
     }
 
-
-     @Autowired
-    private RedisMessageSubscriber messageSubscriber;
-
+    // Message Listener for Redis Pub/Sub
     @Bean
     public MessageListenerAdapter messageListener() {
         return new MessageListenerAdapter(messageSubscriber);
@@ -43,11 +47,23 @@ public class RedisConfig {
         container.addMessageListener(messageListener(), new PatternTopic("my-channel"));
         return container;
     }
-//optional
+
+    // Redis Cache Configuration
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10))
-                .disableCachingNullValues();
+                .entryTtl(Duration.ofDays(30))
+                .disableCachingNullValues()
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())
+                );
+    }
+
+    // ✅ Register CacheManager to wire Spring's @Cacheable
+    @Bean
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        return RedisCacheManager.builder(connectionFactory)
+                .cacheDefaults(cacheConfiguration())
+                .build();
     }
 }

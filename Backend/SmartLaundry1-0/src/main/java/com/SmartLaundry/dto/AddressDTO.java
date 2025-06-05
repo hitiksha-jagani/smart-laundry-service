@@ -1,21 +1,29 @@
 package com.SmartLaundry.dto;
 
-import com.SmartLaundry.model.UserAddress;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
 @Data
 public class AddressDTO {
     private String name;
     private String areaName;
     private CityDTO city;
     private String pincode;
+    private Double latitude;
+    private Double longitude;
 
     //Constructor
-    public AddressDTO(UserAddress address) {
-        this.name = address.getName();
-        this.areaName = address.getAreaName();
-        this.city = new CityDTO(address.getCity());
-        this.pincode =  address.getPincode();
+    public AddressDTO(String name, String areaName, CityDTO city, String pincode, Double latitude, Double longitude) {
+        this.name = name;
+        this.areaName = areaName;
+        this.city = city;
+        this.pincode = pincode;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
+
 
 }

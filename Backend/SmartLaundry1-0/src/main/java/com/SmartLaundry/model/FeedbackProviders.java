@@ -18,9 +18,13 @@ public class FeedbackProviders {
     @Column(name = "Feedback_Id")
     private Long feedbackId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "User_Id", nullable = false)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "User_Id", nullable = false)
+//    private Users user;
+    @ManyToOne(fetch = FetchType.EAGER) // Ensure this is present
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+
 
     public Users getUser() {
         return user;
@@ -37,8 +41,8 @@ public class FeedbackProviders {
     private String response;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_provider_id")
-
+    @JoinColumn(name = "service_provider_id", nullable = false)
+    private ServiceProvider serviceProvider;
 
     public String getFirstName()
     {

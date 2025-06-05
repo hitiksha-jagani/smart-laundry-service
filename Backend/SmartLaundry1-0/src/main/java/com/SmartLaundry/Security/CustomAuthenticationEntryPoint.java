@@ -1,4 +1,5 @@
 package com.SmartLaundry.Security;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,5 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
         response.setContentType("application/json");
         response.getWriter().write("{\"error\": \"Unauthorized access. Please login first.\"}");
- }
-
+    }
 }
