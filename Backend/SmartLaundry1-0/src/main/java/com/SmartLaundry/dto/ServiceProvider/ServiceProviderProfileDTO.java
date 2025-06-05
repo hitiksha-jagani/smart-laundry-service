@@ -1,4 +1,4 @@
-package com.SmartLaundry.dto;
+package com.SmartLaundry.dto.ServiceProvider;
 import com.SmartLaundry.model.SchedulePlan;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +24,7 @@ public class ServiceProviderProfileDTO {
     private Set<SchedulePlan> schedulePlans;
     private BankAccountDTO bankAccount;
     private List<ItemPriceDTO> items;
+   // private AddressDTO address;
 
 
     @Data
@@ -35,7 +36,7 @@ public class ServiceProviderProfileDTO {
         private String ifscCode;
         private String bankAccountNumber;
         private String accountHolderName;
-        private AddressDTO address;
+      //  private AddressDTO address;
     }
 
     @Data

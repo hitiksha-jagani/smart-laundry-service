@@ -1,6 +1,6 @@
 package com.SmartLaundry.controller.Admin;
 
-import com.SmartLaundry.dto.ServiceProviderProfileDTO;
+import com.SmartLaundry.dto.ServiceProvider.ServiceProviderProfileDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
 import lombok.RequiredArgsConstructor;

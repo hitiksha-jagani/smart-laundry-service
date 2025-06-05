@@ -1,5 +1,4 @@
 package com.SmartLaundry.dto;
-
 import lombok.Data;
 
 @Data

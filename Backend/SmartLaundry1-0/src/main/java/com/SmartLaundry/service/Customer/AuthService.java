@@ -1,4 +1,4 @@
-package com.SmartLaundry.service;
+package com.SmartLaundry.service.Customer;
 
 import com.SmartLaundry.dto.JwtRequest;
 import com.SmartLaundry.dto.JwtResponse;
@@ -10,6 +10,7 @@ import com.SmartLaundry.model.UserAddress;
 import com.SmartLaundry.repository.AddressRepository;
 import com.SmartLaundry.repository.CityRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.JWTService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.SmartLaundry.exception.*;
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
@@ -47,6 +47,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    //@author Hitiksha Jagani
     // Logic for registration
     // Store registration details in database.
     @Transactional
@@ -116,10 +117,8 @@ public class UserService {
         return new RegistrationResponseDTO(users.getPhoneNo(), users.getEmail(), "Successfully Registered");
     }
 
-    public List<UserAddress> getAllUsers(){
-        return addressRepository.findAll();
-    }
 
+    //@author Hitiksha Jagani
     // Logic for login
     public JwtResponse loginUser(JwtRequest request) {
         String token;
@@ -139,7 +138,7 @@ public class UserService {
         }
 
         if(authentication.isAuthenticated()) {
-            token = jwtService.generateToken(request.getUsername());
+            token = jwtService.generateToken(users.get().getUserId(), request.getUsername());
 
             return JwtResponse.builder()
                     .jwtToken(token)

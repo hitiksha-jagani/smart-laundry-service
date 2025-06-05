@@ -90,13 +90,13 @@ public class ServiceProvider {
     @JoinColumn(name = "Add_Id")
     private UserAddress address;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "Bank_Account_Id")
     private BankAccount bankAccount;
 
-//    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @ToString.Exclude
-//    private List<FeedbackProviders> feedbacks = new ArrayList<>();
+    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<FeedbackProviders> feedbacks = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -116,5 +116,9 @@ public class ServiceProvider {
     // Getter for photo image
     public byte[] getPhoto() {
         return this.photoImage;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photoImage = photo;
     }
 }
