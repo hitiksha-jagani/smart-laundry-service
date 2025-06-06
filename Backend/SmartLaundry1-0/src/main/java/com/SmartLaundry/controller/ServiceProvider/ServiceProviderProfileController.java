@@ -2,7 +2,6 @@ package com.SmartLaundry.controller.ServiceProvider;
 
 import com.SmartLaundry.dto.Admin.PriceDTO;
 import com.SmartLaundry.dto.Admin.ServiceProviderRequestDTO;
-import com.SmartLaundry.dto.ServiceProviderProfileDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.ItemRepository;
 import com.SmartLaundry.repository.ServiceRepository;
@@ -15,10 +14,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/service-provider/")

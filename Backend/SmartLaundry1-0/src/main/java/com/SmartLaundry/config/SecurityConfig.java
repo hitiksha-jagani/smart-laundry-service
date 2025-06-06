@@ -3,7 +3,6 @@ package com.SmartLaundry.config;
 import com.SmartLaundry.Security.CustomAuthenticationEntryPoint;
 import com.SmartLaundry.filter.JwtFilter;
 import com.SmartLaundry.service.CustomUserDetailsService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -23,19 +23,19 @@ public class GeoRedisService {
         int count = 0;
 
         for (ServiceProvider sp : providers) {
-            UserAddress address = sp.getAddress();
-            if (address != null && address.getLatitude() != null && address.getLongitude() != null) {
-                geoOps.add(
-                        KEY,
-                        new RedisGeoCommands.GeoLocation<>(
-                                sp.getServiceProviderId(),
-                                new Point(address.getLongitude(), address.getLatitude())
-                        )
-                );
+//            UserAddress address = sp.getAddress();
+//            if (address != null && address.getLatitude() != null && address.getLongitude() != null) {
+//                geoOps.add(
+//                        KEY,
+//                        new RedisGeoCommands.GeoLocation<>(
+//                                sp.getServiceProviderId(),
+//                                new Point(address.getLongitude(), address.getLatitude())
+//                        )
+//                );
                 count++;
             }
         }
-        System.out.println("Loaded " + count + " service providers into Redis geo set.");
+//        System.out.println("Loaded " + count + " service providers into Redis geo set.");
     }
 
-}
+

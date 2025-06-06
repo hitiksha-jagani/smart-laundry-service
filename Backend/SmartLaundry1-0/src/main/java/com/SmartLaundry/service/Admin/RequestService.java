@@ -4,7 +4,6 @@ import com.SmartLaundry.dto.Admin.PriceDTO;
 import com.SmartLaundry.dto.Admin.ServiceProviderRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
-import com.SmartLaundry.dto.ServiceProviderProfileDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

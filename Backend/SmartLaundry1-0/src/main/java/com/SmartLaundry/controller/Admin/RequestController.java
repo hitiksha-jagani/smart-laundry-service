@@ -1,26 +1,15 @@
 package com.SmartLaundry.controller.Admin;
 
 import com.SmartLaundry.dto.Admin.ServiceProviderRequestDTO;
-import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
-import com.SmartLaundry.dto.ServiceProviderProfileDTO;
-import com.SmartLaundry.model.UserAddress;
-import com.SmartLaundry.model.Users;
-import com.SmartLaundry.repository.AddressRepository;
-import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.Admin.RequestService;
-import com.SmartLaundry.service.DeliveryAgent.DeliveryAgentProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("")
