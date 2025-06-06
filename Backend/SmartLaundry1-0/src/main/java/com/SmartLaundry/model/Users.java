@@ -24,6 +24,7 @@ import java.util.*;
 @Schema(description = "Represents a user with unique ID, phone and email.")
 public class Users implements Serializable{
 
+    @Getter
     @Id
     @GeneratedValue(generator = "user-id-generator")
     @GenericGenerator(
@@ -85,3 +86,6 @@ public class Users implements Serializable{
 
 
 }
+
+
+

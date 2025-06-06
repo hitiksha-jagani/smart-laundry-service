@@ -43,6 +43,13 @@ public class Order implements Serializable {
     @Schema(description = "Unique identifier for the order.", example = "ODR00001", accessMode = Schema.AccessMode.READ_ONLY)
     private String orderId;
 
+    private Double latitude;
+    private Double longitude;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_agent_id")
+    private DeliveryAgent deliveryAgent;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

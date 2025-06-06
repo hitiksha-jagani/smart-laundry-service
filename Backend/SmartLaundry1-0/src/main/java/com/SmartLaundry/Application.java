@@ -12,7 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 public class Application {
 
 	public static void main(String[] args) {
-		EnvUtils.loadEnv("/media/hitiksha/C/DAIICT/Summer internship/Env_Var.env");
+		EnvUtils.loadEnv("D:\\MSCIT\\summerinternship\\Env_Var.env");
 		SpringApplication.run(Application.class, args);
 	}
 }

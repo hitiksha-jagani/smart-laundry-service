@@ -48,4 +48,5 @@ public class FeedbackProviders {
     {
         return user.getFirstName();
     }
+    public String getLastName() {return user.getLastName();}
 }

@@ -40,6 +40,12 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "Unique identifier for the delivery agents.", example = "DA0001", accessMode = Schema.AccessMode.READ_ONLY)
     private String deliveryAgentId;
 
+    @Column(name = "current_latitude")
+    private Double currentLatitude;
+
+    @Column(name = "current_longitude")
+    private Double currentLongitude;
+
     @JsonIgnore
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", unique = true, nullable = false)

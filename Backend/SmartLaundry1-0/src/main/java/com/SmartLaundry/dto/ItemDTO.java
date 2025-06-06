@@ -1,10 +1,22 @@
 package com.SmartLaundry.dto;
+import lombok.*;
 
-import com.SmartLaundry.model.Services;
-import com.SmartLaundry.model.SubService;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode
 public class ItemDTO {
     private String itemName;
-    private Services service;
-    private SubService subService;
+    private String serviceName;
+    private String subServiceName;
+
+    public void setService(String s) {
+        this.serviceName = s;
+    }
+
+    public void setSubService(String s) {
+        this.subServiceName = s;
+    }
 }
+

@@ -2,6 +2,7 @@ package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Parameter;
@@ -47,7 +48,7 @@ public class Services implements Serializable {
     @Schema(description = "The name of the service. Must be unique.", example = "Dry Cleaning")
     private String serviceName;
 
-    @JsonBackReference
+    @JsonManagedReference
     @OneToMany(mappedBy = "services", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubService> subServices = new ArrayList<>();
 

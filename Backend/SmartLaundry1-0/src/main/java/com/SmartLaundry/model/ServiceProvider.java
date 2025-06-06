@@ -9,6 +9,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class ServiceProvider {
+public class ServiceProvider implements Serializable {
 
     @Id
     @GeneratedValue(generator = "service-provider-id-generator")
@@ -93,4 +94,6 @@ public class ServiceProvider {
     @ToString.Exclude
     private List<FeedbackProviders> feedbacks = new ArrayList<>();
 
+    //public void setItems(List<Items> providerItems) {
+    //}
 }
