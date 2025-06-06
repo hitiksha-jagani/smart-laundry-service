@@ -8,4 +8,5 @@ import java.util.*;
 public interface SubServiceRepository extends JpaRepository<SubService, String> {
     Optional<SubService> findBySubServiceNameAndServices(String subServiceName, Services services);
     List<SubService> findAllByOrderBySubServiceIdAsc(); //SUBSV001
+
 }

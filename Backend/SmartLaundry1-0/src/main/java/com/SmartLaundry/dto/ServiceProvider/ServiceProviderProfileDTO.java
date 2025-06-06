@@ -17,14 +17,8 @@ public class ServiceProviderProfileDTO {
     private String businessLicenseNumber;
     private String gstNumber;
     private Boolean needOfDeliveryAgent;
-    private byte[] photoImage;
-    private byte[] aadharCardImage;
-    private byte[] panCardImage;
-    private byte[] businessUtilityBillImage;
     private Set<SchedulePlan> schedulePlans;
-    private BankAccountDTO bankAccount;
     private List<ItemPriceDTO> items;
-   // private AddressDTO address;
 
 
     @Data
@@ -36,7 +30,6 @@ public class ServiceProviderProfileDTO {
         private String ifscCode;
         private String bankAccountNumber;
         private String accountHolderName;
-      //  private AddressDTO address;
     }
 
     @Data
@@ -50,20 +43,4 @@ public class ServiceProviderProfileDTO {
         private Long price;
     }
 
-
-    public byte[] getPhotoImageBase64() {
-        return photoImage;
-    }
-
-    public byte[] getAadharCardImageBase64() {
-        return aadharCardImage;
-    }
-
-    public byte[] getPanCardImageBase64() {
-        return panCardImage;
-    }
-
-    public byte[] getBusinessUtilityBillImageBase64() {
-        return businessUtilityBillImage;
-    }
 }

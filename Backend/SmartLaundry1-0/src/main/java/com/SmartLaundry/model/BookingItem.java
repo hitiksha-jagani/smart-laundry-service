@@ -11,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 
+//@author Hitiksha Jagani
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

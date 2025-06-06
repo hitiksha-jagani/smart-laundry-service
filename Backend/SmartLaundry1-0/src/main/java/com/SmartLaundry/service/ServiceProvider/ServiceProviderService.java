@@ -42,24 +42,24 @@ public class ServiceProviderService {
 
         // Update basic fields
         existingSP.setBusinessName(updatedData.getBusinessName());
-        existingSP.setPhoto(updatedData.getPhoto());
+//        existingSP.setPhoto(updatedData.getPhoto());
 
         // Update address if provided
-        if (updatedData.getAddress() != null) {
-            UserAddress updatedAddress = updatedData.getAddress();
-            UserAddress existingAddress = existingSP.getAddress();
-
-            if (existingAddress == null) {
-                existingSP.setAddress(updatedAddress);
-            } else {
-                existingAddress.setName(updatedAddress.getName());
-                existingAddress.setAreaName(updatedAddress.getAreaName());
-                existingAddress.setCity(updatedAddress.getCity());
-                existingAddress.setPincode(updatedAddress.getPincode());
-                existingAddress.setLatitude(updatedAddress.getLatitude());
-                existingAddress.setLongitude(updatedAddress.getLongitude());
-            }
-        }
+//        if (updatedData.getAddress() != null) {
+//            UserAddress updatedAddress = updatedData.getAddress();
+//            UserAddress existingAddress = existingSP.getAddress();
+//
+//            if (existingAddress == null) {
+////                existingSP.setAddress(updatedAddress);
+//            } else {
+//                existingAddress.setName(updatedAddress.getName());
+//                existingAddress.setAreaName(updatedAddress.getAreaName());
+//                existingAddress.setCity(updatedAddress.getCity());
+//                existingAddress.setPincode(updatedAddress.getPincode());
+//                existingAddress.setLatitude(updatedAddress.getLatitude());
+//                existingAddress.setLongitude(updatedAddress.getLongitude());
+//            }
+//        }
 
         // Optional: update other related data (items, etc.)
 
@@ -70,15 +70,15 @@ public class ServiceProviderService {
 
     public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
         // Convert Items → ItemDTO
-        List<ItemDTO> itemDTOs = sp.getItems().stream()
-                .map(item -> {
-                    ItemDTO dto = new ItemDTO();
-                    dto.setItemName(item.getItemName());
-                    dto.setServiceName(item.getService().getServiceName());
-                    dto.setSubServiceName(item.getSubService().getSubServiceName());
-                    return dto;
-                })
-                .collect(Collectors.toList());
+//        List<ItemDTO> itemDTOs = sp.getItems().stream()
+//                .map(item -> {
+//                    ItemDTO dto = new ItemDTO();
+//                    dto.setItemName(item.getItemName());
+//                    dto.setServiceName(item.getService().getServiceName());
+//                    dto.setSubServiceName(item.getSubService().getSubServiceName());
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
 
         // Feedback ratings and reviews, now including user names
         List<FeedbackProviders> feedbacks = feedbackRepo.findByServiceProvider_ServiceProviderId(sp.getServiceProviderId());
@@ -103,29 +103,29 @@ public class ServiceProviderService {
         return CustomerServiceProviderDTO.builder()
                 .serviceProviderId(sp.getServiceProviderId())
                 .businessName(sp.getBusinessName())
-                .photoImage(sp.getPhoto())
-                .address(mapAddress(sp.getAddress()))
+//                .photoImage(sp.getPhoto())
+//                .address(mapAddress(sp.getAddress()))
                 .averageRating(avgRating)
                 .reviews(reviews)
-                .items(itemDTOs)
+//                .items(itemDTOs)
                 .userName(userName)
                 .build();
     }
 
 
-        private AddressDTO mapAddress(UserAddress address) {
-            if (address == null) return null;
+    private AddressDTO mapAddress(UserAddress address) {
+        if (address == null) return null;
 
-            CityDTO cityDTO = address.getCity() != null ? new CityDTO(address.getCity()) : null;
+        CityDTO cityDTO = address.getCity() != null ? new CityDTO(address.getCity()) : null;
 
-            return AddressDTO.builder()
-                    .name(address.getName())
-                    .areaName(address.getAreaName())
-                    .city(cityDTO)
-                    .pincode(address.getPincode())
-                    .latitude(address.getLatitude())
-                    .longitude(address.getLongitude())
-                    .build();
-        }
+        return AddressDTO.builder()
+                .name(address.getName())
+                .areaName(address.getAreaName())
+                .city(cityDTO)
+                .pincode(address.getPincode())
+                .latitude(address.getLatitude())
+                .longitude(address.getLongitude())
+                .build();
+    }
 
 }

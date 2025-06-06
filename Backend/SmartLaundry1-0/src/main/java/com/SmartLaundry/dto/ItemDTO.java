@@ -1,13 +1,10 @@
 package com.SmartLaundry.dto;
 
-import lombok.*;
+import com.SmartLaundry.model.Services;
+import com.SmartLaundry.model.SubService;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ItemDTO {
-    private String serviceName;
-    private String subServiceName;
     private String itemName;
+    private Services service;
+    private SubService subService;
 }

@@ -48,7 +48,10 @@ public class GenericPrefixIdGenerator implements IdentifierGenerator, Configurab
                 numberLength = Math.max(numericPart.length(), numberLength);
             }
 
-            return prefix + String.format("%0" + numberLength + "d", nextNumber);
+//            return prefix + String.format("%0" + numberLength + "d", nextNumber);
+            String generatedId = prefix + String.format("%0" + numberLength + "d", nextNumber);
+            System.out.println("Generated ID: " + generatedId);
+            return generatedId;
 
         } catch (Exception e) {
             throw new HibernateException("Unable to generate ID for " + tableName, e);

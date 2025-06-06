@@ -1,6 +1,8 @@
 package com.SmartLaundry.config;
 
 import com.SmartLaundry.Subscriber.RedisMessageSubscriber;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +25,13 @@ public class RedisConfig {
 
     @Autowired
     private RedisMessageSubscriber messageSubscriber;
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
+    }
 
     // RedisTemplate configuration
     @Bean
@@ -59,7 +68,7 @@ public class RedisConfig {
                 );
     }
 
-    // ✅ Register CacheManager to wire Spring's @Cacheable
+    // Register CacheManager to wire Spring's @Cacheable
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         return RedisCacheManager.builder(connectionFactory)

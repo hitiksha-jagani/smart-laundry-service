@@ -10,13 +10,14 @@ import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.GenericGenerator;
 
+//@author Hitiksha Jagani
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "sub_service", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "sub_service_name", name = "uk_sub_service_name")
+        @UniqueConstraint(columnNames = "sub_service_name", name = "uk_sub_service_name")
 })
 @Schema(description = "Represents a sub service with a unique ID and name.")
 public class SubService implements Serializable{

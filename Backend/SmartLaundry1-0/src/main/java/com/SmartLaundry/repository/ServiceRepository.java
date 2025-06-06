@@ -7,4 +7,5 @@ import java.util.*;
 public interface ServiceRepository extends JpaRepository<Services, String> {
     Optional<Services> findByServiceName(String serviceName);
     List<Services> findAllByOrderByServiceIdAsc();
+
 }

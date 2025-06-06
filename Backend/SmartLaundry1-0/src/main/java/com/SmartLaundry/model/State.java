@@ -7,13 +7,14 @@ import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+//@author Hitiksha Jagani
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "states", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "state_name", name = "uk_state_name")
+        @UniqueConstraint(columnNames = "state_name", name = "uk_state_name")
 })
 @Schema(description = "Represents a state with unique ID and name.")
 public class State implements Serializable{

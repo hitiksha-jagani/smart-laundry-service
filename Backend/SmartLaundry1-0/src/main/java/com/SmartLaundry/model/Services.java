@@ -11,9 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -21,7 +19,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "services", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "service_name", name = "uk_service_name")
+        @UniqueConstraint(columnNames = "service_name", name = "uk_service_name")
 })
 @Schema(description = "Represents a service with a unique ID and name.")
 public class Services implements Serializable {
@@ -52,4 +50,7 @@ public class Services implements Serializable {
     @JsonBackReference
     @OneToMany(mappedBy = "services", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubService> subServices = new ArrayList<>();
+
+    public Services(String serviceName) {
+    }
 }

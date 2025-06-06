@@ -30,7 +30,7 @@ public class ServiceProvider {
             strategy = "com.SmartLaundry.util.GenericPrefixIdGenerator",
             parameters = {
                     @Parameter(name = "prefix", value = "SP"),
-                    @Parameter(name = "table_name", value = "SERVICE_PROVIDER"),  // match entity table name exactly
+                    @Parameter(name = "table_name", value = "SERVICE_PROVIDER"),
                     @Parameter(name = "column_name", value = "service_provider_id"),
                     @Parameter(name = "number_length", value = "4")
             }
@@ -50,7 +50,6 @@ public class ServiceProvider {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users user;
-
 
     @ElementCollection(targetClass = SchedulePlan.class)
     @Enumerated(EnumType.STRING)
@@ -87,10 +86,6 @@ public class ServiceProvider {
     private List<Price> prices = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "Add_Id")
-    private UserAddress address;
-
-    @OneToOne
     @JoinColumn(name = "Bank_Account_Id")
     private BankAccount bankAccount;
 
@@ -98,27 +93,4 @@ public class ServiceProvider {
     @ToString.Exclude
     private List<FeedbackProviders> feedbacks = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "SERVICE_PROVIDER_ITEMS",
-            joinColumns = @JoinColumn(name = "service_provider_id"),
-            inverseJoinColumns = @JoinColumn(name = "item_id")
-    )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Prevent unwanted recursion
-    private List<Items> items = new ArrayList<>();
-
-
-    // Getter for address, named consistently
-    public UserAddress getAddress() {
-        return address;
-    }
-
-    // Getter for photo image
-    public byte[] getPhoto() {
-        return this.photoImage;
-    }
-
-    public void setPhoto(byte[] photo) {
-        this.photoImage = photo;
-    }
 }

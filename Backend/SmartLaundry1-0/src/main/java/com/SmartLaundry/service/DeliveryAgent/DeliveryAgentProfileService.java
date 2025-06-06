@@ -1,6 +1,7 @@
 package com.SmartLaundry.service.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
+import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
 import com.SmartLaundry.exception.ExceptionMsg;
 import com.SmartLaundry.exception.FormatException;
 import com.SmartLaundry.model.DeliveryAgent;

@@ -42,7 +42,6 @@ public class AdminProfileService {
     @Autowired
     private  UsernameUtil usernameUtil;
 
-
     //@author Hitiksha Jagani
     // Logic to fetch profile details
     @Cacheable(value = "adminProfileCache", key = "#userId")
@@ -55,8 +54,8 @@ public class AdminProfileService {
             throw new AccessDeniedException("You are not applicable for this page.");
         }
 
-        UserAddress address = addressRepository.findByUsers(user).orElse(null);
-
+        UserAddress address = addressRepository.findByUsers(user)
+                .orElse(null);
 
         AdminProfileResponseDTO.AddressDTO addressDTO = null;
         if (address != null) {

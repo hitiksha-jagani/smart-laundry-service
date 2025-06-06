@@ -2,19 +2,12 @@ package com.SmartLaundry.dto.DeliveryAgent;
 
 import com.SmartLaundry.model.GENDER;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +17,7 @@ public class DeliveryAgentCompleteProfileRequestDTO {
     @NotNull(message = "Date of birth is required.")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Past(message = "Date of Birth must be in the past")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Size(min = 8, max = 10, message = "Vehicle number must be between 8 and 10 characters.")
     private String vehicleNumber;

@@ -13,6 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 
+//@author Hitiksha Jagani
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,12 +48,12 @@ public class Items implements Serializable {
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "service_id", nullable = false)
+    @JoinColumn(name = "service_id", nullable = true)
     private Services service;
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "sub_service_id", nullable = false)
+    @JoinColumn(name = "sub_service_id", nullable = true)
     private SubService subService;
 
 }
