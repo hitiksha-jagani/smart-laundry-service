@@ -2,6 +2,7 @@ package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Parameter;
@@ -71,6 +72,11 @@ public class Order implements Serializable {
     @Column(name = "pickup_time", nullable = false)
     @Schema(description = "Time of pickup for the order.", example = "10:30:00")
     private LocalTime pickupTime;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JsonManagedReference
+    private OrderSchedulePlan orderSchedulePlan;
+
 
     @NotBlank(message = "Contact name is required.")
     @Size(max = 100, message = "Contact name must not exceed 100 characters.")

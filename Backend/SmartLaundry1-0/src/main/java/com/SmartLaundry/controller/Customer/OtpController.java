@@ -1,7 +1,7 @@
 package com.SmartLaundry.controller.Customer;
-import com.SmartLaundry.service.EmailService;
-import com.SmartLaundry.service.OTPService;
-import com.SmartLaundry.service.SMSService;
+import com.SmartLaundry.service.Customer.EmailService;
+import com.SmartLaundry.service.Customer.OTPService;
+import com.SmartLaundry.service.Customer.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

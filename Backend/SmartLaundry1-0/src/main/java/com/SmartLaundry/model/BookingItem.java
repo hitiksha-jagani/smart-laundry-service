@@ -64,7 +64,7 @@ public class BookingItem implements Serializable {
 
     @JsonManagedReference
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "invoice_number", nullable = false)
+    @JoinColumn(name = "invoice_number", nullable = true)
     @Schema(description = "The booking item associated with this bill.")
     private Bill bill;
 

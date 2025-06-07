@@ -1,4 +1,4 @@
-package com.SmartLaundry.service;
+package com.SmartLaundry.service.Customer;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,13 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Your OTP Code");
         message.setText("Your OTP code is: " + otp);
+        mailSender.send(message);
+    }
+    public void sendOrderStatusNotification(String toEmail, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(body);
         mailSender.send(message);
     }
 }

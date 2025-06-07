@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("register", "login", "/complete-agent-profile/", "/otp/", "/publish/","/customer/**","/service-provider/**","/cache/**")
+                                .requestMatchers("register", "login", "/complete-agent-profile/", "/otp/", "/publish/","/customer/**","/service-provider/**","/cache/**","/orders/**","/service-provider/orders/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )
