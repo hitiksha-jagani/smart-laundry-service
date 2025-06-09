@@ -38,10 +38,23 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory){
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
+
+        // For Redis keys
         template.setKeySerializer(new StringRedisSerializer());
+
+        // For Redis values (non-hash)
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        // For hash keys
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        // For hash values
+        template.setHashValueSerializer(new StringRedisSerializer());
+
+        template.afterPropertiesSet();
         return template;
     }
+
 
     // Message Listener for Redis Pub/Sub
     @Bean

@@ -343,9 +343,9 @@ public class RequestService {
         deliveryAgent.setUsers(user);
         deliveryAgent.setDateOfBirth(profileDTO.getDateOfBirth());
         deliveryAgent.setVehicleNumber(profileDTO.getVehicleNumber());
-        deliveryAgent.setAadharCardPhoto(profileDTO.getAadharCardPhoto());
-        deliveryAgent.setDrivingLicensePhoto(profileDTO.getDrivingLicensePhoto());
-        deliveryAgent.setPanCardPhoto(profileDTO.getPanCardPhoto());
+        //deliveryAgent.setAadharCardPhoto(profileDTO.getAadharCardPhoto());
+        //deliveryAgent.setDrivingLicensePhoto(profileDTO.getDrivingLicensePhoto());
+        //deliveryAgent.setPanCardPhoto(profileDTO.getPanCardPhoto());
         deliveryAgent.setBankName(profileDTO.getBankName());
         deliveryAgent.setAccountHolderName(profileDTO.getAccountHolderName());
         deliveryAgent.setBankAccountNumber(profileDTO.getBankAccountNumber());

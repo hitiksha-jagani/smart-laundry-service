@@ -1,5 +1,6 @@
 package com.SmartLaundry.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -10,14 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
-
-//@author Hitiksha Jagani
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "booking_items")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Schema(description = "Represents an item booked under a specific order.")
 public class BookingItem implements Serializable {
 
@@ -33,15 +33,14 @@ public class BookingItem implements Serializable {
                     @Parameter(name = "number_length", value = "5")
             }
     )
-
     @Column(name = "booking_item_id", nullable = false, updatable = false)
+    @EqualsAndHashCode.Include
     @Schema(description = "Unique ID for the booking item.", example = "BI00001")
     private String bookingItemId;
 
-    @JsonManagedReference
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    @Schema(description = "The associated order.")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    @JsonBackReference
     private Order order;
 
     @JsonIgnore
@@ -63,9 +62,9 @@ public class BookingItem implements Serializable {
     private Double finalPrice;
 
     @JsonManagedReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_number", nullable = true)
-    @Schema(description = "The booking item associated with this bill.")
+    @Schema(description = "The bill associated with this booking item.")
     private Bill bill;
-
 }
+

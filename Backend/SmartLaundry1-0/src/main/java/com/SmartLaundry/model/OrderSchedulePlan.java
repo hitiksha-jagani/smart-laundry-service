@@ -1,6 +1,7 @@
 package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = "order")
 @Schema(description = "Represents the schedule plan associated with a customer's order.")
 public class OrderSchedulePlan {
 
@@ -29,8 +31,13 @@ public class OrderSchedulePlan {
     @Column(nullable = false)
     private boolean payLastDelivery;
 
-    @OneToOne
+//    @OneToOne(optional = false)
+//    @JoinColumn(name = "order_id", unique = true, nullable = false)
+//    @JsonIgnore
+//    private Order order;
+    @OneToOne(optional = false)
     @JoinColumn(name = "order_id", unique = true, nullable = false)
     @JsonBackReference
     private Order order;
+
 }

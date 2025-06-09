@@ -18,5 +18,6 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
 
     @Query("SELECT DISTINCT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.user u LEFT JOIN FETCH u.address")
     List<ServiceProvider> findAllWithUserAddresses();
+    Optional<ServiceProvider> findByUserUserId(String userId);
 
 }

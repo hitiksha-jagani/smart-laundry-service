@@ -34,6 +34,4 @@ public class OTPService {
         return isValid;
     }
 
-
-
 }

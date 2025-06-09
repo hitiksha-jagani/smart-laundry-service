@@ -17,5 +17,13 @@ public class BookOrderRequestDto {
     private LocalTime pickupTime;
     private List<OrderItemRequest> items;
     private boolean goWithSchedulePlan;
+
+    public boolean isPayEachDelivery() {
+        return true;
+    }
+
+    public boolean isPayLastDelivery() {
+        return true;
+    }
 }
 
