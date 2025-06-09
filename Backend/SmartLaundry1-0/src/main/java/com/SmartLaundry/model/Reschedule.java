@@ -2,6 +2,8 @@ package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.nio.CharBuffer;
 import java.time.LocalDate;
 
 @Entity
@@ -9,6 +11,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Reschedule {
 
@@ -26,4 +29,6 @@ public class Reschedule {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Order_Id", nullable = false)
     private Order order;
+
+
 }

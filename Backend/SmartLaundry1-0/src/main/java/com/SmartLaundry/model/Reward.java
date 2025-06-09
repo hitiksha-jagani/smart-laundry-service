@@ -7,9 +7,9 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "REWARDS")
-@Data               // Generates getters, setters, toString, equals, hashCode
-@NoArgsConstructor  // Generates no-args constructor
-@AllArgsConstructor // Generates all-args constructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Reward {
 

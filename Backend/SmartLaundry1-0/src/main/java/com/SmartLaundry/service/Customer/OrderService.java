@@ -1,6 +1,7 @@
 package com.SmartLaundry.service.Customer;
 
 import com.SmartLaundry.dto.Customer.*;
+import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
@@ -13,11 +14,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
+import com.SmartLaundry.dto.Customer.BookOrderRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -38,8 +40,14 @@ public class OrderService implements OrderBookingService {
     private final OrderMapper orderMapper;
     private final SMSService smsService;
     private final EmailService emailService;
-    //private final ServiceProviderOrderService spOrderService;
+    private final RescheduleRepository rescheduleRepository;
+    private final FeedbackProvidersRepository feedbackProvidersRepository;
+    private final TicketRepository ticketRepository;
+    private final FAQRepository faqRepository;
+    private final FeedbackAgentsRepository feedbackAgentsRepository;
+    private final DeliveryAgentRepository deliveryAgentRepository;
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
 
     private String getRedisKey(String userId) {
         return "order:user:" + userId;
@@ -116,7 +124,6 @@ public class OrderService implements OrderBookingService {
         }
     }
 
-    // Place order - mark status PENDING and notify service provider
     public void placeOrder(String userId) {
         validateRedisOrderData(userId);
 
@@ -124,29 +131,76 @@ public class OrderService implements OrderBookingService {
         Map<Object, Object> data = redisTemplate.opsForHash().entries(key);
         if (data.isEmpty()) throw new IllegalStateException("No order data found to place order");
 
-        // Set status to PENDING in Redis
-        redisTemplate.opsForHash().put(key, "status", "PENDING");
-        redisTemplate.expire(key, Duration.ofDays(7));
+        // Load user and service provider
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
         String spId = (String) data.get("serviceProviderId");
-
-        // Add userId to pending orders set of service provider
-        redisTemplate.opsForSet().add(ServiceProviderOrderService.getPendingOrdersSetKey(spId), userId);
-
-        // Notify Service Provider (via SMS and Email)
         ServiceProvider sp = serviceProviderRepository.findById(spId)
                 .orElseThrow(() -> new IllegalArgumentException("Service provider not found: " + spId));
 
+        // Extract core fields
+        LocalDate pickupDate = LocalDate.parse((String) data.get("pickupDate"));
+        LocalTime pickupTime = LocalTime.parse((String) data.get("pickupTime"));
+        String contactName = (String) data.get("contactName");
+        String contactPhone = (String) data.get("contactPhone");
+        String contactAddress = (String) data.get("contactAddress");
+
+        // Build initial order
+        Order order = Order.builder()
+                .users(user)
+                .serviceProvider(sp)
+                .pickupDate(pickupDate)
+                .pickupTime(pickupTime)
+                .contactName(contactName)
+                .contactPhone(contactPhone)
+                .contactAddress(contactAddress)
+                .status(OrderStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        // Attach schedule plan if present
+        saveSchedulePlanIfPresent(order, data);
+
+        // Save order (including plan if set)
+        order = orderRepository.save(order);
+
+        if (order.getOrderSchedulePlan() != null) {
+            order.getOrderSchedulePlan().setOrder(order);
+            orderSchedulePlanRepository.save(order.getOrderSchedulePlan());
+        }
+
+        // Parse items and build booking items
+        List<OrderItemRequest> itemRequests = parseItemsFromRedis(data);
+        List<BookingItem> bookingItems = buildBookingItems(order, sp, itemRequests);
+
+        for (BookingItem item : bookingItems) {
+            bookingItemRepository.save(item);
+        }
+
+        // Add orderId to service provider's pending set
+        redisTemplate.opsForSet().add(ServiceProviderOrderService.getPendingOrdersSetKey(spId), order.getOrderId());
+
+        // Notify service provider
+        String customerName = user.getFirstName();
         smsService.sendOrderStatusNotification(
                 sp.getUser().getPhoneNo(),
-                "New laundry order request pending from user " + userId + ". Please accept or reject."
+                "New laundry order received from " + customerName + ". Please check your dashboard."
         );
         emailService.sendOrderStatusNotification(
                 sp.getUser().getEmail(),
                 "New Laundry Order Request",
-                "You have a new laundry order request pending from user " + userId + ". Please log in to accept or reject."
+                "You have received a new laundry order from " + customerName + ". Please accept or reject it."
         );
+
+        // Optionally mark Redis status as "PENDING" and expire in 7 days (for fallback/tracking)
+        redisTemplate.opsForHash().put(key, "status", "PENDING");
+        redisTemplate.expire(key, Duration.ofDays(7));
+
+        // Final cleanup (remove Redis data if no longer needed)
+        redisTemplate.delete(key);
     }
+
 
     // Build order response DTO from Redis stored data
     public  OrderResponseDto buildOrderResponseDtoFromRedisData(String userId, Map<Object, Object> data) {
@@ -242,65 +296,68 @@ public class OrderService implements OrderBookingService {
     public OrderResponseDto createOrder(String userId) {
         validateRedisOrderData(userId);
 
-        // 1. Build Order from Redis (with all necessary in-memory objects attached)
+        // Build Order (without saving)
         Order order = buildOrderFromRedis(userId, OrderStatus.PENDING);
 
-        // 2. Save the Order first
-        order = orderRepository.save(order);  // This assigns a valid ID to Order
+        // Save Order first (to generate orderId)
+        order = orderRepository.save(order);
 
-        // 3. Save OrderSchedulePlan if present
+        // Save schedule plan if present
         if (order.getOrderSchedulePlan() != null) {
             orderSchedulePlanRepository.save(order.getOrderSchedulePlan());
         }
 
-        // 4. Clean up Redis
+        // Save Booking Items
+        if (order.getBookingItems() != null && !order.getBookingItems().isEmpty()) {
+            bookingItemRepository.saveAll(order.getBookingItems());
+        }
+
+        // Clean Redis
         redisTemplate.delete(getRedisKey(userId));
         redisTemplate.opsForSet().remove(
                 ServiceProviderOrderService.getPendingOrdersSetKey(order.getServiceProvider().getServiceProviderId()),
                 userId
         );
 
-        // 5. Return response DTO
+        // Send notification
+        ServiceProvider sp = order.getServiceProvider();
+        smsService.sendOrderStatusNotification(
+                sp.getUser().getPhoneNo(),
+                "New laundry order received from user " + order.getUsers().getFirstName()
+        );
+        emailService.sendOrderStatusNotification(
+                sp.getUser().getEmail(),
+                "New Laundry Order Request",
+                "You have received a new laundry order from " + order.getUsers().getFirstName()
+        );
+
+        // Return OrderResponseDto
         return orderMapper.toOrderResponseDto(order);
     }
 
+    @Transactional
+    public Order buildOrderFromRedis(String userId, OrderStatus status) {
+        String redisKey = getRedisKey(userId);
+        Map<Object, Object> data = redisTemplate.opsForHash().entries(redisKey);
+        if (data.isEmpty()) {
+            throw new IllegalStateException("No order data found for user: " + userId);
+        }
 
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-@Transactional
-public Order buildOrderFromRedis(String userId, OrderStatus status) {
-    String redisKey = getRedisKey(userId);
-    Map<Object, Object> data = redisTemplate.opsForHash().entries(redisKey);
-    if (data.isEmpty()) {
-        throw new IllegalStateException("No order data found for user: " + userId);
-    }
+        String spId = (String) data.get("serviceProviderId");
+        if (spId == null || spId.isBlank()) {
+            throw new IllegalStateException("Service Provider ID missing in Redis");
+        }
+        ServiceProvider sp = serviceProviderRepository.findById(spId)
+                .orElseThrow(() -> new IllegalArgumentException("Service provider not found: " + spId));
 
-    // Fetch user
-    Users user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
-
-    // Fetch service provider
-    String spId = (String) data.get("serviceProviderId");
-    if (spId == null || spId.isBlank()) {
-        throw new IllegalStateException("Service Provider ID missing in Redis order data");
-    }
-    ServiceProvider sp = serviceProviderRepository.findById(spId)
-            .orElseThrow(() -> new IllegalArgumentException("Service provider not found: " + spId));
-
-    try {
-        // Parse required fields from Redis
-        String pickupDateStr = (String) data.get("pickupDate");
-        String pickupTimeStr = (String) data.get("pickupTime");
+        LocalDate pickupDate = LocalDate.parse((String) data.get("pickupDate"));
+        LocalTime pickupTime = LocalTime.parse((String) data.get("pickupTime"));
         String contactName = (String) data.get("contactName");
         String contactPhone = (String) data.get("contactPhone");
         String contactAddress = (String) data.get("contactAddress");
-
-        if (pickupDateStr == null || pickupTimeStr == null || contactName == null ||
-                contactPhone == null || contactAddress == null) {
-            throw new IllegalStateException("Missing required order details in Redis");
-        }
-
-        LocalDate pickupDate = LocalDate.parse(pickupDateStr);
-        LocalTime pickupTime = LocalTime.parse(pickupTimeStr);
 
         double latitude = 0.0;
         double longitude = 0.0;
@@ -311,48 +368,31 @@ public Order buildOrderFromRedis(String userId, OrderStatus status) {
             if (lonStr != null) longitude = Double.parseDouble(lonStr);
         } catch (NumberFormatException ignored) {}
 
-        Order order = new Order();
+        Order order = Order.builder()
+                .users(user)
+                .serviceProvider(sp)
+                .pickupDate(pickupDate)
+                .pickupTime(pickupTime)
+                .contactName(contactName)
+                .contactPhone(contactPhone)
+                .contactAddress(contactAddress)
+                .latitude(latitude)
+                .longitude(longitude)
+                .status(status)
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        // Restore orderId from Redis if present
-        String orderId = (String) data.get("orderId");
-        if (orderId != null && !orderId.isBlank()) {
-            order.setOrderId(orderId);
-        }
-
-        // Set core order fields
-        order.setUsers(user);
-        order.setServiceProvider(sp);
-        order.setPickupDate(pickupDate);
-        order.setPickupTime(pickupTime);
-        order.setContactName(contactName);
-        order.setContactPhone(contactPhone);
-        order.setContactAddress(contactAddress);
-        order.setLatitude(latitude);
-        order.setLongitude(longitude);
-        order.setStatus(status);
-
-        // Save order FIRST so it has an ID for child entities
-        order = orderRepository.save(order);
-
-        // Now safe to parse booking items and schedule plan
+        // Attach BookingItems
         List<OrderItemRequest> itemRequests = parseItemsFromRedis(data);
         List<BookingItem> bookingItems = buildBookingItems(order, sp, itemRequests);
-        bookingItemRepository.saveAll(bookingItems);
+        order.setBookingItems(bookingItems);
 
-        order.setBookingItems(bookingItems); // Attach to order
-
-        // Now save schedule plan (if present)
+        // Attach SchedulePlan if present
         saveSchedulePlanIfPresent(order, data);
 
-        // Store back orderId in Redis
-        redisTemplate.opsForHash().put(redisKey, "orderId", order.getOrderId());
-
         return order;
-
-    } catch (Exception e) {
-        throw new IllegalStateException("Failed to parse order data from Redis", e);
     }
-}
+
     private List<OrderItemRequest> parseItemsFromRedis(Map<Object, Object> data) {
         try {
             Object itemsObj = data.get("items");
@@ -400,31 +440,213 @@ public Order buildOrderFromRedis(String userId, OrderStatus status) {
         if (!goWithSchedulePlan) return;
 
         String schedulePlanStr = (String) data.get("schedulePlan");
-        if (schedulePlanStr == null) {
+        if (schedulePlanStr == null || schedulePlanStr.isBlank()) {
             throw new IllegalStateException("SchedulePlan is missing despite goWithSchedulePlan=true");
+        }
+
+        SchedulePlan planEnum;
+        try {
+            planEnum = SchedulePlan.valueOf(schedulePlanStr);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Invalid schedule plan value: " + schedulePlanStr);
         }
 
         boolean payEachDelivery = Boolean.parseBoolean(String.valueOf(data.getOrDefault("payEachDelivery", "false")));
         boolean payLastDelivery = Boolean.parseBoolean(String.valueOf(data.getOrDefault("payLastDelivery", "false")));
 
-        SchedulePlanRequestDto dto = new SchedulePlanRequestDto(
-                SchedulePlan.valueOf(schedulePlanStr),
-                payEachDelivery,
-                payLastDelivery
-        );
+        SchedulePlanRequestDto dto = new SchedulePlanRequestDto(planEnum, payEachDelivery, payLastDelivery);
         dto.validate();
 
-        // Don't save yet, just attach to order
         OrderSchedulePlan plan = OrderSchedulePlan.builder()
-                .order(order)  // set order reference
-                .schedulePlan(dto.getSchedulePlan())
-                .payEachDelivery(dto.isPayEachDelivery())
-                .payLastDelivery(dto.isPayLastDelivery())
+                .order(order)
+                .schedulePlan(planEnum)
+                .payEachDelivery(payEachDelivery)
+                .payLastDelivery(payLastDelivery)
                 .build();
 
-        // Only attach it to order for later persistence
         order.setOrderSchedulePlan(plan);
     }
 
+    @Transactional
+    public void cancelOrder(String userId, String orderId) {
+        // 1. Fetch the order by orderId and userId to verify ownership and existence
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
+
+        // Optionally verify the order belongs to this user
+        if (!order.getUsers().getUserId().equals(userId)) {
+            throw new SecurityException("User is not authorized to cancel this order");
+        }
+
+        // 2. Check if order is already cancelled or completed
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("Order is already cancelled");
+        }
+        if (order.getStatus() == OrderStatus.COMPLETED) {
+            throw new IllegalStateException("Completed orders cannot be cancelled");
+        }
+
+        // 3. Update order status to CANCELLED
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+        // 4. Notify service provider
+        ServiceProvider sp = order.getServiceProvider();
+        String message = "Order " + order.getOrderId() + " from user " + userId + " has been cancelled.";
+
+        smsService.sendOrderStatusNotification(sp.getUser().getPhoneNo(), message);
+        emailService.sendOrderStatusNotification(
+                sp.getUser().getEmail(),
+                "Order Cancelled Notification",
+                message
+        );
+    }
+
+    public void rescheduleOrder(String userId, String orderId, RescheduleRequestDto dto) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getUsers().getUserId().equals(userId)) {
+            throw new RuntimeException("Unauthorized to reschedule this order");
+        }
+
+        if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELLED) {
+            throw new RuntimeException("Order cannot be rescheduled. It is already " + order.getStatus());
+        }
+
+        LocalTime parsedSlot;
+        try {
+            parsedSlot = LocalTime.parse(dto.getSlot());
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid time slot format. Expected format: HH:mm");
+        }
+
+        Reschedule reschedule = Reschedule.builder()
+                .order(order)
+                .date(dto.getDate())
+                .slot(dto.getSlot())
+                .build();
+        rescheduleRepository.save(reschedule);
+
+        order.setPickupDate(dto.getDate());
+        order.setPickupTime(parsedSlot);
+        order.setStatus(OrderStatus.RESCHEDULED);
+        orderRepository.save(order);
+
+        ServiceProvider sp = order.getServiceProvider();
+        String message = String.format("Order %s from user %s has been rescheduled to %s at %s.",
+                order.getOrderId(), userId, dto.getDate(), dto.getSlot());
+
+        smsService.sendOrderStatusNotification(sp.getUser().getPhoneNo(), message);
+        emailService.sendOrderStatusNotification(
+                sp.getUser().getEmail(),
+                "Order Rescheduled Notification",
+                message
+        );
+
+        log.info("Order {} rescheduled by user {} to {} at {}", order.getOrderId(), userId, dto.getDate(), dto.getSlot());
+    }
+
+
+
+    public TrackOrderResponseDto trackOrder(String userId, String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getUsers().getUserId().equals(userId)) {
+            throw new RuntimeException("You are not authorized to track this order");
+        }
+
+        TrackOrderResponseDto dto = new TrackOrderResponseDto();
+        dto.setOrderId(order.getOrderId());
+        dto.setStatus(order.getStatus().name());
+        dto.setPickupDate(order.getPickupDate());
+        dto.setPickupTime(order.getPickupTime());
+
+        return dto;
+    }
+
+    public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
+                .orElseThrow(() -> new RuntimeException("Service Provider not found"));
+
+        FeedbackProviders feedback = new FeedbackProviders();
+        feedback.setUser(user);
+        feedback.setServiceProvider(provider);
+        feedback.setRating(dto.getRating());
+        feedback.setReview(dto.getReview());
+
+        feedbackProvidersRepository.save(feedback);
+    }
+    //for Delivery Agent
+    public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
+                .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
+
+        FeedbackAgents feedback = new FeedbackAgents();
+        feedback.setUser(user);
+        feedback.setAgent(agent);
+        feedback.setRating(dto.getRating());
+        feedback.setReview(dto.getReview());
+
+        feedbackAgentsRepository.save(feedback);
+    }
+
+
+    public void raiseTicket(String userId, RaiseTicketRequestDto dto) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Ticket ticket = Ticket.builder()
+                .user(user)
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .photo(dto.getPhoto())
+                .category(dto.getCategory())
+                .status("OPEN")
+                .submittedAt(LocalDateTime.now())
+                .build();
+
+        ticketRepository.save(ticket);
+    }
+
+
+//    // Place order - mark status PENDING and notify service provider
+//    public void placeOrder(String userId) {
+//        validateRedisOrderData(userId);
+//
+//        String key = getRedisKey(userId);
+//        Map<Object, Object> data = redisTemplate.opsForHash().entries(key);
+//        if (data.isEmpty()) throw new IllegalStateException("No order data found to place order");
+//
+//        // Set status to PENDING in Redis
+//        redisTemplate.opsForHash().put(key, "status", "PENDING");
+//        redisTemplate.expire(key, Duration.ofDays(7));
+//
+//        String spId = (String) data.get("serviceProviderId");
+//
+//        // Add userId to pending orders set of service provider
+//        redisTemplate.opsForSet().add(ServiceProviderOrderService.getPendingOrdersSetKey(spId), userId);
+//
+//        // Notify Service Provider (via SMS and Email)
+//        ServiceProvider sp = serviceProviderRepository.findById(spId)
+//                .orElseThrow(() -> new IllegalArgumentException("Service provider not found: " + spId));
+//
+//        smsService.sendOrderStatusNotification(
+//                sp.getUser().getPhoneNo(),
+//                "New laundry order request pending from user " + userId + ". Please accept or reject."
+//        );
+//        emailService.sendOrderStatusNotification(
+//                sp.getUser().getEmail(),
+//                "New Laundry Order Request",
+//                "You have a new laundry order request pending from user " + userId + ". Please log in to accept or reject."
+//        );
+//    }
 
 }

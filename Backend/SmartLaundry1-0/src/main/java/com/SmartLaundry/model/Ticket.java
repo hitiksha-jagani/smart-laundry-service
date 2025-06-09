@@ -36,5 +36,9 @@ public class Ticket {
 
     @Column(name = "responded_at")
     private LocalDateTime respondedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 }
 

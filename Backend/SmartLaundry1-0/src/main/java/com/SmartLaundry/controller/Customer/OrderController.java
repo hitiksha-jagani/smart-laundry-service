@@ -1,6 +1,7 @@
 package com.SmartLaundry.controller.Customer;
 
 import com.SmartLaundry.dto.Customer.*;
+import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
 import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.service.JWTService;
 import com.SmartLaundry.controller.ExtractHeader;
@@ -72,4 +73,58 @@ public class OrderController {
         OrderResponseDto createdOrder = orderService.createOrder(userId);
         return ResponseEntity.ok(createdOrder);
     }
+
+    @PostMapping("/cancel/{orderId}")
+    public ResponseEntity<String> cancelOrder(HttpServletRequest request, @PathVariable String orderId) {
+        String userId = extractUserIdFromRequest(request);
+        orderService.cancelOrder(userId, orderId);
+        return ResponseEntity.ok("Order canceled successfully");
+    }
+
+
+    @PostMapping("/reschedule/{orderId}")
+    public ResponseEntity<String> rescheduleOrder(
+            HttpServletRequest request,
+            @PathVariable String orderId,
+            @RequestBody RescheduleRequestDto dto) {
+
+        String userId = extractUserIdFromRequest(request);
+        orderService.rescheduleOrder(userId, orderId, dto);
+        return ResponseEntity.ok("Order rescheduled successfully");
+    }
+
+    @PostMapping("/provider-feedback")
+    public ResponseEntity<String> submitFeedback(HttpServletRequest request, @RequestBody FeedbackRequestDto dto) {
+        String userId = extractUserIdFromRequest(request);
+        orderService.submitFeedbackProviders(userId, dto);
+        return ResponseEntity.ok("Feedback submitted successfully");
+    }
+
+    @PostMapping("/agent-feedback")
+    public ResponseEntity<String> submitFeedbackToAgent(HttpServletRequest request, @RequestBody FeedbackAgentRequestDto dto) {
+        String userId = extractUserIdFromRequest(request);
+        orderService.submitFeedbackAgents(userId, dto);
+        return ResponseEntity.ok("Feedback submitted successfully");
+    }
+
+    @PostMapping("/raise-ticket")
+    public ResponseEntity<String> raiseTicket(
+            HttpServletRequest request,
+            @RequestBody RaiseTicketRequestDto dto) {
+
+        String userId = extractUserIdFromRequest(request);
+        orderService.raiseTicket(userId, dto);
+        return ResponseEntity.ok("Ticket raised successfully");
+    }
+
+
+
+    @GetMapping("/track/{orderId}")
+    public ResponseEntity<TrackOrderResponseDto> trackOrder(HttpServletRequest request, @PathVariable String orderId) {
+        String userId = extractUserIdFromRequest(request);
+        TrackOrderResponseDto dto = orderService.trackOrder(userId, orderId);
+        return ResponseEntity.ok(dto);
+    }
+
+
 }

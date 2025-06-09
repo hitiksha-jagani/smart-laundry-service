@@ -84,6 +84,9 @@ public class Users implements Serializable{
     @OneToMany(mappedBy = "users")
     private List<UserAddress> address;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Ticket> tickets = new ArrayList<>();
+
 
 }
 

@@ -104,6 +104,10 @@ public class DeliveryAgent implements Serializable {
     @OneToOne(mappedBy = "deliveryAgent")
     private DeliveryAgentImages deliveryAgentImages;
 
+    public String getAgentId()
+    {
+        return deliveryAgentId;
+    }
     public void setProfilePhoto(byte[] profilePhoto) {
 
     }
