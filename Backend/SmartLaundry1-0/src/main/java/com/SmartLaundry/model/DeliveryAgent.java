@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Parameter;
 import jakarta.validation.constraints.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 //@author Hitiksha Jagani
@@ -120,6 +122,10 @@ public class DeliveryAgent implements Serializable {
     @Column(name = "status", nullable = false)
     @Schema(description = "Delivery agent is accepted or rejected.", example = "ACCEPTED")
     private Status status = Status.PENDING;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @JsonIgnore
     @JsonManagedReference

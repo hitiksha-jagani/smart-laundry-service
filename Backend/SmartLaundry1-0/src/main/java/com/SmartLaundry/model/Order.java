@@ -65,10 +65,6 @@ public class Order implements Serializable {
     @Schema(description = "Reference to the service provider assigned to the order.")
     private ServiceProvider serviceProvider;
 
-    @ManyToOne
-    @JoinColumn(name = "delivery_agent_id")
-    private DeliveryAgent deliveryAgent;
-
     @NotNull(message = "Pickup date is required.")
     @Column(name = "pickup_date", nullable = false)
     @Schema(description = "Date of pickup for the order.", example = "2025-06-01")
@@ -78,10 +74,6 @@ public class Order implements Serializable {
     @Column(name = "pickup_time", nullable = false)
     @Schema(description = "Time of pickup for the order.", example = "10:30:00")
     private LocalTime pickupTime;
-
-//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-//    @JsonManagedReference
-//    private OrderSchedulePlan orderSchedulePlan;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JsonManagedReference
@@ -105,9 +97,6 @@ public class Order implements Serializable {
     @Schema(description = "Pickup address for the order.", example = "123 MG Road, Bengaluru")
     private String contactAddress;
 
-    private Double latitude;
-    private Double longitude;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @Schema(description = "Current status of the order.", example = "PENDING")
@@ -117,13 +106,10 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderStatusHistory> statusHistory = new ArrayList<>();
 
-//    @JsonBackReference
-//    @OneToMany(mappedBy = "order")
-//    private List<BookingItem> bookingItems;
-
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<BookingItem> bookingItems;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "promo_code", nullable = true, updatable = false)

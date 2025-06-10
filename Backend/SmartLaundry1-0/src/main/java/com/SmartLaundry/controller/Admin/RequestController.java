@@ -75,30 +75,6 @@ public class RequestController {
         return ResponseEntity.ok(profiles);
     }
 
-//    @GetMapping("/image/{type}/{userId}")
-//    public ResponseEntity<byte[]> getImage(@PathVariable String userId) throws IOException {
-//        String imagePath = "/media/hitiksha/C/DAIICT/Summer internship/images/delivery_agents/" + userId + ;  // e.g., US00014.jpg
-//
-//        File file = new File(imagePath);
-//        if (!file.exists()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        // Detect content type dynamically
-//        String contentType = Files.probeContentType(file.toPath());
-//        if (contentType == null) {
-//            contentType = "application/octet-stream"; // Fallback
-//        }
-//
-//        byte[] imageBytes = Files.readAllBytes(file.toPath());
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.parseMediaType(contentType));
-//
-//        return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
-//    }
-
-
     // @author Hitiksha Jagani
     // http://localhost:8080/accept-agent/{userId}
     // Accpet delivery agent request.

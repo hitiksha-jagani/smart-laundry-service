@@ -1,7 +1,6 @@
 package com.SmartLaundry.controller.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.DeliverySummaryResponseDTO;
-import com.SmartLaundry.model.Order;
 import com.SmartLaundry.service.DeliveryAgent.DeliveriesService;
 import com.SmartLaundry.service.JWTService;
 import com.fasterxml.jackson.core.JsonProcessingException;
