@@ -2,6 +2,7 @@ package com.SmartLaundry.controller.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.Customer.TicketResponseDto;
+import com.SmartLaundry.dto.ServiceProvider.ActiveOrderDto;
 import com.SmartLaundry.dto.ServiceProvider.FeedbackResponseDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +52,25 @@ public class ServiceProviderOrderController {
         serviceProviderOrderService.rejectOrder(spUserId, orderId);
         return ResponseEntity.ok("Order rejected successfully.");
     }
+
+    @PutMapping("/{orderId}/incleaning")
+    public ResponseEntity<String> markInProgress(
+            @PathVariable String orderId,
+            HttpServletRequest request) throws AccessDeniedException {
+
+        String spUserId = getServiceProviderUserId(request); // You already have this helper
+        serviceProviderOrderService.markOrderInCleaning(spUserId, orderId);
+
+        return ResponseEntity.ok("Order marked as INPROGRESS");
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<ActiveOrderDto>> getActiveOrders(HttpServletRequest request) {
+        String spUserId = getServiceProviderUserId(request);
+        List<ActiveOrderDto> activeOrders = serviceProviderOrderService.getActiveOrdersForServiceProvider(spUserId);
+        return ResponseEntity.ok(activeOrders);
+    }
+
 
     @PostMapping("/feedbackprovider/respond/{feedbackId}")
     public ResponseEntity<String> respondToFeedback(
