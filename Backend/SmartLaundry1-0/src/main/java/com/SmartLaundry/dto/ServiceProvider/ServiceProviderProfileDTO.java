@@ -29,13 +29,10 @@ public class ServiceProviderProfileDTO {
     private String AadharCardImage;
     private String PanCardImage;
     private String BusinessUtilityBillImage;
-    private ServiceProviderProfileDTO.AddressDTO addresses;
+    private ServiceProviderProfileDTO.AddressDTO address;
     private ServiceProviderProfileDTO.BankAccountDTO bankAccount;
     private List<priceDTO> priceDTO;
-    private ServiceProviderProfileDTO.AddressDTO address;
-    public AddressDTO getAddress() {
-        return address;
-    }
+
 
     public String getProfilePhoto()
     {
@@ -53,6 +50,12 @@ public class ServiceProviderProfileDTO {
     {
         return BusinessUtilityBillImage;
     }
+
+    public AddressDTO getAddress() {
+        return address;
+    }
+
+
     @Data
     @Builder
     @AllArgsConstructor

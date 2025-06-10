@@ -13,13 +13,14 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Service
 public class ServiceProviderProfileService {
     @Autowired
     private UsernameUtil usernameUtil;
@@ -116,7 +117,7 @@ public class ServiceProviderProfileService {
                 .AadharCardImage("/image/aadhar/" + user.getUserId())
                 .PanCardImage("/image/pan/" + user.getUserId())
                 .BusinessUtilityBillImage("/image/utility/" + user.getUserId())
-                .addresses(addressDTO)
+                .address(addressDTO)
                 .bankAccount(bankAccountDTO)
                 .priceDTO(prices)
                 .build();
@@ -156,7 +157,7 @@ public class ServiceProviderProfileService {
         }
 
         // 4. Upload images
-        String uploadDir = "/media/hitiksha/C/DAIICT/Summer internship/images/service_providers/" + userId;
+        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
         String aadharPath = saveFile(aadharCard, uploadDir, userId);
         String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
         String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
@@ -278,6 +279,7 @@ public class ServiceProviderProfileService {
 
     @Transactional
     public String editServiceProviderDetail(String userId, ServiceProviderProfileDTO profileDTO) {
+        System.out.println("Incoming address: " + profileDTO.getAddress());
 
         // Validation for restricted fields
         if (profileDTO.getEmail() != null && !profileDTO.getEmail().isBlank()) {
@@ -288,10 +290,12 @@ public class ServiceProviderProfileService {
             return "Changes in phone number are not allowed.";
         }
 
-        if ((profileDTO.getAddress().getLatitude() != null && !profileDTO.getAddress().getLatitude().isNaN()) ||
-                (profileDTO.getAddress().getLongitude() != null && !profileDTO.getAddress().getLongitude().isNaN())) {
+        if (profileDTO.getAddress() != null &&
+                ((profileDTO.getAddress().getLatitude() != null && !profileDTO.getAddress().getLatitude().isNaN()) ||
+                        (profileDTO.getAddress().getLongitude() != null && !profileDTO.getAddress().getLongitude().isNaN()))) {
             return "Changes in coordinates are not allowed.";
         }
+
 
         // Fetch user and verify role
         Users user = userRepository.findById(userId)
@@ -307,9 +311,13 @@ public class ServiceProviderProfileService {
         userRepository.save(user);
 
         // Update address
+        if (profileDTO.getAddress() == null) {
+            throw new IllegalArgumentException("Address information is required.");
+        }
         UserAddress address = userAddressRepository.findByUsers(user);
         City city = cityRepository.findByCityName(profileDTO.getAddress().getCityName())
                 .orElseThrow(() -> new RuntimeException("City is not available."));
+
 
         address.setName(profileDTO.getAddress().getName());
         address.setAreaName(profileDTO.getAddress().getAreaName());
@@ -353,10 +361,10 @@ public class ServiceProviderProfileService {
         bankAccountRepository.save(bank);
 
         sp.setBankAccount(bank);
-
         serviceProviderRepository.save(sp);
 
         return "Service provider profile has been updated successfully.";
     }
+
 
 }

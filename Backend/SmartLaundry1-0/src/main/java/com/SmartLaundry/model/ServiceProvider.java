@@ -33,7 +33,7 @@ public class ServiceProvider implements Serializable {
             parameters = {
                     @Parameter(name = "prefix", value = "SP"),
                     @Parameter(name = "table_name", value = "SERVICE_PROVIDER"),
-                    @Parameter(name = "column_name", value = "service_provider_id"),
+                   // @Parameter(name = "column_name", value = "service_provider_id"),
                     @Parameter(name = "number_length", value = "4")
             }
     )

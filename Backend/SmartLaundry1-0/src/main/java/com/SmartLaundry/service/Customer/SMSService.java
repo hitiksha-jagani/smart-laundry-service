@@ -40,7 +40,7 @@ public class SMSService {
     public void sendOrderStatusNotification(String phoneNumber, String message) {
         Twilio.init(accountSid, authToken);
 
-        String formattedPhoneNumber = "+" + phoneNumber;
+        String formattedPhoneNumber = phoneNumber.startsWith("+") ? phoneNumber : "+" + phoneNumber;
 
         Message.creator(
                 new com.twilio.type.PhoneNumber(formattedPhoneNumber),
@@ -51,18 +51,22 @@ public class SMSService {
         System.out.println("Sent order notification to " + formattedPhoneNumber);
     }
     public void sendSms(String phoneNumber, String messageBody) {
-        Twilio.init(accountSid, authToken);
+        try {
+            Twilio.init(accountSid, authToken);
+            String formattedPhoneNumber = phoneNumber.startsWith("+") ? phoneNumber : "+" + phoneNumber;
 
-        String formattedPhoneNumber = phoneNumber.startsWith("+") ? phoneNumber : "+" + phoneNumber;
+            Message.creator(
+                    new com.twilio.type.PhoneNumber(formattedPhoneNumber),
+                    new com.twilio.type.PhoneNumber(twilioPhoneNumber),
+                    messageBody
+            ).create();
 
-        Message.creator(
-                new com.twilio.type.PhoneNumber(formattedPhoneNumber),
-                new com.twilio.type.PhoneNumber(twilioPhoneNumber),
-                messageBody
-        ).create();
-
-        System.out.println("Sent SMS to " + formattedPhoneNumber);
+            System.out.println("Sent SMS to " + formattedPhoneNumber);
+        } catch (Exception e) {
+            System.err.println("Failed to send SMS to " + phoneNumber + ": " + e.getMessage());
+        }
     }
+
 
 
 }

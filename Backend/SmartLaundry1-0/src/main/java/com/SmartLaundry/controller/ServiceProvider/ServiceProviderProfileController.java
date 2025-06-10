@@ -1,76 +1,97 @@
 package com.SmartLaundry.controller.ServiceProvider;
 
-import com.SmartLaundry.dto.Admin.PriceDTO;
+import com.SmartLaundry.dto.ChangePasswordRequestDTO;
 import com.SmartLaundry.dto.Admin.ServiceProviderRequestDTO;
-import com.SmartLaundry.model.*;
-import com.SmartLaundry.repository.ItemRepository;
-import com.SmartLaundry.repository.ServiceRepository;
-import com.SmartLaundry.repository.SubServiceRepository;
-import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.dto.ServiceProvider.ServiceProviderProfileDTO;
+import com.SmartLaundry.service.ChangePasswordService;
+import com.SmartLaundry.service.JWTService;
+import com.SmartLaundry.service.ServiceProvider.ServiceProviderProfileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.NoSuchElementException;
-
+import java.io.IOException;
 
 @RestController
-@RequestMapping("/service-provider/")
-@RequiredArgsConstructor
+@RequestMapping("/sp")
 public class ServiceProviderProfileController {
 
     @Autowired
-    private ServiceRepository serviceRepository;
+    private ServiceProviderProfileService serviceProviderProfileService;
 
     @Autowired
-    private SubServiceRepository subServiceRepository;
+    private JWTService jwtService;
 
     @Autowired
-    private UserRepository userRepository;
+    private ChangePasswordService changePasswordService;
 
     @Autowired
-    private ItemRepository itemRepository;
+    private ObjectMapper objectMapper;
 
-    private final RedisTemplate<String, Object> redisTemplate;
 
-    // http://localhost:8080/service-provider/submit-profile/{userId}
-    // Return a form for service provider to complete profile details
-    @PostMapping("submit-profile/{userId}")
-    public ResponseEntity<String> submitProfile(
-            @Valid
+    // http://localhost:8080/complete-sp-profile/{userId}
+    // Render a form for service provider to submit their profile.
+    @PostMapping(value ="{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> completeServiceProviderProfile(
             @PathVariable String userId,
-            @RequestBody ServiceProviderRequestDTO profileDTO) {
+            @RequestPart("data") @Valid String data,
+            @RequestPart("aadharCard") MultipartFile aadharCard,
+            @RequestPart(value = "panCard", required = false) MultipartFile panCard,
+            @RequestPart("utilityBill") MultipartFile utilityBill,
+            @RequestPart("profilePhoto") MultipartFile profilePhoto
+    ) throws IOException {
+        ServiceProviderRequestDTO dto = objectMapper.readValue(data, ServiceProviderRequestDTO.class);
+        return ResponseEntity.ok(serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto));
+    }
 
-        // Check if is exist or not
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    // http://localhost:8080/sp-profile
+    // Return profile detail page of service provider.
+    @GetMapping("/sp-profile")
+    public ResponseEntity<ServiceProviderProfileDTO> getServiceProviderProfile(HttpServletRequest request) {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
 
-        for (PriceDTO priceDTO : profileDTO.getPriceDTO()) {
+        return ResponseEntity.ok(serviceProviderProfileService.getServiceProviderProfileDetail(userId));
+    }
 
-            Items items = itemRepository.findById(priceDTO.getItem().getItemId())
-                    .orElseThrow(() -> new NoSuchElementException(priceDTO.getItem().getItemId() + " is not available."));
-        }
+    // http://localhost:8080/sp-profile/edit
+    // Modify existing service provider profile.
+//    @PutMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<String> editServiceProviderProfile(
+//            HttpServletRequest request,
+//            @ModelAttribute ServiceProviderProfileDTO profileDTO
+//    ) {
+//        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+//        return ResponseEntity.ok(serviceProviderProfileService.editServiceProviderDetail(userId, profileDTO));
+//    }
+    @PutMapping("/edit")
+    public ResponseEntity<String> editServiceProviderProfile(
+            HttpServletRequest request,
+            @RequestBody ServiceProviderProfileDTO profileDTO
+    ){
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        return ResponseEntity.ok(serviceProviderProfileService.editServiceProviderDetail(userId, profileDTO));
+    }
 
-        // Store null if not provided
-        if (profileDTO.getPanCardPhoto() == null || profileDTO.getPanCardPhoto().isBlank()) {
-            profileDTO.setPanCardPhoto(null);
-        }
-        if (profileDTO.getAadharCardPhoto() == null || profileDTO.getAadharCardPhoto().isBlank()) {
-            profileDTO.setAadharCardPhoto(null);
-        }
-        if (profileDTO.getBusinessUtilityBillPhoto() == null || profileDTO.getBusinessUtilityBillPhoto().isBlank()) {
-            profileDTO.setBusinessUtilityBillPhoto(null);
-        }
-        if (profileDTO.getProfilePhoto() == null || profileDTO.getProfilePhoto().isBlank()) {
-            profileDTO.setProfilePhoto(null);
-        }
 
-        redisTemplate.opsForValue().set("serviceProviderProfile:" + userId, profileDTO);
-        return ResponseEntity.ok("Profile data saved and pending admin approval");
+    // http://localhost:8080/sp-profile/change-password
+    // Change password for service provider
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changeServiceProviderPassword(
+            HttpServletRequest request,
+            @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO
+    ) {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+
+        return ResponseEntity.ok(changePasswordService.changePassword(userId, changePasswordRequestDTO));
+    }
+    @GetMapping("{userId}")
+    public ResponseEntity<String> test(@PathVariable String userId) {
+        return ResponseEntity.ok("You hit " + userId);
     }
 
 }
-
