@@ -13,6 +13,8 @@ import java.util.Set;
 public interface ServiceProviderRepository extends JpaRepository<ServiceProvider, String> {
     List<ServiceProvider> findByUser_UserIdIn(Set<String> userIds);
     boolean existsByUser(Users user);
+
+    ServiceProvider findByUser(Users user);
     @Query("SELECT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.user u LEFT JOIN FETCH u.address WHERE sp.serviceProviderId = :id")
     Optional<ServiceProvider> findByIdWithUserAddress(@Param("id") String serviceProviderId);
 

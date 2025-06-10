@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.SmartLaundry.exception.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +36,9 @@ public class AuthService {
 
     @Autowired
     private JWTService jwtService;
+
+    @Autowired
+    private GeoUtils geoUtils;
 
     @Autowired
     private AuthenticationManager manager;
@@ -108,10 +110,26 @@ public class AuthService {
         address.setCity(city);
         address.setUsers(users);
 
+        // Build full address string for geocoding
+        String fullAddress = String.format("%s, %s, %s, %s",
+                addr.getName(),
+                addr.getAreaName(),
+                city.getCityName(),
+                addr.getPincode());
+
+        // Call utility to get coordinates
+        double[] latLng = geoUtils.getLatLng(fullAddress);
+
+        // Set latitude & longitude if found
+        if (latLng[0] != 0.0 || latLng[1] != 0.0) {
+            address.setLatitude(latLng[0]);
+            address.setLongitude(latLng[1]);
+        } else {
+            System.out.println("⚠ Warning: Coordinates could not be determined.");
+        }
+
         // Save data
-        List<UserAddress> addressList = new ArrayList<>();
-        addressList.add(address);
-        users.setAddress(addressList);
+        users.setAddress(address);
         userRepository.save(users);
 
         return new RegistrationResponseDTO(users.getPhoneNo(), users.getEmail(), "Successfully Registered");

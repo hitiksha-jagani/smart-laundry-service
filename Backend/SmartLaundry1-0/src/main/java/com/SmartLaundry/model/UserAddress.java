@@ -25,7 +25,7 @@ public class UserAddress {
     private Long addressId;
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "Id of the user", example = "US00001", accessMode = Schema.AccessMode.READ_ONLY)
     private Users users;

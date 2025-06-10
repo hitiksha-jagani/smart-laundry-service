@@ -49,7 +49,7 @@ public class ServiceProvider implements Serializable {
     @Column(name = "GST_Number", nullable = true)
     private String gstNumber;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users user;
 
@@ -66,21 +66,17 @@ public class ServiceProvider implements Serializable {
     @Column(name = "Need_Of_Delivery_Agent", nullable = true)
     private Boolean needOfDeliveryAgent;
 
-    @Lob
     @Column(name = "PAN_Card", nullable = true)
-    private byte[] panCardImage;
+    private String panCardImage;
 
-    @Lob
     @Column(name = "Business_Utility_Bill", nullable = true)
-    private byte[] businessUtilityBillImage;
+    private String businessUtilityBillImage;
 
-    @Lob
     @Column(name = "Aadhar_Card", nullable = true)
-    private byte[] aadharCardImage;
+    private String aadharCardImage;
 
-    @Lob
     @Column(name = "Photo", nullable = true)
-    private byte[] photoImage;
+    private String photoImage;
 
     @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

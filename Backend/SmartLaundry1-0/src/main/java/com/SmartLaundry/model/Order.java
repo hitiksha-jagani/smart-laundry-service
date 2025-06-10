@@ -65,6 +65,10 @@ public class Order implements Serializable {
     @Schema(description = "Reference to the service provider assigned to the order.")
     private ServiceProvider serviceProvider;
 
+    @ManyToOne
+    @JoinColumn(name = "delivery_agent_id")
+    private DeliveryAgent deliveryAgent;
+
     @NotNull(message = "Pickup date is required.")
     @Column(name = "pickup_date", nullable = false)
     @Schema(description = "Date of pickup for the order.", example = "2025-06-01")
@@ -100,6 +104,9 @@ public class Order implements Serializable {
     @Column(name = "contact_address", nullable = false)
     @Schema(description = "Pickup address for the order.", example = "123 MG Road, Bengaluru")
     private String contactAddress;
+
+    private Double latitude;
+    private Double longitude;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

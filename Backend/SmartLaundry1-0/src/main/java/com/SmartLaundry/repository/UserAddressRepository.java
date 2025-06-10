@@ -1,10 +1,11 @@
 package com.SmartLaundry.repository;
+
 import com.SmartLaundry.model.UserAddress;
+import com.SmartLaundry.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
+import java.util.List;
+
 public interface UserAddressRepository extends JpaRepository<UserAddress, Long> {
-    // You can add custom queries if needed, but basic CRUD is covered by JpaRepository
+    UserAddress findByUsers(Users user);
 }
-

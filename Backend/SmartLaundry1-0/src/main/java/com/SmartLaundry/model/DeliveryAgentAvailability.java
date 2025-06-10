@@ -1,11 +1,14 @@
 package com.SmartLaundry.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -20,17 +23,27 @@ import java.util.Date;
 @Setter
 @ToString
 @Entity
+@Builder
 @Table(name = "delivery_agent_availability")
 @Schema(description = "Represent weekly availability of delivery agent.")
 public class DeliveryAgentAvailability implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "availability_id", updatable = false, nullable = false)
+    @GeneratedValue(generator = "delivery-agent-availability-id-generator")
+    @GenericGenerator(
+            name = "delivery-agent-availability-id-generator",
+            strategy = "com.SmartLaundry.util.GenericPrefixIdGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = "prefix", value = "AV"),
+                    @org.hibernate.annotations.Parameter(name = "table_name", value = "delivery_agent_availability"),
+                    @org.hibernate.annotations.Parameter(name = "column_name", value = "availability_id"),
+                    @org.hibernate.annotations.Parameter(name = "number_length", value = "4")
+            }
+    )
+    @Column(name = "availability_id", updatable = false)
     @Schema(description = "Unique identifier for the availability.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
-    private Long availabilityId;
+    private String availabilityId;
 
-    @NotBlank(message = "Day of week is required.")
     @Enumerated(EnumType.STRING)
     @Column(name = "dayOfWeek", nullable = false)
     @Schema(description = "Day of the week of the availability.", example = "MONDAY")
@@ -53,8 +66,9 @@ public class DeliveryAgentAvailability implements Serializable {
     @Schema(description = "Selected day is holiday or not.", example = "True")
     private boolean holiday = false;
 
-    @JsonManagedReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "delivery_agent_id", nullable = false)
     @Schema(description = "Id of the delivery agent.", example = "DA0001", accessMode = Schema.AccessMode.READ_ONLY)
     private DeliveryAgent deliveryAgent;

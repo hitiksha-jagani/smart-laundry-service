@@ -1,17 +1,11 @@
 package com.SmartLaundry.controller.Admin;
 
-import com.SmartLaundry.controller.ExtractHeader;
 import com.SmartLaundry.dto.Admin.AdminEditProfileRequestDTO;
 import com.SmartLaundry.dto.Admin.AdminProfileResponseDTO;
-import com.SmartLaundry.model.Users;
 import com.SmartLaundry.service.Admin.AdminProfileService;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.eclipse.angus.mail.iap.ResponseInputStream;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +15,6 @@ import java.nio.file.AccessDeniedException;
 @RestController
 @RequestMapping("")
 public class AdminProfileController {
-
-    @Autowired
-    private ExtractHeader extractHeader;
 
     private final AdminProfileService adminProfileService;
 
@@ -39,8 +30,7 @@ public class AdminProfileController {
     // Return profile detail of the admin.
     @GetMapping("/admin-profile")
     public ResponseEntity<AdminProfileResponseDTO> getAdminDetail(HttpServletRequest request) throws AccessDeniedException {
-        String token = extractHeader.extractTokenFromHeader(request);
-        String userId = (String)jwtService.extractUserId(token);
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         return ResponseEntity.ok(adminProfileService.getProfileDetail(userId));
     }
 
