@@ -1,11 +1,9 @@
 package com.SmartLaundry.controller.Admin;
 
-import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.model.DeliveryAgent;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;

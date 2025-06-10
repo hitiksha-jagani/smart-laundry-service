@@ -75,10 +75,6 @@ public class Order implements Serializable {
     @Schema(description = "Time of pickup for the order.", example = "10:30:00")
     private LocalTime pickupTime;
 
-//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-//    @JsonManagedReference
-//    private OrderSchedulePlan orderSchedulePlan;
-
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JsonManagedReference
     private OrderSchedulePlan orderSchedulePlan;
@@ -109,10 +105,6 @@ public class Order implements Serializable {
     @JsonBackReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderStatusHistory> statusHistory = new ArrayList<>();
-
-//    @JsonBackReference
-//    @OneToMany(mappedBy = "order")
-//    private List<BookingItem> bookingItems;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonManagedReference

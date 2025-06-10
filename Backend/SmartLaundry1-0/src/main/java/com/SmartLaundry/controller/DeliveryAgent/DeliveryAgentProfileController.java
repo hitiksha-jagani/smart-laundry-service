@@ -1,10 +1,11 @@
 package com.SmartLaundry.controller.DeliveryAgent;
 
+import com.SmartLaundry.dto.ChangePasswordRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentProfileDTO;
-//import com.SmartLaundry.repository.DeliveryAgentImageRepository;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.ChangePasswordService;
 import com.SmartLaundry.service.DeliveryAgent.DeliveryAgentProfileService;
 import com.SmartLaundry.service.JWTService;
 import com.SmartLaundry.util.UsernameUtil;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+
 @RestController
 @RequestMapping("")
 public class DeliveryAgentProfileController {
@@ -29,6 +31,9 @@ public class DeliveryAgentProfileController {
 
     @Autowired
     private JWTService jwtService;
+
+    @Autowired
+    private ChangePasswordService changePasswordService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -41,9 +46,6 @@ public class DeliveryAgentProfileController {
 
     @Autowired
     private DeliveryAgentRepository deliveryAgentRepository;
-
-//    @Autowired
-//    private DeliveryAgentImageRepository deliveryAgentImageRepository;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -79,9 +81,17 @@ public class DeliveryAgentProfileController {
     // http://localhost:8080/agent-profile/edit
     // Modify existing details.
     @PutMapping("/agent-profile/edit")
-    public ResponseEntity<String> editDeliveryAgentDetail(HttpServletRequest request, DeliveryAgentProfileDTO deliveryAgentProfileDTO){
+    public ResponseEntity<String> editDeliveryAgentDetail(HttpServletRequest request,@RequestBody DeliveryAgentProfileDTO deliveryAgentProfileDTO){
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         return ResponseEntity.ok(deliveryAgentProfileService.editDetail(userId, deliveryAgentProfileDTO));
+    }
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/agent-profile/change-password
+    @PutMapping("/agent-profile/change-password")
+    public ResponseEntity<String> changeDeliveryAgentPassword(HttpServletRequest request, @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO){
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        return ResponseEntity.ok(changePasswordService.changePassword(userId, changePasswordRequestDTO));
     }
 
 }

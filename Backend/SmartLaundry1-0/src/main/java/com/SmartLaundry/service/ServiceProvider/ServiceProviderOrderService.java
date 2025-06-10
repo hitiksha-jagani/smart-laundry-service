@@ -254,7 +254,7 @@ public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, Strin
                 .orElseThrow(() -> new RuntimeException("Feedback not found"));
 
         // Check if the feedback belongs to this agent
-        if (!feedback.getAgent().getAgentId().equals(agent.getAgentId())) {
+        if (!feedback.getAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
             throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
         }
 
@@ -263,7 +263,7 @@ public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, Strin
         feedbackAgentsRepository.save(feedback);
 
         log.info("Delivery Agent {} responded to feedback {} with message: {}",
-                agent.getAgentId(), feedbackId, responseMessage);
+                agent.getDeliveryAgentId(), feedbackId, responseMessage);
     }
 
 
