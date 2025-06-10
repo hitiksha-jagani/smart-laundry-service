@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.*;
 
 public interface DeliveryAgentRepository extends JpaRepository<DeliveryAgent, String> {
+    Optional<DeliveryAgent> findByUsers_UserId(String userId);
+
     List<DeliveryAgent> findAllByOrderByDeliveryAgentIdAsc(); //DA0001
 
     boolean existsByUsers(Users user);

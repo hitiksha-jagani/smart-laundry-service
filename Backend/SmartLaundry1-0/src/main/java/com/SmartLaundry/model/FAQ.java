@@ -22,7 +22,7 @@ public class FAQ implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "faq_id", nullable = false, updatable = false)
     @Schema(example = "1")
-    private String faqId;
+    private Long faqId;
 
     @JsonIgnore
     @OneToOne
@@ -34,5 +34,19 @@ public class FAQ implements Serializable {
     @Column(name = "visibility_status", nullable = false)
     @Schema(description = "Whether FAQ is visible to users", example = "true")
     private Boolean visibilityStatus;
+
+    @NotBlank
+    @Column(name = "question", nullable = false)
+    @Schema(description = "The FAQ question", example = "How can I cancel my order?")
+    private String question;
+
+    @NotBlank
+    @Column(name = "answer", nullable = false, columnDefinition = "TEXT")
+    @Schema(description = "Answer to the FAQ question", example = "Go to 'My Orders' and click 'Cancel Order'.")
+    private String answer;
+
+    @Column(name = "category")
+    @Schema(description = "Category of the FAQ", example = "Order Management")
+    private String category;
 
 }

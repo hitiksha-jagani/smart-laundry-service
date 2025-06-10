@@ -149,7 +149,7 @@ public class AuthService {
             throw new BadCredentialsException("Invalid username or password!");
         }
 
-        if(request.getUsername().matches("^[0-9]{10}$")){
+        if(request.getUsername().matches("^\\+[0-9]{10,15}$")){
             users = userRepository.findByPhoneNo(request.getUsername());
         } else {
             users = userRepository.findByEmail(request.getUsername());

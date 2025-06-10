@@ -2,6 +2,8 @@ package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Parameter;
@@ -24,6 +26,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "orders")
+@ToString(exclude = "orderSchedulePlan")
 @Schema(description = "Represents an order placed by a customer to a service provider.")
 public class Order implements Serializable {
 
@@ -42,6 +45,13 @@ public class Order implements Serializable {
     @Column(name = "order_id", updatable = false, nullable = false)
     @Schema(description = "Unique identifier for the order.", example = "ODR00001", accessMode = Schema.AccessMode.READ_ONLY)
     private String orderId;
+
+    private Double latitude;
+    private Double longitude;
+
+    @ManyToOne
+    @JoinColumn(name = "delivery_agent_id")
+    private DeliveryAgent deliveryAgent;
 
     @JsonIgnore
     @ManyToOne
@@ -69,6 +79,14 @@ public class Order implements Serializable {
     @Schema(description = "Time of pickup for the order.", example = "10:30:00")
     private LocalTime pickupTime;
 
+//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+//    @JsonManagedReference
+//    private OrderSchedulePlan orderSchedulePlan;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JsonManagedReference
+    private OrderSchedulePlan orderSchedulePlan;
+
     @NotBlank(message = "Contact name is required.")
     @Size(max = 100, message = "Contact name must not exceed 100 characters.")
     @Column(name = "contact_name", nullable = false, length = 100)
@@ -76,9 +94,9 @@ public class Order implements Serializable {
     private String contactName;
 
     @NotBlank(message = "Contact phone is required.")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Contact phone must be a 10-digit number.")
-    @Column(name = "contact_phone", nullable = false, length = 10)
-    @Schema(description = "Phone number for contact at pickup location.", example = "9876543210")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Contact phone must be a 10-12 digit number, optionally starting with '+'.")
+    @Column(name = "contact_phone", nullable = false, length = 15)
+    @Schema(description = "Phone number for contact at pickup location.", example = "919876543210")
     private String contactPhone;
 
     @NotBlank(message = "Contact address is required.")
@@ -99,10 +117,13 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderStatusHistory> statusHistory = new ArrayList<>();
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "order")
-    private List<BookingItem> bookingItems;
+//    @JsonBackReference
+//    @OneToMany(mappedBy = "order")
+//    private List<BookingItem> bookingItems;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<BookingItem> bookingItems;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "promo_code", nullable = true, updatable = false)

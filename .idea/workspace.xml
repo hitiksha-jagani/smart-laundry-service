@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bfec3e60-f7db-4ec7-90a0-755973f2e8a9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderOrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderOrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/DeliveryAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/DeliveryAgent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/FAQ.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/FAQ.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/OrderStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/OrderStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reschedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reschedule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reward.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reward.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Ticket.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Ticket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Users.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/DeliveryAgentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/DeliveryAgentRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ServiceProviderOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ServiceProviderOrderService.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="AnnotationType" />
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0-sources.jar!/jakarta/persistence/Cacheable.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar!/jakarta/persistence/Cacheable.class" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2xx4rwq9pjwxt3Rl5bDsV6Si5Sx" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Application.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SendOtpApplicationTests.executor&quot;: &quot;Run&quot;,
+    &quot;JavaClassFindUsagesOptions.isDerivedClasses&quot;: &quot;true&quot;,
+    &quot;JavaClassFindUsagesOptions.isFieldsUsages&quot;: &quot;true&quot;,
+    &quot;JavaClassFindUsagesOptions.isMethodsUsages&quot;: &quot;true&quot;,
+    &quot;Maven.SmartLaundry1-0 [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SmartLaundry1-0 [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SmartLaundry1-0 [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SmartLaundry1-0 [site].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SmartLaundry1-0 [test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SmartLaundry1-0 [validate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SmartLaundry1-0 [verify].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/MSCIT/summerinternship/smart-laundry-service/Backend/SmartLaundry1-0/src/main/resources&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.SmartLaundry.SendOTP" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\MSCIT\summerinternship\smart-laundry-service\Backend\SmartLaundry1-0\src\main\java\com\SmartLaundry\service\Admin" />
+      <recent name="D:\MSCIT\summerinternship\smart-laundry-service\Backend\SmartLaundry1-0\src\main\java\com\SmartLaundry\repository" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\MSCIT\summerinternship\smart-laundry-service\Backend\SmartLaundry1-0\src\main\resources" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bfec3e60-f7db-4ec7-90a0-755973f2e8a9" name="Changes" comment="" />
+      <created>1748866594833</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748866594833</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.env" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

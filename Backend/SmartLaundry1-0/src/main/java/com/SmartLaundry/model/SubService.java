@@ -1,5 +1,6 @@
 package com.SmartLaundry.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Builder
 @Entity
 @Table(name = "sub_service", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "sub_service_name", name = "uk_sub_service_name")
+        @UniqueConstraint(columnNames = "sub_service_name", name = "uk_sub_service_name")
 })
 @Schema(description = "Represents a sub service with a unique ID and name.")
 public class SubService implements Serializable{
@@ -44,7 +45,7 @@ public class SubService implements Serializable{
     @Schema(description = "The name of the sub service. Must be unique.", example = "Winter Cloths")
     private String subServiceName;
 
-    @JsonManagedReference
+    @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "service_id", nullable = false)
     private Services services;

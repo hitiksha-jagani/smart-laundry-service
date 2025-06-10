@@ -19,23 +19,34 @@ public class GeoRedisService {
     private static final String KEY = "service_providers_geo";
 
     public void loadProviderGeoData(List<ServiceProvider> providers) {
+        // Clear old geo data before loading fresh data
+        redisTemplate.delete(KEY);
+
         GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
         int count = 0;
 
         for (ServiceProvider sp : providers) {
-//            UserAddress address = sp.getAddress();
-//            if (address != null && address.getLatitude() != null && address.getLongitude() != null) {
-//                geoOps.add(
-//                        KEY,
-//                        new RedisGeoCommands.GeoLocation<>(
-//                                sp.getServiceProviderId(),
-//                                new Point(address.getLongitude(), address.getLatitude())
-//                        )
-//                );
-                count++;
+            if (sp.getUser() != null && sp.getUser().getAddress() != null && !sp.getUser().getAddress().isEmpty()) {
+                UserAddress address = sp.getUser().getAddress().get(0);
+
+                if (address.getLatitude() != null && address.getLongitude() != null) {
+                    geoOps.add(
+                            KEY,
+                            new RedisGeoCommands.GeoLocation<>(
+                                    sp.getUser().getUserId(),  // Use userId as member name
+                                    new Point(address.getLongitude(), address.getLatitude())
+                            )
+                    );
+                    count++;
+                }
             }
         }
-//        System.out.println("Loaded " + count + " service providers into Redis geo set.");
+
+        System.out.println("Loaded " + count + " service providers into Redis geo set.");
     }
+
+
+}
+
 
 

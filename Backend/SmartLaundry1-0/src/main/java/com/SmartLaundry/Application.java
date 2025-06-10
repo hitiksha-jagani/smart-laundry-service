@@ -13,8 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @PropertySource(value = "classpath:.env", ignoreResourceNotFound = true)
 public class Application {
 
-    public static void main(String[] args) {
-        EnvUtils.loadEnv("/media/hitiksha/C/DAIICT/Summer internship/Env_Var.env");
-        SpringApplication.run(Application.class, args);
-    }
+	public static void main(String[] args) {
+		EnvUtils.loadEnv("D:\\MSCIT\\summerinternship\\application-custom-properties.env");
+		SpringApplication.run(Application.class, args);
+	}
 }

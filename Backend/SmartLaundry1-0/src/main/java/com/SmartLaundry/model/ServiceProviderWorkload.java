@@ -4,13 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "SERVICE_PROVIDER_WORKLOAD")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class ServiceProviderWorkload {
+public class ServiceProviderWorkload implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

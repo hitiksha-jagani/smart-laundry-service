@@ -3,18 +3,15 @@ package com.SmartLaundry.service;
 import com.SmartLaundry.model.ServiceProvider;
 import com.SmartLaundry.repository.ServiceProviderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Point;
-import org.springframework.data.geo.GeoResults;
-import org.springframework.data.redis.connection.RedisGeoCommands;
-import org.springframework.data.redis.connection.RedisGeoCommands.DistanceUnit;
+import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
 import org.springframework.data.redis.connection.RedisGeoCommands.GeoRadiusCommandArgs;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,23 +23,23 @@ public class NearbyProviderService {
     private static final String KEY = "service_providers_geo";
 
     public List<ServiceProvider> getProvidersNearby(Double latitude, Double longitude, double radiusKm) {
-        // Define the search area using Circle
         Circle circle = new Circle(new Point(longitude, latitude),
-                new Distance(radiusKm, DistanceUnit.KILOMETERS));
+                new Distance(radiusKm, Metrics.KILOMETERS));
 
-        // Set up the radius command arguments to include coordinates
         GeoRadiusCommandArgs args = GeoRadiusCommandArgs.newGeoRadiusArgs().includeCoordinates();
 
-        // Fetch nearby geo results
         GeoResults<GeoLocation<String>> results = redisTemplate.opsForGeo()
                 .radius(KEY, circle, args);
 
-        // Extract matching service provider IDs
-        List<String> nearbyProviderIds = results.getContent().stream()
-                .map(result -> result.getContent().getName())
-                .toList();
+        if (results == null || results.getContent().isEmpty()) {
+            return List.of();
+        }
 
-        // Fetch corresponding service provider entities from DB
-        return serviceProviderRepository.findAllById(nearbyProviderIds);
+        Set<String> userIds = results.getContent().stream()
+                .map(result -> result.getContent().getName())
+                .collect(Collectors.toSet());
+
+        // Fetch all service providers whose user.userId is in userIds
+        return serviceProviderRepository.findByUser_UserIdIn(userIds);
     }
 }

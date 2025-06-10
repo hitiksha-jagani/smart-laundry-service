@@ -7,7 +7,10 @@ import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO
 import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import com.SmartLaundry.service.Customer.EmailService;
+import com.SmartLaundry.service.Customer.SMSService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +54,17 @@ public class RequestService {
     @Autowired
     private AddressRepository addressRepository;
 
-//    @Autowired
-//    private DeliveryAgentImageRepository deliveryAgentImageRepository;
 
+    private final EmailService emailService;
+    private final SMSService smsService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
     private static final Logger log = LoggerFactory.getLogger(RequestService.class);
 
-    public RequestService(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
+
+    public RequestService(EmailService emailService, SMSService smsService, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
+        this.emailService = emailService;
+        this.smsService = smsService;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
     }
@@ -204,7 +210,14 @@ public class RequestService {
         } catch (Exception e) {
             throw new RuntimeException("Save failed", e);
         }
+        String phone = user.getPhoneNo();
+        String email = user.getEmail();
 
+        String message = "Congratulations! Your request to become a Service Provider has been approved.";
+        String subject = "Service Provider Approval";
+
+        smsService.sendOrderStatusNotification(phone, message); // Or general-purpose SMS method
+        emailService.sendOrderStatusNotification(email, subject, message);
         // Cleanup: Remove from Redis
         redisTemplate.delete(redisKey);
 
@@ -220,7 +233,20 @@ public class RequestService {
 
         Boolean removed = redisTemplate.delete(key);
 
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String phone = user.getPhoneNo();
+        String email = user.getEmail();
+
         if (Boolean.TRUE.equals(removed)) {
+            // Send SMS + Email notification
+            String message = "We're sorry! Your request to become a Service Provider has been rejected.";
+            String subject = "Service Provider Rejection";
+
+            smsService.sendOrderStatusNotification(phone, message);
+            emailService.sendOrderStatusNotification(email, subject, message);
+
             return "Service provider profile rejected.";
         } else {
             throw new RuntimeException("No pending service provider profile data found.");
@@ -337,5 +363,6 @@ public class RequestService {
 
         }
     }
+
 
 }

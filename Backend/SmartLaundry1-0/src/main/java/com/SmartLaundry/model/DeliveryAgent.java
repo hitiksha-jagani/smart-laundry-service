@@ -66,6 +66,7 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "Vehicle number of the delivery agent.", example = "GJ011234")
     private String vehicleNumber;
 
+
     @NotBlank(message = "Bank name is required.")
     @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters.")
     @Column(name = "bank_name", nullable = false)
@@ -124,6 +125,5 @@ public class DeliveryAgent implements Serializable {
     @JsonManagedReference
     @OneToMany(mappedBy = "deliveryAgent")
     private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
-
 }
 

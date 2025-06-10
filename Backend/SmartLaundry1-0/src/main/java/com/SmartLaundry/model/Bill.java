@@ -28,10 +28,10 @@ public class Bill implements Serializable {
             name = "invoice-number-generator",
             strategy = "com.SmartLaundry.util.GenericPrefixIdGenerator",
             parameters = {
-                @Parameter(name = "prefix", value = "IN"),
-                @Parameter(name = "table_name", value = "bill"),
-                @Parameter(name = "column_name", value = "invoice_number"),
-                @Parameter(name = "number_length", value = "4")
+                    @Parameter(name = "prefix", value = "IN"),
+                    @Parameter(name = "table_name", value = "bill"),
+                    @Parameter(name = "column_name", value = "invoice_number"),
+                    @Parameter(name = "number_length", value = "4")
             }
     )
     @Column(name = "invoice_number", nullable = false, updatable = false)

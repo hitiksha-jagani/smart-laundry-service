@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "city", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "city_name", name = "uk_city_name")
+        @UniqueConstraint(columnNames = "city_name", name = "uk_city_name")
 })
 @Schema(description = "Represents a city with unique ID, name.")
 public class City implements Serializable{

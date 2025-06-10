@@ -5,6 +5,7 @@ import com.SmartLaundry.model.Items;
 import com.SmartLaundry.model.ServiceProvider;
 import com.SmartLaundry.model.Services;
 import com.SmartLaundry.model.SubService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class PriceDTO {
     private Long price;
 
     private ItemDTO item;
+   @JsonIgnore
     private ServiceProviderRequestDTO serviceProvider;
 
     @Data

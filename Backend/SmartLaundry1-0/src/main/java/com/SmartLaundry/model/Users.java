@@ -24,6 +24,7 @@ import java.util.*;
 @Schema(description = "Represents a user with unique ID, phone and email.")
 public class Users implements Serializable{
 
+    @Getter
     @Id
     @GeneratedValue(generator = "user-id-generator")
     @GenericGenerator(
@@ -83,5 +84,11 @@ public class Users implements Serializable{
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserAddress address;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Ticket> tickets = new ArrayList<>();
+
 
 }
+
+
+

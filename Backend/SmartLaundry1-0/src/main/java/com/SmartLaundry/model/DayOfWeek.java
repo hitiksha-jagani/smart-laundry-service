@@ -19,4 +19,3 @@ public enum DayOfWeek {
         return value;
     }
 }
-
