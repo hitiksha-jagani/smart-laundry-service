@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.juli.WebappProperties;
 import org.hibernate.annotations.Parameter;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -66,5 +67,6 @@ public class BookingItem implements Serializable {
     @JoinColumn(name = "invoice_number", nullable = true)
     @Schema(description = "The bill associated with this booking item.")
     private Bill bill;
+
 }
 

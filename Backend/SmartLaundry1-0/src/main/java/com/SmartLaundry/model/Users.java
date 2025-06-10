@@ -56,8 +56,8 @@ public class Users implements Serializable{
     private String lastName;
 
     @NotBlank(message = "Phone number is required.")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
-    @Column(name = "phone_no", nullable = false, unique = true, length = 10)
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Contact phone must be a 10-12 digit number, optionally starting with '+'.")
+    @Column(name = "phone_no", nullable = false, unique = true, length = 15)
     @Schema(description = "The phone number of the user.", example = "9867548934")
     private String phoneNo;
 
@@ -88,6 +88,9 @@ public class Users implements Serializable{
     private List<Ticket> tickets = new ArrayList<>();
 
 
+    public String getName() {
+        return firstName;
+    }
 }
 
 
