@@ -2,6 +2,8 @@ package com.SmartLaundry.controller.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.Customer.TicketResponseDto;
+import com.SmartLaundry.dto.ServiceProvider.FeedbackResponseDto;
+import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
 import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.controller.ExtractHeader;
@@ -25,15 +27,7 @@ public class ServiceProviderOrderController {
     private final OrderService orderService;
 
     private String getServiceProviderUserId(HttpServletRequest request) {
-        String token = extractHeader.extractTokenFromHeader(request);
-        if (token == null || token.isBlank()) {
-            throw new RuntimeException("Authorization token missing or empty");
-        }
-        Object userIdClaim = jwtService.extractClaim(token, claims -> claims.get("id"));
-        if (userIdClaim == null) {
-            throw new RuntimeException("User ID not found in token");
-        }
-        return userIdClaim.toString();
+        return (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
     }
 
     @GetMapping("/pending")
@@ -91,6 +85,23 @@ public class ServiceProviderOrderController {
         serviceProviderOrderService.respondToAgentFeedbackByUserId(agentUserId, feedbackId, responseMessage);
 
         return ResponseEntity.ok("Response submitted successfully");
+    }
+
+    //to Fetch all feedbacks
+    @GetMapping("{providerId}/feedbacks")
+    public ResponseEntity<List<FeedbackResponseDto>> getFeedbacksForProvider(@PathVariable String providerId) {
+        List<FeedbackResponseDto> feedbacks = serviceProviderOrderService.getFeedbackForServiceProvider(providerId);
+        return ResponseEntity.ok(feedbacks);
+    }
+
+    //To fetch all Orders
+    @GetMapping("/service-provider/{providerId}/order-history")
+    public ResponseEntity<List<OrderHistoryDto>> getOrderHistory(
+            @PathVariable String providerId,
+            @RequestParam(required = false) String status) {
+
+        List<OrderHistoryDto> orders = serviceProviderOrderService.getOrderHistoryForProvider(providerId, status);
+        return ResponseEntity.ok(orders);
     }
 
 

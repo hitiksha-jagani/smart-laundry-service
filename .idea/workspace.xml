@@ -6,17 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="bfec3e60-f7db-4ec7-90a0-755973f2e8a9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/OrderController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderOrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderOrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/DeliveryAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/DeliveryAgent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/FAQ.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/FAQ.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/OrderStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/OrderStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reschedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reschedule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reward.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Reward.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Ticket.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Ticket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/BookingItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/BookingItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/FeedbackProviders.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/FeedbackProviders.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Order.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Users.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/DeliveryAgentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/DeliveryAgentRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/FeedbackProvidersRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/FeedbackProvidersRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/OrderRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/JWTService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/JWTService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ProviderAccORrejectOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ProviderAccORrejectOrderService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ServiceProviderOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ServiceProviderOrderService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,32 +50,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Application.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.SendOtpApplicationTests.executor&quot;: &quot;Run&quot;,
-    &quot;JavaClassFindUsagesOptions.isDerivedClasses&quot;: &quot;true&quot;,
-    &quot;JavaClassFindUsagesOptions.isFieldsUsages&quot;: &quot;true&quot;,
-    &quot;JavaClassFindUsagesOptions.isMethodsUsages&quot;: &quot;true&quot;,
-    &quot;Maven.SmartLaundry1-0 [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [site].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [test].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [validate].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [verify].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/MSCIT/summerinternship/smart-laundry-service/Backend/SmartLaundry1-0/src/main/resources&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Application.executor": "Run",
+    "JUnit.SendOtpApplicationTests.executor": "Run",
+    "JavaClassFindUsagesOptions.isDerivedClasses": "true",
+    "JavaClassFindUsagesOptions.isFieldsUsages": "true",
+    "JavaClassFindUsagesOptions.isMethodsUsages": "true",
+    "Maven.SmartLaundry1-0 [clean].executor": "Run",
+    "Maven.SmartLaundry1-0 [compile].executor": "Run",
+    "Maven.SmartLaundry1-0 [install].executor": "Run",
+    "Maven.SmartLaundry1-0 [site].executor": "Run",
+    "Maven.SmartLaundry1-0 [test].executor": "Run",
+    "Maven.SmartLaundry1-0 [validate].executor": "Run",
+    "Maven.SmartLaundry1-0 [verify].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.preview.features.used": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/MSCIT/summerinternship/smart-laundry-service/Backend/SmartLaundry1-0/src/main/resources",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.SmartLaundry.SendOTP" />

@@ -1,5 +1,6 @@
 package com.SmartLaundry.model;
 
+import com.twilio.rest.chat.v1.service.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

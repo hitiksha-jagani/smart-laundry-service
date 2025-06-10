@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface FeedbackProvidersRepository extends JpaRepository<FeedbackProviders, Long> {
     List<FeedbackProviders> findByServiceProvider_ServiceProviderId(String ServiceProviderId);
+    List<FeedbackProviders> findByServiceProvider_ServiceProviderIdOrderByCreatedAtDesc(String providerId);
+
 }
 

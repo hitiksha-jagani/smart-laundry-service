@@ -20,19 +20,9 @@ public class OrderController {
     private final JWTService jwtService;
 
     private String extractUserIdFromRequest(HttpServletRequest request) {
-        String token = extractHeader.extractTokenFromHeader(request);
-        if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("Authorization token is missing");
-        }
-
-
-        // jwtService.extractUserId returns Object, cast safely to String
-        Object userIdObj = jwtService.extractUserId(token);
-        if (!(userIdObj instanceof String userId) || userId.isEmpty()) {
-            throw new IllegalArgumentException("Invalid token or userId");
-        }
-        return userId;
+        return (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
     }
+
 
     @PostMapping("/initial")
     public ResponseEntity<String> saveInitialOrder(HttpServletRequest request, @RequestBody BookOrderRequestDto dto) {

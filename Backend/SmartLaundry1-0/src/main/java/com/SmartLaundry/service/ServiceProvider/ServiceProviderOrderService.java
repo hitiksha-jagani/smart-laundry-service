@@ -2,6 +2,8 @@ package com.SmartLaundry.service.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.Customer.TicketResponseDto;
+import com.SmartLaundry.dto.ServiceProvider.FeedbackResponseDto;
+import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -194,6 +197,49 @@ public class ServiceProviderOrderService {
 
         log.info("Service Provider {} responded to feedback {} with message: {}",
                 sp.getServiceProviderId(), feedbackId, responseMessage);
+    }
+
+//To fetch all feedbacks of service provider
+    public List<FeedbackResponseDto> getFeedbackForServiceProvider(String providerId) {
+        List<FeedbackProviders> feedbackList =
+                feedbackProvidersRepository.findByServiceProvider_ServiceProviderIdOrderByCreatedAtDesc(providerId);
+
+        return feedbackList.stream().map(fb -> FeedbackResponseDto.builder()
+                .customerName(fb.getUser().getName())
+                .review(fb.getReview())
+                .rating(fb.getRating())
+                .submittedAt(fb.getCreatedAt())
+                .build()
+        ).collect(Collectors.toList());
+    }
+// For OrderHistory Page
+public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
+        OrderStatus status = null;
+        if (statusStr != null && !statusStr.isBlank()) {
+            try {
+                status = OrderStatus.valueOf(statusStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid order status");
+            }
+        }
+
+        List<Order> orders = orderRepository.findOrderHistoryByProviderAndStatus(providerId, status);
+
+        List<OrderHistoryDto> history = new ArrayList<>();
+        for (Order order : orders) {
+            for (BookingItem item : order.getBookingItems()) {
+                history.add(OrderHistoryDto.builder()
+                        .orderId(order.getOrderId())
+                        .serviceName( item.getItem().getService().getServiceName())
+                        .subServiceName(item.getItem().getSubService().getSubServiceName())
+                        .itemName(item.getItem().getItemName())
+                        .quantity(item.getQuantity())
+                        .status(order.getStatus().name())
+                        .build());
+            }
+        }
+
+        return history;
     }
 
     //Delivery Agent

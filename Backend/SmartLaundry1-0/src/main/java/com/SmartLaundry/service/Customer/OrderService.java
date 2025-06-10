@@ -616,37 +616,4 @@ public class OrderService implements OrderBookingService {
         ticketRepository.save(ticket);
     }
 
-
-//    // Place order - mark status PENDING and notify service provider
-//    public void placeOrder(String userId) {
-//        validateRedisOrderData(userId);
-//
-//        String key = getRedisKey(userId);
-//        Map<Object, Object> data = redisTemplate.opsForHash().entries(key);
-//        if (data.isEmpty()) throw new IllegalStateException("No order data found to place order");
-//
-//        // Set status to PENDING in Redis
-//        redisTemplate.opsForHash().put(key, "status", "PENDING");
-//        redisTemplate.expire(key, Duration.ofDays(7));
-//
-//        String spId = (String) data.get("serviceProviderId");
-//
-//        // Add userId to pending orders set of service provider
-//        redisTemplate.opsForSet().add(ServiceProviderOrderService.getPendingOrdersSetKey(spId), userId);
-//
-//        // Notify Service Provider (via SMS and Email)
-//        ServiceProvider sp = serviceProviderRepository.findById(spId)
-//                .orElseThrow(() -> new IllegalArgumentException("Service provider not found: " + spId));
-//
-//        smsService.sendOrderStatusNotification(
-//                sp.getUser().getPhoneNo(),
-//                "New laundry order request pending from user " + userId + ". Please accept or reject."
-//        );
-//        emailService.sendOrderStatusNotification(
-//                sp.getUser().getEmail(),
-//                "New Laundry Order Request",
-//                "You have a new laundry order request pending from user " + userId + ". Please log in to accept or reject."
-//        );
-//    }
-
 }

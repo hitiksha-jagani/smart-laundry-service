@@ -117,6 +117,7 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<BookingItem> bookingItems;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "promo_code", nullable = true, updatable = false)

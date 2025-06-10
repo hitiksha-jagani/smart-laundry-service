@@ -15,7 +15,7 @@ public class ProviderAccORrejectOrderService {
 
     // Get all pending approval orders for a service provider
     public List<Order> getPendingOrdersForProvider(String providerId) {
-        return orderRepository.findByServiceProvider_ServiceProviderIdAndStatus(providerId, OrderStatus.PENDING);
+        return orderRepository.findByServiceProvider_User_UserIdAndStatus(providerId, OrderStatus.PENDING);
     }
 
     // Accept or reject an order

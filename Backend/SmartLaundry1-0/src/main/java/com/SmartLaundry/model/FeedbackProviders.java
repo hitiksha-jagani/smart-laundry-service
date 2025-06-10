@@ -5,6 +5,8 @@ import com.SmartLaundry.model.Users;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "FEEDBACK_PROVIDERS")
 @Data
@@ -18,9 +20,7 @@ public class FeedbackProviders {
     @Column(name = "Feedback_Id")
     private Long feedbackId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "User_Id", nullable = false)
-//    private Users user;
+
     @ManyToOne(fetch = FetchType.EAGER) // Ensure this is present
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
@@ -39,6 +39,14 @@ public class FeedbackProviders {
 
     @Column(name = "Response", length = 1000)
     private String response;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_provider_id", nullable = false)
