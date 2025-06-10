@@ -80,8 +80,8 @@ public class Users implements Serializable{
     private LocalDateTime createdAt;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "users")
-    private List<UserAddress> address;
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserAddress address;
 
 
 }

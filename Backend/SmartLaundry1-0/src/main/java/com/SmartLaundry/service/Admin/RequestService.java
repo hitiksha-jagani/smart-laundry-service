@@ -2,6 +2,7 @@ package com.SmartLaundry.service.Admin;
 
 import com.SmartLaundry.dto.Admin.PriceDTO;
 import com.SmartLaundry.dto.Admin.ServiceProviderRequestDTO;
+import com.SmartLaundry.dto.DeliveryAgent.AcceptAgentDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
 import com.SmartLaundry.model.*;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -46,6 +50,9 @@ public class RequestService {
 
     @Autowired
     private AddressRepository addressRepository;
+
+//    @Autowired
+//    private DeliveryAgentImageRepository deliveryAgentImageRepository;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
@@ -158,10 +165,10 @@ public class RequestService {
         sp.setBusinessLicenseNumber(profileDTO.getBusinessLicenseNumber());
         sp.setGstNumber(profileDTO.getGstNumber());
         sp.setNeedOfDeliveryAgent(profileDTO.getNeedOfDeliveryAgent());
-        sp.setPhotoImage(profileDTO.getProfilePhoto());
-        sp.setAadharCardImage(profileDTO.getAadharCardPhoto());
-        sp.setPanCardImage(profileDTO.getPanCardPhoto());
-        sp.setBusinessUtilityBillImage(profileDTO.getBusinessUtilityBillPhoto());
+//        sp.setPhotoImage(profileDTO.getProfilePhoto());
+//        sp.setAadharCardImage(profileDTO.getAadharCardPhoto());
+//        sp.setPanCardImage(profileDTO.getPanCardPhoto());
+//        sp.setBusinessUtilityBillImage(profileDTO.getBusinessUtilityBillPhoto());
         sp.setSchedulePlans(profileDTO.getSchedulePlans());
         sp.setBankAccount(bankAccount);
         sp.setPrices(null);
@@ -223,30 +230,22 @@ public class RequestService {
     // @author Hitiksha Jagani
     // Return all delivery agent data which are pending for approval.
     public List<RequestProfileDTO> getAllAgentProfiles() {
-        Set<String> keys = redisTemplate.keys("DeliveryAgentProfile:*");
 
-        if (keys == null || keys.isEmpty()) {
-            return Collections.emptyList();
-        }
+        List<DeliveryAgent> deliveryAgents = deliveryAgentRepository.findByStatus(Status.PENDING);
 
         List<RequestProfileDTO> pendingProfiles = new ArrayList<>();
 
-        for (String key : keys) {
-            String userId = key.split(":")[1];
+        for (DeliveryAgent agent : deliveryAgents) {
 
-            // Deserialize Redis value into DTO
-            Object value = redisTemplate.opsForValue().get(key);
-            DeliveryAgentCompleteProfileRequestDTO profileDTO = objectMapper.convertValue(
-                    value, DeliveryAgentCompleteProfileRequestDTO.class);
-
-            if (profileDTO == null) continue;
+            if (agent == null) continue;
 
             // Fetch user
-            Users user = userRepository.findById(userId).orElse(null);
+            Users user = userRepository.findById(agent.getUsers().getUserId()).orElse(null);
             if (user == null) continue;
 
             // Fetch address
             UserAddress address = addressRepository.findByUsers(user).orElse(null);
+
             RequestProfileDTO.AddressDTO addressDTO = null;
             if (address != null) {
                 addressDTO = RequestProfileDTO.AddressDTO.builder()
@@ -263,18 +262,18 @@ public class RequestService {
                     .lastName(user.getLastName())
                     .phoneNo(user.getPhoneNo())
                     .email(user.getEmail())
-                    .dateOfBirth(profileDTO.getDateOfBirth())
-                    .vehicleNumber(profileDTO.getVehicleNumber())
-                    .aadharCardPhoto(profileDTO.getAadharCardPhoto())
-                    .panCardPhoto(profileDTO.getPanCardPhoto())
-                    .drivingLicensePhoto(profileDTO.getDrivingLicensePhoto())
-                    .bankName(profileDTO.getBankName())
-                    .accountHolderName(profileDTO.getAccountHolderName())
-                    .bankAccountNumber(profileDTO.getBankAccountNumber())
-                    .ifscCode(profileDTO.getIfscCode())
-                    .profilePhoto(profileDTO.getProfilePhoto())
-                    .gender(profileDTO.getGender())
+                    .dateOfBirth(agent.getDateOfBirth())
+                    .vehicleNumber(agent.getVehicleNumber())
+                    .bankName(agent.getBankName())
+                    .accountHolderName(agent.getAccountHolderName())
+                    .bankAccountNumber(agent.getBankAccountNumber())
+                    .ifscCode(agent.getIfscCode())
+                    .gender(agent.getGender())
                     .addresses(addressDTO)
+                    .aadharCardPhoto("/image/aadhar/" + user.getUserId())
+                    .profilePhoto("/image/profile/" + user.getUserId())
+                    .panCardPhoto("/image/pan/" + user.getUserId())
+                    .drivingLicensePhoto("/image/license/" + user.getUserId())
                     .build();
 
             pendingProfiles.add(requestProfile);
@@ -285,54 +284,30 @@ public class RequestService {
 
     //@author Hitiksha Jagani
     // Logic for accpet delivery agent request
-    @Transactional
-    public String acceptAgent(String userId) {
-        String redisKey = "DeliveryAgentProfile:" + userId;
-
-        // Fetch and convert from Redis
-        Object value = redisTemplate.opsForValue().get(redisKey);
-        if (value == null) {
-            throw new RuntimeException("No pending delivery agent profile data found.");
-        }
-
-        RequestProfileDTO profileDTO = objectMapper.convertValue(value, RequestProfileDTO.class);
+//    @Transactional
+    public String acceptAgent(String userId) throws IOException {
 
         // Fetch user
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
-        // Prevent duplicate approval
-        if (deliveryAgentRepository.existsByUsers(user)) {
-            throw new RuntimeException("Delivery agent is already approved.");
+        DeliveryAgent agent = deliveryAgentRepository.findByUsers(user).orElse(null);
+        if(agent == null){
+            return "Delivery agent is not found.";
         }
 
-        // Map data to DeliveryAgent entity
-        DeliveryAgent deliveryAgent = new DeliveryAgent();
-        deliveryAgent.setProfilePhoto(profileDTO.getProfilePhoto());
-        deliveryAgent.setGender(profileDTO.getGender());
-        deliveryAgent.setUsers(user);
-        deliveryAgent.setDateOfBirth(profileDTO.getDateOfBirth());
-        deliveryAgent.setVehicleNumber(profileDTO.getVehicleNumber());
-        deliveryAgent.setAadharCardPhoto(profileDTO.getAadharCardPhoto());
-        deliveryAgent.setDrivingLicensePhoto(profileDTO.getDrivingLicensePhoto());
-        deliveryAgent.setPanCardPhoto(profileDTO.getPanCardPhoto());
-        deliveryAgent.setBankName(profileDTO.getBankName());
-        deliveryAgent.setAccountHolderName(profileDTO.getAccountHolderName());
-        deliveryAgent.setBankAccountNumber(profileDTO.getBankAccountNumber());
-        deliveryAgent.setIfscCode(profileDTO.getIfscCode());
-
-        try {
-            deliveryAgentRepository.save(deliveryAgent);
-        } catch (Exception e) {
-            throw new RuntimeException("Save failed", e);
+        if(agent.getStatus() != Status.PENDING){
+            return "Request for delivery agent profile already accepted/rejected.";
+        } else if(agent.getStatus() == Status.ACCEPTED){
+            return "Delivery agent is already approved.";
+        } else {
+            agent.setStatus(Status.ACCEPTED);
         }
 
-        // Remove from Redis
-        redisTemplate.delete(redisKey);
+        deliveryAgentRepository.save(agent);
 
         return "Delivery agent profile approved successfully.";
     }
-
 
     //@author Hitiksha Jagani
     // Logic for reject delivery agent request
@@ -340,9 +315,22 @@ public class RequestService {
     public String rejectAgent(String userId){
         String key = "DeliveryAgentProfile:" + userId;
 
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found."));
+
+        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
+                .orElseThrow(() -> new RuntimeException("Delivery agent is not found."));
+
         Boolean removed = redisTemplate.delete(key);
 
         if (Boolean.TRUE.equals(removed)) {
+            if(deliveryAgent.getStatus() != Status.PENDING){
+                return "Request for delivery agent profile already accepted/rejected.";
+            } else if(deliveryAgent.getStatus() == Status.REJECTED){
+                return "Delivery agent is already rejected.";
+            } else {
+                deliveryAgent.setStatus(Status.REJECTED);
+            }
             return "Delivery Agent profile rejected.";
         } else {
             throw new RuntimeException("No pending delivery agent profile data found.");

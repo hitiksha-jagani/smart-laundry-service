@@ -1,7 +1,11 @@
 package com.SmartLaundry.repository;
 
 import com.SmartLaundry.model.Price;
+import com.SmartLaundry.model.ServiceProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface PriceRepository extends JpaRepository<Price, Long> {
+    List<Price> findByServiceProvider(ServiceProvider serviceProvider);
 }

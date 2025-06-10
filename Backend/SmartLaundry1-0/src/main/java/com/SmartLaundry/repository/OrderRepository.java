@@ -1,5 +1,6 @@
 package com.SmartLaundry.repository;
 
+import com.SmartLaundry.model.DeliveryAgent;
 import com.SmartLaundry.model.Order;
 import com.SmartLaundry.model.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProvider_ServiceProviderIdAndStatus(String serviceProviderId, OrderStatus status);
+
+    List<Order> findByDeliveryAgent(DeliveryAgent deliveryAgent);
 }

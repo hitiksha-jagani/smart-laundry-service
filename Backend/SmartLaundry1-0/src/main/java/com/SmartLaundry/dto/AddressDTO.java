@@ -1,5 +1,6 @@
 package com.SmartLaundry.dto;
 
+import com.SmartLaundry.model.UserAddress;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,4 +27,6 @@ public class AddressDTO {
     }
 
 
+    public AddressDTO(UserAddress userAddress) {
+    }
 }

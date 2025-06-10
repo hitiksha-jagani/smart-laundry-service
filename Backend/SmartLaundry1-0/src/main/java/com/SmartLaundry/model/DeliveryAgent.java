@@ -3,6 +3,7 @@ package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,6 +47,12 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "User if of the delivery agent.", example = "US00001", accessMode = Schema.AccessMode.READ_ONLY)
     private Users users;
 
+    @Column(name = "current_latitude", nullable = true)
+    private Double currentLatitude;
+
+    @Column(name = "current_longitude", nullable = true)
+    private Double currentLongitude;
+
     @NotNull(message = "Date of birth is required.")
     @Past(message = "Date of Birth must be in the past")
     @Column(name = "date_of_birth", nullable = false)
@@ -58,23 +65,6 @@ public class DeliveryAgent implements Serializable {
     @Column(name = "vehicle_number", unique = true, nullable = false)
     @Schema(description = "Vehicle number of the delivery agent.", example = "GJ011234")
     private String vehicleNumber;
-
-    @NotNull(message = "aadhar card is required.")
-    @Lob
-    @Column(name = "aadhar_card_photo", nullable = false)
-    @Schema(description = "aadhar card of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
-    private byte[] aadharCardPhoto;
-
-    @Lob
-    @Column(name = "pan_card_photo")
-    @Schema(description = "Pan card of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
-    private byte[] panCardPhoto;
-
-    @NotNull(message = "Driving License is required.")
-    @Lob
-    @Column(name = "driving_license_photo", nullable = false)
-    @Schema(description = "Driving License of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
-    private byte[] drivingLicensePhoto;
 
     @NotBlank(message = "Bank name is required.")
     @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters.")
@@ -99,20 +89,41 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "IFSC Code of the delivery agent bank.", example = "KB01234")
     private String ifscCode;
 
-    @NotNull(message = "Profile photo is required.")
-    @Lob
-    @Column(name = "profile_photo", nullable = false)
-    @Schema(description = "Profile photo of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
-    private byte[] profilePhoto;
-
     @NotNull(message = "Gender is required.")
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     @Schema(description = "Gender of the delivery agent.", example = "MALE")
     private GENDER gender;
 
-    @JsonBackReference
+    @NotNull(message = "aadhar card is required.")
+    @Column(name = "aadhar_card_photo", nullable = false)
+    @Schema(description = "aadhar card of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
+    private String aadharCardPhoto;
+
+    @Column(name = "pan_card_photo")
+    @Schema(description = "Pan card of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
+    private String panCardPhoto;
+
+    @NotNull(message = "Driving License is required.")
+    @Column(name = "driving_license_photo", nullable = false)
+    @Schema(description = "Driving License of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
+    private String drivingLicensePhoto;
+
+    @NotNull(message = "Profile photo is required.")
+    @Column(name = "profile_photo", nullable = false)
+    @Schema(description = "Profile photo of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
+    private String profilePhoto;
+
+    @NotNull(message = "Status is required.")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Schema(description = "Delivery agent is accepted or rejected.", example = "ACCEPTED")
+    private Status status = Status.PENDING;
+
+    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "deliveryAgent")
     private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
+
 }
 

@@ -60,7 +60,7 @@ public class BookingItem implements Serializable {
     @DecimalMin(value = "0.0", inclusive = true, message = "Final price cannot be negative.")
     @Column(name = "final_price", nullable = false)
     @Schema(description = "Final price for the item(s).", example = "150.00", accessMode = Schema.AccessMode.READ_ONLY)
-    private Double finalPrice;
+    private Double finalPrice; // item * quantity
 
     @JsonManagedReference
     @ManyToOne(cascade = CascadeType.ALL)

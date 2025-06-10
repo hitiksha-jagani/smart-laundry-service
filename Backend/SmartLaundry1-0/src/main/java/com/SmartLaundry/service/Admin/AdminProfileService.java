@@ -110,22 +110,22 @@ public class AdminProfileService {
                         .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
             }
 
-            List<UserAddress> addresses = user.getAddress();
+            UserAddress addresses = user.getAddress();
 
-            UserAddress address;
-            if (addresses != null && !addresses.isEmpty()) {
-                address = addresses.getFirst(); // get the first address
-            } else {
-                address = new UserAddress();
-            }
+//            UserAddress address;
+//            if (addresses != null && !addresses.isEmpty()) {
+//                address = addresses.getFirst(); // get the first address
+//            } else {
+//                address = new UserAddress();
+//            }
 
 
-            if (addr.getName() != null) address.setName(addr.getName());
-            if (addr.getAreaName() != null) address.setAreaName(addr.getAreaName());
-            if (addr.getPincode() != null) address.setPincode(addr.getPincode());
-            if (city != null) address.setCity(city);
-
-            user.setAddress(List.of(address));
+//            if (addr.getName() != null) address.setName(addr.getName());
+//            if (addr.getAreaName() != null) address.setAreaName(addr.getAreaName());
+//            if (addr.getPincode() != null) address.setPincode(addr.getPincode());
+//            if (city != null) address.setCity(city);
+//
+//            user.setAddress(List.of(address));
         }
 
         userRepository.save(user);

@@ -1,51 +1,47 @@
-package com.SmartLaundry.dto.DeliveryAgent;
+package com.SmartLaundry.dto.Admin;
 
-import com.SmartLaundry.dto.Admin.AdminEditProfileRequestDTO;
+import com.SmartLaundry.dto.AddressDTO;
 import com.SmartLaundry.model.GENDER;
-import com.SmartLaundry.util.ImageUtil;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class RequestProfileDTO implements Serializable{
+public class DeliveryAgentResponseDTO {
     private String firstName;
     private String lastName;
-    private String phoneNo;
+    private String phone;
     private String email;
     private LocalDate dateOfBirth;
     private String vehicleNumber;
+    private String profilePhoto;
+    private String aadharCardPhoto;
+    private String panCardPhoto;
+    private String drivingLicensePhoto;
     private String bankName;
     private String accountHolderName;
     private String bankAccountNumber;
     private String ifscCode;
     private GENDER gender;
-    private String aadharCardPhoto;
-    private String panCardPhoto;
-    private String drivingLicensePhoto;
-    private String profilePhoto;
 
-    private RequestProfileDTO.AddressDTO addresses;
+    private DeliveryAgentResponseDTO.AddressDTO address;
 
     @Data
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class AddressDTO implements Serializable {
+    public static class AddressDTO {
         private String name;
         private String areaName;
         private String pincode;
         private String cityName;
+        private Double latitude;
+        private Double longitude;
     }
-
 }
