@@ -6,7 +6,7 @@ import com.SmartLaundry.dto.ServiceProvider.FeedbackResponseDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
 import com.SmartLaundry.service.Customer.OrderService;
-import com.SmartLaundry.controller.ExtractHeader;
+
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,6 @@ public class ServiceProviderOrderController {
 
     private final ServiceProviderOrderService serviceProviderOrderService;
     private final JWTService jwtService;
-    private final ExtractHeader extractHeader;
     private final OrderService orderService;
 
     private String getServiceProviderUserId(HttpServletRequest request) {

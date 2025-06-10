@@ -4,7 +4,6 @@ import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
 import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.service.JWTService;
-import com.SmartLaundry.controller.ExtractHeader;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     private final OrderService orderService;
-    private final ExtractHeader extractHeader;
     private final JWTService jwtService;
 
     private String extractUserIdFromRequest(HttpServletRequest request) {
@@ -106,8 +104,6 @@ public class OrderController {
         orderService.raiseTicket(userId, dto);
         return ResponseEntity.ok("Ticket raised successfully");
     }
-
-
 
     @GetMapping("/track/{orderId}")
     public ResponseEntity<TrackOrderResponseDto> trackOrder(HttpServletRequest request, @PathVariable String orderId) {

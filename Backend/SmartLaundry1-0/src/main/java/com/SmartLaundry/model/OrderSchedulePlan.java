@@ -31,10 +31,6 @@ public class OrderSchedulePlan {
     @Column(nullable = false)
     private boolean payLastDelivery;
 
-//    @OneToOne(optional = false)
-//    @JoinColumn(name = "order_id", unique = true, nullable = false)
-//    @JsonIgnore
-//    private Order order;
     @OneToOne(optional = false)
     @JoinColumn(name = "order_id", unique = true, nullable = false)
     @JsonBackReference

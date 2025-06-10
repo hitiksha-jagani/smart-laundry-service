@@ -54,9 +54,18 @@ public class ServiceProviderProfileController {
                     .orElseThrow(() -> new NoSuchElementException(priceDTO.getItem().getItemId() + " is not available."));
         }
 
-        // Store null in pancard if not provided by user
-        if(profileDTO.getPanCardPhoto() == null || profileDTO.getPanCardPhoto().length == 0){
+        // Store null if not provided
+        if (profileDTO.getPanCardPhoto() == null || profileDTO.getPanCardPhoto().isBlank()) {
             profileDTO.setPanCardPhoto(null);
+        }
+        if (profileDTO.getAadharCardPhoto() == null || profileDTO.getAadharCardPhoto().isBlank()) {
+            profileDTO.setAadharCardPhoto(null);
+        }
+        if (profileDTO.getBusinessUtilityBillPhoto() == null || profileDTO.getBusinessUtilityBillPhoto().isBlank()) {
+            profileDTO.setBusinessUtilityBillPhoto(null);
+        }
+        if (profileDTO.getProfilePhoto() == null || profileDTO.getProfilePhoto().isBlank()) {
+            profileDTO.setProfilePhoto(null);
         }
 
         redisTemplate.opsForValue().set("serviceProviderProfile:" + userId, profileDTO);

@@ -1,14 +1,12 @@
-package com.SmartLaundry.service.ServiceProvider;
-
+package com.SmartLaundry.service.Customer;
+//All OR Nearby Service ProviderList
 import com.SmartLaundry.dto.*;
 import com.SmartLaundry.dto.Admin.PriceDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.ServiceProviderRepository;
 import com.SmartLaundry.repository.FeedbackProvidersRepository;
-import com.SmartLaundry.service.Customer.CacheService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -36,48 +34,6 @@ public class ServiceProviderService {
         Optional<ServiceProvider> spOpt = serviceProviderRepository.findByIdWithUserAddress(serviceProviderId);
         ServiceProvider sp = spOpt.orElseThrow(() -> new RuntimeException("Service provider not found with id: " + serviceProviderId));
         return convertToCustomerDTO(sp);
-    }
-
-    @CacheEvict(value = "serviceProvidersCache", allEntries = true)
-    public ServiceProvider createServiceProvider(ServiceProvider newProvider) {
-        return serviceProviderRepository.save(newProvider);
-    }
-
-    @CacheEvict(value = "serviceProvidersCache", allEntries = true)
-    public ServiceProvider updateServiceProvider(String serviceProviderId, ServiceProvider updatedData) {
-        Optional<ServiceProvider> sp = serviceProviderRepository.findById(serviceProviderId);
-
-        if (sp.isEmpty()) {
-            throw new RuntimeException("Service provider not found with id: " + serviceProviderId);
-        }
-
-        ServiceProvider existingSP = sp.get();
-        existingSP.setBusinessName(updatedData.getBusinessName());
-        existingSP.setPhotoImage(updatedData.getPhotoImage());
-
-        if (updatedData.getBankAccount() != null) {
-            existingSP.setBankAccount(updatedData.getBankAccount());
-        }
-
-        existingSP.getPrices().clear();
-        existingSP.getPrices().addAll(updatedData.getPrices());
-
-        if (updatedData.getUser() != null && updatedData.getUser().getAddress() != null) {
-            List<UserAddress> updatedAddresses = updatedData.getUser().getAddress();
-            existingSP.getUser().setAddress(updatedAddresses);
-        }
-
-        cacheService.clearServiceProvidersCache();
-        return serviceProviderRepository.save(existingSP);
-    }
-
-    @CacheEvict(value = "serviceProvidersCache", allEntries = true)
-    public void deleteServiceProvider(String serviceProviderId) {
-        if (!serviceProviderRepository.existsById(serviceProviderId)) {
-            throw new RuntimeException("Service provider not found with id: " + serviceProviderId);
-        }
-        serviceProviderRepository.deleteById(serviceProviderId);
-        cacheService.clearServiceProvidersCache();
     }
 
     public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
@@ -129,16 +85,18 @@ public class ServiceProviderService {
     }
 
     private AddressDTO getFirstAddress(Users user) {
-        if (user == null || user.getAddress() == null || user.getAddress().isEmpty()) {
+        if (user == null || user.getAddress() == null) {
             return null;
         }
 
-        return user.getAddress().stream()
-                .filter(addr -> addr.getLatitude() != null && addr.getLongitude() != null)
-                .findFirst()
-                .map(this::mapAddress)
-                .orElse(mapAddress(user.getAddress().get(0)));
+        UserAddress address = user.getAddress();
+        if (address.getLatitude() != null && address.getLongitude() != null) {
+            return mapAddress(address);
+        }
+
+        return null;
     }
+
 
     private AddressDTO mapAddress(UserAddress address) {
         if (address == null) return null;

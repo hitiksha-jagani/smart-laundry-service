@@ -26,14 +26,14 @@ public class GeoRedisService {
         int count = 0;
 
         for (ServiceProvider sp : providers) {
-            if (sp.getUser() != null && sp.getUser().getAddress() != null && !sp.getUser().getAddress().isEmpty()) {
-                UserAddress address = sp.getUser().getAddress().get(0);
+            if (sp.getUser() != null && sp.getUser().getAddress() != null) {
+                UserAddress address = sp.getUser().getAddress();
 
                 if (address.getLatitude() != null && address.getLongitude() != null) {
                     geoOps.add(
                             KEY,
                             new RedisGeoCommands.GeoLocation<>(
-                                    sp.getUser().getUserId(),  // Use userId as member name
+                                    sp.getUser().getUserId(),
                                     new Point(address.getLongitude(), address.getLatitude())
                             )
                     );
@@ -42,9 +42,9 @@ public class GeoRedisService {
             }
         }
 
+
         System.out.println("Loaded " + count + " service providers into Redis geo set.");
     }
-
 
 }
 

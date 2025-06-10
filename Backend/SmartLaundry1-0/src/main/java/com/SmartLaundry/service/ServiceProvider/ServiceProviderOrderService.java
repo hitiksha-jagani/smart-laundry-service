@@ -223,7 +223,7 @@ public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, Strin
             }
         }
 
-        List<Order> orders = orderRepository.findOrderHistoryByProviderAndStatus(providerId, status);
+        List<Order> orders = orderRepository.findByServiceProvider_ServiceProviderIdAndStatus(providerId, status);
 
         List<OrderHistoryDto> history = new ArrayList<>();
         for (Order order : orders) {

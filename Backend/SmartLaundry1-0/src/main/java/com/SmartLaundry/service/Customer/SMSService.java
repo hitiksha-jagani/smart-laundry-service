@@ -1,6 +1,7 @@
 package com.SmartLaundry.service.Customer;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.rest.lookups.v1.PhoneNumber;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,19 @@ public class SMSService {
         ).create();
 
         System.out.println("Sent order notification to " + formattedPhoneNumber);
+    }
+    public void sendSms(String phoneNumber, String messageBody) {
+        Twilio.init(accountSid, authToken);
+
+        String formattedPhoneNumber = phoneNumber.startsWith("+") ? phoneNumber : "+" + phoneNumber;
+
+        Message.creator(
+                new com.twilio.type.PhoneNumber(formattedPhoneNumber),
+                new com.twilio.type.PhoneNumber(twilioPhoneNumber),
+                messageBody
+        ).create();
+
+        System.out.println("Sent SMS to " + formattedPhoneNumber);
     }
 
 

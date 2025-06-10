@@ -1,5 +1,5 @@
-package com.SmartLaundry.service;
-
+package com.SmartLaundry.service.ServiceProvider;
+// Find nearby ServiceProviders
 import com.SmartLaundry.model.ServiceProvider;
 import com.SmartLaundry.repository.ServiceProviderRepository;
 import lombok.RequiredArgsConstructor;

@@ -125,5 +125,10 @@ public class DeliveryAgent implements Serializable {
     @JsonManagedReference
     @OneToMany(mappedBy = "deliveryAgent")
     private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
+
+    public String getAgentId()
+    {
+        return getDeliveryAgentId();
+    }
 }
 
