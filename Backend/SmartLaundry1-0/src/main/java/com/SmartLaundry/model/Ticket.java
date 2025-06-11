@@ -2,6 +2,8 @@ package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,6 +33,7 @@ public class Ticket {
 
     private String status;
 
+    @CreationTimestamp
     @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
 

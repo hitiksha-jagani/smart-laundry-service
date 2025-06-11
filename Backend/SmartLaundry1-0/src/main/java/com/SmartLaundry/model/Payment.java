@@ -10,4 +10,8 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long payment_id;
+
+    @OneToOne
+    @JoinColumn(name = "orderId")
+    private Order order;
 }

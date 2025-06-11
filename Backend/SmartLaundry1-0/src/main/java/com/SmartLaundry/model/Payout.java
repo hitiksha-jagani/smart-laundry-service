@@ -3,6 +3,7 @@ package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Parameter;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,6 +55,11 @@ public class Payout implements Serializable {
     @Schema(description = "Bank transaction ID", example = "TXN98765")
     private String transactionId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Schema(description = "Status of the payout.", example = "PENDING")
+    private PayoutStatus status = PayoutStatus.PENDING;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -63,5 +69,10 @@ public class Payout implements Serializable {
     @Column(name = "date_time", nullable = false)
     @Schema(description = "Date and time of payout", example = "2025-06-01T10:00:00")
     private LocalDateTime dateTime;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Schema(description = "Timestamp of the payout creation.", example = "2025-05-21 00:00:00", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime createdAt;
 
 }

@@ -2,29 +2,23 @@ package com.SmartLaundry.service.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.DeliverySummaryResponseDTO;
 import com.SmartLaundry.dto.DeliveryAgent.OrderAssignmentDTO;
-import com.SmartLaundry.model.DeliveryAgent;
-import com.SmartLaundry.model.Order;
-import com.SmartLaundry.model.OrderStatus;
-import com.SmartLaundry.model.Users;
-import com.SmartLaundry.repository.DeliveriesRepository;
-import com.SmartLaundry.repository.DeliveryAgentRepository;
-import com.SmartLaundry.repository.OrderRepository;
-import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.dto.DeliveryAgent.OrderResponseDTO;
+import com.SmartLaundry.model.*;
+import com.SmartLaundry.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 // @author Hitiksha Jagani
@@ -42,6 +36,9 @@ public class DeliveriesService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BookingItemRepository bookingItemRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -243,4 +240,58 @@ public class DeliveriesService {
         }
     }
 
+    public List<OrderResponseDTO> todaysDeliveries(String userId) throws AccessDeniedException {
+
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        if (!"DELIVERY_AGENT".equals(user.getRole())) {
+            throw new AccessDeniedException("You are not applicable for this page.");
+        }
+
+        LocalDate pickupDate = LocalDate.now();
+
+        List<Order> orders = orderRepository.findByPickupDate(pickupDate);
+        List<OrderResponseDTO> responseList = new ArrayList<>();
+
+        for (Order odr : orders) {
+
+            List<BookingItem> bookingItems = bookingItemRepository.findByOrder(odr);
+            List<OrderResponseDTO.BookingItemDTO> bookingItemDTOList = new ArrayList<>();
+
+            long totalQuantity = 0;
+
+            for (BookingItem items : bookingItems) {
+                OrderResponseDTO.BookingItemDTO bookingDTO = OrderResponseDTO.BookingItemDTO.builder()
+                        .itemName(items.getItem().getItemName())
+                        .serviceName(items.getItem().getService().getServiceName())
+                        .quantity(items.getQuantity())
+                        .build();
+
+                totalQuantity += items.getQuantity();
+                bookingItemDTOList.add(bookingDTO);
+            }
+
+            String customerAdd = user.getAddress().getName() + user.getAddress().getAreaName() + user.getAddress().getCity().getCityName() + user.getAddress().getPincode();
+            String providerAdd = odr.getServiceProvider().getUser().getAddress().getName() +
+                    odr.getServiceProvider().getUser().getAddress().getAreaName() + odr.getServiceProvider().getUser().getAddress().getPincode() +
+                    odr.getServiceProvider().getUser().getAddress().getCity().getCityName();
+
+            OrderResponseDTO orderResponse = OrderResponseDTO.builder()
+                    .orderId(odr.getOrderId())
+                    .customerName(odr.getUsers().getFirstName() + " " + odr.getUsers().getLastName())
+                    .customerPhone(odr.getUsers().getPhoneNo())
+                    .customerAddress(customerAdd)
+                    .providerName(odr.getServiceProvider().getUser().getFirstName() + odr.getServiceProvider().getUser().getLastName())
+                    .providerPhone(odr.getServiceProvider().getUser().getPhoneNo())
+                    .providerAddress(providerAdd)
+                    .totalQuantity(totalQuantity)
+                    .bookingItemDTOList(bookingItemDTOList)
+                    .build();
+
+            responseList.add(orderResponse);
+        }
+
+        return responseList;
+    }
 }

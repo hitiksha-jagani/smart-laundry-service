@@ -46,6 +46,8 @@ public class Items implements Serializable {
     @Schema(description = "The name of the item.", example = "T-shirt")
     private String itemName;
 
+
+
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "service_id", nullable = true)

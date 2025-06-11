@@ -72,7 +72,7 @@ public class Users implements Serializable{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    @Schema(description = "Role of the user.", example = "ADMIN", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Role of the user.", example = "ADMIN")
     private UserRole role;
 
     @CreationTimestamp

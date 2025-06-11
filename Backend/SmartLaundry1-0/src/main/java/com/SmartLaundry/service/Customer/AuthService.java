@@ -52,7 +52,7 @@ public class AuthService {
     //@author Hitiksha Jagani
     // Logic for registration
     // Store registration details in database.
-    @Transactional
+//    @Transactional
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO request){
 
         // Validation
@@ -125,7 +125,7 @@ public class AuthService {
             address.setLatitude(latLng[0]);
             address.setLongitude(latLng[1]);
         } else {
-            System.out.println("⚠ Warning: Coordinates could not be determined.");
+            throw new RuntimeException("⚠ Warning: Coordinates could not be determined.");
         }
 
         // Save data

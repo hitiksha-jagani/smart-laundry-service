@@ -9,6 +9,7 @@ import com.SmartLaundry.model.UserAddress;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.AddressRepository;
 import com.SmartLaundry.repository.CityRepository;
+import com.SmartLaundry.repository.UserAddressRepository;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.CustomUserDetailsService;
 import com.SmartLaundry.util.UsernameUtil;
@@ -29,6 +30,9 @@ public class AdminProfileService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserAddressRepository userAddressRepository;
 
     @Autowired
     private CityRepository cityRepository;
@@ -78,17 +82,10 @@ public class AdminProfileService {
 
     //@author Hitiksha Jagani
     // Logic to store edited profile details
-    public void editProfile(AdminEditProfileRequestDTO request, String username) throws AccessDeniedException {
+    public String editProfile(AdminEditProfileRequestDTO request, String userId) throws AccessDeniedException {
 
-        Optional<Users> userDetail;
-
-        if(usernameUtil.isEmail(username)){
-            userDetail = userRepository.findByEmail(username);
-        } else {
-            userDetail = userRepository.findByPhoneNo(username);
-        }
-
-        Users user = userDetail.orElseThrow(() -> new RuntimeException("User not found"));
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (request.getFirstName() != null) {
             user.setFirstName(request.getFirstName());
@@ -110,25 +107,20 @@ public class AdminProfileService {
                         .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
             }
 
-            UserAddress addresses = user.getAddress();
+            UserAddress addresses = userAddressRepository.findByUsers(user);
 
-//            UserAddress address;
-//            if (addresses != null && !addresses.isEmpty()) {
-//                address = addresses.getFirst(); // get the first address
-//            } else {
-//                address = new UserAddress();
-//            }
+            if (addr.getName() != null) addresses.setName(addr.getName());
+            if (addr.getAreaName() != null) addresses.setAreaName(addr.getAreaName());
+            if (addr.getPincode() != null) addresses.setPincode(addr.getPincode());
+            if (city != null) addresses.setCity(city);
 
-
-//            if (addr.getName() != null) address.setName(addr.getName());
-//            if (addr.getAreaName() != null) address.setAreaName(addr.getAreaName());
-//            if (addr.getPincode() != null) address.setPincode(addr.getPincode());
-//            if (city != null) address.setCity(city);
-//
-//            user.setAddress(List.of(address));
+            userAddressRepository.save(addresses);
+            user.setAddress(addresses);
         }
 
         userRepository.save(user);
+
+        return "Profile updated successfully.";
     }
 
 }

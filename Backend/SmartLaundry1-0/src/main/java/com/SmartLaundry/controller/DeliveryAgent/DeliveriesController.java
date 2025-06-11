@@ -1,6 +1,8 @@
 package com.SmartLaundry.controller.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.DeliverySummaryResponseDTO;
+import com.SmartLaundry.dto.DeliveryAgent.OrderResponseDTO;
+import com.SmartLaundry.model.Order;
 import com.SmartLaundry.service.DeliveryAgent.DeliveriesService;
 import com.SmartLaundry.service.JWTService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.time.Duration;
+import java.util.List;
 
 @RestController
 @RequestMapping("/deliveries")
@@ -35,6 +39,16 @@ public class DeliveriesController {
         String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         DeliverySummaryResponseDTO deliverySummaryResponseDTO = deliveriesService.deliveriesSummary(agentId);
         return ResponseEntity.ok(deliverySummaryResponseDTO);
+    }
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/deliveries/today
+    // Return total deliveries, pending deliveries and upcoming deliveries
+    @GetMapping("/today")
+    public ResponseEntity<List<OrderResponseDTO>> getTodaysDeliveries(HttpServletRequest request) throws AccessDeniedException {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        List<OrderResponseDTO> orderResponseDTOS = deliveriesService.todaysDeliveries(userId);
+        return ResponseEntity.ok(orderResponseDTOS);
     }
 
     // @author Hitiksha Jagani

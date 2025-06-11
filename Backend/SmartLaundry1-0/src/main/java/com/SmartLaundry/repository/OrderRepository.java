@@ -5,6 +5,7 @@ import com.SmartLaundry.model.Order;
 import com.SmartLaundry.model.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
@@ -16,4 +17,10 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findByServiceProvider_ServiceProviderIdAndStatus(String serviceProviderId, OrderStatus status);
 
     List<Order> findByDeliveryAgent(DeliveryAgent deliveryAgent);
+
+    List<Order> findByPickupDate(LocalDate pickupDate);
+
+//    List<Order> findByServiceProvider_User_UserIdAndStatus(String serviceProviderId, OrderStatus orderStatus);
+
+//    List<Order> findOrderHistoryByServiceProviderAndStatus(String serviceProviderId, OrderStatus status);
 }

@@ -49,6 +49,7 @@ public class Order implements Serializable {
     private Double latitude;
     private Double longitude;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "delivery_agent_id")
     private DeliveryAgent deliveryAgent;
