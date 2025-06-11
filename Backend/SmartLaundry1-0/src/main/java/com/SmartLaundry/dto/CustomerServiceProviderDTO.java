@@ -15,7 +15,7 @@ import java.util.List;
 public class CustomerServiceProviderDTO {
  private String serviceProviderId;
  private String businessName;
- private byte[] photoImage; // Base64 string
+ private String photoImage;
  private AddressDTO address; // Use structured address DTO
  private Long averageRating;
  private List<ReviewDTO> reviews;

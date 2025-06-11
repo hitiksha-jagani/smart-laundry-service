@@ -56,13 +56,13 @@ public class AuthService {
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO request){
 
         // Validation
-        if(!request.getFirstName().matches("^[A-Za-z\\\\s]+$")){
+        if(!request.getFirstName().matches("^[A-Za-z\\s]+$")){
             throw new FormatException("First name");
         }
-        if(!request.getLastName().matches("^[A-Za-z\\\\s]+$")){
+        if(!request.getLastName().matches("^[A-Za-z\\s]+$")){
             throw new FormatException("Last name");
         }
-        if (!request.getPhone().matches("^[0-9]{10}$")) {
+        if (!request.getPhone().matches("^\\+?[0-9]{10,15}$")) {
             throw new ExceptionMsg("Phone number must be 10 digits.");
         }
 
@@ -82,6 +82,8 @@ public class AuthService {
         if(!request.getPassword().equals(request.getConfirmPassword())){
             throw new PasswordMisMatchException();
         }
+
+        System.out.println("Start storing user.");
 
         // Store user data in user object.
         Users users = new Users();
@@ -103,6 +105,8 @@ public class AuthService {
         City city = cityRepository.findById(addr.getCityId())
                 .orElseThrow(() -> new RuntimeException("Invalid city ID: " + addr.getCityId()));
 
+        System.out.println("Start storing address");
+
         UserAddress address = new UserAddress();
         address.setName(addr.getName());
         address.setAreaName(addr.getAreaName());
@@ -118,19 +122,40 @@ public class AuthService {
                 addr.getPincode());
 
         // Call utility to get coordinates
-        double[] latLng = geoUtils.getLatLng(fullAddress);
+        double[] latLng;
+        try {
+            latLng = geoUtils.getLatLng(fullAddress);
+        } catch (Exception e) {
+            throw new RuntimeException("Geo location service failed: " + e.getMessage(), e);
+        }
 
         // Set latitude & longitude if found
+        try {
         if (latLng[0] != 0.0 || latLng[1] != 0.0) {
             address.setLatitude(latLng[0]);
             address.setLongitude(latLng[1]);
-        } else {
-            throw new RuntimeException("⚠ Warning: Coordinates could not be determined.");
+        } } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
 
+//        else {
+//            try {
+//                throw new RuntimeException("⚠ Warning: Coordinates could not be determined.");
+//        }
+
+        System.out.println("address saved");
         // Save data
         users.setAddress(address);
-        userRepository.save(users);
+
+        try {
+            userRepository.save(users);
+            System.out.println("User saved successfully");
+        } catch (Exception e) {
+            e.printStackTrace(); // VERY important
+            throw e;
+        }
+
 
         return new RegistrationResponseDTO(users.getPhoneNo(), users.getEmail(), "Successfully Registered");
     }

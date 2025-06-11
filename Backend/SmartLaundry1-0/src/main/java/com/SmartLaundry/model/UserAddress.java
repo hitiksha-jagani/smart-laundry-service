@@ -24,7 +24,8 @@ public class UserAddress {
     @Schema(description = "Unique udentifier of the address.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long addressId;
 
-    @JsonBackReference
+    @JsonIgnore
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "Id of the user", example = "US00001", accessMode = Schema.AccessMode.READ_ONLY)

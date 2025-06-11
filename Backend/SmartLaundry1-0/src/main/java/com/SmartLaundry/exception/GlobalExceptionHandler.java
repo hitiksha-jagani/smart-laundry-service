@@ -58,6 +58,14 @@ public class GlobalExceptionHandler {
         return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, req);
     }
 
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<?> handleException(Exception e) {
+//        e.printStackTrace(); // Required to actually print something
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(new ExceptionMsg("500", "Internal Server Error", e.getMessage()));
+//    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) {
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()

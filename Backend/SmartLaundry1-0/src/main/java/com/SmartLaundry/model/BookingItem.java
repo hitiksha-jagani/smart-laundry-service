@@ -11,6 +11,7 @@ import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.beans.beancontext.BeanContextServiceProvider;
 import java.io.Serializable;
 @Data
 @AllArgsConstructor
@@ -67,6 +68,7 @@ public class BookingItem implements Serializable {
     @JoinColumn(name = "invoice_number", nullable = true)
     @Schema(description = "The bill associated with this booking item.")
     private Bill bill;
+
 
 }
 

@@ -6,5 +6,5 @@ public enum SchedulePlan {
     BIWEEKLY,
     MONTHLY,
     ON_DEMAND,
-    NONE
+    NONE,
 }

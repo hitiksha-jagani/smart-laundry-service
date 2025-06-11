@@ -14,6 +14,7 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     List<ServiceProvider> findByUser_UserIdIn(Set<String> userIds);
     boolean existsByUser(Users user);
 
+    Optional<ServiceProvider> getByUser(Users user);
     ServiceProvider findByUser(Users user);
     @Query("SELECT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.user u LEFT JOIN FETCH u.address WHERE sp.serviceProviderId = :id")
     Optional<ServiceProvider> findByIdWithUserAddress(@Param("id") String serviceProviderId);
@@ -21,5 +22,7 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     @Query("SELECT DISTINCT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.user u LEFT JOIN FETCH u.address")
     List<ServiceProvider> findAllWithUserAddresses();
     Optional<ServiceProvider> findByUserUserId(String userId);
+
+
 
 }

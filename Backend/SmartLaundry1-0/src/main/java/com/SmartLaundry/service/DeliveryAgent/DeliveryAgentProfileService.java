@@ -13,8 +13,11 @@ import com.SmartLaundry.repository.CityRepository;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserAddressRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.Customer.EmailService;
 import com.SmartLaundry.service.Customer.GeoUtils;
+import com.SmartLaundry.service.Customer.SMSService;
 import com.SmartLaundry.util.UsernameUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,7 +27,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.SmartLaundry.service.Customer.EmailService;
+import com.SmartLaundry.service.Customer.SMSService;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -56,7 +60,15 @@ public class DeliveryAgentProfileService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+
+    private final EmailService emailService;
+    private final SMSService smsService;
     // Return profile details of delivery agent
+
+    public DeliveryAgentProfileService(EmailService emailService, SMSService smsService) {
+        this.emailService = emailService;
+        this.smsService = smsService;
+    }
     public DeliveryAgentProfileDTO getProfileDetail(String userId) {
 
         Users user = userRepository.findById(userId)
@@ -152,6 +164,16 @@ public class DeliveryAgentProfileService {
                 .build();
 
         deliveryAgentRepository.save(requestProfile);
+
+        String phone = user.getPhoneNo();
+        String email = user.getEmail();
+
+        String message = "Congratulations! Your request to become a Delivery Agent has been submitted for review.";
+        String subject = "Delivery Agent Profile Submission";
+
+
+        smsService.sendSms(phone, message);
+        emailService.sendMail(email, subject, message);
 
         return "Your request is sent successfully. Wait for a response.";
     }

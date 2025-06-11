@@ -24,6 +24,7 @@ public class PriceDTO {
     private Long price;
 
     private ItemDTO item;
+
    @JsonIgnore
     private ServiceProviderRequestDTO serviceProvider;
 

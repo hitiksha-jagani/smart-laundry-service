@@ -1,6 +1,7 @@
 package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Parameter;
@@ -43,14 +44,14 @@ public class Users implements Serializable{
 
     @NotBlank(message = "First name is required.")
     @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters.")
-    @Pattern(regexp = "^[A-Za-z\\\\s]+$", message = "First name contains invalid characters.")
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "First name contains invalid characters.")
     @Column(name = "first_name", nullable = false, unique = false, length = 100)
     @Schema(description = "The first name of the user.", example = "John")
     private String firstName;
 
     @NotBlank(message = "Last name is required.")
     @Size(min = 2, max = 100, message = "Last name must be between 2 and 100 characters.")
-    @Pattern(regexp = "^[A-Za-z\\\\s]+$", message = "Last name contains invalid characters.")
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Last name contains invalid characters.")
     @Column(name = "last_name", nullable = false, unique = false, length = 100)
     @Schema(description = "The last name of the user.", example = "Deo")
     private String lastName;
@@ -80,7 +81,8 @@ public class Users implements Serializable{
     @Schema(description = "Timestamp of the user creation.", example = "2025-05-21 00:00:00", accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createdAt;
 
-    @JsonManagedReference
+    @JsonIgnore
+    @JsonBackReference
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserAddress address;
 

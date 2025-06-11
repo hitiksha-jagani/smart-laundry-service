@@ -1,6 +1,7 @@
 package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,18 +23,6 @@ public class ServiceProviderWorkload implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Order_Id", nullable = false)
     private Order order;
-
-    @Column(name = "Action", nullable = false)
-    private String action;
-
-    @Column(name = "Active_Jobs", nullable = false)
-    private Integer activeJobs;
-
-    @Column(name = "Capacity", nullable = false)
-    private Integer capacity;
-
-    @Column(name = "Status", nullable = false)
-    private String status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Provider_Id", nullable = false)

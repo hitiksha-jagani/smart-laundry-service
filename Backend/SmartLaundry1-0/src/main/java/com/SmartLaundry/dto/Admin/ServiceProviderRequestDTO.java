@@ -25,15 +25,20 @@ public class ServiceProviderRequestDTO {
     private String businessLicenseNumber;
     private String gstNumber;
     private Boolean needOfDeliveryAgent;
-    private byte[] profilePhoto;
-    private byte[] aadharCardPhoto;
-    private byte[] panCardPhoto;
-    private byte[] businessUtilityBillPhoto;
+    private String profilePhoto;
+    private String aadharCardPhoto;
+    private String panCardPhoto;
+    private String businessUtilityBillPhoto;
     private Set<SchedulePlan> schedulePlans;
 
     private ServiceProviderRequestDTO.AddressDTO addresses;
     private ServiceProviderRequestDTO.BankAccountDTO bankAccount;
     private List<PriceDTO> priceDTO;
+
+
+    public AddressDTO getAddress() {
+        return addresses;
+    }
 
     @Data
     @Builder
@@ -58,13 +63,13 @@ public class ServiceProviderRequestDTO {
         private String accountHolderName;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class priceDTO {
-        private String  itemId;
-        private Long price;
-        private String serviceProviderId;
-    }
+//    @Data
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    @Builder
+//    public static class priceDTO {
+//        private String  itemId;
+//        private Long price;
+//        private String serviceProviderId;
+//    }
 }

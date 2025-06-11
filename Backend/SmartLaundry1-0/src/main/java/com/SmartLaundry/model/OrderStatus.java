@@ -11,6 +11,6 @@ public enum OrderStatus {
     ACCEPTED,
     COMPLETED,
     REJECTED,
-    RESCHEDULED
+    RESCHEDULED,
 }
 
