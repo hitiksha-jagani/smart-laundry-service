@@ -10,6 +10,7 @@ import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.FeedbackAgentsRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.Admin.RoleCheckingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -27,26 +28,19 @@ import java.util.stream.Collectors;
 public class FeedbackService {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private DeliveryAgentRepository deliveryAgentRepository;
-
-    @Autowired
     private FeedbackAgentsRepository feedbackAgentsRepository;
+
+    @Autowired
+    private RoleCheckingService roleCheckingService;
 
     // Return summary count of feedback
     public FeedbackSummaryResponseDTO getSummary(String userId, String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        Users user = roleCheckingService.checkUser(userId);
 
-        if (!"DELIVERY_AGENT".equals(user.getRole())) {
-            throw new AccessDeniedException("You are not applicable for this page.");
-        }
+        roleCheckingService.isDeliveryAgent(user);
 
-        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
-                .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not found."));
+        DeliveryAgent deliveryAgent = roleCheckingService.checkDeliveryAgent(user);
 
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime start, end;
@@ -101,12 +95,9 @@ public class FeedbackService {
 
     public List<FeedbackResponseDTO> getFeedbacks(String userId, String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        Users user = roleCheckingService.checkUser(userId);
 
-        if (!"DELIVERY_AGENT".equals(user.getRole())) {
-            throw new AccessDeniedException("You are not applicable for this page.");
-        }
+        roleCheckingService.isDeliveryAgent(user);
 
         LocalDate today = LocalDate.now();
         LocalDate weekStart = today.with(DayOfWeek.MONDAY);

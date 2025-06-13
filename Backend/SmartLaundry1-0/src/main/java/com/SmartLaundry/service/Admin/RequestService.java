@@ -54,6 +54,9 @@ public class RequestService {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private RoleCheckingService roleCheckingService;
+
 
     private final EmailService emailService;
     private final SMSService smsService;
@@ -147,8 +150,7 @@ public class RequestService {
         ServiceProviderRequestDTO profileDTO = objectMapper.convertValue(value, ServiceProviderRequestDTO.class);
 
         // Fetch user
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Users user = roleCheckingService.checkUser(userId);
 
         // Prevent duplicate approval
         if (serviceProviderRepository.existsByUser(user)) {
@@ -233,8 +235,7 @@ public class RequestService {
 
         Boolean removed = redisTemplate.delete(key);
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Users user = roleCheckingService.checkUser(userId);
 
         String phone = user.getPhoneNo();
         String email = user.getEmail();
@@ -314,8 +315,7 @@ public class RequestService {
     public String acceptAgent(String userId) throws IOException {
 
         // Fetch user
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found."));
+        Users user = roleCheckingService.checkUser(userId);
 
         DeliveryAgent agent = deliveryAgentRepository.findByUsers(user).orElse(null);
         if(agent == null){
@@ -341,11 +341,9 @@ public class RequestService {
     public String rejectAgent(String userId){
         String key = "DeliveryAgentProfile:" + userId;
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found."));
+        Users user = roleCheckingService.checkUser(userId);
 
-        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
-                .orElseThrow(() -> new RuntimeException("Delivery agent is not found."));
+        DeliveryAgent deliveryAgent = roleCheckingService.checkDeliveryAgent(user);
 
         Boolean removed = redisTemplate.delete(key);
 

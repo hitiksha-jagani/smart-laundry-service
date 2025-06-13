@@ -1,6 +1,7 @@
-package com.SmartLaundry.dto.Customer;
+package com.SmartLaundry.dto.Admin;
+
 import com.SmartLaundry.model.TicketStatus;
-import jakarta.validation.constraints.NotBlank;
+import com.SmartLaundry.model.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,25 +13,16 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RaiseTicketRequestDto {
-
-    private Long ticketId;
-
-    @NotBlank(message = "Title is required.")
+public class ComplaintsListResponseDTO {
+    public Long complaintId;
     private String title;
-
-    @NotBlank(message = "Description is required.")
     private String description;
-
     private String photo;
-
-    @NotBlank(message = "Category is required.")
     private String category;
-
-    private LocalDateTime submittedAt;
-    private TicketStatus status;
-
     private String response;
+    private TicketStatus status;
+    private LocalDateTime submittedAt;
     private LocalDateTime respondedAt;
+    private UserRole userType;
+    private String userName;
 }
-

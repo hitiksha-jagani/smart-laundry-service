@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FeedbackAgentsRepository extends JpaRepository<FeedbackAgents, Long> {
+
     @Query("SELECT f FROM FeedbackAgents f WHERE f.createdAt BETWEEN :start AND :end")
     List<FeedbackAgents> findByDate(@Param("start") LocalDate start, @Param("end") LocalDate end);
 

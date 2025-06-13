@@ -1,9 +1,12 @@
 package com.SmartLaundry.controller.Admin;
 
 import com.SmartLaundry.dto.Admin.RevenueResponseDTO;
+import com.SmartLaundry.dto.Admin.RevenueSettingRequestDTO;
+import com.SmartLaundry.dto.Admin.RevenueSettingResponseDTO;
 import com.SmartLaundry.service.Admin.RevenueService;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +16,7 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/revenue")
+@RequestMapping("")
 public class RevenueController {
 
     @Autowired
@@ -25,16 +28,16 @@ public class RevenueController {
     // @author Hitiksha Jagani
     // http://localhost:8080/revenue/set
     // Set revenue
-    @PutMapping("/set")
-    public ResponseEntity<String> setRevenue(HttpServletRequest request) throws AccessDeniedException {
+    @PutMapping("/revenue-settings")
+    public ResponseEntity<RevenueSettingResponseDTO> setRevenue(HttpServletRequest request, @RequestBody RevenueSettingRequestDTO revenueSettingRequestDTO) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        return ResponseEntity.ok(revenueService.setRevenue(userId));
+        return ResponseEntity.ok(revenueService.setRevenue(userId, revenueSettingRequestDTO));
     }
 
     // @author Hitiksha Jagani
     // http://localhost:8080/revenue/summary
     // Return count of Total revenue, total orders, gross sales, service providers payouts, delivery agents payouts, average order value.
-    @GetMapping("/summary")
+    @GetMapping("/revenue/summary")
     public ResponseEntity<RevenueResponseDTO> getRevenueSummary(
             HttpServletRequest request,
             @RequestParam(defaultValue = "Overall") String filter,
@@ -47,7 +50,7 @@ public class RevenueController {
     // @author Hitiksha Jagani
     // http://localhost:8080/revenue/breakdown
     // Return count of Total revenue, total orders, gross sales, service providers payouts, delivery agents payouts, average order value.
-    @GetMapping("/breakdown")
+    @GetMapping("/revenue/breakdown")
     public ResponseEntity<RevenueResponseDTO> getRevenueBreakdown(
             HttpServletRequest request,
             @RequestParam(defaultValue = "Overall") String filter,

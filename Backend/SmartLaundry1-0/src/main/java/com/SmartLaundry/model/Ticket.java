@@ -29,16 +29,17 @@ public class Ticket {
 
     private String category;
 
-    private String response;
+    private String response = null;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;
 
     @CreationTimestamp
     @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
 
     @Column(name = "responded_at")
-    private LocalDateTime respondedAt;
+    private LocalDateTime respondedAt = null;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

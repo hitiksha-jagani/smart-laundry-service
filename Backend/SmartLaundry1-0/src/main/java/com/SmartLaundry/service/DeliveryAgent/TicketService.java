@@ -4,7 +4,9 @@ import com.SmartLaundry.dto.Customer.RaiseTicketRequestDto;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.TicketRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.Admin.RoleCheckingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,16 +26,16 @@ public class TicketService {
     private TicketRepository ticketRepository;
 
     @Autowired
+    private RoleCheckingService roleCheckingService;
+
+    @Autowired
     private DeliveryAgentProfileService deliveryAgentProfileService ;
 
     public String raiseTicket(String userId, RaiseTicketRequestDto raiseTicketRequestDto, MultipartFile image) throws IOException {
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        Users user = roleCheckingService.checkUser(userId);
 
-        if (!"DELIVERY_AGENT".equals(user.getRole())) {
-            throw new AccessDeniedException("You are not applicable for this page.");
-        }
+        roleCheckingService.isDeliveryAgent(user);
 
         String uploadDir = "/media/hitiksha/C/DAIICT/Summer internship/images/tickets/delivery_agent/" + user.getUserId();
         String photo = deliveryAgentProfileService.saveFile(image, uploadDir, userId);
@@ -41,12 +43,12 @@ public class TicketService {
         Ticket ticket = Ticket.builder()
                 .title(raiseTicketRequestDto.getTitle())
                 .description(raiseTicketRequestDto.getDescription())
-                .photo(raiseTicketRequestDto.getPhoto() != null ? photo : null)
+                .photo(photo)
                 .category(raiseTicketRequestDto.getCategory())
                 .response(null)
                 .respondedAt(null)
                 .user(user)
-                .status(String.valueOf(TicketStatus.NOT_RESPONDED))
+                .status(TicketStatus.NOT_RESPONDED)
                 .build();
 
         ticketRepository.save(ticket);
@@ -55,16 +57,21 @@ public class TicketService {
     }
 
     // Return list of raised tickets
-    public List<RaiseTicketRequestDto> getAllTickets(String title, String category, TicketStatus status, String userID) throws AccessDeniedException {
+    public List<RaiseTicketRequestDto> getAllTickets(String category, TicketStatus status, String userID) throws AccessDeniedException {
 
-        Users user = userRepository.findById(userID)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        Users user = roleCheckingService.checkUser(userID);
 
-        if (!"DELIVERY_AGENT".equals(user.getRole())) {
-            throw new AccessDeniedException("You are not applicable for this page.");
+        roleCheckingService.isDeliveryAgent(user);
+
+        List<Ticket> tickets;
+
+        if(category != null && !category.isBlank()){
+            tickets = ticketRepository.findTicketsByCategoryAndUser(category, userID);
+        } else if(status != null) {
+            tickets = ticketRepository.findTicketByStatusAndUser(status, userID);
+        } else {
+            tickets = ticketRepository.findByUser(user);
         }
-
-        List<Ticket> tickets = ticketRepository.findByTitleOrCategoryOrStatus(title, category, status);
 
         return tickets.stream().map(this::mapToTicketDTO).collect(Collectors.toList());
 
@@ -73,9 +80,12 @@ public class TicketService {
     private RaiseTicketRequestDto mapToTicketDTO(Ticket ticket){
 
         RaiseTicketRequestDto dto = RaiseTicketRequestDto.builder()
+                    .ticketId(ticket.getTicketId())
                     .title(ticket.getTitle())
                     .description(ticket.getDescription())
-                    .photo("/ticket/image/" + ticket.getUser().getUserId())
+                    .photo(ticket.getPhoto() != null && !ticket.getPhoto().isBlank()
+                            ? ("/complaints/image/" + ticket.getTicketId())
+                            : null)
                     .category(ticket.getCategory())
                     .submittedAt(ticket.getSubmittedAt())
                     .status(ticket.getStatus())

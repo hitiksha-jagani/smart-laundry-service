@@ -46,20 +46,19 @@ public class AdminProfileService {
     @Autowired
     private  UsernameUtil usernameUtil;
 
+    @Autowired
+    private RoleCheckingService roleCheckingService;
+
     //@author Hitiksha Jagani
     // Logic to fetch profile details
     @Cacheable(value = "adminProfileCache", key = "#userId")
     public AdminProfileResponseDTO getProfileDetail(String userId) throws AccessDeniedException {
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        Users user = roleCheckingService.checkUser(userId);
 
-        if (!"ADMIN".equals(user.getRole())) {
-            throw new AccessDeniedException("You are not applicable for this page.");
-        }
+        roleCheckingService.isAdmin(user);
 
-        UserAddress address = addressRepository.findByUsers(user)
-                .orElse(null);
+        UserAddress address = roleCheckingService.checkUserAddress(user);
 
         AdminProfileResponseDTO.AddressDTO addressDTO = null;
         if (address != null) {
@@ -84,8 +83,7 @@ public class AdminProfileService {
     // Logic to store edited profile details
     public String editProfile(AdminEditProfileRequestDTO request, String userId) throws AccessDeniedException {
 
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Users user = roleCheckingService.checkUser(userId);
 
         if (request.getFirstName() != null) {
             user.setFirstName(request.getFirstName());

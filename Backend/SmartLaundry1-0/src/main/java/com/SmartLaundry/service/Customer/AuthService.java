@@ -52,7 +52,7 @@ public class AuthService {
     //@author Hitiksha Jagani
     // Logic for registration
     // Store registration details in database.
-//    @Transactional
+    @Transactional
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO request){
 
         // Validation
@@ -83,8 +83,6 @@ public class AuthService {
             throw new PasswordMisMatchException();
         }
 
-        System.out.println("Start storing user.");
-
         // Store user data in user object.
         Users users = new Users();
         users.setFirstName(request.getFirstName());
@@ -104,8 +102,6 @@ public class AuthService {
 
         City city = cityRepository.findById(addr.getCityId())
                 .orElseThrow(() -> new RuntimeException("Invalid city ID: " + addr.getCityId()));
-
-        System.out.println("Start storing address");
 
         UserAddress address = new UserAddress();
         address.setName(addr.getName());
@@ -139,12 +135,6 @@ public class AuthService {
             throw e;
         }
 
-//        else {
-//            try {
-//                throw new RuntimeException("⚠ Warning: Coordinates could not be determined.");
-//        }
-
-        System.out.println("address saved");
         // Save data
         users.setAddress(address);
 
@@ -174,7 +164,7 @@ public class AuthService {
             throw new BadCredentialsException("Invalid username or password!");
         }
 
-        if(request.getUsername().matches("^\\+[0-9]{10,15}$")){
+        if(request.getUsername().matches("^\\+?[0-9]{10,15}$")){
             users = userRepository.findByPhoneNo(request.getUsername());
         } else {
             users = userRepository.findByEmail(request.getUsername());

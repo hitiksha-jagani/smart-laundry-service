@@ -9,7 +9,7 @@ import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
 import com.SmartLaundry.service.Customer.EmailService;
-//import com.SmartLaundry.service.Customer.OrderService;
+import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.service.Customer.SMSService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class ServiceProviderOrderService {
     private final SMSService smsService;
     private final EmailService emailService;
     private final OrderMapper orderMapper;
-//    private final OrderService orderService;
+    private final OrderService orderService;
     private final OrderRepository orderRepository;
     private final FeedbackProvidersRepository feedbackProvidersRepository;
     private final TicketRepository ticketRepository;
@@ -86,12 +86,12 @@ public class ServiceProviderOrderService {
                 throw new IllegalStateException("Order is not in PENDING status and cannot be accepted");
             }
 
-            order.setStatus(OrderStatus.ACCEPTED);
+            order.setStatus(OrderStatus.ACCEPTED_BY_PROVIDER);
             order = orderRepository.save(order);
 
             orderStatusHistoryRepository.save(OrderStatusHistory.builder()
                     .order(order)
-                    .status(OrderStatus.ACCEPTED)
+                    .status(OrderStatus.ACCEPTED_BY_PROVIDER)
                     .changedAt(LocalDateTime.now())
                     .build());
 
@@ -175,7 +175,7 @@ public class ServiceProviderOrderService {
             throw new AccessDeniedException("Unauthorized to update this order");
         }
 
-        if (order.getStatus() != OrderStatus.ACCEPTED) {
+        if (order.getStatus() != OrderStatus.ACCEPTED_BY_PROVIDER) {
             throw new IllegalStateException("Order must be ACCEPTED to mark as IN_CLEANING");
         }
 
@@ -210,28 +210,28 @@ public class ServiceProviderOrderService {
         ).collect(Collectors.toList());
     }
 
-//    public List<OrderResponseDto> getPendingOrdersForServiceProvider(String spUserId) {
-//        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-//                .orElseThrow(() -> new RuntimeException("Service Provider not found for user: " + spUserId));
-//        String serviceProviderId = sp.getServiceProviderId();
-//
-//        Set<Object> orderIds = redisTemplate.opsForSet().members(getPendingOrdersSetKey(serviceProviderId));
-//        if (orderIds == null || orderIds.isEmpty()) return Collections.emptyList();
-//
-//        List<OrderResponseDto> pendingOrders = new ArrayList<>();
-//
-//        for (Object orderIdObj : orderIds) {
-//            String orderId = (String) orderIdObj;
-//            String redisKey = getRedisKey(orderId);
-//            Map<Object, Object> data = redisTemplate.opsForHash().entries(redisKey);
-//            if (data == null || data.isEmpty()) continue;
-//            if (!"PENDING".equalsIgnoreCase((String) data.get("status"))) continue;
-//
-//            OrderResponseDto dto = orderService.buildOrderResponseDtoFromRedisData(orderId, data);
-//            pendingOrders.add(dto);
-//        }
-//        return pendingOrders;
-//    }
+    public List<OrderResponseDto> getPendingOrdersForServiceProvider(String spUserId) {
+        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
+                .orElseThrow(() -> new RuntimeException("Service Provider not found for user: " + spUserId));
+        String serviceProviderId = sp.getServiceProviderId();
+
+        Set<Object> orderIds = redisTemplate.opsForSet().members(getPendingOrdersSetKey(serviceProviderId));
+        if (orderIds == null || orderIds.isEmpty()) return Collections.emptyList();
+
+        List<OrderResponseDto> pendingOrders = new ArrayList<>();
+
+        for (Object orderIdObj : orderIds) {
+            String orderId = (String) orderIdObj;
+            String redisKey = getRedisKey(orderId);
+            Map<Object, Object> data = redisTemplate.opsForHash().entries(redisKey);
+            if (data == null || data.isEmpty()) continue;
+            if (!"PENDING".equalsIgnoreCase((String) data.get("status"))) continue;
+
+            OrderResponseDto dto = orderService.buildOrderResponseDtoFromRedisData(orderId, data);
+            pendingOrders.add(dto);
+        }
+        return pendingOrders;
+    }
 
     public void respondToFeedbackByUserId(String spUserId, Long feedbackId, String responseMessage) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
@@ -316,7 +316,7 @@ public class ServiceProviderOrderService {
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
         ticket.setResponse(dto.getResponseText());
-        ticket.setStatus("RESPONDED");
+        ticket.setStatus(TicketStatus.RESPONDED);
         ticket.setRespondedAt(LocalDateTime.now());
 
         ticketRepository.save(ticket);

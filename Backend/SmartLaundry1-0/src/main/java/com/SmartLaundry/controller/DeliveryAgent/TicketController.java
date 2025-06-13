@@ -39,7 +39,7 @@ public class TicketController {
     // Render form to submit ticket
     @PostMapping("/raise-ticket")
     public ResponseEntity<String> raiseTicket(@RequestPart("data") @Valid String  data,
-                                              @RequestPart("photo") MultipartFile photo,
+                                              @RequestPart(value = "photo", required = false) MultipartFile photo,
                                               HttpServletRequest request) throws IOException {
         // Parse JSON string to DTO
         ObjectMapper mapper = new ObjectMapper();
@@ -52,13 +52,12 @@ public class TicketController {
     // Return list of tickets based on search
     @GetMapping("/tickets")
     public ResponseEntity<List<RaiseTicketRequestDto>> getAllTickets(
-            @RequestParam(required = false) String title,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) TicketStatus status,
             HttpServletRequest request
     ) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        List<RaiseTicketRequestDto> serviceProviders = ticketService.getAllTickets(title, category, status, userId);
+        List<RaiseTicketRequestDto> serviceProviders = ticketService.getAllTickets(category, status, userId);
         return ResponseEntity.ok(serviceProviders);
     }
 

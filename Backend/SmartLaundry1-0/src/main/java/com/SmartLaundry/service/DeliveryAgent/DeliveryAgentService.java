@@ -4,7 +4,10 @@ import com.SmartLaundry.model.DeliveryAgent;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ public class DeliveryAgentService {
     @Autowired
     private DeliveryAgentRepository deliveryAgentRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(DeliveryAgentService.class);
+
     // @author Hitiksha Jagani
     public void updateLocation(String agentId, Double latitude, Double longitude) {
         String key = REDIS_KEY_PREFIX + agentId;
@@ -38,11 +43,26 @@ public class DeliveryAgentService {
         locationMap.put("latitude", latitude);
         locationMap.put("longitude", longitude);
 
-        redisTemplate.opsForValue().set(key, locationMap);
-        System.out.println("Saved location for: " + key);
+        try {
+            redisTemplate.opsForValue().set(key, locationMap);
 
-        // Optionally, set TTL for automatic expiration if agent goes offline
-        redisTemplate.expire(key, 30, TimeUnit.MINUTES);
+            DataType type = redisTemplate.type("activeDeliveryAgents");
+
+            if (type != DataType.SET && type != DataType.NONE) {
+                logger.warn("Key 'activeDeliveryAgents' has wrong type: {}. Deleting it.", type.code());
+                redisTemplate.delete("activeDeliveryAgents");
+            } else {
+                logger.error("'activeDeliveryAgents' exists as type {}. Expected a Set. Aborting write.", type.code());
+            }
+
+            redisTemplate.opsForSet().add("activeDeliveryAgents", agentId);
+
+            redisTemplate.expire(key, 30, TimeUnit.MINUTES);
+            logger.info("Location saved for agent {} with TTL 30 mins", agentId);
+        } catch (Exception e) {
+            logger.error("Failed to save location for agent {}: {}", agentId, e.getMessage());
+        }
+
     }
 
     // @author Hitiksha Jagani

@@ -3,6 +3,7 @@ import com.SmartLaundry.dto.Customer.FAQRequestDto;
 import com.SmartLaundry.dto.Customer.FAQResponseDto;
 import com.SmartLaundry.model.FAQ;
 import com.SmartLaundry.model.Ticket;
+import com.SmartLaundry.model.TicketStatus;
 import com.SmartLaundry.repository.FAQRepository;
 import com.SmartLaundry.repository.TicketRepository;
 
@@ -45,7 +46,7 @@ public class FAQService {
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
         ticket.setResponse(responseText);
-        ticket.setStatus("RESPONDED");
+        ticket.setStatus(TicketStatus.RESPONDED);
         ticket.setRespondedAt(LocalDateTime.now());
         ticketRepository.save(ticket);
 

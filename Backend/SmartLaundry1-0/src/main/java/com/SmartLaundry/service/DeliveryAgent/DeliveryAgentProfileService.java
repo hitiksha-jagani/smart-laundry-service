@@ -186,16 +186,24 @@ public class DeliveryAgentProfileService {
 
         // Create directory if not exists
         File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IOException("Failed to create upload directory: " + uploadDir);
         }
 
         // Use a unique filename (timestamp + original filename) to avoid collision
         String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.trim().isEmpty()) {
+            throw new IOException("Invalid file name.");
+        }
+
         String fileName = System.currentTimeMillis()+  "_" + originalFilename;
 
         // Full path
         File destination = new File(dir, fileName);
+
+        if (destination.exists() && destination.isDirectory()) {
+            throw new IOException("Destination path is a directory: " + destination.getAbsolutePath());
+        }
 
         // Save file locally
         file.transferTo(destination);

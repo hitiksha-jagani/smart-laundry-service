@@ -8,6 +8,8 @@ import com.SmartLaundry.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.TaskScheduler;
@@ -17,9 +19,11 @@ import org.springframework.stereotype.Service;
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 // @author Hitiksha Jagani
 @Service
@@ -41,6 +45,9 @@ public class DeliveriesService {
     private BookingItemRepository bookingItemRepository;
 
     @Autowired
+    private DeliveryAgentAvailabilityRepository availabilityRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -48,6 +55,8 @@ public class DeliveriesService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    private static final Logger logger = LoggerFactory.getLogger(DeliveriesService.class);
 
     public DeliverySummaryResponseDTO deliveriesSummary(String agentId) {
         Users user = userRepository.findById(agentId).orElseThrow();
@@ -88,8 +97,13 @@ public class DeliveriesService {
 
     // Sort delivery agent based on distance of delivery agent from customer
     public void assignToDeliveryAgent(String orderId) throws JsonProcessingException {
-        Order order = orderRepository.findById(orderId).orElseThrow();
-        Users customer = order.getUsers();
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not exists."));
+
+        if(order.getStatus() != OrderStatus.ACCEPTED_BY_PROVIDER){
+            throw new RuntimeException("Order is not accepted by service provider yet");
+        }
 
         // Get customer lat/lng
         Double custLat = order.getLatitude();
@@ -101,26 +115,49 @@ public class DeliveriesService {
         if (rejectedAgentIds == null) rejectedAgentIds = Collections.emptySet();
 
         // Get all delivery agent IDs and locations from Redis
-        Set<String> keys = redisTemplate.keys("deliveryAgentLocation:*");
+        Set<Object> activeAgents = redisTemplate.opsForSet().members("activeDeliveryAgents");
+
+        if (activeAgents == null || activeAgents.isEmpty()) {
+            logger.warn("No active delivery agents available. Cannot assign order: {}", orderId);
+            return; // or throw exception, or mark as pending
+        }
+
+        Set<String> agentIds = activeAgents != null
+                ? activeAgents.stream().map(Object::toString).collect(Collectors.toSet())
+                : Collections.emptySet();
+
         Map<String, Double> agentDistances = new HashMap<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        for (String key : keys) {
-            String agentId = key.split(":")[1];
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        for (String key : agentIds) {
 
             // Skip if already rejected
-            if (rejectedAgentIds.contains(agentId)) continue;
+            if (rejectedAgentIds.contains(key)) continue;
 
-            String loc = (String) redisTemplate.opsForValue().get(key);
+            // Check availability
+            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
+            if (!isAvailable) {
+                logger.info("Agent {} is not available at {} on {}", key, now, today);
+                continue;
+            }
+
+            String locationKey = "deliveryAgentLocation:" + key;
+
+            @SuppressWarnings("unchecked")
+            Map<String, Double> loc = (Map<String, Double>) redisTemplate.opsForValue().get(locationKey);
+
+
             if (loc != null) {
 
-                Map<String, Double> location = objectMapper.readValue(loc, new TypeReference<>() {});
-                double agentLat = location.get("latitude");
-                double agentLng = location.get("longitude");
+                Double agentLat = loc.get("latitude");
+                Double agentLng = loc.get("longitude");
 
-                double distance = haversine(custLat, custLng, agentLat, agentLng);
-                agentDistances.put(agentId, distance);
+                Double distance = haversine(custLat, custLng, agentLat, agentLng);
+                agentDistances.put(key, distance);
             }
         }
 
@@ -162,13 +199,12 @@ public class DeliveriesService {
 
         try {
             String value = objectMapper.writeValueAsString(assignment);
-            redisTemplate.opsForValue().set(redisKey, value, 5, TimeUnit.MINUTES);
 
-            // Schedule a fallback if order is not accepted in time
-            scheduleReassignment(order.getOrderId(), agentId);
-
-            // Send notification or request to agent
-            System.out.println("Order " + order.getOrderId() + " sent to Agent " + agentId);
+            Boolean success = redisTemplate.opsForValue().setIfAbsent(redisKey, value);
+            if (Boolean.TRUE.equals(success)) {
+                scheduleReassignment(order.getOrderId(), agentId);
+                logger.info("Assigned order {} to agent {}", order.getOrderId(), agentId);
+            }
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to store assignment", e);
@@ -180,18 +216,24 @@ public class DeliveriesService {
         taskScheduler.schedule(() -> {
             String redisKey = "assignment:" + orderId;
 
-            // Check if order is still not accepted
-            if (redisTemplate.hasKey(redisKey)) {
-                // Add agent to rejected set
-                redisTemplate.opsForSet().add("rejectedAgents:" + orderId, agentId);
-
-                // Delete old assignment
-                redisTemplate.delete(redisKey);
-
-                // Re-run assignment logic
+            String assignmentJson = redisTemplate.opsForValue().get(redisKey).toString();
+            if (assignmentJson != null) {
                 try {
-                    assignToDeliveryAgent(orderId);
-                } catch (Exception e) {
+                    OrderAssignmentDTO assignment = objectMapper.readValue(assignmentJson, OrderAssignmentDTO.class);
+
+                    // Check if still pending
+                    if (assignment.getStatus() == OrderStatus.PENDING) {
+
+                        // Add to rejected agents
+                        redisTemplate.opsForSet().add("rejectedAgents:" + orderId, agentId);
+
+                        // Remove assignment key
+                        redisTemplate.delete(redisKey);
+
+                        // Retry assignment
+                        assignToDeliveryAgent(orderId);
+                    }
+                } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
             }
@@ -227,7 +269,7 @@ public class DeliveriesService {
                     .orElseThrow(() -> new RuntimeException("Agent not found"));
 
             order.setDeliveryAgent(agent);
-            order.setStatus(OrderStatus.ACCEPTED);
+            order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
             orderRepository.save(order);
 
             // Remove from Redis
@@ -240,14 +282,7 @@ public class DeliveriesService {
         }
     }
 
-    public List<OrderResponseDTO> todaysDeliveries(String userId) throws AccessDeniedException {
-
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
-
-        if (!"DELIVERY_AGENT".equals(user.getRole())) {
-            throw new AccessDeniedException("You are not applicable for this page.");
-        }
+    public List<OrderResponseDTO> todaysDeliveries(Users user) throws AccessDeniedException {
 
         LocalDate pickupDate = LocalDate.now();
 
@@ -293,5 +328,9 @@ public class DeliveriesService {
         }
 
         return responseList;
+    }
+
+    public String changeStatus(String orderId) {
+        return "Status is updated successfully.";
     }
 }

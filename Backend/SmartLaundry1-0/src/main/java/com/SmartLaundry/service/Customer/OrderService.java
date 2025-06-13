@@ -581,6 +581,7 @@ public class OrderService implements OrderBookingService {
 
         feedbackProvidersRepository.save(feedback);
     }
+
     //for Delivery Agent
     public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
         Users user = userRepository.findById(userId)
@@ -609,7 +610,7 @@ public class OrderService implements OrderBookingService {
                 .description(dto.getDescription())
                 .photo(dto.getPhoto())
                 .category(dto.getCategory())
-                .status("OPEN")
+                .status(TicketStatus.NOT_RESPONDED)
                 .submittedAt(LocalDateTime.now())
                 .build();
 
