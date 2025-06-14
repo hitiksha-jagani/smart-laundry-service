@@ -9,14 +9,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class OrderResponseDto {
-
     private String orderId;
     private String userId;
     private String serviceProviderId;
@@ -24,23 +23,27 @@ public class OrderResponseDto {
     private String contactName;
     private String contactPhone;
     private String contactAddress;
-    private Double latitude;
-    private Double longitude;
+
+    @Builder.Default
+    private double latitude = 0.0;
+
+    @Builder.Default
+    private double longitude = 0.0;
 
     private LocalDate pickupDate;
     private LocalTime pickupTime;
 
     private OrderStatus status;
 
-    private List<BookingItemDto> bookingItems;
+    @Builder.Default
+    private List<BookingItemDto> bookingItems = new ArrayList<>();
 
-    private SchedulePlanDto schedulePlan; // Optional: null if not used
+    private SchedulePlanDto schedulePlan;
 
-    private boolean needOfDeliveryAgent;
+    @Builder.Default
+    private boolean needOfDeliveryAgent = false;
 
     @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
     public static class BookingItemDto {
         private String itemId;
@@ -50,13 +53,12 @@ public class OrderResponseDto {
     }
 
     @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
     public static class SchedulePlanDto {
-        private String plan; // Enum name
+        private String plan;
         private boolean payEachDelivery;
         private boolean payLastDelivery;
     }
 }
+
 

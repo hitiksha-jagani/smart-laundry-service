@@ -140,7 +140,11 @@ public class Order implements Serializable {
     private Double totalKm;
 
     @Column(name = "need_of_delivery_agent")
-    private boolean needOfDeliveryAgent;
+    public Boolean needOfDeliveryAgent = false;
+
+    public Boolean getNeedOfDeliveryAgent() {
+        return needOfDeliveryAgent;
+    }
 
 
     public Users getUser() {
