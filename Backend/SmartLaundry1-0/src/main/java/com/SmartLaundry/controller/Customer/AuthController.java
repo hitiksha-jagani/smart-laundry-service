@@ -40,7 +40,6 @@ public class AuthController {
     // Sign up
     @PostMapping("/register")
     public ResponseEntity<RegistrationResponseDTO> register(@Valid @RequestBody RegistrationRequestDTO request){
-        System.out.println("Start registering");
         return ResponseEntity.ok(authService.registerUser(request));
     }
 

@@ -17,44 +17,6 @@ public class OrderMapper {
 
     private final BookingItemRepository bookingItemRepository;
 
-//    public OrderResponseDto toOrderResponseDto(Order order) {
-//        List<OrderResponseDto.BookingItemDto> bookingItems = bookingItemRepository
-//                .findByOrder(order)
-//                .stream()
-//                .map(b -> OrderResponseDto.BookingItemDto.builder()
-//                        .itemId(b.getItem().getItemId())
-//                        .itemName(b.getItem().getItemName())
-//                        .quantity(b.getQuantity())
-//                        .finalPrice(b.getFinalPrice())
-//                        .build())
-//                .toList();
-//
-//        OrderResponseDto.SchedulePlanDto planDto = null;
-//        if (order.getOrderSchedulePlan() != null) {
-//            planDto = OrderResponseDto.SchedulePlanDto.builder()
-//                    .plan(order.getOrderSchedulePlan().getSchedulePlan().name())
-//                    .payEachDelivery(order.getOrderSchedulePlan().isPayEachDelivery())
-//                    .payLastDelivery(order.getOrderSchedulePlan().isPayLastDelivery())
-//                    .build();
-//        }
-//
-//        return OrderResponseDto.builder()
-//                .orderId(order.getOrderId())
-//                .userId(order.getUsers().getUserId())
-//                .serviceProviderId(order.getServiceProvider().getServiceProviderId())
-//                .contactName(order.getContactName())
-//                .contactPhone(order.getContactPhone())
-//                .contactAddress(order.getContactAddress())
-//                .latitude(order.getLatitude())
-//                .longitude(order.getLongitude())
-//                .pickupDate(order.getPickupDate())
-//                .pickupTime(order.getPickupTime())
-//                .status(order.getStatus())
-//                .bookingItems(bookingItems)
-//                .schedulePlan(planDto)
-//                .build();
-//    }
-
     public OrderResponseDto toOrderResponseDto(Order order) {
         if (order == null) return null;
 
@@ -94,9 +56,9 @@ public class OrderMapper {
             builder.schedulePlan(schedulePlanDto);
         }
 
+        // ✅ Include needOfDeliveryAgent flag
+        builder.needOfDeliveryAgent(order.isNeedOfDeliveryAgent());
+
         return builder.build();
     }
-
-
 }
-

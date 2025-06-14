@@ -1,5 +1,4 @@
 package com.SmartLaundry;
-
 import com.SmartLaundry.util.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
 
 	public static void main(String[] args) {
-		EnvUtils.loadEnv("/media/hitiksha/C/DAIICT/Summer internship/Env_Var.env");
+		EnvUtils.loadEnv("D:\\MSCIT\\summerinternship\\application-custom-properties.env");
 		SpringApplication.run(Application.class, args);
 	}
 }

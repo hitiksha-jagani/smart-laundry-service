@@ -80,4 +80,12 @@ public class Promotion implements Serializable {
     @Schema(description = "Promotion end date", example = "2025-11-30")
     private LocalDate endDate;
 
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = false;
+
+
+    public void setIsActive(boolean b) {
+        isActive = b;
+    }
+
 }

@@ -2,31 +2,29 @@ package com.SmartLaundry.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "payment")
+@Table(name = "payments")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Payment {
+public class Payments implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "payment_id")
     private Long paymentId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-
-    @OneToOne
-    @JoinColumn(name = "invoiceNumber", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_number", nullable = false)
     private Bill bill;
 
-    @Column(name = "transaction_id", nullable = false)
-    private String transactionId;
+    @Column(name = "amount", nullable = false)
+    private Double amount;
 
     @Column(name = "date_time", nullable = false)
     private LocalDateTime dateTime;
@@ -34,4 +32,8 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private PaymentStatus status;
+
+    @Column(name = "paypal_payment_id")
+    private String paypalPaymentId;
+
 }

@@ -13,5 +13,5 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DeliverySummaryResponseDTO {
     private Integer totalDeliveries;
     private Integer pendingDeliveries;
-    private Integer todayDeliveries;
+    private Integer upcomingDeliveries;
 }

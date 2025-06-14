@@ -68,7 +68,5 @@ public class BookingItem implements Serializable {
     @JoinColumn(name = "invoice_number", nullable = true)
     @Schema(description = "The bill associated with this booking item.")
     private Bill bill;
-
-
 }
 

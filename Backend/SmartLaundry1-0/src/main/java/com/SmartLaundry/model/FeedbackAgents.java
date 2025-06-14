@@ -1,12 +1,8 @@
 package com.SmartLaundry.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "FEEDBACK_AGENTS")
@@ -31,17 +27,16 @@ public class FeedbackAgents {
     @Column(name = "Review", length = 1000)
     private String review;
 
-    @JsonIgnore
-    @OneToOne
+    @Column(name = "Response", length = 1000)
+    private String response;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Agent_Id", nullable = false)
+    private DeliveryAgent agent;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery_agent_id", nullable = false)
-    private DeliveryAgent deliveryAgent;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 }

@@ -11,6 +11,6 @@ public class ContactDetailsDto {
     private String contactName;
     private String contactPhone;
     private String contactAddress;
-    private Double latitude;
-    private Double longitude;
+//    private Double latitude;
+//    private Double longitude;
 }

@@ -88,7 +88,6 @@ public class DeliveryAgentProfileController {
 
     // @author Hitiksha Jagani
     // http://localhost:8080/agent-profile/change-password
-    // Change password
     @PutMapping("/agent-profile/change-password")
     public ResponseEntity<String> changeDeliveryAgentPassword(HttpServletRequest request, @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO){
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));

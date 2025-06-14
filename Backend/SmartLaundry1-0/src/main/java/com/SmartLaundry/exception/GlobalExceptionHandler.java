@@ -4,14 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 // Single point to handle all exceptions
@@ -62,19 +57,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleOther(Exception ex, HttpServletRequest req) {
         return buildResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, req);
     }
-
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorResponse> userNotFound(UsernameNotFoundException ex, HttpServletRequest req){
-        return buildResponse(ex, HttpStatus.valueOf(org.apache.http.HttpStatus.SC_NOT_FOUND), req);
-    }
-
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<?> handleException(Exception e) {
-//        e.printStackTrace(); // Required to actually print something
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .body(new ExceptionMsg("500", "Internal Server Error", e.getMessage()));
-//    }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) {

@@ -1,22 +1,25 @@
 package com.SmartLaundry.service.Customer;
-
 import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import com.SmartLaundry.service.GeocodingService;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import com.SmartLaundry.dto.Customer.BookOrderRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +35,7 @@ public class OrderService implements OrderBookingService {
     private final ObjectMapper objectMapper;
     private final OrderRepository orderRepository;
     private final ServiceProviderRepository serviceProviderRepository;
-    private final ItemsRepository itemsRepository;
+    private final ItemRepository itemsRepository;
     private final PriceRepository priceRepository;
     private final BookingItemRepository bookingItemRepository;
     private final OrderSchedulePlanRepository orderSchedulePlanRepository;
@@ -47,41 +50,47 @@ public class OrderService implements OrderBookingService {
     private final FeedbackAgentsRepository feedbackAgentsRepository;
     private final DeliveryAgentRepository deliveryAgentRepository;
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+    @Autowired
+    private final GeocodingService geocodingService;
 
-
-    private String getRedisKey(String userId) {
-        return "order:user:" + userId;
+    private String getRedisKey(String userId, String dummyOrderId) {
+        return "order:user:" + userId + ":draft:" + dummyOrderId;
     }
 
-
     // Save initial order details in Redis
-    public void saveInitialOrderDetails(String userId, BookOrderRequestDto dto) {
+    public String saveInitialOrderDetails(String userId, BookOrderRequestDto dto) {
         if (dto == null || dto.getServiceProviderId() == null || dto.getPickupDate() == null ||
                 dto.getPickupTime() == null || dto.getItems() == null || dto.getItems().isEmpty()) {
             throw new IllegalArgumentException("Missing required fields in BookOrderRequestDto");
         }
 
-        String key = getRedisKey(userId);
+        //  Generate dummyOrderId server-side
+        String dummyOrderId = UUID.randomUUID().toString();
+        String key = getRedisKey(userId, dummyOrderId);
 
+        redisTemplate.opsForHash().put(key, "dummyOrderId", dummyOrderId);
         redisTemplate.opsForHash().put(key, "serviceProviderId", dto.getServiceProviderId());
         redisTemplate.opsForHash().put(key, "pickupDate", dto.getPickupDate().toString());
         redisTemplate.opsForHash().put(key, "pickupTime", dto.getPickupTime().toString());
         redisTemplate.opsForHash().put(key, "goWithSchedulePlan", String.valueOf(dto.isGoWithSchedulePlan()));
+
         try {
             redisTemplate.opsForHash().put(key, "items", objectMapper.writeValueAsString(dto.getItems()));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to serialize items list", e);
         }
+
         redisTemplate.expire(key, Duration.ofDays(7));
+     return dummyOrderId;
     }
 
     // Save schedule plan details in Redis
-    public void saveSchedulePlan(String userId, SchedulePlanRequestDto dto) {
+    public void saveSchedulePlan(String userId, String dummyOrderId, SchedulePlanRequestDto dto) {
         if (dto == null || dto.getSchedulePlan() == null) {
             throw new IllegalArgumentException("Schedule plan or selection is missing");
         }
 
-        String key = getRedisKey(userId);
+        String key = getRedisKey(userId, dummyOrderId);
 
         redisTemplate.opsForHash().put(key, "schedulePlan", dto.getSchedulePlan().name());
         redisTemplate.opsForHash().put(key, "payEachDelivery", String.valueOf(dto.isPayEachDelivery()));
@@ -90,25 +99,31 @@ public class OrderService implements OrderBookingService {
     }
 
     // Save contact info in Redis
-    public void saveContactInfo(String userId, ContactDetailsDto dto) {
-        if (dto == null || dto.getContactName() == null || dto.getContactPhone() == null ||
-                dto.getContactAddress() == null || dto.getLatitude() == null || dto.getLongitude() == null) {
+    @Transactional
+    public void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto) {
+        if (dto == null || dto.getContactName() == null || dto.getContactPhone() == null || dto.getContactAddress() == null) {
             throw new IllegalArgumentException("Missing required contact fields");
         }
 
-        String key = getRedisKey(userId);
+        // Geocode the address
+        String fullAddress = dto.getContactAddress() + ", India";
+        GeocodingService.LatLng latLng = geocodingService.getLatLongFromAddress(fullAddress);
 
+        // Save in Redis
+        String key = getRedisKey(userId, dummyOrderId);
         redisTemplate.opsForHash().put(key, "contactName", dto.getContactName());
         redisTemplate.opsForHash().put(key, "contactPhone", dto.getContactPhone());
         redisTemplate.opsForHash().put(key, "contactAddress", dto.getContactAddress());
-        redisTemplate.opsForHash().put(key, "latitude", String.valueOf(dto.getLatitude()));
-        redisTemplate.opsForHash().put(key, "longitude", String.valueOf(dto.getLongitude()));
+        redisTemplate.opsForHash().put(key, "latitude", String.valueOf(latLng.getLatitude()));
+        redisTemplate.opsForHash().put(key, "longitude", String.valueOf(latLng.getLongitude()));
         redisTemplate.expire(key, Duration.ofDays(7));
     }
 
+
+
     // Validate that all required fields exist in Redis before order placement
-    public void validateRedisOrderData(String userId) {
-        Map<Object, Object> data = redisTemplate.opsForHash().entries(getRedisKey(userId));
+    public void validateRedisOrderData(String userId,String dummyOrderId) {
+        Map<Object, Object> data = redisTemplate.opsForHash().entries(getRedisKey(userId,dummyOrderId));
         if (data.isEmpty())
             throw new IllegalStateException("No order data found for user: " + userId);
 
@@ -123,84 +138,6 @@ public class OrderService implements OrderBookingService {
             }
         }
     }
-
-    public void placeOrder(String userId) {
-        validateRedisOrderData(userId);
-
-        String key = getRedisKey(userId);
-        Map<Object, Object> data = redisTemplate.opsForHash().entries(key);
-        if (data.isEmpty()) throw new IllegalStateException("No order data found to place order");
-
-        // Load user and service provider
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
-
-        String spId = (String) data.get("serviceProviderId");
-        ServiceProvider sp = serviceProviderRepository.findById(spId)
-                .orElseThrow(() -> new IllegalArgumentException("Service provider not found: " + spId));
-
-        // Extract core fields
-        LocalDate pickupDate = LocalDate.parse((String) data.get("pickupDate"));
-        LocalTime pickupTime = LocalTime.parse((String) data.get("pickupTime"));
-        String contactName = (String) data.get("contactName");
-        String contactPhone = (String) data.get("contactPhone");
-        String contactAddress = (String) data.get("contactAddress");
-
-        // Build initial order
-        Order order = Order.builder()
-                .users(user)
-                .serviceProvider(sp)
-                .pickupDate(pickupDate)
-                .pickupTime(pickupTime)
-                .contactName(contactName)
-                .contactPhone(contactPhone)
-                .contactAddress(contactAddress)
-                .status(OrderStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        // Attach schedule plan if present
-        saveSchedulePlanIfPresent(order, data);
-
-        // Save order (including plan if set)
-        order = orderRepository.save(order);
-
-        if (order.getOrderSchedulePlan() != null) {
-            order.getOrderSchedulePlan().setOrder(order);
-            orderSchedulePlanRepository.save(order.getOrderSchedulePlan());
-        }
-
-        // Parse items and build booking items
-        List<OrderItemRequest> itemRequests = parseItemsFromRedis(data);
-        List<BookingItem> bookingItems = buildBookingItems(order, sp, itemRequests);
-
-        for (BookingItem item : bookingItems) {
-            bookingItemRepository.save(item);
-        }
-
-        // Add orderId to service provider's pending set
-        redisTemplate.opsForSet().add(ServiceProviderOrderService.getPendingOrdersSetKey(spId), order.getOrderId());
-
-        // Notify service provider
-        String customerName = user.getFirstName();
-        smsService.sendOrderStatusNotification(
-                sp.getUser().getPhoneNo(),
-                "New laundry order received from " + customerName + ". Please check your dashboard."
-        );
-        emailService.sendOrderStatusNotification(
-                sp.getUser().getEmail(),
-                "New Laundry Order Request",
-                "You have received a new laundry order from " + customerName + ". Please accept or reject it."
-        );
-
-        // Optionally mark Redis status as "PENDING" and expire in 7 days (for fallback/tracking)
-        redisTemplate.opsForHash().put(key, "status", "PENDING");
-        redisTemplate.expire(key, Duration.ofDays(7));
-
-        // Final cleanup (remove Redis data if no longer needed)
-        redisTemplate.delete(key);
-    }
-
 
     // Build order response DTO from Redis stored data
     public  OrderResponseDto buildOrderResponseDtoFromRedisData(String userId, Map<Object, Object> data) {
@@ -293,14 +230,20 @@ public class OrderService implements OrderBookingService {
     }
 
     // Finalize and create actual Order entity from Redis and save to DB
-    public OrderResponseDto createOrder(String userId) {
-        validateRedisOrderData(userId);
+    public OrderResponseDto createOrder(String userId, String dummyOrderId) {
+        validateRedisOrderData(userId, dummyOrderId);
 
         // Build Order (without saving)
-        Order order = buildOrderFromRedis(userId, OrderStatus.PENDING);
+        Order order = buildOrderFromRedis(userId, dummyOrderId, OrderStatus.PENDING);
 
         // Save Order first (to generate orderId)
         order = orderRepository.save(order);
+
+        // Add orderId to SP’s Redis pending set
+        redisTemplate.opsForSet().add(
+                ServiceProviderOrderService.getPendingOrdersSetKey(order.getServiceProvider().getServiceProviderId()),
+                order.getOrderId()
+        );
 
         // Save schedule plan if present
         if (order.getOrderSchedulePlan() != null) {
@@ -313,7 +256,7 @@ public class OrderService implements OrderBookingService {
         }
 
         // Clean Redis
-        redisTemplate.delete(getRedisKey(userId));
+        redisTemplate.delete(getRedisKey(userId, dummyOrderId));
         redisTemplate.opsForSet().remove(
                 ServiceProviderOrderService.getPendingOrdersSetKey(order.getServiceProvider().getServiceProviderId()),
                 userId
@@ -335,10 +278,12 @@ public class OrderService implements OrderBookingService {
         return orderMapper.toOrderResponseDto(order);
     }
 
+
     @Transactional
-    public Order buildOrderFromRedis(String userId, OrderStatus status) {
-        String redisKey = getRedisKey(userId);
+    public Order buildOrderFromRedis(String userId, String dummyOrderId, OrderStatus status) {
+        String redisKey = getRedisKey(userId, dummyOrderId);
         Map<Object, Object> data = redisTemplate.opsForHash().entries(redisKey);
+
         if (data.isEmpty()) {
             throw new IllegalStateException("No order data found for user: " + userId);
         }
@@ -350,6 +295,7 @@ public class OrderService implements OrderBookingService {
         if (spId == null || spId.isBlank()) {
             throw new IllegalStateException("Service Provider ID missing in Redis");
         }
+
         ServiceProvider sp = serviceProviderRepository.findById(spId)
                 .orElseThrow(() -> new IllegalArgumentException("Service provider not found: " + spId));
 
@@ -359,14 +305,9 @@ public class OrderService implements OrderBookingService {
         String contactPhone = (String) data.get("contactPhone");
         String contactAddress = (String) data.get("contactAddress");
 
-        double latitude = 0.0;
-        double longitude = 0.0;
-        try {
-            String latStr = (String) data.get("latitude");
-            String lonStr = (String) data.get("longitude");
-            if (latStr != null) latitude = Double.parseDouble(latStr);
-            if (lonStr != null) longitude = Double.parseDouble(lonStr);
-        } catch (NumberFormatException ignored) {}
+        //  Use latitude & longitude from Redis (already saved during contact info step)
+        double latitude = Double.parseDouble((String) data.get("latitude"));
+        double longitude = Double.parseDouble((String) data.get("longitude"));
 
         Order order = Order.builder()
                 .users(user)
@@ -566,15 +507,57 @@ public class OrderService implements OrderBookingService {
         return dto;
     }
 
+//    public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
+//        Users user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
+//                .orElseThrow(() -> new RuntimeException("Service Provider not found"));
+//
+//        FeedbackProviders feedback = new FeedbackProviders();
+//        feedback.setUser(user);
+//        feedback.setServiceProvider(provider);
+//        feedback.setRating(dto.getRating());
+//        feedback.setReview(dto.getReview());
+//
+//        feedbackProvidersRepository.save(feedback);
+//    }
+//    //for Delivery Agent
+//    public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
+//        Users user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
+//                .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
+//
+//        FeedbackAgents feedback = new FeedbackAgents();
+//        feedback.setUser(user);
+//        feedback.setAgent(agent);
+//        feedback.setRating(dto.getRating());
+//        feedback.setReview(dto.getReview());
+//
+//        feedbackAgentsRepository.save(feedback);
+//    }
+
+
     public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Order order = orderRepository.findById(dto.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // ✅ Ensure order belongs to this user
+        if (!order.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("You are not allowed to give feedback on this order");
+        }
 
         ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
                 .orElseThrow(() -> new RuntimeException("Service Provider not found"));
 
         FeedbackProviders feedback = new FeedbackProviders();
         feedback.setUser(user);
+        feedback.setOrder(order);
         feedback.setServiceProvider(provider);
         feedback.setRating(dto.getRating());
         feedback.setReview(dto.getReview());
@@ -582,17 +565,24 @@ public class OrderService implements OrderBookingService {
         feedbackProvidersRepository.save(feedback);
     }
 
-    //for Delivery Agent
     public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Order order = orderRepository.findById(dto.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("You are not allowed to give feedback on this order");
+        }
 
         DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
                 .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
 
         FeedbackAgents feedback = new FeedbackAgents();
         feedback.setUser(user);
-        feedback.setDeliveryAgent(agent);
+        feedback.setOrder(order);
+        feedback.setAgent(agent);
         feedback.setRating(dto.getRating());
         feedback.setReview(dto.getReview());
 
@@ -600,21 +590,74 @@ public class OrderService implements OrderBookingService {
     }
 
 
-    public void raiseTicket(String userId, RaiseTicketRequestDto dto) {
+
+    public void raiseTicket(String userId, RaiseTicketRequestDto dto, MultipartFile photoFile) throws IOException {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Convert String status to TicketStatus enum
+        TicketStatus ticketStatus;
+        try {
+            ticketStatus = TicketStatus.valueOf(dto.getStatus().toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            ticketStatus = TicketStatus.NOT_RESPONDED;
+        }
+
+        // Convert submittedAt (String) to LocalDateTime
+        LocalDateTime submittedTime;
+        try {
+            submittedTime = dto.getSubmittedAt() != null
+                    ? LocalDateTime.parse(dto.getSubmittedAt())
+                    : LocalDateTime.now();
+        } catch (DateTimeParseException e) {
+            submittedTime = LocalDateTime.now(); // fallback if parsing fails
+        }
+
+        // Save uploaded photo and get its path
+        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers\\" + userId;
+        String photoPath = (photoFile != null && !photoFile.isEmpty())
+                ? saveFile(photoFile, uploadDir, userId)
+                : null;
 
         Ticket ticket = Ticket.builder()
                 .user(user)
                 .title(dto.getTitle())
                 .description(dto.getDescription())
-                .photo(dto.getPhoto())
+                .photo(photoPath)
                 .category(dto.getCategory())
-                .status(TicketStatus.NOT_RESPONDED)
-                .submittedAt(LocalDateTime.now())
+                .status(ticketStatus)
+                .submittedAt(submittedTime)
                 .build();
 
         ticketRepository.save(ticket);
     }
+
+
+    public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
+
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        // Create directory if not exists
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        // Use a unique filename (timestamp + original filename) to avoid collision
+        String originalFilename = file.getOriginalFilename();
+        String fileName = System.currentTimeMillis()+  "_" + originalFilename;
+
+        // Full path
+        File destination = new File(dir, fileName);
+
+        // Save file locally
+        file.transferTo(destination);
+
+        // Return the relative or absolute path
+        return destination.getAbsolutePath();
+    }
+
 
 }

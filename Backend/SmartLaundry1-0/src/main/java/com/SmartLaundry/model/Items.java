@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.beans.beancontext.BeanContextServiceProvider;
 import java.io.Serializable;
 
 //@author Hitiksha Jagani
@@ -46,8 +47,6 @@ public class Items implements Serializable {
     @Schema(description = "The name of the item.", example = "T-shirt")
     private String itemName;
 
-
-
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "service_id", nullable = true)
@@ -57,5 +56,6 @@ public class Items implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "sub_service_id", nullable = true)
     private SubService subService;
+
 
 }

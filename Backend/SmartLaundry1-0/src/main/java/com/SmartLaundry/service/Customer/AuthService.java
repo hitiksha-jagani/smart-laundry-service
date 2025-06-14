@@ -56,13 +56,13 @@ public class AuthService {
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO request){
 
         // Validation
-        if(!request.getFirstName().matches("^[A-Za-z\\s]+$")){
+        if(!request.getFirstName().matches("^[A-Za-z\\\\s]+$")){
             throw new FormatException("First name");
         }
-        if(!request.getLastName().matches("^[A-Za-z\\s]+$")){
+        if(!request.getLastName().matches("^[A-Za-z\\\\s]+$")){
             throw new FormatException("Last name");
         }
-        if (!request.getPhone().matches("^\\+?[0-9]{10,15}$")) {
+        if (!request.getPhone().matches("^[0-9]{10}$")) {
             throw new ExceptionMsg("Phone number must be 10 digits.");
         }
 
@@ -118,34 +118,19 @@ public class AuthService {
                 addr.getPincode());
 
         // Call utility to get coordinates
-        double[] latLng;
-        try {
-            latLng = geoUtils.getLatLng(fullAddress);
-        } catch (Exception e) {
-            throw new RuntimeException("Geo location service failed: " + e.getMessage(), e);
-        }
+        double[] latLng = geoUtils.getLatLng(fullAddress);
 
         // Set latitude & longitude if found
-        try {
         if (latLng[0] != 0.0 || latLng[1] != 0.0) {
             address.setLatitude(latLng[0]);
             address.setLongitude(latLng[1]);
-        } } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+        } else {
+            System.out.println("⚠ Warning: Coordinates could not be determined.");
         }
 
         // Save data
         users.setAddress(address);
-
-        try {
-            userRepository.save(users);
-            System.out.println("User saved successfully");
-        } catch (Exception e) {
-            e.printStackTrace(); // VERY important
-            throw e;
-        }
-
+        userRepository.save(users);
 
         return new RegistrationResponseDTO(users.getPhoneNo(), users.getEmail(), "Successfully Registered");
     }
@@ -164,7 +149,7 @@ public class AuthService {
             throw new BadCredentialsException("Invalid username or password!");
         }
 
-        if(request.getUsername().matches("^\\+?[0-9]{10,15}$")){
+        if(request.getUsername().matches("^\\+[0-9]{10,15}$")){
             users = userRepository.findByPhoneNo(request.getUsername());
         } else {
             users = userRepository.findByEmail(request.getUsername());

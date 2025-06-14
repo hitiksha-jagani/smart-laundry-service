@@ -1,8 +1,9 @@
 package com.SmartLaundry.model;
 public enum PaymentStatus {
     PENDING,
-    COMPLETED,
+    PAID,
     FAILED,
     CANCELLED
-
 }
+
+

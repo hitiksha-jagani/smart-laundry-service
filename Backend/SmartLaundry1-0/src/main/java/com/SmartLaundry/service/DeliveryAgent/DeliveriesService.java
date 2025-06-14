@@ -3,7 +3,6 @@ package com.SmartLaundry.service.DeliveryAgent;
 import com.SmartLaundry.dto.DeliveryAgent.DeliverySummaryResponseDTO;
 import com.SmartLaundry.dto.DeliveryAgent.OrderAssignmentDTO;
 import com.SmartLaundry.dto.DeliveryAgent.OrderResponseDTO;
-import com.SmartLaundry.dto.DeliveryAgent.PendingDeliveriesResponseDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
 import com.SmartLaundry.service.Customer.EmailService;
@@ -19,8 +18,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -29,8 +26,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static java.lang.Math.round;
 
 // @author Hitiksha Jagani
 @Service
@@ -41,9 +36,6 @@ public class DeliveriesService {
 
     @Autowired
     private DeliveryAgentRepository deliveryAgentRepository;
-
-    @Autowired
-    private BillRepository billRepository;
 
     @Autowired
     private DeliveriesRepository deliveriesRepository;
@@ -58,15 +50,6 @@ public class DeliveriesService {
     private DeliveryAgentAvailabilityRepository availabilityRepository;
 
     @Autowired
-    private DeliveryAgentEarningsRepository deliveryAgentEarningsRepository;
-
-    @Autowired
-    private SMSService smsService;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -74,8 +57,15 @@ public class DeliveriesService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    private final SMSService smsService;
+    private final EmailService emailService;
 
     private static final Logger logger = LoggerFactory.getLogger(DeliveriesService.class);
+
+    public DeliveriesService(SMSService smsService, EmailService emailService) {
+        this.smsService = smsService;
+        this.emailService = emailService;
+    }
 
     public DeliverySummaryResponseDTO deliveriesSummary(String agentId) {
         Users user = userRepository.findById(agentId).orElseThrow();
@@ -84,9 +74,7 @@ public class DeliveriesService {
         DeliverySummaryResponseDTO deliverySummaryResponseDTO = new DeliverySummaryResponseDTO();
         deliverySummaryResponseDTO.setTotalDeliveries(deliveriesRepository.countDeliveriesByAgent(deliveryAgent.getDeliveryAgentId()));
         deliverySummaryResponseDTO.setPendingDeliveries(countPendingAssignmentsForAgent(deliveryAgent.getDeliveryAgentId()));
-        deliverySummaryResponseDTO.setTodayDeliveries(
-                deliveriesRepository.countAcceptedDeliveryOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()) +
-                deliveriesRepository.countAcceptedPickupOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()));
+        deliverySummaryResponseDTO.setUpcomingDeliveries(deliveriesRepository.countAcceptedOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()));
 
         return deliverySummaryResponseDTO;
     }
@@ -100,187 +88,20 @@ public class DeliveriesService {
 
         for (String key : keys) {
             try {
-                Object raw = redisTemplate.opsForValue().get(key);
-                if (raw == null) continue;
+                String json = (String) redisTemplate.opsForValue().get(key);
+                if (json == null) continue;
 
-
-                OrderAssignmentDTO dto = objectMapper.convertValue(raw, OrderAssignmentDTO.class);
-
-                if (dto.getAgentId().equals(agentId) && dto.getStatus() == OrderStatus.ACCEPTED_BY_PROVIDER ||
-                        dto.getAgentId().equals(agentId) && dto.getStatus() == OrderStatus.READY_FOR_DELIVERY) {
+                OrderAssignmentDTO dto = objectMapper.readValue(json, OrderAssignmentDTO.class);
+                if (dto.getAgentId().equals(agentId) && dto.getStatus() == OrderStatus.PENDING) {
                     count++;
                 }
 
             } catch (Exception e) {
                 System.err.println("Failed to parse value for key: " + key);
-                e.printStackTrace();
             }
         }
 
         return count;
-    }
-
-    // Return list of pending deliveries
-    public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) {
-
-        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
-                .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not exist."));
-        List<Order> order1 = orderRepository.findByStatusAndPickupDeliveryAgent(OrderStatus.ACCEPTED_BY_PROVIDER, deliveryAgent);
-        List<Order> order2 = orderRepository.findByStatusAndDeliveryDeliveryAgent(OrderStatus.READY_FOR_DELIVERY, deliveryAgent);
-        List<Order> orders = new ArrayList<>();
-        if(order1 != null) orders.addAll(order1);
-        if(order2 != null) orders.addAll(order2);
-        List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
-
-        Double agentLat, agentLon, providerLat, providerLon, customerLat, customerLon, earning;
-
-        DeliveryAgentEarnings deliveryAgentEarnings = deliveryAgentEarningsRepository.findByCurrentStatus(CurrentStatus.ACTIVE);
-        if (deliveryAgentEarnings == null) {
-            throw new IllegalStateException("No active earnings settings found.");
-        }
-
-        for(Order order : orders){
-            providerLat = order.getServiceProvider().getUser().getAddress().getLatitude();
-            providerLon = order.getServiceProvider().getUser().getAddress().getLongitude();
-            customerLat = order.getLatitude();
-            customerLon = order.getLongitude();
-
-            String locationKey = "deliveryAgentLocation:" + user.getUserId();
-
-            @SuppressWarnings("unchecked")
-            Map<String, Double> loc = (Map<String, Double>) redisTemplate.opsForValue().get(locationKey);
-
-            if (loc != null && loc.get("latitude") != null && loc.get("longitude") != null) {
-                agentLat = loc.get("latitude");
-                agentLon = loc.get("longitude");
-            } else {
-                continue;
-            }
-
-            Double distAgentToCustomer = haversine(agentLat, agentLon, customerLat, customerLon);
-            Double distCustomerToProvider = haversine(customerLat, customerLon, providerLat, providerLon);
-            double totalKm = distAgentToCustomer + distCustomerToProvider;
-
-            if(totalKm > deliveryAgentEarnings.getBaseKm()){
-                Double netKm = totalKm - deliveryAgentEarnings.getBaseKm();
-                Double extraAnount = netKm * deliveryAgentEarnings.getExtraPerKmAmount();
-                earning = deliveryAgentEarnings.getFixedAmount() + extraAnount;
-            } else {
-                earning = deliveryAgentEarnings.getFixedAmount();
-            }
-
-            String address = order.getServiceProvider().getUser().getAddress().getName() + " " + order.getServiceProvider().getUser().getAddress().getAreaName() +
-                    " " + order.getServiceProvider().getUser().getAddress().getCity().getCityName() + " " + order.getServiceProvider().getUser().getAddress().getPincode();
-
-            Long quantity = 0L;
-             List<BookingItem> bookingItemList = bookingItemRepository.findByOrder(order);
-             List<PendingDeliveriesResponseDTO.BookingItemDTO> bookingItemDTOS = new ArrayList<>();
-             for(BookingItem item : bookingItemList){
-                 quantity += item.getQuantity();
-                 PendingDeliveriesResponseDTO.BookingItemDTO bookingItemDTO = PendingDeliveriesResponseDTO.BookingItemDTO.builder()
-                         .itemName(item.getItem().getItemName())
-                         .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : item.getItem().getSubService().getServices().getServiceName())
-                         .quantity(item.getQuantity())
-                         .build();
-                 bookingItemDTOS.add(bookingItemDTO);
-             }
-
-             String deliveryType;
-
-             if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
-                 deliveryType = "Customer -> Service Provider";
-             } else {
-                 deliveryType = "Service Provider -> Customer";
-             }
-
-            PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
-                    .orderId(order.getOrderId())
-                    .deliveryType(deliveryType)
-                    .deliveryEarning(round(earning, 2))
-                    .km(round(totalKm, 2))
-                    .customerName(order.getContactName())
-                    .customerPhone(order.getContactPhone())
-                    .customerAddress(order.getContactAddress())
-                    .providerName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
-                    .providerPhone(order.getServiceProvider().getUser().getPhoneNo())
-                    .providerAddress(address)
-                    .totalQuantity(quantity)
-                    .bookingItemDTOList(bookingItemDTOS)
-                    .build();
-
-            pendingDeliveriesResponseDTOList.add(pendingDeliveriesResponseDTO);
-
-        }
-
-        return pendingDeliveriesResponseDTOList;
-    }
-
-    private double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
-
-    public List<PendingDeliveriesResponseDTO> getTodayDeliveries(Users user) {
-        List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
-
-        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
-                .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not exist."));
-
-        List<Order> order1 = orderRepository.findByStatusAndPickupDeliveryAgentAndPickupDate(OrderStatus.ACCEPTED_BY_AGENT, deliveryAgent, LocalDate.now());
-        List<Order> order2 = orderRepository.findByStatusAndDeliveryDeliveryAgentAndDeliveryDate(OrderStatus.READY_FOR_DELIVERY, deliveryAgent, LocalDate.now());
-        List<Order> orders = new ArrayList<>();
-        orders.addAll(order1);
-        orders.addAll(order2);
-
-        for(Order order : orders){
-
-            Bill bill = billRepository.findByOrder(order);
-
-            String address = order.getServiceProvider().getUser().getAddress().getName() + " " + order.getServiceProvider().getUser().getAddress().getAreaName() +
-                    " " + order.getServiceProvider().getUser().getAddress().getCity().getCityName() + " " + order.getServiceProvider().getUser().getAddress().getPincode();
-
-            Long quantity = 0L;
-            List<BookingItem> bookingItemList = bookingItemRepository.findByOrder(order);
-            List<PendingDeliveriesResponseDTO.BookingItemDTO> bookingItemDTOS = new ArrayList<>();
-            for(BookingItem item : bookingItemList){
-                quantity += item.getQuantity();
-                PendingDeliveriesResponseDTO.BookingItemDTO bookingItemDTO = PendingDeliveriesResponseDTO.BookingItemDTO.builder()
-                        .itemName(item.getItem().getItemName())
-                        .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : item.getItem().getSubService().getServices().getServiceName())
-                        .quantity(item.getQuantity())
-                        .build();
-                bookingItemDTOS.add(bookingItemDTO);
-            }
-
-            String deliveryType;
-            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_AGENT)) {
-                deliveryType = "Customer -> Service Provider";
-            } else {
-                deliveryType = "Service Provider -> Customer";
-            }
-
-            PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
-                    .orderId(order.getOrderId())
-                    .deliveryType(deliveryType)
-                    .deliveryEarning(bill.getDeliveryCharge())
-                    .km(order.getTotalKm())
-                    .customerName(order.getContactName())
-                    .customerPhone(order.getContactPhone())
-                    .customerAddress(order.getContactAddress())
-                    .providerName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
-                    .providerPhone(order.getServiceProvider().getUser().getPhoneNo())
-                    .providerAddress(address)
-                    .totalQuantity(quantity)
-                    .bookingItemDTOList(bookingItemDTOS)
-                    .build();
-
-            pendingDeliveriesResponseDTOList.add(pendingDeliveriesResponseDTO);
-        }
-
-        return pendingDeliveriesResponseDTOList;
     }
 
     // Sort delivery agent based on distance of delivery agent from customer
@@ -376,7 +197,6 @@ public class DeliveriesService {
 
     // Logic to assign orders to delivery agents
     public void tryAssign(Order order, String agentId) {
-
         String redisKey = ORDER_ASSIGNMENT_PREFIX + order.getOrderId();
 
         // Check if already assigned
@@ -392,29 +212,27 @@ public class DeliveriesService {
             if (Boolean.TRUE.equals(success)) {
                 scheduleReassignment(order.getOrderId(), agentId);
                 logger.info("Assigned order {} to agent {}", order.getOrderId(), agentId);
-            }
 
-            // Fetch delivery agent by agentId
-            DeliveryAgent deliveryAgent = deliveryAgentRepository.findById(agentId)
-                    .orElseThrow(() -> new RuntimeException("Delivery agent not found: " + agentId));
+                // Fetch delivery agent by agentId
+                DeliveryAgent deliveryAgent = deliveryAgentRepository.findByDeliveryAgentId(agentId)
+                        .orElseThrow(() -> new RuntimeException("Delivery agent not found: " + agentId));
 
-            // Send notification to delivery agent
-            smsService.sendOrderStatusNotification(
-                    deliveryAgent.getUsers().getPhoneNo(),
-                    "New order assigned to you from user " + order.getUsers().getFirstName()
-            );
-            if(deliveryAgent.getUsers().getEmail() != null) {
+                // Send notification to delivery agent
+                smsService.sendOrderStatusNotification(
+                        deliveryAgent.getUsers().getPhoneNo(),
+                        "New laundry order assigned to you from user " + order.getUsers().getFirstName()
+                );
                 emailService.sendOrderStatusNotification(
                         deliveryAgent.getUsers().getEmail(),
-                        "New Order Assigned",
-                        "You have been assigned a new order from " + order.getUsers().getFirstName()
+                        "New Laundry Order Assigned",
+                        "You have been assigned a new laundry order from " + order.getUsers().getFirstName()
                 );
             }
-
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to store assignment", e);
         }
     }
+
 
     //  Run if the agent hasn’t accepted within 5 minutes.
     private void scheduleReassignment(String orderId, String agentId) {
@@ -473,12 +291,7 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
                     .orElseThrow(() -> new RuntimeException("Agent not found"));
 
-            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
-                order.setPickupDeliveryAgent(agent);
-            } else {
-                order.setDeliveryDeliveryAgent(agent);
-            }
-
+            order.setDeliveryAgent(agent);
             order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
             orderRepository.save(order);
 
@@ -492,8 +305,55 @@ public class DeliveriesService {
         }
     }
 
+    public List<OrderResponseDTO> todaysDeliveries(Users user) throws AccessDeniedException {
+
+        LocalDate pickupDate = LocalDate.now();
+
+        List<Order> orders = orderRepository.findByPickupDate(pickupDate);
+        List<OrderResponseDTO> responseList = new ArrayList<>();
+
+        for (Order odr : orders) {
+
+            List<BookingItem> bookingItems = bookingItemRepository.findByOrder(odr);
+            List<OrderResponseDTO.BookingItemDTO> bookingItemDTOList = new ArrayList<>();
+
+            long totalQuantity = 0;
+
+            for (BookingItem items : bookingItems) {
+                OrderResponseDTO.BookingItemDTO bookingDTO = OrderResponseDTO.BookingItemDTO.builder()
+                        .itemName(items.getItem().getItemName())
+                        .serviceName(items.getItem().getService().getServiceName())
+                        .quantity(items.getQuantity())
+                        .build();
+
+                totalQuantity += items.getQuantity();
+                bookingItemDTOList.add(bookingDTO);
+            }
+
+            String customerAdd = user.getAddress().getName() + user.getAddress().getAreaName() + user.getAddress().getCity().getCityName() + user.getAddress().getPincode();
+            String providerAdd = odr.getServiceProvider().getUser().getAddress().getName() +
+                    odr.getServiceProvider().getUser().getAddress().getAreaName() + odr.getServiceProvider().getUser().getAddress().getPincode() +
+                    odr.getServiceProvider().getUser().getAddress().getCity().getCityName();
+
+            OrderResponseDTO orderResponse = OrderResponseDTO.builder()
+                    .orderId(odr.getOrderId())
+                    .customerName(odr.getUsers().getFirstName() + " " + odr.getUsers().getLastName())
+                    .customerPhone(odr.getUsers().getPhoneNo())
+                    .customerAddress(customerAdd)
+                    .providerName(odr.getServiceProvider().getUser().getFirstName() + odr.getServiceProvider().getUser().getLastName())
+                    .providerPhone(odr.getServiceProvider().getUser().getPhoneNo())
+                    .providerAddress(providerAdd)
+                    .totalQuantity(totalQuantity)
+                    .bookingItemDTOList(bookingItemDTOList)
+                    .build();
+
+            responseList.add(orderResponse);
+        }
+
+        return responseList;
+    }
+
     public String changeStatus(String orderId) {
         return "Status is updated successfully.";
     }
-
 }

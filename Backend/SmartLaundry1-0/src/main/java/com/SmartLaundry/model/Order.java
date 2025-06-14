@@ -49,18 +49,9 @@ public class Order implements Serializable {
     private Double latitude;
     private Double longitude;
 
-    @Column(name = "total_km")
-    private Double totalKm;
-
-    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "pickup_delivery_agent_id")
-    private DeliveryAgent pickupDeliveryAgent;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "delivery_delivery_agent_id")
-    private DeliveryAgent deliveryDeliveryAgent;
+    @JoinColumn(name = "delivery_agent_id")
+    private DeliveryAgent deliveryAgent;
 
     @JsonIgnore
     @ManyToOne
@@ -83,14 +74,6 @@ public class Order implements Serializable {
     @Column(name = "pickup_time", nullable = false)
     @Schema(description = "Time of pickup for the order.", example = "10:30:00")
     private LocalTime pickupTime;
-
-    @Column(name = "delivery_date")
-    @Schema(description = "Date of delivery for the order.", example = "2025-06-01")
-    private LocalDate deliveryDate;
-
-    @Column(name = "delivery_time")
-    @Schema(description = "Time of delivery for the order.", example = "10:30:00")
-    private LocalTime deliveryTime;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JsonManagedReference
@@ -129,7 +112,7 @@ public class Order implements Serializable {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "promo_code", nullable = true, updatable = false)
+    @JoinColumn(name = "promo_code", nullable = true)
     @Schema(description = "Promotion id.")
     private Promotion promotion;
 
@@ -137,5 +120,24 @@ public class Order implements Serializable {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Schema(description = "Timestamp of when the order was created.", example = "2025-05-27T10:15:30")
     private LocalDateTime createdAt;
+
+    @Column(name = "delivery_date", nullable = true)
+    @Schema(description = "Date of delivery for the order.", example = "2025-06-01")
+    private LocalDate deliveryDate;
+
+    @Column(name = "delivery_time")
+    @Schema(description = "Time of delivery for the order.", example = "10:30:00")
+    private LocalTime deliveryTime;
+
+    @Column(name = "total_km")
+    private Double totalKm;
+
+    @Column(name = "need_of_delivery_agent")
+    private boolean needOfDeliveryAgent;
+
+
+    public Users getUser() {
+        return users;
+    }
 
 }

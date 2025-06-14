@@ -37,9 +37,6 @@ public class AdminUserService {
     @Autowired
     private UserAddressRepository userAddressRepository;
 
-    @Autowired
-    private RoleCheckingService roleCheckingService;
-
     @Cacheable(
             value = "customerTableCache",
             key = "T(java.util.Objects).toString(#keyword, '') + '-' + T(java.util.Objects).toString(#startDate, '') + '-' + T(java.util.Objects).toString(#endDate, '') + '-' + #sortBy"
@@ -119,7 +116,7 @@ public class AdminUserService {
                 })
                 .collect(Collectors.toList());
 
-        UserAddress userAddresses = roleCheckingService.checkUserAddress(user);
+        UserAddress userAddresses = userAddressRepository.findByUsers(user);
 
         ServiceProviderResponseDTO.AddressDTO addressDTO = ServiceProviderResponseDTO.AddressDTO.builder()
                 .name(userAddresses.getName())
@@ -173,9 +170,9 @@ public class AdminUserService {
         dto.setPhone(user.getPhoneNo());
         dto.setEmail(user.getEmail());
 
-        DeliveryAgent deliveryAgent = roleCheckingService.checkDeliveryAgent(user);
+        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElseThrow();
 
-        UserAddress userAddresses = roleCheckingService.checkUserAddress(user);
+        UserAddress userAddresses = userAddressRepository.findByUsers(user);
 
         DeliveryAgentResponseDTO.AddressDTO addressDTO = DeliveryAgentResponseDTO.AddressDTO.builder()
                 .name(userAddresses.getName())

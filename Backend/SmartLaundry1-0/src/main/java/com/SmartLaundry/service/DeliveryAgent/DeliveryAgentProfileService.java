@@ -69,7 +69,6 @@ public class DeliveryAgentProfileService {
         this.emailService = emailService;
         this.smsService = smsService;
     }
-
     public DeliveryAgentProfileDTO getProfileDetail(String userId) {
 
         Users user = userRepository.findById(userId)
@@ -137,8 +136,7 @@ public class DeliveryAgentProfileService {
             throw new FormatException("Invalid IFSC Code format.");
         }
 
-        String uploadDir = "/media/hitiksha/C/DAIICT/Summer internship/images/delivery_agents/" + userId;
-
+        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
         // Save files and get paths
         String aadharCardPath = saveFile(aadharCard, uploadDir, userId);
         String panCardPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
@@ -187,24 +185,16 @@ public class DeliveryAgentProfileService {
 
         // Create directory if not exists
         File dir = new File(uploadDir);
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new IOException("Failed to create upload directory: " + uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
 
         // Use a unique filename (timestamp + original filename) to avoid collision
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename == null || originalFilename.trim().isEmpty()) {
-            throw new IOException("Invalid file name.");
-        }
-
         String fileName = System.currentTimeMillis()+  "_" + originalFilename;
 
         // Full path
         File destination = new File(dir, fileName);
-
-        if (destination.exists() && destination.isDirectory()) {
-            throw new IOException("Destination path is a directory: " + destination.getAbsolutePath());
-        }
 
         // Save file locally
         file.transferTo(destination);

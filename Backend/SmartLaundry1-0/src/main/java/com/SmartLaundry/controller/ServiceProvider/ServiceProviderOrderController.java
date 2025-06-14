@@ -2,11 +2,12 @@ package com.SmartLaundry.controller.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.Customer.TicketResponseDto;
+import com.SmartLaundry.dto.ServiceProvider.AcceptOrderRequestDto;
 import com.SmartLaundry.dto.ServiceProvider.ActiveOrderDto;
 import com.SmartLaundry.dto.ServiceProvider.FeedbackResponseDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
-//import com.SmartLaundry.service.Customer.OrderService;
+import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,26 +25,30 @@ public class ServiceProviderOrderController {
 
     private final ServiceProviderOrderService serviceProviderOrderService;
     private final JWTService jwtService;
-//    private final OrderService orderService;
+    private final OrderService orderService;
 
     private String getServiceProviderUserId(HttpServletRequest request) {
         return (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
     }
 
-//    @GetMapping("/pending")
-//    public ResponseEntity<List<OrderResponseDto>> getPendingOrders(HttpServletRequest request) {
-//        String spUserId = getServiceProviderUserId(request);
-//        List<OrderResponseDto> pendingOrders = serviceProviderOrderService.getPendingOrdersForServiceProvider(spUserId);
-//        return ResponseEntity.ok(pendingOrders);
-//    }
-
-    @PostMapping("/{orderId}/accept")
-    public ResponseEntity<OrderResponseDto> acceptOrder(HttpServletRequest request,
-                                                        @PathVariable String orderId) {
+    @GetMapping("/pending")
+    public ResponseEntity<List<OrderResponseDto>> getPendingOrders(HttpServletRequest request) {
         String spUserId = getServiceProviderUserId(request);
-        OrderResponseDto response = serviceProviderOrderService.acceptOrder(spUserId, orderId);
+        List<OrderResponseDto> pendingOrders = serviceProviderOrderService.getPendingOrdersForServiceProvider(spUserId);
+        return ResponseEntity.ok(pendingOrders);
+    }
+    @PostMapping("/accept")
+    public ResponseEntity<OrderResponseDto> acceptOrder(HttpServletRequest request,
+                                                        @RequestBody AcceptOrderRequestDto acceptOrderRequest) {
+        String spUserId = getServiceProviderUserId(request);
+        OrderResponseDto response = serviceProviderOrderService.acceptOrder(
+                spUserId,
+                acceptOrderRequest.getOrderId(),
+                acceptOrderRequest.isNeedOfDeliveryAgent()
+        );
         return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/{orderId}/reject")
     public ResponseEntity<String> rejectOrder(HttpServletRequest request,
@@ -63,6 +68,17 @@ public class ServiceProviderOrderController {
 
         return ResponseEntity.ok("Order marked as INPROGRESS");
     }
+    @PutMapping("/{orderId}/ready-for-delivery")
+    public ResponseEntity<String> markReadyForDelivery(
+            @PathVariable String orderId,
+            HttpServletRequest request) throws AccessDeniedException {
+
+        String spUserId = getServiceProviderUserId(request);
+        serviceProviderOrderService.markOrderReadyForDelivery(spUserId, orderId);
+
+        return ResponseEntity.ok("Order marked as READY_FOR_DELIVERY");
+    }
+
 
     @GetMapping("/active")
     public ResponseEntity<List<ActiveOrderDto>> getActiveOrders(HttpServletRequest request) {
@@ -114,7 +130,7 @@ public class ServiceProviderOrderController {
     }
 
     //To fetch all Orders
-    @GetMapping("/service-provider/{providerId}/order-history")
+    @GetMapping("/{providerId}/order-history")
     public ResponseEntity<List<OrderHistoryDto>> getOrderHistory(
             @PathVariable String providerId,
             @RequestParam(required = false) String status) {
@@ -123,19 +139,5 @@ public class ServiceProviderOrderController {
         return ResponseEntity.ok(orders);
     }
 
-
-    @PostMapping("/ticket/respond/{ticketId}")
-    public ResponseEntity<String> respondToTicket(
-            @PathVariable Long ticketId,
-            @RequestBody TicketResponseDto dto
-    ) {
-        try {
-            serviceProviderOrderService.respondToTicket(ticketId, dto);
-            return ResponseEntity.ok("Ticket responded successfully" +
-                    (dto.isMakeFaqVisible() ? " and added to FAQ." : "."));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body("Error: " + e.getMessage());
-        }
-    }
 }
 

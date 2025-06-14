@@ -9,7 +9,6 @@ import com.SmartLaundry.model.UserAddress;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.AddressRepository;
 import com.SmartLaundry.repository.CityRepository;
-import com.SmartLaundry.repository.UserAddressRepository;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.CustomUserDetailsService;
 import com.SmartLaundry.util.UsernameUtil;
@@ -32,9 +31,6 @@ public class AdminProfileService {
     private UserRepository userRepository;
 
     @Autowired
-    private UserAddressRepository userAddressRepository;
-
-    @Autowired
     private CityRepository cityRepository;
 
     @Autowired
@@ -46,19 +42,20 @@ public class AdminProfileService {
     @Autowired
     private  UsernameUtil usernameUtil;
 
-    @Autowired
-    private RoleCheckingService roleCheckingService;
-
     //@author Hitiksha Jagani
     // Logic to fetch profile details
     @Cacheable(value = "adminProfileCache", key = "#userId")
     public AdminProfileResponseDTO getProfileDetail(String userId) throws AccessDeniedException {
 
-        Users user = roleCheckingService.checkUser(userId);
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
-        roleCheckingService.isAdmin(user);
+        if (!"ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException("You are not applicable for this page.");
+        }
 
-        UserAddress address = roleCheckingService.checkUserAddress(user);
+        UserAddress address = addressRepository.findByUsers(user)
+                .orElse(null);
 
         AdminProfileResponseDTO.AddressDTO addressDTO = null;
         if (address != null) {
@@ -81,9 +78,17 @@ public class AdminProfileService {
 
     //@author Hitiksha Jagani
     // Logic to store edited profile details
-    public String editProfile(AdminEditProfileRequestDTO request, String userId) throws AccessDeniedException {
+    public void editProfile(AdminEditProfileRequestDTO request, String username) throws AccessDeniedException {
 
-        Users user = roleCheckingService.checkUser(userId);
+        Optional<Users> userDetail;
+
+        if(usernameUtil.isEmail(username)){
+            userDetail = userRepository.findByEmail(username);
+        } else {
+            userDetail = userRepository.findByPhoneNo(username);
+        }
+
+        Users user = userDetail.orElseThrow(() -> new RuntimeException("User not found"));
 
         if (request.getFirstName() != null) {
             user.setFirstName(request.getFirstName());
@@ -105,20 +110,25 @@ public class AdminProfileService {
                         .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
             }
 
-            UserAddress addresses = userAddressRepository.findByUsers(user);
+            UserAddress addresses = user.getAddress();
 
-            if (addr.getName() != null) addresses.setName(addr.getName());
-            if (addr.getAreaName() != null) addresses.setAreaName(addr.getAreaName());
-            if (addr.getPincode() != null) addresses.setPincode(addr.getPincode());
-            if (city != null) addresses.setCity(city);
+//            UserAddress address;
+//            if (addresses != null && !addresses.isEmpty()) {
+//                address = addresses.getFirst(); // get the first address
+//            } else {
+//                address = new UserAddress();
+//            }
 
-            userAddressRepository.save(addresses);
-            user.setAddress(addresses);
+
+//            if (addr.getName() != null) address.setName(addr.getName());
+//            if (addr.getAreaName() != null) address.setAreaName(addr.getAreaName());
+//            if (addr.getPincode() != null) address.setPincode(addr.getPincode());
+//            if (city != null) address.setCity(city);
+//
+//            user.setAddress(List.of(address));
         }
 
         userRepository.save(user);
-
-        return "Profile updated successfully.";
     }
 
 }

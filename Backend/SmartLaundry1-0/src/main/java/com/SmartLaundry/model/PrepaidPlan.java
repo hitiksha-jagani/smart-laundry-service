@@ -21,6 +21,6 @@ public class PrepaidPlan {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Payment_Id", nullable = false)
-    private Payment payment;
+    private Payments payment;
 }
 

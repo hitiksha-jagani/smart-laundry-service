@@ -3,7 +3,6 @@ import com.SmartLaundry.dto.Customer.FAQRequestDto;
 import com.SmartLaundry.dto.Customer.FAQResponseDto;
 import com.SmartLaundry.model.FAQ;
 import com.SmartLaundry.model.Ticket;
-import com.SmartLaundry.model.TicketStatus;
 import com.SmartLaundry.repository.FAQRepository;
 import com.SmartLaundry.repository.TicketRepository;
 
@@ -38,27 +37,6 @@ public class FAQService {
                 .build();
 
         return mapToDto(faqRepository.save(faq));
-    }
-
-    // 2. Auto-create FAQ when responding to a ticket
-    public void respondToTicket(Long ticketId, String responseText, boolean makeFaqVisible) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
-
-        ticket.setResponse(responseText);
-        ticket.setStatus(TicketStatus.RESPONDED);
-        ticket.setRespondedAt(LocalDateTime.now());
-        ticketRepository.save(ticket);
-
-        FAQ faq = FAQ.builder()
-                .ticket(ticket)
-                .visibilityStatus(makeFaqVisible)
-                .question(ticket.getTitle())
-                .answer(responseText)
-                .category(ticket.getCategory() != null ? ticket.getCategory() : "General")
-                .build();
-
-        faqRepository.save(faq);
     }
 
     // 3. Get all visible FAQs

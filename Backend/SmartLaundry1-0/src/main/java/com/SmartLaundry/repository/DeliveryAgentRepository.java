@@ -13,10 +13,11 @@ public interface DeliveryAgentRepository extends JpaRepository<DeliveryAgent, St
     Optional<DeliveryAgent> findByUsers_UserId(String userId);
 
     List<DeliveryAgent> findAllByOrderByDeliveryAgentIdAsc(); //DA0001
-
+  //  Optional<DeliveryAgent> findByAgentId(String deliveryAgentId);
     boolean existsByUsers(Users user);
 
     Optional<DeliveryAgent> findByUsers(Users user);
 
     List<DeliveryAgent> findByStatus(Status status);
+    Optional<DeliveryAgent> findByDeliveryAgentId(String deliveryAgentId);
 }

@@ -5,11 +5,8 @@ import com.SmartLaundry.service.DeliveryAgent.DeliveryAgentService;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("")
@@ -22,9 +19,9 @@ public class DeliveryAgentController {
     private JWTService jwtService;
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/delivery-agent/update-location
+    // http://localhost:8080/delivery-agent/location
     // Store latest location of delivery agent automatically frequently every 5-10 seconds and store data from redis to db in every 5 minute.
-    @PutMapping("/delivery-agent/update-location")
+    @PutMapping("/delivery-agent/location")
     public ResponseEntity<?> updateLocation(
             @RequestBody LocationUpdateDTO locationDTO,
             HttpServletRequest request) {
@@ -35,21 +32,6 @@ public class DeliveryAgentController {
 
         return ResponseEntity.ok().build();
     }
-
-    // http://localhost:8080/delivery-agent/get-location
-    @GetMapping("/delivery-agent/get-location")
-    public ResponseEntity<?> getAgentLocation(HttpServletRequest request) {
-        String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-
-        Map<String, Double> location = deliveryAgentService.getCurrentLocation(agentId);
-        if (location != null) {
-            return ResponseEntity.ok(location);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Location not available or expired for agent: " + agentId);
-        }
-    }
-
 
 }
 
