@@ -1,3 +1,4 @@
+
 package com.SmartLaundry.dto.Customer;
 import com.SmartLaundry.model.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -46,4 +47,3 @@ public class OrderSummaryDto {
         private double finalPrice;
     }
 }
-

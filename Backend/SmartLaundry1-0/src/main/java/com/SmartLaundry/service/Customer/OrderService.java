@@ -27,6 +27,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+
+
 @Service
 @RequiredArgsConstructor
 public class OrderService implements OrderBookingService {
@@ -52,7 +54,8 @@ public class OrderService implements OrderBookingService {
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     @Autowired
     private final GeocodingService geocodingService;
-
+    @Autowired
+    private GeoUtils geoUtils;
     private String getRedisKey(String userId, String dummyOrderId) {
         return "order:user:" + userId + ":draft:" + dummyOrderId;
     }
@@ -99,26 +102,57 @@ public class OrderService implements OrderBookingService {
     }
 
     // Save contact info in Redis
+//    @Transactional
+//    public void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto) {
+//        if (dto == null || dto.getContactName() == null || dto.getContactPhone() == null || dto.getContactAddress() == null) {
+//            throw new IllegalArgumentException("Missing required contact fields");
+//        }
+//
+//        // Geocode the address
+//        String fullAddress = dto.getContactAddress() + ", India";
+//        GeocodingService.LatLng latLng = geocodingService.getLatLongFromAddress(fullAddress);
+//
+//        // Save in Redis
+//        String key = getRedisKey(userId, dummyOrderId);
+//        redisTemplate.opsForHash().put(key, "contactName", dto.getContactName());
+//        redisTemplate.opsForHash().put(key, "contactPhone", dto.getContactPhone());
+//        redisTemplate.opsForHash().put(key, "contactAddress", dto.getContactAddress());
+//        redisTemplate.opsForHash().put(key, "latitude", String.valueOf(latLng.getLatitude()));
+//        redisTemplate.opsForHash().put(key, "longitude", String.valueOf(latLng.getLongitude()));
+//        redisTemplate.expire(key, Duration.ofDays(7));
+//    }
+
+
     @Transactional
     public void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto) {
+        Double latitude = 0.0;
+        Double longitude = 0.0;
         if (dto == null || dto.getContactName() == null || dto.getContactPhone() == null || dto.getContactAddress() == null) {
             throw new IllegalArgumentException("Missing required contact fields");
         }
 
         // Geocode the address
-        String fullAddress = dto.getContactAddress() + ", India";
-        GeocodingService.LatLng latLng = geocodingService.getLatLongFromAddress(fullAddress);
+        String fullAddress = String.format("%s",dto.getContactAddress());
 
+        // Call utility to get coordinates
+        double[] latLng = geoUtils.getLatLng(fullAddress);
+
+        // Set latitude & longitude if found
+        if (latLng[0] != 0.0 || latLng[1] != 0.0) {
+            latitude=latLng[0];
+            longitude=latLng[1];
+        } else {
+            System.out.println("⚠ Warning: Coordinates could not be determined.");
+        }
         // Save in Redis
         String key = getRedisKey(userId, dummyOrderId);
         redisTemplate.opsForHash().put(key, "contactName", dto.getContactName());
         redisTemplate.opsForHash().put(key, "contactPhone", dto.getContactPhone());
         redisTemplate.opsForHash().put(key, "contactAddress", dto.getContactAddress());
-        redisTemplate.opsForHash().put(key, "latitude", String.valueOf(latLng.getLatitude()));
-        redisTemplate.opsForHash().put(key, "longitude", String.valueOf(latLng.getLongitude()));
+        redisTemplate.opsForHash().put(key, "latitude",String.valueOf(latitude));
+        redisTemplate.opsForHash().put(key, "longitude",String.valueOf (longitude));
         redisTemplate.expire(key, Duration.ofDays(7));
     }
-
 
 
     // Validate that all required fields exist in Redis before order placement

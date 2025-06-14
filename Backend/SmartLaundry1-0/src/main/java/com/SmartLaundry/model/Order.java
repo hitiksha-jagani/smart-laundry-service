@@ -49,16 +49,6 @@ public class Order implements Serializable {
     private Double latitude;
     private Double longitude;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "pickup_delivery_agent_id")
-    private DeliveryAgent pickupDeliveryAgent;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "delivery_delivery_agent_id")
-    private DeliveryAgent deliveryDeliveryAgent;
-
 
     @JsonIgnore
     @ManyToOne
@@ -140,15 +130,23 @@ public class Order implements Serializable {
     private Double totalKm;
 
     @Column(name = "need_of_delivery_agent")
-    public Boolean needOfDeliveryAgent = false;
+    private boolean needOfDeliveryAgent;
 
-    public Boolean getNeedOfDeliveryAgent() {
-        return needOfDeliveryAgent;
-    }
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "pickup_delivery_agent_id")
+    private DeliveryAgent pickupDeliveryAgent;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "delivery_delivery_agent_id")
+    private DeliveryAgent deliveryDeliveryAgent;
 
     public Users getUser() {
         return users;
     }
 
+    public boolean getNeedOfDeliveryAgent() {
+        return needOfDeliveryAgent;
+    }
 }

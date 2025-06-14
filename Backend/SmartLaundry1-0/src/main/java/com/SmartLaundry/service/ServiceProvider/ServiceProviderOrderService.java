@@ -1,3 +1,4 @@
+
 package com.SmartLaundry.service.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
@@ -366,7 +367,8 @@ public class ServiceProviderOrderService {
     }
 
     public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException {
-        Order order = orderRepository.findByOrderId(orderId);
+        Order order = orderRepository.findByorderId(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
@@ -515,11 +517,11 @@ public class ServiceProviderOrderService {
 //        FeedbackAgents feedback = feedbackAgentsRepository.findById(feedbackId)
 //                .orElseThrow(() -> new RuntimeException("Feedback not found"));
 //
-//        if (!feedback.getDeliveryAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
+//        if (!feedback.getAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
 //            throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
 //        }
 //
-//        feedback.ge(responseMessage);
+//        feedback.setResponse(responseMessage);
 //        feedbackAgentsRepository.save(feedback);
 //
 //        log.info("Delivery Agent {} responded to feedback {} with message: {}",

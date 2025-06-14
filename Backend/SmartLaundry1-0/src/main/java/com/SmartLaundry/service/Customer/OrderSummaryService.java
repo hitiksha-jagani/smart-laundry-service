@@ -196,9 +196,8 @@ public class OrderSummaryService {
         double finalAmount = itemsTotal + gstAmount + deliveryCharge - discount;
 
         // Save bill if it doesn't exist
-//        Optional<Bill> existingBill = billRepository.findByOrder(order);
         Bill existingBill = billRepository.findByOrder(order);
-        if (existingBill == null) {
+        if (existingBill==null) {
             Bill bill = Bill.builder()
                     .order(order)
                     .status(BillStatus.PENDING_FOR_PAYMENT)
@@ -271,3 +270,5 @@ public class OrderSummaryService {
                 .build();
     }
 }
+
+
