@@ -3,23 +3,23 @@ package com.SmartLaundry.controller.Customer;
 import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
 import com.SmartLaundry.model.Bill;
+import com.SmartLaundry.model.BookingItem;
 import com.SmartLaundry.model.Order;
 import com.SmartLaundry.model.Promotion;
 import com.SmartLaundry.repository.BillRepository;
 import com.SmartLaundry.repository.OrderRepository;
 import com.SmartLaundry.repository.PaymentRepository;
 import com.SmartLaundry.repository.PromotionRepository;
-import com.SmartLaundry.service.Customer.OrderService;
-import com.SmartLaundry.service.Customer.OrderSummaryService;
-import com.SmartLaundry.service.Customer.PromotionService;
+import com.SmartLaundry.service.Customer.*;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.SmartLaundry.service.Customer.BillService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +36,9 @@ public class OrderController {
     private final PromotionService promotionService;
     private final OrderRepository orderRepository;
     private final BillRepository billRepository;
+    @Autowired
+    private PromotionEvaluatorService promotionEvaluatorService;
+
     private String extractUserIdFromRequest(HttpServletRequest request) {
         return (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
     }
@@ -167,6 +170,7 @@ public class OrderController {
         List<Promotion> validPromos = promotionService.getAvailablePromotionsForOrder(order.getCreatedAt());
         return ResponseEntity.ok(validPromos);
     }
+
     @GetMapping("/promotion/{id}")
     public ResponseEntity<Promotion> testPromo(@PathVariable String id) {
         Promotion promo = promotionService.getPromotionById(id);
@@ -193,13 +197,38 @@ public class OrderController {
         Order order = orderOpt.get();
         Promotion promotion = promotionOpt.get();
 
+        // TEMPORARILY try to apply the promo — only if valid, save it
+        List<BookingItem> items = order.getBookingItems();
+        BigDecimal totalBeforeDiscount = BigDecimal.valueOf(
+                items.stream().mapToDouble(b -> b.getFinalPrice() != null ? b.getFinalPrice() : 0.0).sum()
+                        + (items.stream().mapToDouble(b -> b.getFinalPrice() != null ? b.getFinalPrice() : 0.0).sum() * 0.18)
+                        + 30.0 // assuming fixed delivery charge
+        );
+
+        String validationMessage = promotionEvaluatorService.getPromotionValidationMessage(
+                promotion, items, totalBeforeDiscount, order.getCreatedAt()
+        );
+
+        if (validationMessage != null) {
+            // ❌ Don’t save the promo to the order if it's invalid
+            return ResponseEntity.ok(OrderSummaryDto.builder()
+                    .orderId(orderId)
+                    .promotionMessage(validationMessage)
+                    .isPromotionApplied(false)
+                    .appliedPromoCode(null)  // promo code not applied
+                    .build());
+        }
+
+        // ✅ Only save promo to order if valid
         order.setPromotion(promotion);
         orderRepository.save(order);
 
+        // Now build summary with discount applied
         OrderSummaryDto summary = orderSummaryService.generateOrderSummary(orderId, promotion);
 
         return ResponseEntity.ok(summary);
     }
+
 
 
 
