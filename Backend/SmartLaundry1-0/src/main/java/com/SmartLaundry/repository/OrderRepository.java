@@ -15,7 +15,6 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
 
-    List<Order> findByServiceProvider_ServiceProviderId(String providerId);
     // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProviderAndStatus(ServiceProvider serviceProvider, OrderStatus status);
 
@@ -41,7 +40,9 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     List<Order> findByStatusAndPickupDeliveryAgentAndPickupDate(@Param("orderStatus") OrderStatus orderStatus, @Param("deliveryAgent") DeliveryAgent deliveryAgent, @Param("now") LocalDate now);
 
-    List<Order> findByDeliveryAgent(DeliveryAgent deliveryAgent);
 
-    <T> ScopedValue<T> findByOrderId(String orderId);
+
+    Order findByOrderId(String orderId);
+
+    List<Order> findByServiceProvider_ServiceProviderId(String providerId);
 }
