@@ -6,7 +6,6 @@ import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.OrderRepository;
 import com.SmartLaundry.repository.UserRepository;
-import com.SmartLaundry.service.Admin.RoleCheckingService;
 import com.SmartLaundry.service.DeliveryAgent.OrderHistoryService;
 import com.SmartLaundry.service.JWTService;
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -30,18 +28,14 @@ public class OrderHistoryController {
     @Autowired
     private OrderHistoryService orderHistoryService;
 
-    @Autowired
-    private RoleCheckingService roleCheckingService;
-
     // @author Hitiksha Jagani
     // http://localhost:8080/orders/completed
     // List of all completed deliveries
     @GetMapping("/completed")
-    public ResponseEntity<List<Order>> getCompletedOrders(HttpServletRequest request) throws AccessDeniedException {
+    public ResponseEntity<List<Order>> getCompletedOrders(HttpServletRequest request){
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        Users user = roleCheckingService.checkUser(userId);
-        roleCheckingService.isDeliveryAgent(user);
-        return ResponseEntity.ok(orderHistoryService.completedOrders(user));
+        List<Order> orders = orderHistoryService.completedOrders(userId);
+        return ResponseEntity.ok(orders);
     }
 
     // @author Hitiksha Jagani

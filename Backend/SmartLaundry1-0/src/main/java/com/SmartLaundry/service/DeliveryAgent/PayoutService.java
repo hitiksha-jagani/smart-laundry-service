@@ -141,7 +141,7 @@ public class PayoutService {
 
         PayoutResponseDTO dto = PayoutResponseDTO.builder()
                 .payoutId(payout.getPayoutId())
-                .orderId(payout.getPayment().getOrder().getOrderId())
+                .orderId(payout.getPayment().getBill().getOrder().getOrderId())
                 .deliveryEarning(payout.getDeliveryEarning())
                 .charge(payout.getCharge())
                 .payoutStatus(payout.getStatus())

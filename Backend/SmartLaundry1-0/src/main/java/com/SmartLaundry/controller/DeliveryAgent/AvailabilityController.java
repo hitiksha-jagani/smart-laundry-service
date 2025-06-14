@@ -25,7 +25,7 @@ public class AvailabilityController {
     // Render a form to set availability for current week.
     @PostMapping("/manage")
     public ResponseEntity<String> saveAvailability(HttpServletRequest request,
-                                              @RequestBody List<AvailabilityDTO> dto) {
+                                                   @RequestBody List<AvailabilityDTO> dto) {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         return ResponseEntity.ok(availabilityService.saveAvailability(userId, dto));
     }

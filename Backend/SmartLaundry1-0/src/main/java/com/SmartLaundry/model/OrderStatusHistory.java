@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -35,8 +34,8 @@ public class OrderStatusHistory {
     @Schema(description = "Status of the order", example = "PLACED")
     private OrderStatus status;
 
-    @CreationTimestamp
     @Column(name = "changed_at", nullable = false)
     @Schema(description = "Date and time of changed status.", example = "2025-05-31 00:00:00")
     private LocalDateTime changedAt;
+
 }

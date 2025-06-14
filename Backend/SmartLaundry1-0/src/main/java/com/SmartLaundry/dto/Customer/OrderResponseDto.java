@@ -36,7 +36,7 @@ public class OrderResponseDto {
 
     private SchedulePlanDto schedulePlan; // Optional: null if not used
 
-
+    private boolean needOfDeliveryAgent;
 
     @Data
     @AllArgsConstructor

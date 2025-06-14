@@ -1,5 +1,4 @@
 package com.SmartLaundry.dto.DeliveryAgent;
-
 import com.SmartLaundry.model.ServiceProvider;
 import com.SmartLaundry.model.Users;
 import lombok.AllArgsConstructor;

@@ -23,8 +23,7 @@ public class BillService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        Bill bill = billRepository.findByOrder(order)
-                .orElseThrow(() -> new RuntimeException("Bill not found for order"));
+        Bill bill = billRepository.findByOrder(order);
 
         if (bill.getStatus() == BillStatus.PAID) {
             throw new IllegalStateException("Bill is already marked as PAID");

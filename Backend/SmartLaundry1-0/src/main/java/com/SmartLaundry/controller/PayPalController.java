@@ -126,7 +126,7 @@
 //import com.SmartLaundry.model.Bill;
 //import com.SmartLaundry.model.BillStatus;
 //import com.SmartLaundry.model.PaymentStatus;
-//import com.SmartLaundry.model.Payment;
+//import com.SmartLaundry.model.Payments;
 //import com.SmartLaundry.repository.BillRepository;
 //import com.SmartLaundry.repository.PaymentRepository;
 //import com.SmartLaundry.service.PayPalService;

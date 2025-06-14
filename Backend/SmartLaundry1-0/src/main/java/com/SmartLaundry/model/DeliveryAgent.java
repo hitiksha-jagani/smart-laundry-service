@@ -132,9 +132,9 @@ public class DeliveryAgent implements Serializable {
     @OneToMany(mappedBy = "deliveryAgent")
     private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
 
-    public String getAgentId()
-    {
-        return getDeliveryAgentId();
+    public String getDeliveryAgentId() {
+        return this.deliveryAgentId;
     }
+
 }
 

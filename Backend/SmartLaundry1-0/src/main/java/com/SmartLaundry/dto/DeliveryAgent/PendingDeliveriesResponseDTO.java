@@ -24,7 +24,7 @@ public class PendingDeliveriesResponseDTO {
     private Double km;
     private String deliveryType; // Customer -> Service provider, Service provider -> Customer
 
-    private List<PendingDeliveriesResponseDTO.BookingItemDTO> bookingItemDTOList;
+    private List<BookingItemDTO> bookingItemDTOList;
 
     @Data
     @Builder

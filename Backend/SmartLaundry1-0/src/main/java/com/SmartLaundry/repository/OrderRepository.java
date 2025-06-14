@@ -36,4 +36,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     List<Order> findByStatusAndPickupDeliveryAgentAndPickupDate(@Param("orderStatus") OrderStatus orderStatus, @Param("deliveryAgent") DeliveryAgent deliveryAgent, @Param("now") LocalDate now);
 
+    List<Order> findByDeliveryAgent(DeliveryAgent deliveryAgent);
+
+    <T> ScopedValue<T> findByOrderId(String orderId);
 }

@@ -55,6 +55,9 @@ public class DeliveriesService {
     private BookingItemRepository bookingItemRepository;
 
     @Autowired
+    private DeliveryAgentAvailabilityRepository availabilityRepository;
+
+    @Autowired
     private DeliveryAgentEarningsRepository deliveryAgentEarningsRepository;
 
     @Autowired
@@ -83,7 +86,7 @@ public class DeliveriesService {
         deliverySummaryResponseDTO.setPendingDeliveries(countPendingAssignmentsForAgent(deliveryAgent.getDeliveryAgentId()));
         deliverySummaryResponseDTO.setTodayDeliveries(
                 deliveriesRepository.countAcceptedDeliveryOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()) +
-                deliveriesRepository.countAcceptedPickupOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()));
+                        deliveriesRepository.countAcceptedPickupOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()));
 
         return deliverySummaryResponseDTO;
     }
@@ -170,25 +173,25 @@ public class DeliveriesService {
                     " " + order.getServiceProvider().getUser().getAddress().getCity().getCityName() + " " + order.getServiceProvider().getUser().getAddress().getPincode();
 
             Long quantity = 0L;
-             List<BookingItem> bookingItemList = bookingItemRepository.findByOrder(order);
-             List<PendingDeliveriesResponseDTO.BookingItemDTO> bookingItemDTOS = new ArrayList<>();
-             for(BookingItem item : bookingItemList){
-                 quantity += item.getQuantity();
-                 PendingDeliveriesResponseDTO.BookingItemDTO bookingItemDTO = PendingDeliveriesResponseDTO.BookingItemDTO.builder()
-                         .itemName(item.getItem().getItemName())
-                         .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : item.getItem().getSubService().getServices().getServiceName())
-                         .quantity(item.getQuantity())
-                         .build();
-                 bookingItemDTOS.add(bookingItemDTO);
-             }
+            List<BookingItem> bookingItemList = bookingItemRepository.findByOrder(order);
+            List<PendingDeliveriesResponseDTO.BookingItemDTO> bookingItemDTOS = new ArrayList<>();
+            for(BookingItem item : bookingItemList){
+                quantity += item.getQuantity();
+                PendingDeliveriesResponseDTO.BookingItemDTO bookingItemDTO = PendingDeliveriesResponseDTO.BookingItemDTO.builder()
+                        .itemName(item.getItem().getItemName())
+                        .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : item.getItem().getSubService().getServices().getServiceName())
+                        .quantity(item.getQuantity())
+                        .build();
+                bookingItemDTOS.add(bookingItemDTO);
+            }
 
-             String deliveryType;
+            String deliveryType;
 
-             if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
-                 deliveryType = "Customer -> Service Provider";
-             } else {
-                 deliveryType = "Service Provider -> Customer";
-             }
+            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
+                deliveryType = "Customer -> Service Provider";
+            } else {
+                deliveryType = "Service Provider -> Customer";
+            }
 
             PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                     .orderId(order.getOrderId())

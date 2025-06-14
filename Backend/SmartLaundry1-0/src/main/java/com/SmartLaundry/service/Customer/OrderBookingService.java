@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 public interface OrderBookingService {
-    //List<BookingItem> createBookingItemsFromRedis(String userId, String orderId);
-    void saveInitialOrderDetails(String userId, BookOrderRequestDto dto);
-    void saveSchedulePlan(String userId, SchedulePlanRequestDto dto);
-    void saveContactInfo(String userId, ContactDetailsDto dto);
-    OrderResponseDto createOrder(String userId);
+    String saveInitialOrderDetails(String userId, BookOrderRequestDto dto);
+    void saveSchedulePlan(String userId, String dummyOrderId, SchedulePlanRequestDto dto);
+    void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto);
+    OrderResponseDto createOrder(String userId, String dummyOrderId);
 }
+
 

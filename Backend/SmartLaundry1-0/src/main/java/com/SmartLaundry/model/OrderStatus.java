@@ -2,6 +2,7 @@ package com.SmartLaundry.model;
 
 public enum OrderStatus {
     PENDING,
+    PENDING_FOR_PAYMENT,
     PICKED_UP,
     IN_CLEANING,
     READY_FOR_DELIVERY,
@@ -9,9 +10,10 @@ public enum OrderStatus {
     DELIVERED,
     CANCELLED,
     ACCEPTED_BY_PROVIDER,
-    ACCEPTED_BY_AGENT,
     COMPLETED,
-    REJECTED,
+    REJECTED_BY_PROVIDER,
+    ACCEPTED_BY_AGENT,
+    REJECTED_BY_AGENT,
     RESCHEDULED,
 }
 

@@ -19,13 +19,12 @@ import lombok.*;
 public class UserAddress {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "add_id")
     @Schema(description = "Unique udentifier of the address.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long addressId;
 
-    @JsonIgnore
-    @JsonManagedReference
+    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "Id of the user", example = "US00001", accessMode = Schema.AccessMode.READ_ONLY)

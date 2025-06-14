@@ -17,10 +17,6 @@ public class Payment {
     @Column(name = "payment_id")
     private Long paymentId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-
     @OneToOne
     @JoinColumn(name = "invoiceNumber", nullable = false)
     private Bill bill;

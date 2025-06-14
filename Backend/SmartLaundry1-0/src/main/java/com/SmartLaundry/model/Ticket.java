@@ -2,8 +2,6 @@ package com.SmartLaundry.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,22 +22,21 @@ public class Ticket {
 
     private String description;
 
-    // Store file path or URL to the photo
     private String photo;
 
     private String category;
 
-    private String response = null;
+    private String response;
 
     @Enumerated(EnumType.STRING)
-    private TicketStatus status;
+    @Column(nullable = false)
+    private TicketStatus status = TicketStatus.NOT_RESPONDED;
 
-    @CreationTimestamp
     @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
 
     @Column(name = "responded_at")
-    private LocalDateTime respondedAt = null;
+    private LocalDateTime respondedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
