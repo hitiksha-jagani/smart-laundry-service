@@ -1,5 +1,6 @@
 package com.SmartLaundry.dto.DeliveryAgent;
 
+import com.SmartLaundry.model.PayoutStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PayoutResponseDTO {
     private String payoutId;
-    private Double amount;
+    private Double finalAmount;
     private LocalDateTime dateTime;
     private String orderId;
+    private Double charge;
+    private Double deliveryEarning;
+    private PayoutStatus payoutStatus;
 }

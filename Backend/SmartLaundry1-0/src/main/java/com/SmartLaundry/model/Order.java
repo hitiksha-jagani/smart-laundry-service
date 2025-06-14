@@ -49,10 +49,18 @@ public class Order implements Serializable {
     private Double latitude;
     private Double longitude;
 
+    @Column(name = "total_km")
+    private Double totalKm;
+
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "delivery_agent_id")
-    private DeliveryAgent deliveryAgent;
+    @JoinColumn(name = "pickup_delivery_agent_id")
+    private DeliveryAgent pickupDeliveryAgent;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "delivery_delivery_agent_id")
+    private DeliveryAgent deliveryDeliveryAgent;
 
     @JsonIgnore
     @ManyToOne
@@ -75,6 +83,14 @@ public class Order implements Serializable {
     @Column(name = "pickup_time", nullable = false)
     @Schema(description = "Time of pickup for the order.", example = "10:30:00")
     private LocalTime pickupTime;
+
+    @Column(name = "delivery_date")
+    @Schema(description = "Date of delivery for the order.", example = "2025-06-01")
+    private LocalDate deliveryDate;
+
+    @Column(name = "delivery_time")
+    @Schema(description = "Time of delivery for the order.", example = "10:30:00")
+    private LocalTime deliveryTime;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JsonManagedReference

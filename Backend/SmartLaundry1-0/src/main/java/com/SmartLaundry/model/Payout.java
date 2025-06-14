@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "payouts")
+@Table(name = "payout")
 @Schema(description = "Payment settlements for service providers or delivery agents.")
 public class Payout implements Serializable {
 
@@ -44,14 +44,19 @@ public class Payout implements Serializable {
     @Schema(description = "Payment reference ID", example = "PAY12345")
     private Payment payment;
 
+    @Column(name = "delivery_earning")
+    private Double deliveryEarning;
+
+    @Column(name = "charge")
+    private Double charge;
+
     @NotNull(message = "Amount is required.")
     @DecimalMin(value = "0.0", inclusive = false)
-    @Column(name = "amount", nullable = false)
+    @Column(name = "final_amount", nullable = false)
     @Schema(description = "Amount paid", example = "500.00")
-    private Double amount;
+    private Double finalAmount;
 
-    @NotBlank(message = "Transaction id is required.")
-    @Column(name = "transaction_id", nullable = false)
+    @Column(name = "transaction_id")
     @Schema(description = "Bank transaction ID", example = "TXN98765")
     private String transactionId;
 
@@ -66,7 +71,7 @@ public class Payout implements Serializable {
     @Schema(description = "User ID receiving the payout", example = "US00001")
     private Users users;
 
-    @Column(name = "date_time", nullable = false)
+    @Column(name = "date_time")
     @Schema(description = "Date and time of payout", example = "2025-06-01T10:00:00")
     private LocalDateTime dateTime;
 

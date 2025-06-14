@@ -2,10 +2,8 @@ package com.SmartLaundry.controller.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.DeliverySummaryResponseDTO;
 import com.SmartLaundry.dto.DeliveryAgent.OrderResponseDTO;
-import com.SmartLaundry.model.Order;
-import com.SmartLaundry.model.OrderStatus;
-import com.SmartLaundry.model.OrderStatusHistory;
-import com.SmartLaundry.model.Users;
+import com.SmartLaundry.dto.DeliveryAgent.PendingDeliveriesResponseDTO;
+import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.OrderRepository;
 import com.SmartLaundry.service.Admin.RoleCheckingService;
 import com.SmartLaundry.service.DeliveryAgent.DeliveriesService;
@@ -53,38 +51,27 @@ public class DeliveriesController {
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/deliveries/today
-    // Return total deliveries, pending deliveries and upcoming deliveries
-    @GetMapping("/today")
-    public ResponseEntity<List<OrderResponseDTO>> getTodaysDeliveries(HttpServletRequest request) throws AccessDeniedException {
+    // http://localhost:8080/deliveries/pending
+    // Return a list of pending deliveries
+    @GetMapping("/pending")
+    public ResponseEntity<List<PendingDeliveriesResponseDTO>> getPendingDeliveries(HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
-        List<OrderResponseDTO> orderResponseDTOS = deliveriesService.todaysDeliveries(user);
-        return ResponseEntity.ok(orderResponseDTOS);
+        return ResponseEntity.ok(deliveriesService.pendingDeliveries(user));
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/deliveries/pending
-    // Return a list of pending deliveries
-//    @GetMapping("/pending")
-//    public ResponseEntity<Order> getDeliveriesSummary(HttpServletRequest request){
-//        // Fetch agent id
-//        String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-//        DeliverySummaryResponseDTO deliverySummaryResponseDTO = deliveriesService.deliveriesSummary(agentId);
-//        return ResponseEntity.ok(deliverySummaryResponseDTO);
-//    }
-
-    // @author Hitiksha Jagani
-    // http://localhost:8080/deliveries/upcoming
+    // http://localhost:8080/deliveries/today
     // Return a list of upcoming deliveries
-//    @GetMapping("/upcoming")
-//    public ResponseEntity<DeliverySummaryResponseDTO> getDeliveriesSummary(HttpServletRequest request){
-//        // Fetch agent id
-//        String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-//        DeliverySummaryResponseDTO deliverySummaryResponseDTO = deliveriesService.deliveriesSummary(agentId);
-//        return ResponseEntity.ok(deliverySummaryResponseDTO);
-//    }
+    @GetMapping("/today")
+    public ResponseEntity<List<PendingDeliveriesResponseDTO>> getTodayDeliveries(HttpServletRequest request) throws AccessDeniedException {
+        // Fetch agent id
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        return ResponseEntity.ok(deliveriesService.getTodayDeliveries(user));
+    }
 
     // @author Hitiksha Jagani
     // http://localhost:8080/deliveries/accept/{orderId}

@@ -1,7 +1,6 @@
 package com.SmartLaundry.controller.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.AvailabilityDTO;
-import com.SmartLaundry.model.DeliveryAgentAvailability;
 import com.SmartLaundry.service.DeliveryAgent.AvailabilityService;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;

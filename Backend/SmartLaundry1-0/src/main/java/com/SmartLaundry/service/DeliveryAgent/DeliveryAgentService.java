@@ -34,6 +34,27 @@ public class DeliveryAgentService {
 
     private static final Logger logger = LoggerFactory.getLogger(DeliveryAgentService.class);
 
+    public Map<String, Double> getCurrentLocation(String agentId) {
+        String key = REDIS_KEY_PREFIX + agentId;
+
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Double> locationMap = (Map<String, Double>) redisTemplate.opsForValue().get(key);
+
+            if (locationMap != null &&
+                    locationMap.containsKey("latitude") &&
+                    locationMap.containsKey("longitude")) {
+                return locationMap;
+            } else {
+                logger.warn("No location data found for agent ID: {}", agentId);
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("Error while fetching location for agent {}: {}", agentId, e.getMessage());
+            return null;
+        }
+    }
+
     // @author Hitiksha Jagani
     public void updateLocation(String agentId, Double latitude, Double longitude) {
         String key = REDIS_KEY_PREFIX + agentId;

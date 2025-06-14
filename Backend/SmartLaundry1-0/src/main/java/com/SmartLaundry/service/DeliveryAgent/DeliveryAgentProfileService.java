@@ -69,6 +69,7 @@ public class DeliveryAgentProfileService {
         this.emailService = emailService;
         this.smsService = smsService;
     }
+
     public DeliveryAgentProfileDTO getProfileDetail(String userId) {
 
         Users user = userRepository.findById(userId)

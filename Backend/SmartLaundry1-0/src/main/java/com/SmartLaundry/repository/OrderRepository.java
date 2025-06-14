@@ -5,8 +5,11 @@ import com.SmartLaundry.model.Order;
 import com.SmartLaundry.model.OrderStatus;
 import com.SmartLaundry.model.ServiceProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
@@ -18,11 +21,19 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProvider_ServiceProviderIdAndStatus(String serviceProviderId, OrderStatus status);
 
-    List<Order> findByDeliveryAgent(DeliveryAgent deliveryAgent);
 
     List<Order> findByPickupDate(LocalDate pickupDate);
 
-//    List<Order> findByServiceProvider_User_UserIdAndStatus(String serviceProviderId, OrderStatus orderStatus);
+    List<Order> findByStatusAndPickupDeliveryAgent(@Param("orderStatus") OrderStatus orderStatus,@Param("deliveryAgent") DeliveryAgent deliveryAgent);
 
-//    List<Order> findOrderHistoryByServiceProviderAndStatus(String serviceProviderId, OrderStatus status);
+    List<Order> findByPickupDeliveryAgent(@Param("deliveryAgent") DeliveryAgent deliveryAgent);
+
+    List<Order> findByDeliveryDeliveryAgent(@Param("deliveryAgent") DeliveryAgent deliveryAgent);
+
+    List<Order> findByStatusAndDeliveryDeliveryAgent(@Param("orderStatus") OrderStatus orderStatus, @Param("deliveryAgent") DeliveryAgent deliveryAgent);
+
+    List<Order> findByStatusAndDeliveryDeliveryAgentAndDeliveryDate(@Param("orderStatus") OrderStatus orderStatus, @Param("deliveryAgent") DeliveryAgent deliveryAgent, @Param("now") LocalDate now);
+
+    List<Order> findByStatusAndPickupDeliveryAgentAndPickupDate(@Param("orderStatus") OrderStatus orderStatus, @Param("deliveryAgent") DeliveryAgent deliveryAgent, @Param("now") LocalDate now);
+
 }

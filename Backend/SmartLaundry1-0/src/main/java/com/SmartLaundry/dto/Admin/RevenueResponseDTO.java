@@ -11,5 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RevenueResponseDTO {
-    private String revenueId;
+    private Double totalRevenue;
+    private Long totalOrders;
+    private Double grossSales;
+    private Double serviceProviderPayouts;
+    private Double deliveryAgentPayouts;
+    private Double avgOrderValue;
 }
