@@ -366,8 +366,7 @@ public class ServiceProviderOrderService {
     }
 
     public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException {
-        Order order = orderRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        Order order = orderRepository.findByOrderId(orderId);
 
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
@@ -509,22 +508,22 @@ public class ServiceProviderOrderService {
         }
 
 
-    public void respondToAgentFeedbackByUserId(String agentUserId, Long feedbackId, String responseMessage) {
-        DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(agentUserId)
-                .orElseThrow(() -> new RuntimeException("Delivery agent not found with userId: " + agentUserId));
-
-        FeedbackAgents feedback = feedbackAgentsRepository.findById(feedbackId)
-                .orElseThrow(() -> new RuntimeException("Feedback not found"));
-
-        if (!feedback.getAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
-            throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
-        }
-
-        feedback.setResponse(responseMessage);
-        feedbackAgentsRepository.save(feedback);
-
-        log.info("Delivery Agent {} responded to feedback {} with message: {}",
-                agent.getDeliveryAgentId(), feedbackId, responseMessage);
-    }
+//    public void respondToAgentFeedbackByUserId(String agentUserId, Long feedbackId, String responseMessage) {
+//        DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(agentUserId)
+//                .orElseThrow(() -> new RuntimeException("Delivery agent not found with userId: " + agentUserId));
+//
+//        FeedbackAgents feedback = feedbackAgentsRepository.findById(feedbackId)
+//                .orElseThrow(() -> new RuntimeException("Feedback not found"));
+//
+//        if (!feedback.getDeliveryAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
+//            throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
+//        }
+//
+//        feedback.ge(responseMessage);
+//        feedbackAgentsRepository.save(feedback);
+//
+//        log.info("Delivery Agent {} responded to feedback {} with message: {}",
+//                agent.getDeliveryAgentId(), feedbackId, responseMessage);
+//    }
 
 }

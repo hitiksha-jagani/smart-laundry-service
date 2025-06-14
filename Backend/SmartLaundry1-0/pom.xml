@@ -36,6 +36,7 @@
 	</properties>
 
 	<dependencies>
+
 		<!-- Jakarta Persistence API -->
 		<dependency>
 			<groupId>jakarta.persistence</groupId>

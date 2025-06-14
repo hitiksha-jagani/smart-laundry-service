@@ -1,30 +1,25 @@
 package com.SmartLaundry.controller.DeliveryAgent;
 
-import com.SmartLaundry.dto.Admin.ServiceProviderResponseDTO;
 import com.SmartLaundry.dto.Customer.RaiseTicketRequestDto;
-import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.model.TicketStatus;
 import com.SmartLaundry.service.DeliveryAgent.TicketService;
 import com.SmartLaundry.service.JWTService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDate;
 import java.util.List;
 
 // @author Hitiksha Jagani
 @RestController
 @RequestMapping("")
-public class TicketController {
+public class DeliveryAgentTicketController {
 
     @Autowired
     private JWTService jwtService;
