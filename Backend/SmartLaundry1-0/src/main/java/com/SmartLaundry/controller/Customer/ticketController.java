@@ -15,7 +15,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/ticket")
 @CrossOrigin(origins = "http://localhost:63342")
-public class TicketController {
+public class ticketController {
 
     @Autowired
     private OrderService orderService;

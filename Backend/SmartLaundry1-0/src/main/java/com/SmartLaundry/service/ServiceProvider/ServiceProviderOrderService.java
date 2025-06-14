@@ -66,7 +66,7 @@ public class ServiceProviderOrderService {
         redisTemplate.delete(lockKey);
     }
 
-//    public OrderResponseDto acceptOrder(String spUserId, String orderId) {
+    //    public OrderResponseDto acceptOrder(String spUserId, String orderId) {
 //        String lockKey = LOCK_PREFIX + orderId;
 //
 //        if (!tryAcquireLock(lockKey)) {
@@ -366,7 +366,7 @@ public class ServiceProviderOrderService {
     }
 
     public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException {
-        Order order = orderRepository.findByOrderId(orderId)
+        Order order = orderRepository.findByorderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
@@ -427,7 +427,7 @@ public class ServiceProviderOrderService {
         ).collect(Collectors.toList());
     }
 
-//    public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
+    //    public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
 //        OrderStatus status = null;
 //        if (statusStr != null && !statusStr.isBlank()) {
 //            try {
@@ -470,61 +470,61 @@ public class ServiceProviderOrderService {
 //
 //        return history;
 //    }
-        public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
-            OrderStatus status = null;
-            if (statusStr != null && !statusStr.isBlank()) {
-                try {
-                    status = OrderStatus.valueOf(statusStr.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("Invalid order status");
-                }
+    public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
+        OrderStatus status = null;
+        if (statusStr != null && !statusStr.isBlank()) {
+            try {
+                status = OrderStatus.valueOf(statusStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid order status");
             }
+        }
 
-            List<Order> orders = (status != null)
-                    ? orderRepository.findByServiceProvider_ServiceProviderIdAndStatus(providerId, status)
-                    : orderRepository.findByServiceProvider_ServiceProviderId(providerId);
+        List<Order> orders = (status != null)
+                ? orderRepository.findByServiceProvider_ServiceProviderIdAndStatus(providerId, status)
+                : orderRepository.findByServiceProvider_ServiceProviderId(providerId);
 
-            List<OrderHistoryDto> history = new ArrayList<>();
+        List<OrderHistoryDto> history = new ArrayList<>();
 
-            for (Order order : orders) {
-                List<OrderHistoryDto.ItemDetail> items = new ArrayList<>();
+        for (Order order : orders) {
+            List<OrderHistoryDto.ItemDetail> items = new ArrayList<>();
 
-                for (BookingItem item : order.getBookingItems()) {
-                    items.add(OrderHistoryDto.ItemDetail.builder()
-                            .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : null)
-                            .subServiceName(item.getItem().getSubService() != null ? item.getItem().getSubService().getSubServiceName() : null)
-                            .itemName(item.getItem().getItemName())
-                            .quantity(item.getQuantity())
-                            .build());
-                }
-
-                history.add(OrderHistoryDto.builder()
-                        .orderId(order.getOrderId())
-                        .status(order.getStatus().name())
-                        .items(items)
+            for (BookingItem item : order.getBookingItems()) {
+                items.add(OrderHistoryDto.ItemDetail.builder()
+                        .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : null)
+                        .subServiceName(item.getItem().getSubService() != null ? item.getItem().getSubService().getSubServiceName() : null)
+                        .itemName(item.getItem().getItemName())
+                        .quantity(item.getQuantity())
                         .build());
             }
 
-            return history;
+            history.add(OrderHistoryDto.builder()
+                    .orderId(order.getOrderId())
+                    .status(order.getStatus().name())
+                    .items(items)
+                    .build());
         }
 
-
-    public void respondToAgentFeedbackByUserId(String agentUserId, Long feedbackId, String responseMessage) {
-        DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(agentUserId)
-                .orElseThrow(() -> new RuntimeException("Delivery agent not found with userId: " + agentUserId));
-
-        FeedbackAgents feedback = feedbackAgentsRepository.findById(feedbackId)
-                .orElseThrow(() -> new RuntimeException("Feedback not found"));
-
-        if (!feedback.getAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
-            throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
-        }
-
-        feedback.setResponse(responseMessage);
-        feedbackAgentsRepository.save(feedback);
-
-        log.info("Delivery Agent {} responded to feedback {} with message: {}",
-                agent.getDeliveryAgentId(), feedbackId, responseMessage);
+        return history;
     }
+
+
+//    public void respondToAgentFeedbackByUserId(String agentUserId, Long feedbackId, String responseMessage) {
+//        DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(agentUserId)
+//                .orElseThrow(() -> new RuntimeException("Delivery agent not found with userId: " + agentUserId));
+//
+//        FeedbackAgents feedback = feedbackAgentsRepository.findById(feedbackId)
+//                .orElseThrow(() -> new RuntimeException("Feedback not found"));
+//
+//        if (!feedback.getAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
+//            throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
+//        }
+//
+//        feedback.setResponse(responseMessage);
+//        feedbackAgentsRepository.save(feedback);
+//
+//        log.info("Delivery Agent {} responded to feedback {} with message: {}",
+//                agent.getDeliveryAgentId(), feedbackId, responseMessage);
+//    }
 
 }
