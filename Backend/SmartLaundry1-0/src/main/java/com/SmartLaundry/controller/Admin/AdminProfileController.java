@@ -27,7 +27,7 @@ public class AdminProfileController {
     @Autowired
     private ChangePasswordService changePasswordService;
 
-    //@author HitikshaJagani
+    //@author Hitiksha Jagani
     // http://localhost:8080/admin-profile
     // Return profile detail of the admin.
     @GetMapping("/admin-profile")
@@ -36,7 +36,7 @@ public class AdminProfileController {
         return ResponseEntity.ok(adminProfileService.getProfileDetail(userId));
     }
 
-    //@author HitikshaJagani
+    //@author Hitiksha Jagani
     // http://localhost:8080/admin-profile/edit
     // Render form for edit profile details.
     @PutMapping("/admin-profile/edit")

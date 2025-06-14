@@ -49,7 +49,7 @@ public class ServiceProviderProfileController {
         return ResponseEntity.ok(serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto));
     }
 
-    // http://localhost:8080/sp-profile
+    // http://localhost:8080/sp/US00004
     // Return profile detail page of service provider.
     @GetMapping("/sp-profile")
     public ResponseEntity<ServiceProviderProfileDTO> getServiceProviderProfile(HttpServletRequest request) {
@@ -57,26 +57,6 @@ public class ServiceProviderProfileController {
 
         return ResponseEntity.ok(serviceProviderProfileService.getServiceProviderProfileDetail(userId));
     }
-
-    // http://localhost:8080/sp-profile/edit
-    // Modify existing service provider profile.
-//    @PutMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<String> editServiceProviderProfile(
-//            HttpServletRequest request,
-//            @ModelAttribute ServiceProviderProfileDTO profileDTO
-//    ) {
-//        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-//        return ResponseEntity.ok(serviceProviderProfileService.editServiceProviderDetail(userId, profileDTO));
-//    }
-    @PutMapping("/edit")
-    public ResponseEntity<String> editServiceProviderProfile(
-            HttpServletRequest request,
-            @RequestBody ServiceProviderProfileDTO profileDTO
-    ){
-        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        return ResponseEntity.ok(serviceProviderProfileService.editServiceProviderDetail(userId, profileDTO));
-    }
-
 
     // http://localhost:8080/sp-profile/change-password
     // Change password for service provider
@@ -89,6 +69,7 @@ public class ServiceProviderProfileController {
 
         return ResponseEntity.ok(changePasswordService.changePassword(userId, changePasswordRequestDTO));
     }
+
     @GetMapping("{userId}")
     public ResponseEntity<String> test(@PathVariable String userId) {
         return ResponseEntity.ok("You hit " + userId);

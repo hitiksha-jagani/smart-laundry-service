@@ -37,17 +37,27 @@ public class ServiceProviderController {
     }
 
     // for Nearby Filter
-    @GetMapping("/serviceProviders/nearby")
-    public ResponseEntity<List<CustomerServiceProviderDTO>> getNearbyServiceProviders(
-            @RequestParam Double latitude,
-            @RequestParam Double longitude,
-            @RequestParam(defaultValue = "10") double radiusKm) {
+//    @GetMapping("/serviceProviders/nearby")
+//    public ResponseEntity<List<CustomerServiceProviderDTO>> getNearbyServiceProviders(
+//            @RequestParam Double latitude,
+//            @RequestParam Double longitude,
+//            @RequestParam(defaultValue = "10") double radiusKm) {
+//
+//        List<ServiceProvider> nearbyProviders = nearbyProviderService.getProvidersNearby(latitude, longitude, radiusKm);
+//        List<CustomerServiceProviderDTO> result = nearbyProviders.stream()
+//                .map(serviceProviderService::convertToCustomerDTO)
+//                .toList();
+//
+//        return ResponseEntity.ok(result);
+//    }
 
-        List<ServiceProvider> nearbyProviders = nearbyProviderService.getProvidersNearby(latitude, longitude, radiusKm);
-        List<CustomerServiceProviderDTO> result = nearbyProviders.stream()
-                .map(serviceProviderService::convertToCustomerDTO)
-                .toList();
-
-        return ResponseEntity.ok(result);
+    @GetMapping("/providers/nearby")
+    public ResponseEntity<List<ServiceProvider>> getNearbyProviders(
+            @RequestParam Double lat,
+            @RequestParam Double lng,
+            @RequestParam(defaultValue = "5") Double radiusKm
+    ) {
+        List<ServiceProvider> providers = nearbyProviderService.getProvidersNearby(lat, lng, radiusKm);
+        return ResponseEntity.ok(providers);
     }
 }

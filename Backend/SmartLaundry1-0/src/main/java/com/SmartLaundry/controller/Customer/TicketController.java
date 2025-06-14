@@ -43,8 +43,8 @@ public class TicketController {
             orderService.raiseTicket(userId, dto, photoFile);
             return ResponseEntity.ok("Ticket raised successfully.");
         } catch (IOException e) {
-                e.printStackTrace(); // log the exact reason
-                return ResponseEntity.internalServerError().body("Failed to save ticket photo: " + e.getMessage());
+            e.printStackTrace(); // log the exact reason
+            return ResponseEntity.internalServerError().body("Failed to save ticket photo: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

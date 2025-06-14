@@ -55,9 +55,6 @@ public class DeliveriesService {
     private BookingItemRepository bookingItemRepository;
 
     @Autowired
-    private DeliveryAgentAvailabilityRepository availabilityRepository;
-
-    @Autowired
     private DeliveryAgentEarningsRepository deliveryAgentEarningsRepository;
 
     @Autowired
