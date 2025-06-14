@@ -11,6 +11,7 @@ import com.SmartLaundry.service.Customer.SMSService;
 import com.SmartLaundry.util.UsernameUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,9 @@ public class ServiceProviderProfileService {
     private final EmailService emailService;
     private final SMSService smsService;
     // Return profile details of delivery agent
+
+    @Value("${SERVICE_PROVIDER_PROFILE_IMAGE}")
+    private String path;
 
     public ServiceProviderProfileService(EmailService emailService, SMSService smsService) {
         this.emailService = emailService;
@@ -162,31 +166,7 @@ public class ServiceProviderProfileService {
         String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
         String profilePath = saveFile(profilePhoto, uploadDir, userId);
 
-        // 5. Save Address with Geo location
-        ServiceProviderRequestDTO.AddressDTO addressDTO = data.getAddresses();
-        City city = cityRepository.findByCityName(addressDTO.getCityName())
-                .orElseThrow(() -> new RuntimeException("City not found."));
-
-        UserAddress address = UserAddress.builder()
-                .users(user)
-                .name(addressDTO.getName())
-                .areaName(addressDTO.getAreaName())
-                .pincode(addressDTO.getPincode())
-                .city(city)
-                .build();
-
-        String fullAddress = String.format("%s, %s, %s, %s",
-                addressDTO.getName(), addressDTO.getAreaName(), city.getCityName(), addressDTO.getPincode());
-
-        double[] latLng = geoUtils.getLatLng(fullAddress);
-        if (latLng[0] != 0.0 || latLng[1] != 0.0) {
-            address.setLatitude(latLng[0]);
-            address.setLongitude(latLng[1]);
-        }
-
-        userAddressRepository.save(address);
-
-        // 6. Save BankAccount entity
+        // 5. Save BankAccount entity
         BankAccount bankAccount = BankAccount.builder()
                 .bankName(bankDTO.getBankName())
                 .ifscCode(bankDTO.getIfscCode())
@@ -196,7 +176,7 @@ public class ServiceProviderProfileService {
 
         bankAccountRepository.save(bankAccount);
 
-        // 7. Map and Save ServiceProvider
+        // 6. Map and Save ServiceProvider
         ServiceProvider serviceProvider = ServiceProvider.builder()
                 .user(user)
                 .businessName(data.getBusinessName())
@@ -213,8 +193,7 @@ public class ServiceProviderProfileService {
 
         serviceProviderRepository.save(serviceProvider);
 
-        // 8. Save Prices
-
+        // 7. Save Prices
         if (data.getPriceDTO() != null && !data.getPriceDTO().isEmpty()) {
             List<Price> prices = data.getPriceDTO().stream().map(priceDto -> {
                 if (priceDto.getItem() == null || priceDto.getItem().getItemId() == null) {
@@ -235,10 +214,7 @@ public class ServiceProviderProfileService {
             priceRepository.saveAll(prices);
         }
 
-
-
-
-        // 9. Send Notification
+        // 8. Send Notification
         String message = "Congratulations! Your request to become a Service Provider has been submitted for review.";
         String subject = "Service Provider Profile Submission";
 
@@ -247,6 +223,7 @@ public class ServiceProviderProfileService {
 
         return "Your request is sent successfully. Wait for a response.";
     }
+
 
 
     public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
@@ -274,9 +251,4 @@ public class ServiceProviderProfileService {
         // Return the relative or absolute path
         return destination.getAbsolutePath();
     }
-
-
-
-
-
 }

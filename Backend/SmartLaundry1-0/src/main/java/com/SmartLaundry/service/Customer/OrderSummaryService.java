@@ -1,29 +1,33 @@
-//package com.SmartLaundry.service.Customer;
-//
-//import com.SmartLaundry.dto.Customer.OrderSummaryDto;
-//import com.SmartLaundry.model.*;
-//import com.SmartLaundry.repository.BillRepository;
-//import com.SmartLaundry.repository.OrderRepository;
-//import com.SmartLaundry.repository.PriceRepository;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//
-//import java.math.BigDecimal;
-//import java.util.List;
-//import java.util.Optional;
-//
-//@RequiredArgsConstructor
-//@Service
-//public class OrderSummaryService {
-//
-//    private final OrderRepository orderRepository;
-//    private final BillRepository billRepository;
-//    private final PromotionEvaluatorService promotionEvaluatorService;
-//    private final PriceRepository priceRepository;
-//
+package com.SmartLaundry.service.Customer;
+
+import com.SmartLaundry.dto.Customer.OrderSummaryDto;
+import com.SmartLaundry.model.*;
+import com.SmartLaundry.repository.BillRepository;
+import com.SmartLaundry.repository.OrderRepository;
+import com.SmartLaundry.repository.PriceRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+@RequiredArgsConstructor
+@Service
+public class OrderSummaryService {
+
+    private final OrderRepository orderRepository;
+    private final BillRepository billRepository;
+    private final PromotionEvaluatorService promotionEvaluatorService;
+    private final PriceRepository priceRepository;
+
 //    public OrderSummaryDto generateOrderSummary(String orderId, Promotion promo) {
 //        Order order = orderRepository.findById(orderId)
 //                .orElseThrow(() -> new RuntimeException("Order not found"));
+//
+//        if (promo == null) {
+//            promo = order.getPromotion();
+//        }
 //
 //        List<BookingItem> bookingItems = order.getBookingItems();
 //
@@ -50,6 +54,12 @@
 //                        .calculateDiscount(promo, totalBeforeDiscount)
 //                        .doubleValue();
 //                promoMessage = "Promotion applied.";
+//
+//                if (order.getPromotion() == null ||
+//                        !order.getPromotion().getPromotionId().equals(promo.getPromotionId())) {
+//                    order.setPromotion(promo);
+//                    orderRepository.save(order);
+//                }
 //            } else {
 //                promoMessage = validationMessage;
 //            }
@@ -57,9 +67,9 @@
 //
 //        double finalAmount = itemsTotal + gstAmount + deliveryCharge - discount;
 //
-//        // Save bill if it doesn't exist
-//        Optional<Bill> existingBill = billRepository.findByOrder(order);
-//        if (existingBill.isEmpty()) {
+//        // Create and save bill if it doesn't exist
+//        Bill existingBill = billRepository.findByOrder(order);
+//        if (existingBill == null) {
 //            Bill bill = Bill.builder()
 //                    .order(order)
 //                    .status(BillStatus.PENDING_FOR_PAYMENT)
@@ -70,13 +80,8 @@
 //                    .finalPrice(finalAmount)
 //                    .build();
 //
-//            List<BookingItem> billItems = bookingItems.stream().map(item -> {
-//                item.setBill(bill);
-//                return item;
-//            }).toList();
-//
-//            bill.setBookingItems(billItems);
-//
+//            List<BookingItem> copiedItems = copyBookingItems(bookingItems, bill, order);
+//            bill.setBookingItems(copiedItems);
 //            billRepository.save(bill);
 //        }
 //
@@ -89,23 +94,30 @@
 //                    .orElse(0L);
 //
 //            return OrderSummaryDto.ItemSummary.builder()
-//                    .itemName(itemEntity.getItemName())
+//                    .itemName(Optional.ofNullable(itemEntity.getItemName()).orElse("Unnamed Item"))
 //                    .quantity(item.getQuantity())
 //                    .price(pricePerUnit.doubleValue())
 //                    .finalPrice(item.getFinalPrice())
 //                    .build();
 //        }).toList();
 //
-//        // Handle null SubService/Service safely
-//        String subServiceName = "";
+//        // Extract service/subservice info
 //        String serviceName = "";
+//        String subServiceName = "";
+//
 //        if (!bookingItems.isEmpty()) {
-//            Items firstItem = bookingItems.get(0).getItem();
-//            if (firstItem != null && firstItem.getSubService() != null) {
-//                subServiceName = Optional.ofNullable(firstItem.getSubService().getSubServiceName()).orElse("");
-//                if (firstItem.getSubService().getServices() != null) {
-//                    serviceName = Optional.ofNullable(firstItem.getSubService().getServices().getServiceName()).orElse("");
-//                }
+//            Items firstItem = Optional.ofNullable(bookingItems.get(0)).map(BookingItem::getItem).orElse(null);
+//            if (firstItem != null) {
+//                SubService subService = firstItem.getSubService();
+//                Services service = subService != null ? subService.getServices() : firstItem.getService();
+//
+//                subServiceName = Optional.ofNullable(subService)
+//                        .map(SubService::getSubServiceName)
+//                        .orElse("N/A");
+//
+//                serviceName = Optional.ofNullable(service)
+//                        .map(Services::getServiceName)
+//                        .orElse("N/A");
 //            }
 //        }
 //
@@ -121,38 +133,16 @@
 //                .finalAmount(finalAmount)
 //                .isPromotionApplied(isValidPromotion)
 //                .promotionMessage(promoMessage)
+//                .appliedPromoCode(promo != null ? promo.getPromoCode() : null)
 //                .orderStatus(order.getStatus())
 //                .build();
 //    }
-//}
-package com.SmartLaundry.service.Customer;
 
-import com.SmartLaundry.dto.Customer.OrderSummaryDto;
-import com.SmartLaundry.model.*;
-import com.SmartLaundry.repository.BillRepository;
-import com.SmartLaundry.repository.OrderRepository;
-import com.SmartLaundry.repository.PriceRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-@RequiredArgsConstructor
-@Service
-public class OrderSummaryService {
-
-    private final OrderRepository orderRepository;
-    private final BillRepository billRepository;
-    private final PromotionEvaluatorService promotionEvaluatorService;
-    private final PriceRepository priceRepository;
 
     public OrderSummaryDto generateOrderSummary(String orderId, Promotion promo) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // If no promo passed, use the one from the order
         if (promo == null) {
             promo = order.getPromotion();
         }
@@ -164,12 +154,23 @@ public class OrderSummaryService {
                 .sum();
 
         double gstAmount = itemsTotal * 0.18;
-        double deliveryCharge = 30.0;
 
+        // Step 1: Try fetching existing bill
+        Bill existingBill = billRepository.findByOrder(order);
+
+        double deliveryCharge;
         double discount = 0.0;
         String promoMessage = "";
         boolean isValidPromotion = false;
 
+        // Step 2: Determine delivery charge
+        if (existingBill != null && existingBill.getDeliveryCharge() != null) {
+            deliveryCharge = existingBill.getDeliveryCharge();
+        } else {
+            deliveryCharge = 30.0; // fallback default
+        }
+
+        // Step 3: Validate and apply promotion (if any)
         if (promo != null) {
             BigDecimal totalBeforeDiscount = BigDecimal.valueOf(itemsTotal + gstAmount + deliveryCharge);
             String validationMessage = promotionEvaluatorService.getPromotionValidationMessage(
@@ -193,31 +194,27 @@ public class OrderSummaryService {
             }
         }
 
-        double finalAmount = itemsTotal + gstAmount + deliveryCharge - discount;
+        // Step 4: Calculate final amount
+        double finalAmount = itemsTotal + gstAmount + deliveryCharge - (isValidPromotion ? discount : 0.0);
 
-        // Save bill if it doesn't exist
-        Bill existingBill = billRepository.findByOrder(order);
-        if (existingBill==null) {
+        // Step 5: Create bill only if not present
+        if (existingBill == null) {
             Bill bill = Bill.builder()
                     .order(order)
                     .status(BillStatus.PENDING_FOR_PAYMENT)
                     .itemsTotalPrice(itemsTotal)
                     .gstAmount(gstAmount)
                     .deliveryCharge(deliveryCharge)
-                    .discountAmount(discount)
+                    .discountAmount(isValidPromotion ? discount : 0.0)
                     .finalPrice(finalAmount)
                     .build();
 
-            List<BookingItem> billItems = bookingItems.stream().map(item -> {
-                item.setBill(bill);
-                return item;
-            }).toList();
-
-            bill.setBookingItems(billItems);
+            List<BookingItem> copiedItems = copyBookingItems(bookingItems, bill, order);
+            bill.setBookingItems(copiedItems);
             billRepository.save(bill);
         }
 
-        // Build item summary list
+        // Step 6: Build item summaries
         List<OrderSummaryDto.ItemSummary> itemSummaries = bookingItems.stream().map(item -> {
             Items itemEntity = item.getItem();
             Long pricePerUnit = priceRepository
@@ -226,32 +223,31 @@ public class OrderSummaryService {
                     .orElse(0L);
 
             return OrderSummaryDto.ItemSummary.builder()
-                    .itemName(itemEntity.getItemName())
+                    .itemName(Optional.ofNullable(itemEntity.getItemName()).orElse("Unnamed Item"))
                     .quantity(item.getQuantity())
                     .price(pricePerUnit.doubleValue())
                     .finalPrice(item.getFinalPrice())
                     .build();
         }).toList();
 
-        // Handle null SubService/Service safely
-        String subServiceName = "";
+        // Step 7: Extract service/subservice names
         String serviceName = "";
-
+        String subServiceName = "";
         if (!bookingItems.isEmpty()) {
-            Items firstItem = bookingItems.get(0).getItem();
+            Items firstItem = Optional.ofNullable(bookingItems.get(0)).map(BookingItem::getItem).orElse(null);
             if (firstItem != null) {
                 SubService subService = firstItem.getSubService();
-                if (subService != null) {
-                    subServiceName = Optional.ofNullable(subService.getSubServiceName()).orElse("");
+                Services service = subService != null ? subService.getServices() : firstItem.getService();
 
-                    Services service = subService.getServices();
-                    if (service != null) {
-                        serviceName = Optional.ofNullable(service.getServiceName()).orElse("");
-                    }
-                }
+                subServiceName = Optional.ofNullable(subService)
+                        .map(SubService::getSubServiceName)
+                        .orElse("N/A");
+
+                serviceName = Optional.ofNullable(service)
+                        .map(Services::getServiceName)
+                        .orElse("N/A");
             }
         }
-
 
         return OrderSummaryDto.builder()
                 .orderId(orderId)
@@ -261,14 +257,23 @@ public class OrderSummaryService {
                 .itemsTotal(itemsTotal)
                 .gstAmount(gstAmount)
                 .deliveryCharge(deliveryCharge)
-                .discountAmount(discount)
+                .discountAmount(isValidPromotion ? discount : 0.0)
                 .finalAmount(finalAmount)
                 .isPromotionApplied(isValidPromotion)
                 .promotionMessage(promoMessage)
-                .appliedPromoCode(promo != null ? promo.getPromoCode() : null) // ✅ Add this line
+                .appliedPromoCode(promo != null ? promo.getPromoCode() : null)
                 .orderStatus(order.getStatus())
                 .build();
     }
+    private List<BookingItem> copyBookingItems(List<BookingItem> originalItems, Bill bill, Order order) {
+        return originalItems.stream().map(original -> {
+            BookingItem copy = new BookingItem();
+            copy.setItem(original.getItem());
+            copy.setQuantity(original.getQuantity());
+            copy.setFinalPrice(original.getFinalPrice());
+            copy.setOrder(order);
+            copy.setBill(bill);
+            return copy;
+        }).toList();
+    }
 }
-
-

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import com.SmartLaundry.dto.Customer.BookOrderRequestDto;
@@ -56,6 +57,8 @@ public class OrderService implements OrderBookingService {
     private final GeocodingService geocodingService;
     @Autowired
     private GeoUtils geoUtils;
+    @Value("${SERVICE_PROVIDER_TICKET}")
+    private String path;
     private String getRedisKey(String userId, String dummyOrderId) {
         return "order:user:" + userId + ":draft:" + dummyOrderId;
     }
@@ -100,28 +103,6 @@ public class OrderService implements OrderBookingService {
         redisTemplate.opsForHash().put(key, "payLastDelivery", String.valueOf(dto.isPayLastDelivery()));
         redisTemplate.expire(key, Duration.ofDays(7));
     }
-
-    // Save contact info in Redis
-//    @Transactional
-//    public void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto) {
-//        if (dto == null || dto.getContactName() == null || dto.getContactPhone() == null || dto.getContactAddress() == null) {
-//            throw new IllegalArgumentException("Missing required contact fields");
-//        }
-//
-//        // Geocode the address
-//        String fullAddress = dto.getContactAddress() + ", India";
-//        GeocodingService.LatLng latLng = geocodingService.getLatLongFromAddress(fullAddress);
-//
-//        // Save in Redis
-//        String key = getRedisKey(userId, dummyOrderId);
-//        redisTemplate.opsForHash().put(key, "contactName", dto.getContactName());
-//        redisTemplate.opsForHash().put(key, "contactPhone", dto.getContactPhone());
-//        redisTemplate.opsForHash().put(key, "contactAddress", dto.getContactAddress());
-//        redisTemplate.opsForHash().put(key, "latitude", String.valueOf(latLng.getLatitude()));
-//        redisTemplate.opsForHash().put(key, "longitude", String.valueOf(latLng.getLongitude()));
-//        redisTemplate.expire(key, Duration.ofDays(7));
-//    }
-
 
     @Transactional
     public void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto) {
@@ -357,6 +338,7 @@ public class OrderService implements OrderBookingService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
+
         // Attach BookingItems
         List<OrderItemRequest> itemRequests = parseItemsFromRedis(data);
         List<BookingItem> bookingItems = buildBookingItems(order, sp, itemRequests);
@@ -541,39 +523,6 @@ public class OrderService implements OrderBookingService {
         return dto;
     }
 
-//    public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
-//        Users user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
-//                .orElseThrow(() -> new RuntimeException("Service Provider not found"));
-//
-//        FeedbackProviders feedback = new FeedbackProviders();
-//        feedback.setUser(user);
-//        feedback.setServiceProvider(provider);
-//        feedback.setRating(dto.getRating());
-//        feedback.setReview(dto.getReview());
-//
-//        feedbackProvidersRepository.save(feedback);
-//    }
-//    //for Delivery Agent
-//    public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
-//        Users user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
-//                .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
-//
-//        FeedbackAgents feedback = new FeedbackAgents();
-//        feedback.setUser(user);
-//        feedback.setAgent(agent);
-//        feedback.setRating(dto.getRating());
-//        feedback.setReview(dto.getReview());
-//
-//        feedbackAgentsRepository.save(feedback);
-//    }
-
-
     public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -581,7 +530,7 @@ public class OrderService implements OrderBookingService {
         Order order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // ✅ Ensure order belongs to this user
+        //  Ensure order belongs to this user
         if (!order.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("You are not allowed to give feedback on this order");
         }
@@ -648,7 +597,7 @@ public class OrderService implements OrderBookingService {
         }
 
         // Save uploaded photo and get its path
-        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers\\" + userId;
+        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
         String photoPath = (photoFile != null && !photoFile.isEmpty())
                 ? saveFile(photoFile, uploadDir, userId)
                 : null;

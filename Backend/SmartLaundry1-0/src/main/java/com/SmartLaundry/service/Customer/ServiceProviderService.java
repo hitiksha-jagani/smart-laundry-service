@@ -2,6 +2,8 @@ package com.SmartLaundry.service.Customer;
 //All OR Nearby Service ProviderList
 import com.SmartLaundry.dto.*;
 import com.SmartLaundry.dto.Admin.PriceDTO;
+import com.SmartLaundry.dto.Customer.BillResponseDto;
+import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.ServiceProviderRepository;
 import com.SmartLaundry.repository.FeedbackProvidersRepository;
@@ -96,6 +98,47 @@ public class ServiceProviderService {
 
         return null;
     }
+//    public OrderResponseDto buildOrderResponseDto(Order order) {
+//        OrderResponseDto.OrderResponseDtoBuilder builder = OrderResponseDto.builder();
+//
+//        builder
+//                .orderId(order.getOrderId())
+//                .userId(order.getUser().getUserId())
+//                .serviceProviderId(order.getServiceProvider().getServiceProviderId())
+//                .contactName(order.getContactName())
+//                .contactPhone(order.getContactPhone())
+//                .contactAddress(order.getContactAddress())
+//                .latitude(order.getLatitude() != null ? order.getLatitude() : 0.0)
+//                .longitude(order.getLongitude() != null ? order.getLongitude() : 0.0)
+//                .pickupDate(order.getPickupDate())
+//                .pickupTime(order.getPickupTime())
+//                .status(order.getStatus())
+//                .needOfDeliveryAgent(order.getNeedOfDeliveryAgent());
+//
+//        // Booking items
+//        if (order.getBookingItems() != null) {
+//            List<OrderResponseDto.BookingItemDto> items = order.getBookingItems().stream()
+//                    .map(item -> OrderResponseDto.BookingItemDto.builder()
+//                            .itemId(item.getItem().getItemId())
+//                            .itemName(item.getItem().getItemName())
+//                            .quantity(item.getQuantity())
+//                            .finalPrice(item.getFinalPrice())
+//                            .build())
+//                    .toList();
+//            builder.bookingItems(items);
+//        }
+//
+//        // Schedule plan
+//        if (order.getOrderSchedulePlan() != null) {
+//            builder.schedulePlan(OrderResponseDto.SchedulePlanDto.builder()
+//                    .plan(order.getOrderSchedulePlan())
+//                    .payEachDelivery(order.getOrderSchedulePlan().isPayEachDelivery())
+//                    .payLastDelivery(order.getOrderSchedulePlan().isPayLastDelivery())
+//                    .build());
+//        }
+//
+//        return builder.build();
+//    }
 
 
     private AddressDTO mapAddress(UserAddress address) {

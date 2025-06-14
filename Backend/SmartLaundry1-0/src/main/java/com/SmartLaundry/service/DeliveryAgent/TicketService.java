@@ -6,6 +6,7 @@ import com.SmartLaundry.repository.TicketRepository;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.Admin.RoleCheckingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -30,14 +31,15 @@ public class TicketService {
 
     @Autowired
     private DeliveryAgentProfileService deliveryAgentProfileService ;
-
+    @Value("${DELIVERY_AGENT_TICKET}")
+    private String path;
     public String raiseTicket(String userId, RaiseTicketRequestDto raiseTicketRequestDto, MultipartFile image) throws IOException {
 
         Users user = roleCheckingService.checkUser(userId);
 
         roleCheckingService.isDeliveryAgent(user);
 
-        String uploadDir = "/media/hitiksha/C/DAIICT/Summer internship/images/tickets/delivery_agent/" + user.getUserId();
+        String uploadDir = "path" + user.getUserId();
         String photo = deliveryAgentProfileService.saveFile(image, uploadDir, userId);
 
         Ticket ticket = Ticket.builder()

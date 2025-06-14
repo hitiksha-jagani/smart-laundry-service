@@ -218,7 +218,7 @@ public class OrderController {
                     .build());
         }
 
-        // ✅ Only save promo to order if valid
+        // Only save promo to order if valid
         order.setPromotion(promotion);
         orderRepository.save(order);
 

@@ -20,6 +20,7 @@ import com.SmartLaundry.util.UsernameUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
@@ -64,7 +65,8 @@ public class DeliveryAgentProfileService {
     private final EmailService emailService;
     private final SMSService smsService;
     // Return profile details of delivery agent
-
+    @Value("${DELIVERY_AGENT_PROFILE_IMAGE}")
+    private String path;
     public DeliveryAgentProfileService(EmailService emailService, SMSService smsService) {
         this.emailService = emailService;
         this.smsService = smsService;
@@ -136,7 +138,7 @@ public class DeliveryAgentProfileService {
             throw new FormatException("Invalid IFSC Code format.");
         }
 
-        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
+        String uploadDir = "path" + userId;
         // Save files and get paths
         String aadharCardPath = saveFile(aadharCard, uploadDir, userId);
         String panCardPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
