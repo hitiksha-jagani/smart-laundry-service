@@ -32,19 +32,18 @@ public class ServiceProviderOrderController {
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<OrderResponseDto>> getPendingOrders(HttpServletRequest request) {
+    public ResponseEntity<List<ActiveOrderDto>> getPendingOrders(HttpServletRequest request) {
         String spUserId = getServiceProviderUserId(request);
-        List<OrderResponseDto> pendingOrders = serviceProviderOrderService.getPendingOrdersForServiceProvider(spUserId);
+        List<ActiveOrderDto> pendingOrders = serviceProviderOrderService.getPendingOrdersForServiceProvider(spUserId);
         return ResponseEntity.ok(pendingOrders);
     }
-    @PostMapping("/accept")
+    @PostMapping("/accept/{orderId}")
     public ResponseEntity<OrderResponseDto> acceptOrder(HttpServletRequest request,
-                                                        @RequestBody AcceptOrderRequestDto acceptOrderRequest) {
+                                                        @PathVariable String orderId) {
         String spUserId = getServiceProviderUserId(request);
         OrderResponseDto response = serviceProviderOrderService.acceptOrder(
                 spUserId,
-                acceptOrderRequest.getOrderId(),
-                acceptOrderRequest.isNeedOfDeliveryAgent()
+                orderId
         );
         return ResponseEntity.ok(response);
     }

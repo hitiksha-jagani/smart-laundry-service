@@ -66,131 +66,7 @@ public class ServiceProviderOrderService {
         redisTemplate.delete(lockKey);
     }
 
-//    public OrderResponseDto acceptOrder(String spUserId, String orderId) {
-//        String lockKey = LOCK_PREFIX + orderId;
-//
-//        if (!tryAcquireLock(lockKey)) {
-//            throw new IllegalStateException("Order is currently being processed by another request.");
-//        }
-//
-//        try {
-//            Order order = orderRepository.findById(orderId)
-//                    .orElseThrow(() -> new IllegalStateException("Order with ID " + orderId + " not found"));
-//
-//            ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-//                    .orElseThrow(() -> new IllegalStateException("Service Provider not found for user: " + spUserId));
-//
-//            if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
-//                throw new IllegalStateException("Order does not belong to logged-in service provider");
-//            }
-//
-//            if (order.getStatus() != OrderStatus.PENDING) {
-//                throw new IllegalStateException("Order is not in PENDING status and cannot be accepted");
-//            }
-//
-//            order.setStatus(OrderStatus.ACCEPTED_BY_PROVIDER);
-//            order = orderRepository.save(order);
-//
-//            orderStatusHistoryRepository.save(OrderStatusHistory.builder()
-//                    .order(order)
-//                    .status(OrderStatus.ACCEPTED_BY_PROVIDER)
-//                    .changedAt(LocalDateTime.now())
-//                    .build());
-//
-//            redisTemplate.opsForSet().remove(getPendingOrdersSetKey(sp.getServiceProviderId()), order.getOrderId());
-//
-//            smsService.sendOrderStatusNotification(order.getContactPhone(),
-//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
-//            emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
-//                    "Order Accepted",
-//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
-//
-//            log.info("Order {} accepted by service provider {} for customer {}", order.getOrderId(), spUserId, order.getUsers().getUserId());
-//
-//            return orderMapper.toOrderResponseDto(order);
-//
-//        } catch (Exception e) {
-//            log.error("Failed to accept order {} by service provider {}: {}", orderId, spUserId, e.getMessage(), e);
-//            throw e;
-//        } finally {
-//            releaseLock(lockKey);
-//        }
-//    }
-//
-//    public void rejectOrder(String spUserId, String orderId) {
-//        String lockKey = LOCK_PREFIX + orderId;
-//
-//        if (!tryAcquireLock(lockKey)) {
-//            throw new IllegalStateException("Order is currently being processed by another request.");
-//        }
-//
-//        try {
-//            Order order = orderRepository.findById(orderId)
-//                    .orElseThrow(() -> new IllegalStateException("Order with ID " + orderId + " not found"));
-//
-//            ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-//                    .orElseThrow(() -> new IllegalStateException("Service Provider not found for user: " + spUserId));
-//
-//            if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
-//                throw new IllegalStateException("Order does not belong to logged-in service provider");
-//            }
-//
-//            if (order.getStatus() != OrderStatus.PENDING) {
-//                throw new IllegalStateException("Order is not in PENDING status and cannot be rejected");
-//            }
-//
-//            order.setStatus(OrderStatus.REJECTED_BY_PROVIDER);
-//            orderRepository.save(order);
-//
-//            orderStatusHistoryRepository.save(OrderStatusHistory.builder()
-//                    .order(order)
-//                    .status(OrderStatus.REJECTED_BY_PROVIDER)
-//                    .changedAt(LocalDateTime.now())
-//                    .build());
-//
-//            redisTemplate.opsForSet().remove(getPendingOrdersSetKey(sp.getServiceProviderId()), order.getOrderId());
-//
-//            smsService.sendOrderStatusNotification(order.getContactPhone(),
-//                    "We're sorry! Your order " + order.getOrderId() + " has been rejected.");
-//            emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
-//                    "Order Rejected",
-//                    "We're sorry! Your order " + order.getOrderId() + " has been rejected.");
-//
-//            log.info("Order {} rejected by service provider {} for customer {}", order.getOrderId(), spUserId, order.getUsers().getUserId());
-//
-//        } catch (Exception e) {
-//            log.error("Failed to reject order {} by service provider {}: {}", orderId, spUserId, e.getMessage(), e);
-//            throw e;
-//        } finally {
-//            releaseLock(lockKey);
-//        }
-//    }
-//
-//    public void markOrderInCleaning(String spUserId, String orderId) throws AccessDeniedException {
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
-//
-//        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-//                .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
-//
-//        if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
-//            throw new AccessDeniedException("Unauthorized to update this order");
-//        }
-//
-//        if (order.getStatus() != OrderStatus.ACCEPTED_BY_PROVIDER) {
-//            throw new IllegalStateException("Order must be ACCEPTED to mark as IN_CLEANING");
-//        }
-//
-//        order.setStatus(OrderStatus.IN_CLEANING);
-//        orderRepository.save(order);
-//
-//        orderStatusHistoryRepository.save(OrderStatusHistory.builder()
-//                .order(order)
-//                .status(OrderStatus.IN_CLEANING)
-//                .changedAt(LocalDateTime.now())
-//                .build());
-//    }
-//
+
     public List<ActiveOrderDto> getActiveOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
@@ -198,44 +74,71 @@ public class ServiceProviderOrderService {
         List<Order> activeOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.IN_CLEANING);
 
         return activeOrders.stream().flatMap(order ->
-                order.getBookingItems().stream().map(item -> ActiveOrderDto.builder()
-                        .orderId(order.getOrderId())
-                        .service(item.getItem().getService().getServiceName())
-                        .subService(item.getItem().getSubService().getSubServiceName())
-                        .itemName(item.getItem().getItemName())
-                        .quantity(item.getQuantity())
-                        .pickupDate(order.getPickupDate())
-                        .pickupTime(order.getPickupTime())
-                        .status(order.getStatus())
-                        .build()
-                )
+                order.getBookingItems().stream().map(item -> {
+                    Items itemEntity = item.getItem();
+
+                    String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                            .map(sub -> sub.getServices())
+                            .map(Services::getServiceName)
+                            .orElse(Optional.ofNullable(itemEntity.getService())
+                                    .map(Services::getServiceName)
+                                    .orElse("N/A"));
+
+                    String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                            .map(SubService::getSubServiceName)
+                            .orElse("N/A");
+
+                    return ActiveOrderDto.builder()
+                            .orderId(order.getOrderId())
+                            .service(serviceName)
+                            .subService(subServiceName)
+                            .itemName(itemEntity.getItemName())
+                            .quantity(item.getQuantity())
+                            .pickupDate(order.getPickupDate())
+                            .pickupTime(order.getPickupTime())
+                            .status(order.getStatus())
+                            .build();
+                })
         ).collect(Collectors.toList());
     }
 
-    public List<OrderResponseDto> getPendingOrdersForServiceProvider(String spUserId) {
+    public List<ActiveOrderDto> getPendingOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-                .orElseThrow(() -> new RuntimeException("Service Provider not found for user: " + spUserId));
-        String serviceProviderId = sp.getServiceProviderId();
+                .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
 
-        Set<Object> orderIds = redisTemplate.opsForSet().members(getPendingOrdersSetKey(serviceProviderId));
-        if (orderIds == null || orderIds.isEmpty()) return Collections.emptyList();
+        List<Order> pendingOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.PENDING);
 
-        List<OrderResponseDto> pendingOrders = new ArrayList<>();
+        return pendingOrders.stream().flatMap(order ->
+                order.getBookingItems().stream().map(item -> {
+                    Items itemEntity = item.getItem();
 
-        for (Object orderIdObj : orderIds) {
-            String orderId = (String) orderIdObj;
-            String redisKey = getRedisKey(orderId);
-            Map<Object, Object> data = redisTemplate.opsForHash().entries(redisKey);
-            if (data == null || data.isEmpty()) continue;
-            if (!"PENDING".equalsIgnoreCase((String) data.get("status"))) continue;
+                    String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                            .map(sub -> sub.getServices())
+                            .map(Services::getServiceName)
+                            .orElse(Optional.ofNullable(itemEntity.getService())
+                                    .map(Services::getServiceName)
+                                    .orElse("N/A"));
 
-            OrderResponseDto dto = orderService.buildOrderResponseDtoFromRedisData(orderId, data);
-            pendingOrders.add(dto);
-        }
-        return pendingOrders;
+                    String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                            .map(SubService::getSubServiceName)
+                            .orElse("N/A");
+
+                    return ActiveOrderDto.builder()
+                            .orderId(order.getOrderId())
+                            .service(serviceName)
+                            .subService(subServiceName)
+                            .itemName(itemEntity.getItemName())
+                            .quantity(item.getQuantity())
+                            .pickupDate(order.getPickupDate())
+                            .pickupTime(order.getPickupTime())
+                            .status(order.getStatus())
+                            .build();
+                })
+        ).collect(Collectors.toList());
     }
 
-    public OrderResponseDto acceptOrder(String spUserId, String orderId, boolean needOfDeliveryAgent) {
+
+    public OrderResponseDto acceptOrder(String spUserId, String orderId) {
         String lockKey = LOCK_PREFIX + orderId;
 
         if (!tryAcquireLock(lockKey)) {
@@ -261,7 +164,7 @@ public class ServiceProviderOrderService {
 
             // Update order status and needOfDeliveryAgent BEFORE saving
             order.setStatus(OrderStatus.ACCEPTED_BY_PROVIDER);
-            order.setNeedOfDeliveryAgent(needOfDeliveryAgent);
+//            order.setNeedOfDeliveryAgent(needOfDeliveryAgent);
             order = orderRepository.save(order); // Save with updated fields
 
             // Save status history
@@ -271,14 +174,14 @@ public class ServiceProviderOrderService {
             redisTemplate.opsForSet().remove(getPendingOrdersSetKey(sp.getServiceProviderId()), order.getOrderId());
 
             // Send notifications
-            smsService.sendOrderStatusNotification(order.getContactPhone(),
-                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
-            emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
-                    "Order Accepted",
-                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
+//            smsService.sendOrderStatusNotification(order.getContactPhone(),
+//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
+//            emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
+//                    "Order Accepted",
+//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
 
             // Assign to delivery agent if selected
-            if (needOfDeliveryAgent) {
+            if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
                 deliveryService.assignToDeliveryAgent(order.getOrderId());
             }
 
@@ -426,7 +329,7 @@ public class ServiceProviderOrderService {
         ).collect(Collectors.toList());
     }
 
-//    public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
+    //    public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
 //        OrderStatus status = null;
 //        if (statusStr != null && !statusStr.isBlank()) {
 //            try {
@@ -469,43 +372,43 @@ public class ServiceProviderOrderService {
 //
 //        return history;
 //    }
-        public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
-            OrderStatus status = null;
-            if (statusStr != null && !statusStr.isBlank()) {
-                try {
-                    status = OrderStatus.valueOf(statusStr.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("Invalid order status");
-                }
+    public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
+        OrderStatus status = null;
+        if (statusStr != null && !statusStr.isBlank()) {
+            try {
+                status = OrderStatus.valueOf(statusStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid order status");
             }
+        }
 
-            List<Order> orders = (status != null)
-                    ? orderRepository.findByServiceProvider_ServiceProviderIdAndStatus(providerId, status)
-                    : orderRepository.findByServiceProvider_ServiceProviderId(providerId);
+        List<Order> orders = (status != null)
+                ? orderRepository.findByServiceProvider_ServiceProviderIdAndStatus(providerId, status)
+                : orderRepository.findByServiceProvider_ServiceProviderId(providerId);
 
-            List<OrderHistoryDto> history = new ArrayList<>();
+        List<OrderHistoryDto> history = new ArrayList<>();
 
-            for (Order order : orders) {
-                List<OrderHistoryDto.ItemDetail> items = new ArrayList<>();
+        for (Order order : orders) {
+            List<OrderHistoryDto.ItemDetail> items = new ArrayList<>();
 
-                for (BookingItem item : order.getBookingItems()) {
-                    items.add(OrderHistoryDto.ItemDetail.builder()
-                            .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : null)
-                            .subServiceName(item.getItem().getSubService() != null ? item.getItem().getSubService().getSubServiceName() : null)
-                            .itemName(item.getItem().getItemName())
-                            .quantity(item.getQuantity())
-                            .build());
-                }
-
-                history.add(OrderHistoryDto.builder()
-                        .orderId(order.getOrderId())
-                        .status(order.getStatus().name())
-                        .items(items)
+            for (BookingItem item : order.getBookingItems()) {
+                items.add(OrderHistoryDto.ItemDetail.builder()
+                        .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : null)
+                        .subServiceName(item.getItem().getSubService() != null ? item.getItem().getSubService().getSubServiceName() : null)
+                        .itemName(item.getItem().getItemName())
+                        .quantity(item.getQuantity())
                         .build());
             }
 
-            return history;
+            history.add(OrderHistoryDto.builder()
+                    .orderId(order.getOrderId())
+                    .status(order.getStatus().name())
+                    .items(items)
+                    .build());
         }
+
+        return history;
+    }
 
 
 //    public void respondToAgentFeedbackByUserId(String agentUserId, Long feedbackId, String responseMessage) {
@@ -515,11 +418,11 @@ public class ServiceProviderOrderService {
 //        FeedbackAgents feedback = feedbackAgentsRepository.findById(feedbackId)
 //                .orElseThrow(() -> new RuntimeException("Feedback not found"));
 //
-//        if (!feedback.getDeliveryAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
+//        if (!feedback.getAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
 //            throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
 //        }
 //
-//        feedback.ge(responseMessage);
+//        feedback.setResponse(responseMessage);
 //        feedbackAgentsRepository.save(feedback);
 //
 //        log.info("Delivery Agent {} responded to feedback {} with message: {}",

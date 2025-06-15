@@ -60,5 +60,3 @@ public class OrderResponseDto {
         private boolean payLastDelivery;
     }
 }
-
-

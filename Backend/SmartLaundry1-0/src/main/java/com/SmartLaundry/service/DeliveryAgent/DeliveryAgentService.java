@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,10 +74,11 @@ public class DeliveryAgentService {
                 logger.warn("Key 'activeDeliveryAgents' has wrong type: {}. Deleting it.", type.code());
                 redisTemplate.delete("activeDeliveryAgents");
             } else {
-                logger.error("'activeDeliveryAgents' exists as type {}. Expected a Set. Aborting write.", type.code());
+                redisTemplate.opsForSet().add("activeDeliveryAgents", agentId);
             }
 
-            redisTemplate.opsForSet().add("activeDeliveryAgents", agentId);
+
+//            redisTemplate.opsForSet().add("activeDeliveryAgents", agentId);
 
             redisTemplate.expire(key, 30, TimeUnit.MINUTES);
             logger.info("Location saved for agent {} with TTL 30 mins", agentId);
@@ -91,6 +93,9 @@ public class DeliveryAgentService {
     @Scheduled(fixedRate = 300000) // every 5 minutes
     @Transactional
     public void persistLocationsFromCache() {
+
+        System.out.println("Scheduler triggered at " + LocalDateTime.now());
+
         // Get all keys matching prefix
         Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
         if (keys == null || keys.isEmpty()) return;

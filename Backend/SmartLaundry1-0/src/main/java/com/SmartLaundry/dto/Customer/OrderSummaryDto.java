@@ -46,4 +46,3 @@ public class OrderSummaryDto {
         private double finalPrice;
     }
 }
-

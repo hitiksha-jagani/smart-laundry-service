@@ -20,6 +20,7 @@ import com.SmartLaundry.util.UsernameUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
@@ -60,6 +61,8 @@ public class DeliveryAgentProfileService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Value("${DELIVERY_AGENT_PROFILE_IMAGE}")
+    private String path;
 
     private final EmailService emailService;
     private final SMSService smsService;
@@ -117,10 +120,6 @@ public class DeliveryAgentProfileService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
-        if (!UserRole.DELIVERY_AGENT.equals(user.getRole())) {
-            throw new ForbiddenAccessException("You are not applicable for this page.");
-        }
-
         // Check whether delivery agent already has pending approval
         DeliveryAgent agent = deliveryAgentRepository.findByUsers(user).orElse(null);
         if (agent != null) {
@@ -136,7 +135,7 @@ public class DeliveryAgentProfileService {
             throw new FormatException("Invalid IFSC Code format.");
         }
 
-        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
+        String uploadDir = path + userId;
         // Save files and get paths
         String aadharCardPath = saveFile(aadharCard, uploadDir, userId);
         String panCardPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;

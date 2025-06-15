@@ -11,6 +11,7 @@ import com.SmartLaundry.service.Customer.SMSService;
 import com.SmartLaundry.util.UsernameUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,9 @@ public class ServiceProviderProfileService {
     private final EmailService emailService;
     private final SMSService smsService;
     // Return profile details of delivery agent
+
+    @Value("${SERVICE_PROVIDER_PROFILE_IMAGE}")
+    private String path;
 
     public ServiceProviderProfileService(EmailService emailService, SMSService smsService) {
         this.emailService = emailService;
@@ -156,7 +160,7 @@ public class ServiceProviderProfileService {
         }
 
         // 4. Upload images
-        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
+        String uploadDir = "path" + userId;
         String aadharPath = saveFile(aadharCard, uploadDir, userId);
         String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
         String utilityBillPath = saveFile(utilityBill, uploadDir, userId);

@@ -57,7 +57,7 @@ public class OrderMapper {
         }
 
         // ✅ Include needOfDeliveryAgent flag
-        builder.needOfDeliveryAgent(order.getNeedOfDeliveryAgent());
+//        builder.needOfDeliveryAgent(order.getNeedOfDeliveryAgent());
 
         return builder.build();
     }

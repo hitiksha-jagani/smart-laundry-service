@@ -54,7 +54,7 @@ public class DeliveriesController {
     // http://localhost:8080/deliveries/pending
     // Return a list of pending deliveries
     @GetMapping("/pending")
-    public ResponseEntity<List<PendingDeliveriesResponseDTO>> getPendingDeliveries(HttpServletRequest request) throws AccessDeniedException {
+    public ResponseEntity<List<PendingDeliveriesResponseDTO>> getPendingDeliveries(HttpServletRequest request) throws AccessDeniedException, JsonProcessingException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
@@ -82,20 +82,10 @@ public class DeliveriesController {
         String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(agentId);
         roleCheckingService.isDeliveryAgent(user);
+        System.out.println("Enter service");
+        deliveriesService.acceptOrder(orderId, agentId);
 
-        boolean result = deliveriesService.acceptOrder(orderId, agentId);
-
-        if(result){
-            Order order = orderRepository.findById(orderId)
-                    .orElseThrow(() -> new RuntimeException("Order not exist."));
-            OrderStatusHistory orderStatusHistory = OrderStatusHistory.builder()
-                    .status(OrderStatus.ACCEPTED_BY_AGENT)
-                    .order(order)
-                    .build();
-            return ResponseEntity.ok("Order accepted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Order already accepted or invalid agent.");
-        }
+        return ResponseEntity.ok("Order accepted successfully.");
     }
 
     // @author Hitiksha Jagani

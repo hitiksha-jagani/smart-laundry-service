@@ -27,6 +27,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+
+
 @Service
 @RequiredArgsConstructor
 public class OrderService implements OrderBookingService {
@@ -52,7 +54,8 @@ public class OrderService implements OrderBookingService {
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     @Autowired
     private final GeocodingService geocodingService;
-
+    @Autowired
+    private GeoUtils geoUtils;
     private String getRedisKey(String userId, String dummyOrderId) {
         return "order:user:" + userId + ":draft:" + dummyOrderId;
     }
@@ -81,7 +84,7 @@ public class OrderService implements OrderBookingService {
         }
 
         redisTemplate.expire(key, Duration.ofDays(7));
-     return dummyOrderId;
+        return dummyOrderId;
     }
 
     // Save schedule plan details in Redis
@@ -98,27 +101,36 @@ public class OrderService implements OrderBookingService {
         redisTemplate.expire(key, Duration.ofDays(7));
     }
 
-    // Save contact info in Redis
     @Transactional
     public void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto) {
+        Double latitude = 0.0;
+        Double longitude = 0.0;
         if (dto == null || dto.getContactName() == null || dto.getContactPhone() == null || dto.getContactAddress() == null) {
             throw new IllegalArgumentException("Missing required contact fields");
         }
 
         // Geocode the address
-        String fullAddress = dto.getContactAddress() + ", India";
-        GeocodingService.LatLng latLng = geocodingService.getLatLongFromAddress(fullAddress);
+        String fullAddress = String.format("%s",dto.getContactAddress());
 
+        // Call utility to get coordinates
+        double[] latLng = geoUtils.getLatLng(fullAddress);
+
+        // Set latitude & longitude if found
+        if (latLng[0] != 0.0 || latLng[1] != 0.0) {
+            latitude=latLng[0];
+            longitude=latLng[1];
+        } else {
+            System.out.println("⚠ Warning: Coordinates could not be determined.");
+        }
         // Save in Redis
         String key = getRedisKey(userId, dummyOrderId);
         redisTemplate.opsForHash().put(key, "contactName", dto.getContactName());
         redisTemplate.opsForHash().put(key, "contactPhone", dto.getContactPhone());
         redisTemplate.opsForHash().put(key, "contactAddress", dto.getContactAddress());
-        redisTemplate.opsForHash().put(key, "latitude", String.valueOf(latLng.getLatitude()));
-        redisTemplate.opsForHash().put(key, "longitude", String.valueOf(latLng.getLongitude()));
+        redisTemplate.opsForHash().put(key, "latitude",String.valueOf(latitude));
+        redisTemplate.opsForHash().put(key, "longitude",String.valueOf (longitude));
         redisTemplate.expire(key, Duration.ofDays(7));
     }
-
 
 
     // Validate that all required fields exist in Redis before order placement
@@ -264,15 +276,16 @@ public class OrderService implements OrderBookingService {
 
         // Send notification
         ServiceProvider sp = order.getServiceProvider();
+        System.out.println("phone : " + sp.getUser().getPhoneNo());
         smsService.sendOrderStatusNotification(
                 sp.getUser().getPhoneNo(),
                 "New laundry order received from user " + order.getUsers().getFirstName()
         );
-        emailService.sendOrderStatusNotification(
-                sp.getUser().getEmail(),
-                "New Laundry Order Request",
-                "You have received a new laundry order from " + order.getUsers().getFirstName()
-        );
+//        emailService.sendOrderStatusNotification(
+//                sp.getUser().getEmail(),
+//                "New Laundry Order Request",
+//                "You have received a new laundry order from " + order.getUsers().getFirstName()
+//        );
 
         // Return OrderResponseDto
         return orderMapper.toOrderResponseDto(order);
@@ -322,6 +335,7 @@ public class OrderService implements OrderBookingService {
                 .status(status)
                 .createdAt(LocalDateTime.now())
                 .build();
+
 
         // Attach BookingItems
         List<OrderItemRequest> itemRequests = parseItemsFromRedis(data);
@@ -507,39 +521,6 @@ public class OrderService implements OrderBookingService {
         return dto;
     }
 
-//    public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
-//        Users user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
-//                .orElseThrow(() -> new RuntimeException("Service Provider not found"));
-//
-//        FeedbackProviders feedback = new FeedbackProviders();
-//        feedback.setUser(user);
-//        feedback.setServiceProvider(provider);
-//        feedback.setRating(dto.getRating());
-//        feedback.setReview(dto.getReview());
-//
-//        feedbackProvidersRepository.save(feedback);
-//    }
-//    //for Delivery Agent
-//    public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
-//        Users user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
-//                .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
-//
-//        FeedbackAgents feedback = new FeedbackAgents();
-//        feedback.setUser(user);
-//        feedback.setAgent(agent);
-//        feedback.setRating(dto.getRating());
-//        feedback.setReview(dto.getReview());
-//
-//        feedbackAgentsRepository.save(feedback);
-//    }
-
-
     public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -547,7 +528,7 @@ public class OrderService implements OrderBookingService {
         Order order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // ✅ Ensure order belongs to this user
+        //  Ensure order belongs to this user
         if (!order.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("You are not allowed to give feedback on this order");
         }
