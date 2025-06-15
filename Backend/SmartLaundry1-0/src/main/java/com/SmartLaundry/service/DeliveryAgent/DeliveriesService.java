@@ -265,7 +265,7 @@ public class DeliveriesService {
                 earning = deliveryAgentEarnings.getFixedAmount();
             }
 
-            // ✅ Store earning and km in Redis for later use in bill generation
+            //  Store earning and km in Redis for later use in bill generation
             Map<String, Object> deliveryInfo = new HashMap<>();
             deliveryInfo.put("earning", round(earning, 2));
             deliveryInfo.put("totalKm", round(totalKm, 2));
