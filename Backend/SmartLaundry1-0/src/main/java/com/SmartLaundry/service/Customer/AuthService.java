@@ -182,7 +182,7 @@ public class AuthService {
         String input = request.getUsername().trim();
         Authentication authentication = null;
         try {
-            authentication = manager.authenticate(new UsernamePasswordAuthenticationToken(input, request.getPassword()));
+            authentication = manager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Invalid username or password!");
         }

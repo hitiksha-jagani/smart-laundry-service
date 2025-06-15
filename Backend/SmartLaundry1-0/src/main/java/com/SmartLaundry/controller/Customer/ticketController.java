@@ -1,4 +1,6 @@
 package com.SmartLaundry.controller.Customer;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.SmartLaundry.dto.Customer.RaiseTicketRequestDto;
 import com.SmartLaundry.service.Customer.OrderService;
@@ -15,7 +17,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/ticket")
 @CrossOrigin(origins = "http://localhost:63342")
-public class TicketController {
+public class ticketController {
 
     @Autowired
     private OrderService orderService;
@@ -36,8 +38,11 @@ public class TicketController {
         try {
             String userId = extractUserIdFromRequest(request);
 
-            // Manually parse the ticket JSON
+            // Manually parse the ticket JSON with proper module
             ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
             RaiseTicketRequestDto dto = mapper.readValue(ticketJson, RaiseTicketRequestDto.class);
 
             orderService.raiseTicket(userId, dto, photoFile);
@@ -49,5 +54,6 @@ public class TicketController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
 }

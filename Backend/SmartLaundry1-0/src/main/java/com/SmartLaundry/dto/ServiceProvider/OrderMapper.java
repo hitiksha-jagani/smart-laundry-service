@@ -56,8 +56,6 @@ public class OrderMapper {
             builder.schedulePlan(schedulePlanDto);
         }
 
-        // ✅ Include needOfDeliveryAgent flag
-//        builder.needOfDeliveryAgent(order.getNeedOfDeliveryAgent());
 
         return builder.build();
     }

@@ -1,4 +1,4 @@
-package com.SmartLaundry.service;
+package com.SmartLaundry.service.Customer;
 import java.time.LocalDateTime;
 
 public class OtpDetails {

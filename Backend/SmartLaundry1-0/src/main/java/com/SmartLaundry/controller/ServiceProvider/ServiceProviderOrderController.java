@@ -37,6 +37,7 @@ public class ServiceProviderOrderController {
         List<ActiveOrderDto> pendingOrders = serviceProviderOrderService.getPendingOrdersForServiceProvider(spUserId);
         return ResponseEntity.ok(pendingOrders);
     }
+
     @PostMapping("/accept/{orderId}")
     public ResponseEntity<OrderResponseDto> acceptOrder(HttpServletRequest request,
                                                         @PathVariable String orderId) {

@@ -11,12 +11,16 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
+
+    // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProviderAndStatus(ServiceProvider serviceProvider, OrderStatus status);
 
     // To list all orders sorted by OrderId in ascending order
     List<Order> findAllByOrderByOrderIdAsc();
+    Optional<Order> findByorderId(String orderId);
 
     // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProvider_ServiceProviderIdAndStatus(String serviceProviderId, OrderStatus status);

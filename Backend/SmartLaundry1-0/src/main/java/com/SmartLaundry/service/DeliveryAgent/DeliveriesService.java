@@ -12,6 +12,7 @@ import com.SmartLaundry.service.Customer.SMSService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.mail.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,19 +225,17 @@ public class DeliveriesService {
                 quantity += item.getQuantity();
                 PendingDeliveriesResponseDTO.BookingItemDTO bookingItemDTO = PendingDeliveriesResponseDTO.BookingItemDTO.builder()
                         .itemName(item.getItem().getItemName())
-                        .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : item.getItem().getSubService().getServices().getServiceName())
+                        .serviceName(item.getItem().getService() != null ?
+                                item.getItem().getService().getServiceName() :
+                                item.getItem().getSubService().getServices().getServiceName())
                         .quantity(item.getQuantity())
                         .build();
                 bookingItemDTOS.add(bookingItemDTO);
             }
 
-            String deliveryType;
-
-            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
-                deliveryType = "Customer -> Service Provider";
-            } else {
-                deliveryType = "Service Provider -> Customer";
-            }
+            String deliveryType = order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)
+                    ? "Customer -> Service Provider"
+                    : "Service Provider -> Customer";
 
             PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                     .orderId(order.getOrderId())
@@ -381,11 +380,11 @@ public class DeliveriesService {
             if (rejectedAgentIds.contains(key)) continue;
 
             // Check availability
-//            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
-//            if (!isAvailable) {
-//                logger.info("Agent {} is not available at {} on {}", key, now, today);
-//                continue;
-//            }
+            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
+            if (!isAvailable) {
+                logger.info("Agent {} is not available at {} on {}", key);
+                continue;
+            }
 
             String locationKey = "deliveryAgentLocation:" + key;
 

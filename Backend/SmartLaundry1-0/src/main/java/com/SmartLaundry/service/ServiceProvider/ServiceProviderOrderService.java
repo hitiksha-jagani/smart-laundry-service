@@ -1,3 +1,4 @@
+
 package com.SmartLaundry.service.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
@@ -138,6 +139,69 @@ public class ServiceProviderOrderService {
     }
 
 
+//    public OrderResponseDto acceptOrder(String spUserId, String orderId, boolean needOfDeliveryAgent) {
+//        String lockKey = LOCK_PREFIX + orderId;
+//
+//        if (!tryAcquireLock(lockKey)) {
+//            throw new IllegalStateException("Order is currently being processed by another request.");
+//        }
+//
+//        try {
+//            // Fetch the order
+//            Order order = orderRepository.findById(orderId)
+//                    .orElseThrow(() -> new IllegalStateException("Order with ID " + orderId + " not found"));
+//
+//            // Validate service provider
+//            ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
+//                    .orElseThrow(() -> new IllegalStateException("Service Provider not found for user: " + spUserId));
+//
+//            if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
+//                throw new IllegalStateException("Order does not belong to logged-in service provider");
+//            }
+//
+//            if (order.getStatus() != OrderStatus.PENDING) {
+//                throw new IllegalStateException("Order is not in PENDING status and cannot be accepted");
+//            }
+//
+//            // Update order status and needOfDeliveryAgent BEFORE saving
+//            order.setStatus(OrderStatus.ACCEPTED_BY_PROVIDER);
+//            order.setNeedOfDeliveryAgent(needOfDeliveryAgent);
+//            order = orderRepository.save(order); // Save with updated fields
+//
+//            // Save status history
+//            saveOrderStatusHistory(order, OrderStatus.ACCEPTED_BY_PROVIDER);
+//
+//            // Remove from Redis pending set
+//            redisTemplate.opsForSet().remove(getPendingOrdersSetKey(sp.getServiceProviderId()), order.getOrderId());
+//
+//            // Send notifications
+//            smsService.sendOrderStatusNotification(order.getContactPhone(),
+//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
+//            emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
+//                    "Order Accepted",
+//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
+//
+//            // Assign to delivery agent if selected
+//            if (needOfDeliveryAgent) {
+//                deliveryService.assignToDeliveryAgent(order.getOrderId());
+//            }
+//
+//            log.info("Order {} accepted by service provider {} for customer {}",
+//                    order.getOrderId(), spUserId, order.getUsers().getUserId());
+//
+//            // Return response
+//            return orderMapper.toOrderResponseDto(order);
+//
+//        } catch (Exception e) {
+//            log.error("Failed to accept order {} by service provider {}: {}",
+//                    orderId, spUserId, e.getMessage(), e);
+//            throw new RuntimeException("Failed to accept order: " + e.getMessage());
+//        } finally {
+//            releaseLock(lockKey);
+//        }
+//    }
+
+
     public OrderResponseDto acceptOrder(String spUserId, String orderId) {
         String lockKey = LOCK_PREFIX + orderId;
 
@@ -174,14 +238,14 @@ public class ServiceProviderOrderService {
             redisTemplate.opsForSet().remove(getPendingOrdersSetKey(sp.getServiceProviderId()), order.getOrderId());
 
             // Send notifications
-//            smsService.sendOrderStatusNotification(order.getContactPhone(),
-//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
-//            emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
-//                    "Order Accepted",
-//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
+            smsService.sendOrderStatusNotification(order.getContactPhone(),
+                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
+            emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
+                    "Order Accepted",
+                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
 
             // Assign to delivery agent if selected
-            if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
+            if (sp.getNeedOfDeliveryAgent().equals(true)) {
                 deliveryService.assignToDeliveryAgent(order.getOrderId());
             }
 
@@ -199,7 +263,6 @@ public class ServiceProviderOrderService {
             releaseLock(lockKey);
         }
     }
-
 
     public void rejectOrder(String spUserId, String orderId) {
         String lockKey = LOCK_PREFIX + orderId;
@@ -269,7 +332,8 @@ public class ServiceProviderOrderService {
     }
 
     public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException {
-        Order order = orderRepository.findByOrderId(orderId);
+        Order order = orderRepository.findByorderId(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
@@ -329,49 +393,7 @@ public class ServiceProviderOrderService {
         ).collect(Collectors.toList());
     }
 
-    //    public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
-//        OrderStatus status = null;
-//        if (statusStr != null && !statusStr.isBlank()) {
-//            try {
-//                status = OrderStatus.valueOf(statusStr.toUpperCase());
-//            } catch (IllegalArgumentException e) {
-//                throw new IllegalArgumentException("Invalid order status");
-//            }
-//        }
-//
-//        List<Order> orders;
-//        if (status != null) {
-//            orders = orderRepository.findByServiceProvider_ServiceProviderIdAndStatus(providerId, status);
-//        } else {
-//            orders = orderRepository.findByServiceProvider_ServiceProviderId(providerId);
-//        }
-//
-//        List<OrderHistoryDto> history = new ArrayList<>();
-//        for (Order order : orders) {
-//            for (BookingItem item : order.getBookingItems()) {
-//                history.add(OrderHistoryDto.builder()
-//                        .orderId(order.getOrderId())
-//                        .serviceName(
-//                                item.getItem().getService() != null
-//                                        ? item.getItem().getService().getServiceName()
-//                                        : null
-//                        )
-//                        .subServiceName(
-//                                item.getItem().getSubService() != null
-//                                        ? item.getItem().getSubService().getSubServiceName()
-//                                        : null
-//                        )
-//                        .itemName(item.getItem().getItemName())
-//                        .quantity(item.getQuantity())
-//                        .status(order.getStatus().name())
-//                        .build());
-//
-//
-//            }
-//        }
-//
-//        return history;
-//    }
+
     public List<OrderHistoryDto> getOrderHistoryForProvider(String providerId, String statusStr) {
         OrderStatus status = null;
         if (statusStr != null && !statusStr.isBlank()) {
@@ -409,24 +431,5 @@ public class ServiceProviderOrderService {
 
         return history;
     }
-
-
-//    public void respondToAgentFeedbackByUserId(String agentUserId, Long feedbackId, String responseMessage) {
-//        DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(agentUserId)
-//                .orElseThrow(() -> new RuntimeException("Delivery agent not found with userId: " + agentUserId));
-//
-//        FeedbackAgents feedback = feedbackAgentsRepository.findById(feedbackId)
-//                .orElseThrow(() -> new RuntimeException("Feedback not found"));
-//
-//        if (!feedback.getAgent().getDeliveryAgentId().equals(agent.getDeliveryAgentId())) {
-//            throw new RuntimeException("Unauthorized: Feedback does not belong to this delivery agent");
-//        }
-//
-//        feedback.setResponse(responseMessage);
-//        feedbackAgentsRepository.save(feedback);
-//
-//        log.info("Delivery Agent {} responded to feedback {} with message: {}",
-//                agent.getDeliveryAgentId(), feedbackId, responseMessage);
-//    }
 
 }

@@ -1,4 +1,5 @@
 package com.SmartLaundry.controller.Customer;
+
 import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
 import com.SmartLaundry.model.Bill;
@@ -209,7 +210,7 @@ public class OrderController {
         );
 
         if (validationMessage != null) {
-            // ❌ Don’t save the promo to the order if it's invalid
+            // Don’t save the promo to the order if it's invalid
             return ResponseEntity.ok(OrderSummaryDto.builder()
                     .orderId(orderId)
                     .promotionMessage(validationMessage)
@@ -218,7 +219,7 @@ public class OrderController {
                     .build());
         }
 
-        // ✅ Only save promo to order if valid
+        // Only save promo to order if valid
         order.setPromotion(promotion);
         orderRepository.save(order);
 

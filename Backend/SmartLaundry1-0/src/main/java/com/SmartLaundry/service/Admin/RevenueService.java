@@ -239,8 +239,8 @@ public class RevenueService {
         List<TotalRevenueDTO> revenueDTOS = new ArrayList<>();
 
         for(Order order : orders){
-
             Bill bill = billRepository.findByOrder(order);
+
             Payment payment = paymentRepository.findByBill(bill);
             List<Payout> payout = payoutRepository.findByPayment(payment);
             AdminRevenue adminRevenue = revenueRepository.findByPayment(payment);

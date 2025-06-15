@@ -1,5 +1,4 @@
 package com.SmartLaundry.service.Customer;
-import com.SmartLaundry.service.OtpDetails;
 import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.Map;
