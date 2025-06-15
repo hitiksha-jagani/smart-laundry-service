@@ -160,7 +160,7 @@ public class ServiceProviderProfileService {
         }
 
         // 4. Upload images
-        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
+        String uploadDir = "path" + userId;
         String aadharPath = saveFile(aadharCard, uploadDir, userId);
         String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
         String utilityBillPath = saveFile(utilityBill, uploadDir, userId);

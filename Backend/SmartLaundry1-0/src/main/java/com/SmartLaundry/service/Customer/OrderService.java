@@ -87,7 +87,7 @@ public class OrderService implements OrderBookingService {
         }
 
         redisTemplate.expire(key, Duration.ofDays(7));
-     return dummyOrderId;
+        return dummyOrderId;
     }
 
     // Save schedule plan details in Redis
@@ -104,6 +104,7 @@ public class OrderService implements OrderBookingService {
         redisTemplate.expire(key, Duration.ofDays(7));
     }
 
+    // Save contact info in Redis
     @Transactional
     public void saveContactInfo(String userId, String dummyOrderId, ContactDetailsDto dto) {
         Double latitude = 0.0;
@@ -134,6 +135,7 @@ public class OrderService implements OrderBookingService {
         redisTemplate.opsForHash().put(key, "longitude",String.valueOf (longitude));
         redisTemplate.expire(key, Duration.ofDays(7));
     }
+
 
 
     // Validate that all required fields exist in Redis before order placement
@@ -523,6 +525,39 @@ public class OrderService implements OrderBookingService {
         return dto;
     }
 
+//    public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
+//        Users user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
+//                .orElseThrow(() -> new RuntimeException("Service Provider not found"));
+//
+//        FeedbackProviders feedback = new FeedbackProviders();
+//        feedback.setUser(user);
+//        feedback.setServiceProvider(provider);
+//        feedback.setRating(dto.getRating());
+//        feedback.setReview(dto.getReview());
+//
+//        feedbackProvidersRepository.save(feedback);
+//    }
+//    //for Delivery Agent
+//    public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
+//        Users user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
+//                .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
+//
+//        FeedbackAgents feedback = new FeedbackAgents();
+//        feedback.setUser(user);
+//        feedback.setAgent(agent);
+//        feedback.setRating(dto.getRating());
+//        feedback.setReview(dto.getReview());
+//
+//        feedbackAgentsRepository.save(feedback);
+//    }
+
+
     public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -597,7 +632,7 @@ public class OrderService implements OrderBookingService {
         }
 
         // Save uploaded photo and get its path
-        String uploadDir = "D:\\MSCIT\\summerinternship\\images\\service_providers" + userId;
+        String uploadDir = path + userId;
         String photoPath = (photoFile != null && !photoFile.isEmpty())
                 ? saveFile(photoFile, uploadDir, userId)
                 : null;

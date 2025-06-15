@@ -31,15 +31,17 @@ public class TicketService {
 
     @Autowired
     private DeliveryAgentProfileService deliveryAgentProfileService ;
+
     @Value("${DELIVERY_AGENT_TICKET}")
     private String path;
+
     public String raiseTicket(String userId, RaiseTicketRequestDto raiseTicketRequestDto, MultipartFile image) throws IOException {
 
         Users user = roleCheckingService.checkUser(userId);
 
         roleCheckingService.isDeliveryAgent(user);
 
-        String uploadDir = "path" + user.getUserId();
+        String uploadDir = path + user.getUserId();
         String photo = deliveryAgentProfileService.saveFile(image, uploadDir, userId);
 
         Ticket ticket = Ticket.builder()

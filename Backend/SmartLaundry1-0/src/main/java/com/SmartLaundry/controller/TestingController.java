@@ -25,7 +25,7 @@ public class TestingController {
     // http://localhost:8080/testing/{orderId}
     // Just for testing
     @PostMapping("/{orderId}")
-    public ResponseEntity<String> assignOrder(@PathVariable String orderId, HttpServletRequest request) {
+    public ResponseEntity<String> assignOrder(@PathVariable String orderId) {
         try {
             logger.info("Assigning order: {}", orderId);
             deliveriesService.assignToDeliveryAgent(orderId);

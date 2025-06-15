@@ -61,12 +61,13 @@ public class DeliveryAgentProfileService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Value("${DELIVERY_AGENT_PROFILE_IMAGE}")
+    private String path;
 
     private final EmailService emailService;
     private final SMSService smsService;
     // Return profile details of delivery agent
-    @Value("${DELIVERY_AGENT_PROFILE_IMAGE}")
-    private String path;
+
     public DeliveryAgentProfileService(EmailService emailService, SMSService smsService) {
         this.emailService = emailService;
         this.smsService = smsService;
@@ -119,10 +120,6 @@ public class DeliveryAgentProfileService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
-        if (!UserRole.DELIVERY_AGENT.equals(user.getRole())) {
-            throw new ForbiddenAccessException("You are not applicable for this page.");
-        }
-
         // Check whether delivery agent already has pending approval
         DeliveryAgent agent = deliveryAgentRepository.findByUsers(user).orElse(null);
         if (agent != null) {
@@ -138,7 +135,7 @@ public class DeliveryAgentProfileService {
             throw new FormatException("Invalid IFSC Code format.");
         }
 
-        String uploadDir = "path" + userId;
+        String uploadDir = path + userId;
         // Save files and get paths
         String aadharCardPath = saveFile(aadharCard, uploadDir, userId);
         String panCardPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;

@@ -23,6 +23,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "orders")
 @ToString(exclude = "orderSchedulePlan")
@@ -47,6 +48,16 @@ public class Order implements Serializable {
 
     private Double latitude;
     private Double longitude;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "pickup_delivery_agent_id")
+    private DeliveryAgent pickupDeliveryAgent;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "delivery_delivery_agent_id")
+    private DeliveryAgent deliveryDeliveryAgent;
 
 
     @JsonIgnore
@@ -127,34 +138,12 @@ public class Order implements Serializable {
 
     @Column(name = "total_km")
     private Double totalKm;
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "pickup_delivery_agent_id")
-    private DeliveryAgent pickupDeliveryAgent;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "delivery_delivery_agent_id")
-    private DeliveryAgent deliveryDeliveryAgent;
+//    @Column(name = "need_of_delivery_agent")
+//    public Boolean needOfDeliveryAgent;
 
     public Users getUser() {
         return users;
     }
 
-    @Builder
-    public Order(Double latitude, Double longitude, Users users, ServiceProvider serviceProvider,
-                 LocalDate pickupDate, LocalTime pickupTime, String contactName, String contactPhone,
-                 String contactAddress, OrderStatus status, LocalDateTime createdAt) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.users = users;
-        this.serviceProvider = serviceProvider;
-        this.pickupDate = pickupDate;
-        this.pickupTime = pickupTime;
-        this.contactName = contactName;
-        this.contactPhone = contactPhone;
-        this.contactAddress = contactAddress;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
 }

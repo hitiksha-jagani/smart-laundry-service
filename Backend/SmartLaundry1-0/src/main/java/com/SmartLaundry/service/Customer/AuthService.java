@@ -138,10 +138,48 @@ public class AuthService {
 
     //@author Hitiksha Jagani
     // Logic for login
+//    public JwtResponse loginUser(JwtRequest request) {
+//        String rawInput = request.getUsername().trim();
+//        String normalized = rawInput.startsWith("+91") ? rawInput.substring(3) : rawInput;
+//
+//        Optional<Users> users = normalized.matches("^\\d{10,15}$")
+//                ? userRepository.findByPhoneNo(rawInput)  // use rawInput here to support both formats
+//                : userRepository.findByEmail(rawInput);
+//
+//        if (users.isEmpty()) {
+//            throw new BadCredentialsException("Invalid username or password!");
+//        }
+//
+//        System.out.println("Found user: " + users.get().getPhoneNo());
+//
+//        Authentication authentication;
+//        try {
+//            authentication = manager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(rawInput, request.getPassword())
+//            );
+//        } catch (BadCredentialsException e) {
+//            throw new BadCredentialsException("Invalid username or password!");
+//        }
+//
+//        if (authentication.isAuthenticated()) {
+//            String token = jwtService.generateToken(users.get().getUserId(), rawInput);
+//            return JwtResponse.builder()
+//                    .jwtToken(token)
+//                    .username(rawInput)
+//                    .role(users.get().getRole().toString())
+//                    .build();
+//        }
+//
+//        throw new RuntimeException("Authentication failed.");
+//    }
+
+
     public JwtResponse loginUser(JwtRequest request) {
         String token;
         Optional<Users> users;
 
+        System.out.println("jwtphonne : " + request.getUsername());
+        String input = request.getUsername().trim();
         Authentication authentication = null;
         try {
             authentication = manager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -149,8 +187,9 @@ public class AuthService {
             throw new BadCredentialsException("Invalid username or password!");
         }
 
-        if(request.getUsername().matches("^\\+?[0-9]{10,15}$")){
+        if(input.matches("^\\+?[0-9]{10,15}$")){
             users = userRepository.findByPhoneNo(request.getUsername());
+            System.out.println("phone : " + users.get().getPhoneNo());
         } else {
             users = userRepository.findByEmail(request.getUsername());
         }

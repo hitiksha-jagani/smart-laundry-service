@@ -69,39 +69,39 @@ public class ServiceProviderOrderService {
 
 
     public List<ActiveOrderDto> getActiveOrdersForServiceProvider(String spUserId) {
-    ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-            .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
+        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
+                .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
 
-    List<Order> activeOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.IN_CLEANING);
+        List<Order> activeOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.IN_CLEANING);
 
-    return activeOrders.stream().flatMap(order ->
-            order.getBookingItems().stream().map(item -> {
-                Items itemEntity = item.getItem();
+        return activeOrders.stream().flatMap(order ->
+                order.getBookingItems().stream().map(item -> {
+                    Items itemEntity = item.getItem();
 
-                String serviceName = Optional.ofNullable(itemEntity.getSubService())
-                        .map(sub -> sub.getServices())
-                        .map(Services::getServiceName)
-                        .orElse(Optional.ofNullable(itemEntity.getService())
-                                .map(Services::getServiceName)
-                                .orElse("N/A"));
+                    String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                            .map(sub -> sub.getServices())
+                            .map(Services::getServiceName)
+                            .orElse(Optional.ofNullable(itemEntity.getService())
+                                    .map(Services::getServiceName)
+                                    .orElse("N/A"));
 
-                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
-                        .map(SubService::getSubServiceName)
-                        .orElse("N/A");
+                    String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                            .map(SubService::getSubServiceName)
+                            .orElse("N/A");
 
-                return ActiveOrderDto.builder()
-                        .orderId(order.getOrderId())
-                        .service(serviceName)
-                        .subService(subServiceName)
-                        .itemName(itemEntity.getItemName())
-                        .quantity(item.getQuantity())
-                        .pickupDate(order.getPickupDate())
-                        .pickupTime(order.getPickupTime())
-                        .status(order.getStatus())
-                        .build();
-            })
-    ).collect(Collectors.toList());
-}
+                    return ActiveOrderDto.builder()
+                            .orderId(order.getOrderId())
+                            .service(serviceName)
+                            .subService(subServiceName)
+                            .itemName(itemEntity.getItemName())
+                            .quantity(item.getQuantity())
+                            .pickupDate(order.getPickupDate())
+                            .pickupTime(order.getPickupTime())
+                            .status(order.getStatus())
+                            .build();
+                })
+        ).collect(Collectors.toList());
+    }
 
     public List<ActiveOrderDto> getPendingOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
