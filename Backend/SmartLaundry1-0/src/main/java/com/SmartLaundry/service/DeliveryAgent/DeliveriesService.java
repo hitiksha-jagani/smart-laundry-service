@@ -6,7 +6,6 @@ import com.SmartLaundry.dto.DeliveryAgent.OrderResponseDTO;
 import com.SmartLaundry.dto.DeliveryAgent.PendingDeliveriesResponseDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
-import com.SmartLaundry.service.Admin.RoleCheckingService;
 import com.SmartLaundry.service.Customer.EmailService;
 import com.SmartLaundry.service.Customer.SMSService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -70,13 +69,7 @@ public class DeliveriesService {
     private EmailService emailService;
 
     @Autowired
-    private RoleCheckingService roleCheckingService;
-
-    @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private OrderStatusHistoryRepository orderStatusHistoryRepository;
 
     @Autowired
     private TaskScheduler taskScheduler;
@@ -130,44 +123,109 @@ public class DeliveriesService {
     }
 
     // Return list of pending deliveries
-    public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) throws JsonProcessingException {
+//    public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) {
+//
+//        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
+//                .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not exist."));
+//        List<Order> order1 = orderRepository.findByStatusAndPickupDeliveryAgent(OrderStatus.ACCEPTED_BY_PROVIDER, deliveryAgent);
+//        List<Order> order2 = orderRepository.findByStatusAndDeliveryDeliveryAgent(OrderStatus.READY_FOR_DELIVERY, deliveryAgent);
+//        List<Order> orders = new ArrayList<>();
+//        if(order1 != null) orders.addAll(order1);
+//        if(order2 != null) orders.addAll(order2);
+//        List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
+//
+//        Double agentLat, agentLon, providerLat, providerLon, customerLat, customerLon, earning;
+//
+//        DeliveryAgentEarnings deliveryAgentEarnings = deliveryAgentEarningsRepository.findByCurrentStatus(CurrentStatus.ACTIVE);
+//        if (deliveryAgentEarnings == null) {
+//            throw new IllegalStateException("No active earnings settings found.");
+//        }
+//
+//        for(Order order : orders){
+//            providerLat = order.getServiceProvider().getUser().getAddress().getLatitude();
+//            providerLon = order.getServiceProvider().getUser().getAddress().getLongitude();
+//            customerLat = order.getLatitude();
+//            customerLon = order.getLongitude();
+//
+//            String locationKey = "deliveryAgentLocation:" + user.getUserId();
+//
+//            @SuppressWarnings("unchecked")
+//            Map<String, Double> loc = (Map<String, Double>) redisTemplate.opsForValue().get(locationKey);
+//
+//            if (loc != null && loc.get("latitude") != null && loc.get("longitude") != null) {
+//                agentLat = loc.get("latitude");
+//                agentLon = loc.get("longitude");
+//            } else {
+//                continue;
+//            }
+//
+//            Double distAgentToCustomer = haversine(agentLat, agentLon, customerLat, customerLon);
+//            Double distCustomerToProvider = haversine(customerLat, customerLon, providerLat, providerLon);
+//            double totalKm = distAgentToCustomer + distCustomerToProvider;
+//
+//            if(totalKm > deliveryAgentEarnings.getBaseKm()){
+//                Double netKm = totalKm - deliveryAgentEarnings.getBaseKm();
+//                Double extraAnount = netKm * deliveryAgentEarnings.getExtraPerKmAmount();
+//                earning = deliveryAgentEarnings.getFixedAmount() + extraAnount;
+//            } else {
+//                earning = deliveryAgentEarnings.getFixedAmount();
+//            }
+//
+//            String address = order.getServiceProvider().getUser().getAddress().getName() + " " + order.getServiceProvider().getUser().getAddress().getAreaName() +
+//                    " " + order.getServiceProvider().getUser().getAddress().getCity().getCityName() + " " + order.getServiceProvider().getUser().getAddress().getPincode();
+//
+//            Long quantity = 0L;
+//            List<BookingItem> bookingItemList = bookingItemRepository.findByOrder(order);
+//            List<PendingDeliveriesResponseDTO.BookingItemDTO> bookingItemDTOS = new ArrayList<>();
+//            for(BookingItem item : bookingItemList){
+//                quantity += item.getQuantity();
+//                PendingDeliveriesResponseDTO.BookingItemDTO bookingItemDTO = PendingDeliveriesResponseDTO.BookingItemDTO.builder()
+//                        .itemName(item.getItem().getItemName())
+//                        .serviceName(item.getItem().getService() != null ? item.getItem().getService().getServiceName() : item.getItem().getSubService().getServices().getServiceName())
+//                        .quantity(item.getQuantity())
+//                        .build();
+//                bookingItemDTOS.add(bookingItemDTO);
+//            }
+//
+//            String deliveryType;
+//
+//            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
+//                deliveryType = "Customer -> Service Provider";
+//            } else {
+//                deliveryType = "Service Provider -> Customer";
+//            }
+//
+//            PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
+//                    .orderId(order.getOrderId())
+//                    .deliveryType(deliveryType)
+//                    .deliveryEarning(round(earning, 2))
+//                    .km(round(totalKm, 2))
+//                    .customerName(order.getContactName())
+//                    .customerPhone(order.getContactPhone())
+//                    .customerAddress(order.getContactAddress())
+//                    .providerName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
+//                    .providerPhone(order.getServiceProvider().getUser().getPhoneNo())
+//                    .providerAddress(address)
+//                    .totalQuantity(quantity)
+//                    .bookingItemDTOList(bookingItemDTOS)
+//                    .build();
+//
+//            pendingDeliveriesResponseDTOList.add(pendingDeliveriesResponseDTO);
+//
+//        }
+//
+//        return pendingDeliveriesResponseDTOList;
+//    }
+    public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) {
 
-        Set<String> keys = redisTemplate.keys("assignment:*");
+        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
+                .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not exist."));
+
+        List<Order> order1 = orderRepository.findByStatusAndPickupDeliveryAgent(OrderStatus.ACCEPTED_BY_PROVIDER, deliveryAgent);
+        List<Order> order2 = orderRepository.findByStatusAndDeliveryDeliveryAgent(OrderStatus.READY_FOR_DELIVERY, deliveryAgent);
         List<Order> orders = new ArrayList<>();
-
-        if (keys != null) {
-            for (String key : keys) {
-
-                try {
-                    String orderId = key.split(":")[1];
-                    System.out.println("orderId : " + orderId);
-
-                    Object value = redisTemplate.opsForValue().get(key);
-
-                    OrderAssignmentDTO assignment = null;
-
-                    if (value instanceof String json) {
-                        assignment = objectMapper.readValue(json, OrderAssignmentDTO.class);
-                    } else if (value instanceof LinkedHashMap map) {
-                        assignment = objectMapper.convertValue(map, OrderAssignmentDTO.class);
-                    }
-
-                    if (assignment != null && assignment.getAgentId().equals(user.getUserId())) {
-                        // Only include assignments for this delivery agent
-                        Order order = orderRepository.findById(orderId)
-                                .orElse(null);
-                        if (order != null) {
-                            orders.add(order);
-                        }
-                    }
-
-                } catch (Exception e) {
-                    System.out.println("Failed to parse assignment for key " + key);
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        if(order1 != null) orders.addAll(order1);
+        if(order2 != null) orders.addAll(order2);
         List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
 
         Double agentLat, agentLon, providerLat, providerLon, customerLat, customerLon, earning;
@@ -178,7 +236,6 @@ public class DeliveriesService {
         }
 
         for(Order order : orders){
-            System.out.println("orderID : " + order.getOrderId());
             providerLat = order.getServiceProvider().getUser().getAddress().getLatitude();
             providerLon = order.getServiceProvider().getUser().getAddress().getLongitude();
             customerLat = order.getLatitude();
@@ -202,18 +259,18 @@ public class DeliveriesService {
 
             if(totalKm > deliveryAgentEarnings.getBaseKm()){
                 Double netKm = totalKm - deliveryAgentEarnings.getBaseKm();
-                Double extraAnount = netKm * deliveryAgentEarnings.getExtraPerKmAmount();
-                earning = deliveryAgentEarnings.getFixedAmount() + extraAnount;
+                Double extraAmount = netKm * deliveryAgentEarnings.getExtraPerKmAmount();
+                earning = deliveryAgentEarnings.getFixedAmount() + extraAmount;
             } else {
                 earning = deliveryAgentEarnings.getFixedAmount();
             }
 
-            // Store earning and km in Redis for later use in bill generation
+            //  Store earning and km in Redis for later use in bill generation
             Map<String, Object> deliveryInfo = new HashMap<>();
             deliveryInfo.put("earning", round(earning, 2));
             deliveryInfo.put("totalKm", round(totalKm, 2));
             redisTemplate.opsForHash().putAll("deliveryEarnings:" + order.getOrderId(), deliveryInfo);
-            redisTemplate.expire("deliveryEarnings:" + order.getOrderId(), Duration.ofDays(1));
+            redisTemplate.expire("deliveryEarnings:" + order.getOrderId(), Duration.ofDays(30));
 
             String address = order.getServiceProvider().getUser().getAddress().getName() + " " + order.getServiceProvider().getUser().getAddress().getAreaName() +
                     " " + order.getServiceProvider().getUser().getAddress().getCity().getCityName() + " " + order.getServiceProvider().getUser().getAddress().getPincode();
@@ -253,7 +310,6 @@ public class DeliveriesService {
                     .build();
 
             pendingDeliveriesResponseDTOList.add(pendingDeliveriesResponseDTO);
-            System.out.println("Ok");
         }
 
         return pendingDeliveriesResponseDTOList;
@@ -344,35 +400,26 @@ public class DeliveriesService {
         // Fetch rejected agent list
         @SuppressWarnings("unchecked")
         Set<String> rejectedAgentIds =  (Set<String>)(Set<?>) redisTemplate.opsForSet().members("rejectedAgents:" + orderId);
-        System.out.println("Rejected agents for order " + orderId + ":");
-        rejectedAgentIds.forEach(System.out::println);
-
         if (rejectedAgentIds == null) rejectedAgentIds = Collections.emptySet();
 
         // Get all delivery agent IDs and locations from Redis
         Set<Object> activeAgents = redisTemplate.opsForSet().members("activeDeliveryAgents");
 
-        System.out.println("Active agents in Redis:");
-        activeAgents.forEach(System.out::println);
-
-
         if (activeAgents == null || activeAgents.isEmpty()) {
             logger.warn("No active delivery agents available. Cannot assign order: {}", orderId);
+            return; // or throw exception, or mark as pending
         }
 
-//        Set<String> agentIds = activeAgents != null
-//                ? activeAgents.stream().map(Object::toString).collect(Collectors.toSet())
-//                : Collections.emptySet();
-
         Set<String> agentIds = activeAgents != null
-                ? activeAgents.stream()
-                .map(Object::toString)
-                .map(id -> id.replaceAll("^\"|\"$", "")) // <-- Remove surrounding quotes
-                .collect(Collectors.toSet())
+                ? activeAgents.stream().map(Object::toString).collect(Collectors.toSet())
                 : Collections.emptySet();
 
-
         Map<String, Double> agentDistances = new HashMap<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
 
         for (String key : agentIds) {
 
@@ -382,7 +429,7 @@ public class DeliveriesService {
             // Check availability
             boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
             if (!isAvailable) {
-                logger.info("Agent {} is not available at {} on {}", key);
+                logger.info("Agent {} is not available at {} on {}", key, now, today);
                 continue;
             }
 
@@ -398,22 +445,14 @@ public class DeliveriesService {
                 Double agentLng = loc.get("longitude");
 
                 Double distance = haversine(custLat, custLng, agentLat, agentLng);
-                System.out.println("Distances to agents:");
-
                 agentDistances.put(key, distance);
             }
         }
 
-        agentDistances.forEach((agentId, distance) ->
-                System.out.println(agentId + " => " + distance + " km")
-        );
-
         // Sort by distance and try to assign
         agentDistances.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .filter(agentId -> tryAssign(order, agentId))
-                .findFirst(); // stops at first successful assignment
+                .forEach(entry -> tryAssign(order, entry.getKey()));
     }
 
 
@@ -436,47 +475,45 @@ public class DeliveriesService {
     private static final String ORDER_ASSIGNMENT_PREFIX = "assignment:";
 
     // Logic to assign orders to delivery agents
-    public boolean tryAssign(Order order, String userId) {
+    public void tryAssign(Order order, String agentId) {
 
-        System.out.println("Enter to the assign");
         String redisKey = ORDER_ASSIGNMENT_PREFIX + order.getOrderId();
 
         // Check if already assigned
-        if (redisTemplate.hasKey(redisKey)) return false;
+        if (redisTemplate.hasKey(redisKey)) return;
 
         // Build assignment data
-        OrderAssignmentDTO assignment = new OrderAssignmentDTO(userId, OrderStatus.PENDING, System.currentTimeMillis());
+        OrderAssignmentDTO assignment = new OrderAssignmentDTO(agentId, OrderStatus.PENDING, System.currentTimeMillis());
 
-        //            String value = objectMapper.writeValueAsString(assignment);
+        try {
+            String value = objectMapper.writeValueAsString(assignment);
 
-        Boolean success = redisTemplate.opsForValue().setIfAbsent(redisKey, assignment);
-
-        if (Boolean.TRUE.equals(success)) {
-            scheduleReassignment(order.getOrderId(), userId);
-            logger.info("Assigned order {} to agent {}", order.getOrderId(), userId);
+            Boolean success = redisTemplate.opsForValue().setIfAbsent(redisKey, value);
+            if (Boolean.TRUE.equals(success)) {
+                scheduleReassignment(order.getOrderId(), agentId);
+                logger.info("Assigned order {} to agent {}", order.getOrderId(), agentId);
+            }
 
             // Fetch delivery agent by agentId
-            Users user = roleCheckingService.checkUser(userId);
-            DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
-                    .orElseThrow(() -> new RuntimeException("Delivery agent not found: "));
-
-            System.out.println("Order assigned to delivery agent : " + deliveryAgent.getDeliveryAgentId() + " " + deliveryAgent.getUsers().getFirstName());
+            DeliveryAgent deliveryAgent = deliveryAgentRepository.findById(agentId)
+                    .orElseThrow(() -> new RuntimeException("Delivery agent not found: " + agentId));
 
             // Send notification to delivery agent
-//            smsService.sendOrderStatusNotification(
-//                    deliveryAgent.getUsers().getPhoneNo(),
-//                    "New order assigned to you from user " + order.getUsers().getFirstName()
-//            );
-//            if(deliveryAgent.getUsers().getEmail() != null) {
-//                emailService.sendOrderStatusNotification(
-//                        deliveryAgent.getUsers().getEmail(),
-//                        "New Order Assigned",
-//                        "You have been assigned a new order from " + order.getUsers().getFirstName()
-//                );
-//            }
-            return true;
+            smsService.sendOrderStatusNotification(
+                    deliveryAgent.getUsers().getPhoneNo(),
+                    "New order assigned to you from user " + order.getUsers().getFirstName()
+            );
+            if(deliveryAgent.getUsers().getEmail() != null) {
+                emailService.sendOrderStatusNotification(
+                        deliveryAgent.getUsers().getEmail(),
+                        "New Order Assigned",
+                        "You have been assigned a new order from " + order.getUsers().getFirstName()
+                );
+            }
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to store assignment", e);
         }
-        return false;
     }
 
     //  Run if the agent hasn’t accepted within 5 minutes.
@@ -484,75 +521,108 @@ public class DeliveriesService {
         taskScheduler.schedule(() -> {
             String redisKey = "assignment:" + orderId;
 
-            // Directly get deserialized object from Redis
-            OrderAssignmentDTO assignment = (OrderAssignmentDTO) redisTemplate.opsForValue().get(redisKey);
+            String assignmentJson = redisTemplate.opsForValue().get(redisKey).toString();
+            if (assignmentJson != null) {
+                try {
+                    OrderAssignmentDTO assignment = objectMapper.readValue(assignmentJson, OrderAssignmentDTO.class);
 
-            if (assignment != null) {
-                // Check if still pending
-                if (assignment.getStatus() == OrderStatus.PENDING) {
-                    System.out.println("Reassigning order " + orderId + " because agent " + agentId + " didn't respond in time.");
+                    // Check if still pending
+                    if (assignment.getStatus() == OrderStatus.PENDING) {
 
-                    // Add to rejected agents
-                    redisTemplate.opsForSet().add("rejectedAgents:" + orderId, agentId);
+                        // Add to rejected agents
+                        redisTemplate.opsForSet().add("rejectedAgents:" + orderId, agentId);
 
-                    // Remove assignment key
-                    redisTemplate.delete(redisKey);
+                        // Remove assignment key
+                        redisTemplate.delete(redisKey);
 
-                    // Retry assignment
-                    try {
+                        // Retry assignment
                         assignToDeliveryAgent(orderId);
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
                     }
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
                 }
             }
         }, Instant.now().plus(5, ChronoUnit.MINUTES)); // trigger after 5 min
     }
 
     // Logic for accept order
-    public void acceptOrder(String orderId, String userId) {
+//    public boolean acceptOrder(String orderId, String agentId) {
+//        String redisKey = "assignment:" + orderId;
+//
+//        // Get current assignment info from Redis
+//        String value = (String) redisTemplate.opsForValue().get(redisKey);
+//        if (value == null) return false;
+//
+//        try {
+//            ObjectMapper mapper = new ObjectMapper();
+//            Map<String, Object> assignment = mapper.readValue(value, new TypeReference<>() {});
+//            String assignedAgentId = (String) assignment.get("agentId");
+//
+//            // Check if the accepting agent is the same one assigned
+//            if (!assignedAgentId.equals(agentId)) {
+//                return false;
+//            }
+//
+//            // Update order in DB
+//            Order order = orderRepository.findById(orderId)
+//                    .orElseThrow(() -> new RuntimeException("Order is not available."));
+//
+//            Users user = userRepository.findById(agentId)
+//                    .orElseThrow(() -> new RuntimeException("User is not exist"));
+//
+//            DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
+//                    .orElseThrow(() -> new RuntimeException("Agent not found"));
+//
+//            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
+//                order.setPickupDeliveryAgent(agent);
+//            } else {
+//                order.setDeliveryDeliveryAgent(agent);
+//            }
+//
+//            order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
+//            orderRepository.save(order);
+//
+//            // Remove from Redis
+//            redisTemplate.delete(redisKey);
+//
+//            return true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
 
+    public boolean acceptOrder(String orderId, String agentId) {
         String redisKey = "assignment:" + orderId;
-        Object value = redisTemplate.opsForValue().get(redisKey);
-        if (value == null) {
-            System.out.println("No Redis assignment found for key: " + redisKey);
-            return;
-        }
+
+        // Get current assignment info from Redis
+        String value = (String) redisTemplate.opsForValue().get(redisKey);
+        if (value == null) return false;
 
         try {
-            OrderAssignmentDTO assignment = null;
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> assignment = mapper.readValue(value, new TypeReference<>() {});
+            String assignedAgentId = (String) assignment.get("agentId");
 
-            if (value instanceof String json) {
-                assignment = objectMapper.readValue(json, OrderAssignmentDTO.class);
-                System.out.println("Assignment id : " + assignment.getAgentId());
-            } else if (value instanceof LinkedHashMap map) {
-                assignment = objectMapper.convertValue(map, OrderAssignmentDTO.class);
-            }
+            // Validate agent match
+            if (!assignedAgentId.equals(agentId)) return false;
 
-            // Check if the accepting agent is the same one assigned
-            if (assignment != null && !assignment.getAgentId().equals(userId))  {
-                System.out.println("Same agent trying to accept: " + userId);
-                return;
-            }
-
-            // Update order in DB
+            // Fetch order and agent
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new RuntimeException("Order is not available."));
-
-
-            Users user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User is not exist"));
-
+            Users user = userRepository.findById(agentId)
+                    .orElseThrow(() -> new RuntimeException("User does not exist"));
             DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
                     .orElseThrow(() -> new RuntimeException("Agent not found"));
 
-            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
+            // Assign delivery agent based on status
+            if (order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
                 order.setPickupDeliveryAgent(agent);
-                order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
             } else {
                 order.setDeliveryDeliveryAgent(agent);
-                order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
             }
+
+            order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
 
             //  Retrieve delivery data from Redis
             String deliveryRedisKey = "deliveryEarnings:" + orderId;
@@ -582,22 +652,16 @@ public class DeliveriesService {
             }
 
             orderRepository.save(order);
+            redisTemplate.delete(redisKey); // Remove assignment info
 
-            OrderStatusHistory orderStatusHistory = OrderStatusHistory.builder()
-                    .status(order.getStatus())
-                    .order(order)
-                    .build();
-
-            orderStatusHistoryRepository.save(orderStatusHistory);
-
-            // Remove from Redis
-            redisTemplate.delete(redisKey);
+            return true;
 
         } catch (Exception e) {
-            System.out.println("Failed to parse assignment for key " + redisKey);
             e.printStackTrace();
+            return false;
         }
     }
+
 
     public String changeStatus(String orderId) {
         return "Status is updated successfully.";

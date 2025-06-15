@@ -25,7 +25,6 @@ public class OrderSummaryService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // If no promo passed, use the one from the order
         if (promo == null) {
             promo = order.getPromotion();
         }
@@ -46,12 +45,11 @@ public class OrderSummaryService {
         String promoMessage = "";
         boolean isValidPromotion = false;
 
-        // Step 2: Determine delivery charge
-        if (existingBill != null && existingBill.getDeliveryCharge() != null) {
-            deliveryCharge = existingBill.getDeliveryCharge();
-        } else {
-            deliveryCharge = 30.0; // fallback default
+        // Step 2: Require delivery charge from existing bill
+        if (existingBill == null || existingBill.getDeliveryCharge() == null) {
+            throw new IllegalStateException("Delivery charge is not calculated yet. Please try again later.");
         }
+        deliveryCharge = existingBill.getDeliveryCharge();
 
         // Step 3: Validate and apply promotion (if any)
         if (promo != null) {
@@ -132,7 +130,6 @@ public class OrderSummaryService {
             }
         }
 
-
         return OrderSummaryDto.builder()
                 .orderId(orderId)
                 .serviceName(serviceName)
@@ -149,6 +146,7 @@ public class OrderSummaryService {
                 .orderStatus(order.getStatus())
                 .build();
     }
+
     private List<BookingItem> copyBookingItems(List<BookingItem> originalItems, Bill bill, Order order) {
         return originalItems.stream().map(original -> {
             BookingItem copy = new BookingItem();
