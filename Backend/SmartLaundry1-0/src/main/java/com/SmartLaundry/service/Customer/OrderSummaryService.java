@@ -40,16 +40,16 @@ public class OrderSummaryService {
         // Step 1: Try fetching existing bill
         Bill existingBill = billRepository.findByOrder(order);
 
-        double deliveryCharge;
+        double deliveryCharge = 30;
         double discount = 0.0;
         String promoMessage = "";
         boolean isValidPromotion = false;
 
         // Step 2: Require delivery charge from existing bill
-        if (existingBill == null || existingBill.getDeliveryCharge() == null) {
-            throw new IllegalStateException("Delivery charge is not calculated yet. Please try again later.");
-        }
-        deliveryCharge = existingBill.getDeliveryCharge();
+//        if (existingBill == null || existingBill.getDeliveryCharge() == null) {
+//            throw new IllegalStateException("Delivery charge is not calculated yet. Please try again later.");
+//        }
+//        deliveryCharge = existingBill.getDeliveryCharge();
 
         // Step 3: Validate and apply promotion (if any)
         if (promo != null) {
@@ -85,7 +85,7 @@ public class OrderSummaryService {
                     .status(BillStatus.PENDING_FOR_PAYMENT)
                     .itemsTotalPrice(itemsTotal)
                     .gstAmount(gstAmount)
-                    .deliveryCharge(deliveryCharge)
+//                    .deliveryCharge(deliveryCharge)
                     .discountAmount(isValidPromotion ? discount : 0.0)
                     .finalPrice(finalAmount)
                     .build();

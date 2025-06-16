@@ -3,10 +3,7 @@ package com.SmartLaundry.service.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.Customer.TicketResponseDto;
-import com.SmartLaundry.dto.ServiceProvider.ActiveOrderDto;
-import com.SmartLaundry.dto.ServiceProvider.FeedbackResponseDto;
-import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
-import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
+import com.SmartLaundry.dto.ServiceProvider.*;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
 import com.SmartLaundry.service.Customer.EmailService;
@@ -68,76 +65,83 @@ public class ServiceProviderOrderService {
     }
 
 
-    public List<ActiveOrderDto> getActiveOrdersForServiceProvider(String spUserId) {
+    public List<ActiveOrderGroupedDto> getActiveOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
 
         List<Order> activeOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.IN_CLEANING);
 
-        return activeOrders.stream().flatMap(order ->
-                order.getBookingItems().stream().map(item -> {
-                    Items itemEntity = item.getItem();
+        return activeOrders.stream().map(order -> {
+            List<ActiveOrderDto> itemDtos = order.getBookingItems().stream().map(item -> {
+                Items itemEntity = item.getItem();
 
-                    String serviceName = Optional.ofNullable(itemEntity.getSubService())
-                            .map(sub -> sub.getServices())
-                            .map(Services::getServiceName)
-                            .orElse(Optional.ofNullable(itemEntity.getService())
-                                    .map(Services::getServiceName)
-                                    .orElse("N/A"));
+                String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(sub -> sub.getServices())
+                        .map(Services::getServiceName)
+                        .orElse(Optional.ofNullable(itemEntity.getService())
+                                .map(Services::getServiceName)
+                                .orElse("N/A"));
 
-                    String subServiceName = Optional.ofNullable(itemEntity.getSubService())
-                            .map(SubService::getSubServiceName)
-                            .orElse("N/A");
+                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getSubServiceName)
+                        .orElse("N/A");
 
-                    return ActiveOrderDto.builder()
-                            .orderId(order.getOrderId())
-                            .service(serviceName)
-                            .subService(subServiceName)
-                            .itemName(itemEntity.getItemName())
-                            .quantity(item.getQuantity())
-                            .pickupDate(order.getPickupDate())
-                            .pickupTime(order.getPickupTime())
-                            .status(order.getStatus())
-                            .build();
-                })
-        ).collect(Collectors.toList());
+                return ActiveOrderDto.builder()
+                        .itemName(itemEntity.getItemName())
+                        .service(serviceName)
+                        .subService(subServiceName)
+                        .quantity(item.getQuantity())
+                        .build();
+            }).toList();
+
+            return ActiveOrderGroupedDto.builder()
+                    .orderId(order.getOrderId())
+                    .pickupDate(order.getPickupDate())
+                    .pickupTime(order.getPickupTime())
+                    .status(order.getStatus())
+                    .items(itemDtos)
+                    .build();
+        }).toList();
     }
 
-    public List<ActiveOrderDto> getPendingOrdersForServiceProvider(String spUserId) {
+    public List<ActiveOrderGroupedDto> getPendingOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
 
         List<Order> pendingOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.PENDING);
 
-        return pendingOrders.stream().flatMap(order ->
-                order.getBookingItems().stream().map(item -> {
-                    Items itemEntity = item.getItem();
+        return pendingOrders.stream().map(order -> {
+            List<ActiveOrderDto> itemDtos = order.getBookingItems().stream().map(item -> {
+                Items itemEntity = item.getItem();
 
-                    String serviceName = Optional.ofNullable(itemEntity.getSubService())
-                            .map(sub -> sub.getServices())
-                            .map(Services::getServiceName)
-                            .orElse(Optional.ofNullable(itemEntity.getService())
-                                    .map(Services::getServiceName)
-                                    .orElse("N/A"));
+                String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(sub -> sub.getServices())
+                        .map(Services::getServiceName)
+                        .orElse(Optional.ofNullable(itemEntity.getService())
+                                .map(Services::getServiceName)
+                                .orElse("N/A"));
 
-                    String subServiceName = Optional.ofNullable(itemEntity.getSubService())
-                            .map(SubService::getSubServiceName)
-                            .orElse("N/A");
+                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getSubServiceName)
+                        .orElse("N/A");
 
-                    return ActiveOrderDto.builder()
-                            .orderId(order.getOrderId())
-                            .service(serviceName)
-                            .subService(subServiceName)
-                            .itemName(itemEntity.getItemName())
-                            .quantity(item.getQuantity())
-                            .pickupDate(order.getPickupDate())
-                            .pickupTime(order.getPickupTime())
-                            .status(order.getStatus())
-                            .build();
-                })
-        ).collect(Collectors.toList());
+                return ActiveOrderDto.builder()
+                        .itemName(itemEntity.getItemName())
+                        .service(serviceName)
+                        .subService(subServiceName)
+                        .quantity(item.getQuantity())
+                        .build();
+            }).toList();
+
+            return ActiveOrderGroupedDto.builder()
+                    .orderId(order.getOrderId())
+                    .pickupDate(order.getPickupDate())
+                    .pickupTime(order.getPickupTime())
+                    .status(order.getStatus())
+                    .items(itemDtos)
+                    .build();
+        }).toList();
     }
-
 
 //    public OrderResponseDto acceptOrder(String spUserId, String orderId, boolean needOfDeliveryAgent) {
 //        String lockKey = LOCK_PREFIX + orderId;
@@ -208,13 +212,14 @@ public class ServiceProviderOrderService {
         if (!tryAcquireLock(lockKey)) {
             throw new IllegalStateException("Order is currently being processed by another request.");
         }
-
+        System.out.println("Provider id : " + spUserId);
         try {
             // Fetch the order
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new IllegalStateException("Order with ID " + orderId + " not found"));
 
             // Validate service provider
+            System.out.println("Provider id : " + spUserId);
             ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                     .orElseThrow(() -> new IllegalStateException("Service Provider not found for user: " + spUserId));
 
@@ -351,9 +356,6 @@ public class ServiceProviderOrderService {
         orderRepository.save(order);
         saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
     }
-
-
-
 
     private void saveOrderStatusHistory(Order order, OrderStatus status) {
         orderStatusHistoryRepository.save(OrderStatusHistory.builder()
