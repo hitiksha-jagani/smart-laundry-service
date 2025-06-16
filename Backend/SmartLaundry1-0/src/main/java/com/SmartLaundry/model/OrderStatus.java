@@ -15,5 +15,6 @@ public enum OrderStatus {
     ACCEPTED_BY_AGENT,
     REJECTED_BY_AGENT,
     RESCHEDULED,
+
 }
 

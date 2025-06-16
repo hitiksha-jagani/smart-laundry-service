@@ -2,10 +2,7 @@ package com.SmartLaundry.controller.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.Customer.TicketResponseDto;
-import com.SmartLaundry.dto.ServiceProvider.AcceptOrderRequestDto;
-import com.SmartLaundry.dto.ServiceProvider.ActiveOrderDto;
-import com.SmartLaundry.dto.ServiceProvider.FeedbackResponseDto;
-import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
+import com.SmartLaundry.dto.ServiceProvider.*;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
 import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.service.JWTService;
@@ -32,9 +29,9 @@ public class ServiceProviderOrderController {
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<ActiveOrderDto>> getPendingOrders(HttpServletRequest request) {
+    public ResponseEntity<List<ActiveOrderGroupedDto>> getPendingOrders(HttpServletRequest request) {
         String spUserId = getServiceProviderUserId(request);
-        List<ActiveOrderDto> pendingOrders = serviceProviderOrderService.getPendingOrdersForServiceProvider(spUserId);
+        List<ActiveOrderGroupedDto> pendingOrders = serviceProviderOrderService.getPendingOrdersForServiceProvider(spUserId);
         return ResponseEntity.ok(pendingOrders);
     }
 
@@ -81,9 +78,9 @@ public class ServiceProviderOrderController {
 
 
     @GetMapping("/active")
-    public ResponseEntity<List<ActiveOrderDto>> getActiveOrders(HttpServletRequest request) {
+    public ResponseEntity<List<ActiveOrderGroupedDto>> getActiveOrders(HttpServletRequest request) {
         String spUserId = getServiceProviderUserId(request);
-        List<ActiveOrderDto> activeOrders = serviceProviderOrderService.getActiveOrdersForServiceProvider(spUserId);
+        List<ActiveOrderGroupedDto> activeOrders = serviceProviderOrderService.getActiveOrdersForServiceProvider(spUserId);
         return ResponseEntity.ok(activeOrders);
     }
 

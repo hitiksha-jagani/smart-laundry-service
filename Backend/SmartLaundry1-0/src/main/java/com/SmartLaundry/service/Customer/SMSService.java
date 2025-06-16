@@ -28,16 +28,20 @@ public class SMSService {
             throw new IllegalArgumentException("Phone number is null");
         }
 
+        // Clean up any non-digit characters
         String digitsOnly = phoneNumber.replaceAll("\\D", "");
 
+        // Normalize to international format
         if (digitsOnly.length() == 10) {
             return "+91" + digitsOnly;
-        } else if (digitsOnly.length() == 12 && digitsOnly.startsWith("91")) {
-            return "+" + digitsOnly;
-        } else if (digitsOnly.length() == 13 && digitsOnly.startsWith("91")) {
-            return "+" + digitsOnly.substring(1); // remove double +
-        } else if (digitsOnly.startsWith("0") && digitsOnly.length() == 11) {
+        } else if (digitsOnly.length() == 11 && digitsOnly.startsWith("0")) {
             return "+91" + digitsOnly.substring(1);
+        } else if (digitsOnly.length() == 12 && digitsOnly.startsWith("91")) {
+            return "+91" + digitsOnly.substring(2);
+        } else if (digitsOnly.length() == 13 && digitsOnly.startsWith("91")) {
+            return "+91" + digitsOnly.substring(2); // Extra safeguard
+        } else if (phoneNumber.startsWith("+91") && digitsOnly.length() == 12) {
+            return "+91" + digitsOnly.substring(2); // Already valid
         } else {
             throw new IllegalArgumentException("Invalid phone number format: " + phoneNumber);
         }

@@ -90,6 +90,11 @@ public class Users implements Serializable{
     @Column(name = "preferred_language")
     private String preferredLanguage;
 
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+
     public String getUsersId() {
         return userId;
     }

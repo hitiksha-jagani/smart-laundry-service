@@ -34,24 +34,43 @@ import java.util.*;
 @RequiredArgsConstructor
 public class OrderService implements OrderBookingService {
 
+    @Autowired
     private final RedisTemplate<String, Object> redisTemplate;
+    @Autowired
     private final ObjectMapper objectMapper;
+    @Autowired
     private final OrderRepository orderRepository;
+    @Autowired
     private final ServiceProviderRepository serviceProviderRepository;
+    @Autowired
     private final ItemRepository itemsRepository;
+    @Autowired
     private final PriceRepository priceRepository;
+    @Autowired
     private final BookingItemRepository bookingItemRepository;
+    @Autowired
     private final OrderSchedulePlanRepository orderSchedulePlanRepository;
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final OrderMapper orderMapper;
+    @Autowired
     private final SMSService smsService;
+    @Autowired
     private final EmailService emailService;
+    @Autowired
     private final RescheduleRepository rescheduleRepository;
+    @Autowired
     private final FeedbackProvidersRepository feedbackProvidersRepository;
+    @Autowired
     private final TicketRepository ticketRepository;
+    @Autowired
     private final FAQRepository faqRepository;
+    @Autowired
     private final FeedbackAgentsRepository feedbackAgentsRepository;
+    @Autowired
     private final DeliveryAgentRepository deliveryAgentRepository;
+    @Autowired
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     @Autowired
     private final GeocodingService geocodingService;
@@ -676,6 +695,7 @@ public class OrderService implements OrderBookingService {
         // Return the relative or absolute path
         return destination.getAbsolutePath();
     }
+
 
 
 }

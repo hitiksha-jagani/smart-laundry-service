@@ -53,7 +53,11 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/register", "/login", "/complete-agent-profile/**", "/otp/**", "/publish/**" , "/customer/**" , "/service-provider/**" , "/cache/**" , "/orders/**","/provider/orders/**","/users/**","/sp/**","/paypal/**","/ticket/**","/faqs/**","/testing/**")
+                                .requestMatchers("/register", "/login", "/complete-agent-profile/**", "/otp/**",
+                                        "/publish/**" , "/customer/**" , "/service-provider/**" , "/cache/**" , "/orders/**",
+                                        "/provider/orders/**","/users/**","/sp/**","/paypal/**","/ticket/**","/faqs/**",
+                                        "/testing/**","/orderotp/**","/availability/**","/deliveries/**","/payouts/**",
+                                        "/complaints/**","/image/**","/revenue/**","/configurations/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )
