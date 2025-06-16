@@ -95,12 +95,12 @@ public class DeliveriesController {
     public ResponseEntity<String> rejectOrder(@PathVariable String orderId,  HttpServletRequest request) throws JsonProcessingException, AccessDeniedException {
 
         // Fetch agent id
-        String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        Users user = roleCheckingService.checkUser(agentId);
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
 
         // Add agent to rejected list in Redis
-        redisTemplate.opsForSet().add("rejectedAgents:" + orderId, agentId);
+        redisTemplate.opsForSet().add("rejectedAgents:" + orderId, userId);
         redisTemplate.expire("rejectedAgents:" + orderId, Duration.ofMinutes(30));
 
         // Remove current assignment to allow re-assignment

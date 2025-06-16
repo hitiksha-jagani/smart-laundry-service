@@ -34,9 +34,9 @@ public class ServiceProviderProfileController {
     private ObjectMapper objectMapper;
 
 
-    // http://localhost:8080/complete-sp-profile/{userId}
+    // http://localhost:8080/sp/complete-sp-profile/{userId}
     // Render a form for service provider to submit their profile.
-    @PostMapping(value ="{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value ="/complete-sp-profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> completeServiceProviderProfile(
             @PathVariable String userId,
             @RequestPart("data") @Valid String data,

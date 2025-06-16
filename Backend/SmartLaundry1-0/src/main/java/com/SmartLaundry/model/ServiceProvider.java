@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "SERVICE_PROVIDER")
+@Table(name = "service_provider")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,8 +32,8 @@ public class ServiceProvider implements Serializable {
             strategy = "com.SmartLaundry.util.GenericPrefixIdGenerator",
             parameters = {
                     @Parameter(name = "prefix", value = "SP"),
-                    @Parameter(name = "table_name", value = "SERVICE_PROVIDER"),
-                   // @Parameter(name = "column_name", value = "service_provider_id"),
+                    @Parameter(name = "table_name", value = "service_provider"),
+                    @Parameter(name = "column_name", value = "service_provider_id"),
                     @Parameter(name = "number_length", value = "4")
             }
     )
