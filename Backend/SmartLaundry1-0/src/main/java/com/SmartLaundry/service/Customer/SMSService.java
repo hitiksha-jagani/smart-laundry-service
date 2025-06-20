@@ -15,7 +15,7 @@ public class SMSService {
     @PostConstruct
     public void init() {
         this.accountSid = System.getProperty("TWILIO_ACCOUNT_SID");
-        this.authToken = System.getProperty("NEW_TWILIO_TOKEN");
+        this.authToken = System.getProperty("TWILIO_AUTH_TOKEN");
         this.twilioPhoneNumber = System.getProperty("TWILIO_PHONE_NUMBER");
 
         System.out.println("Twilio Account SID: " + accountSid);

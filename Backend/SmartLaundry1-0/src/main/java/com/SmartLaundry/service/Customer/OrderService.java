@@ -111,6 +111,7 @@ public class OrderService implements OrderBookingService {
 
     // Save schedule plan details in Redis
     public void saveSchedulePlan(String userId, String dummyOrderId, SchedulePlanRequestDto dto) {
+        dto.validate();
         if (dto == null || dto.getSchedulePlan() == null) {
             throw new IllegalArgumentException("Schedule plan or selection is missing");
         }
@@ -155,6 +156,10 @@ public class OrderService implements OrderBookingService {
         redisTemplate.expire(key, Duration.ofDays(7));
     }
 
+    public Map<Object, Object> getRedisData(String userId, String dummyOrderId) {
+        String key = getRedisKey(userId, dummyOrderId);
+        return redisTemplate.opsForHash().entries(key);
+    }
 
 
     // Validate that all required fields exist in Redis before order placement

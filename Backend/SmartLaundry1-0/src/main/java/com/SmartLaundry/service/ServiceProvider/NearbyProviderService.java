@@ -39,7 +39,24 @@ public class NearbyProviderService {
                 .map(result -> result.getContent().getName())
                 .collect(Collectors.toSet());
 
-        // Fetch all service providers whose user.userId is in userIds
-        return serviceProviderRepository.findByUser_UserIdIn(userIds);
+        System.out.println("Geo Redis found userIds: " + userIds);
+
+        // Fetch providers from DB
+        List<ServiceProvider> providers = serviceProviderRepository.findByUser_UserIdIn(userIds);
+        System.out.println("DB matched providers: " + providers.size());
+
+        // ⛔ Remove Redis entries that no longer exist in DB
+        Set<String> missingIds = userIds.stream()
+                .filter(id -> providers.stream().noneMatch(p -> p.getUser().getUserId().equals(id)))
+                .collect(Collectors.toSet());
+
+        if (!missingIds.isEmpty()) {
+            redisTemplate.opsForGeo().remove(KEY, missingIds.toArray(new String[0]));
+            System.out.println("Removed stale Redis entries: " + missingIds);
+        }
+
+
+        return providers;
     }
+
 }

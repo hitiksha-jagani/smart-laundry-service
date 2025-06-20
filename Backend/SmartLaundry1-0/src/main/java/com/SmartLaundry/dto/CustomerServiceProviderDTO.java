@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CustomerServiceProviderDTO {
+
  private String serviceProviderId;
  private String businessName;
  private String photoImage;
@@ -20,7 +21,7 @@ public class CustomerServiceProviderDTO {
  private Long averageRating;
  private List<ReviewDTO> reviews;
  private List<PriceDTO> prices;
- private List<ItemDTO> items;
+ //private List<ItemDTO> items;
  @JsonIgnore // ignore during JSON serialization/deserialization
  private String userName;
 }

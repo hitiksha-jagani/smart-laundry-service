@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<UserAddress, Long> {
     Optional<UserAddress> findByUsers(Users users);
-
+    Optional<UserAddress> findFirstByPincode(String pincode);
 }

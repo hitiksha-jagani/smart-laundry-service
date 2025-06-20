@@ -90,6 +90,9 @@ public class Users implements Serializable{
     @Column(name = "preferred_language")
     private String preferredLanguage;
 
+    @Column(name = "is_blocked")
+    private boolean isBlocked=false;
+
     public String getPhoneNo() {
         return phoneNo;
     }

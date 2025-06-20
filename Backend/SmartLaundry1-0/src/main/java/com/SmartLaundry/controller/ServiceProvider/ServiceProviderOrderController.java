@@ -3,11 +3,14 @@ package com.SmartLaundry.controller.ServiceProvider;
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.Customer.TicketResponseDto;
 import com.SmartLaundry.dto.ServiceProvider.*;
+import com.SmartLaundry.model.Users;
+import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
 import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +22,24 @@ import java.util.Map;
 @RequestMapping("/provider/orders")
 @RequiredArgsConstructor
 public class ServiceProviderOrderController {
-
+    @Autowired
     private final ServiceProviderOrderService serviceProviderOrderService;
+    @Autowired
     private final JWTService jwtService;
+    @Autowired
     private final OrderService orderService;
+    @Autowired
+    private final UserRepository usersRepository;
 
     private String getServiceProviderUserId(HttpServletRequest request) {
         return (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+    }
+    private void checkIfBlocked(String userId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.isBlocked()) {
+            throw new RuntimeException("Your account is blocked by admin. You cannot perform this action.");
+        }
     }
 
     @GetMapping("/pending")
@@ -39,6 +53,7 @@ public class ServiceProviderOrderController {
     public ResponseEntity<OrderResponseDto> acceptOrder(HttpServletRequest request,
                                                         @PathVariable String orderId) {
         String spUserId = getServiceProviderUserId(request);
+        checkIfBlocked(spUserId);
         OrderResponseDto response = serviceProviderOrderService.acceptOrder(
                 spUserId,
                 orderId
@@ -51,6 +66,7 @@ public class ServiceProviderOrderController {
     public ResponseEntity<String> rejectOrder(HttpServletRequest request,
                                               @PathVariable String orderId) {
         String spUserId = getServiceProviderUserId(request);
+        checkIfBlocked(spUserId);
         serviceProviderOrderService.rejectOrder(spUserId, orderId);
         return ResponseEntity.ok("Order rejected successfully.");
     }
@@ -60,7 +76,8 @@ public class ServiceProviderOrderController {
             @PathVariable String orderId,
             HttpServletRequest request) throws AccessDeniedException {
 
-        String spUserId = getServiceProviderUserId(request); // You already have this helper
+        String spUserId = getServiceProviderUserId(request);
+        checkIfBlocked(spUserId);
         serviceProviderOrderService.markOrderInCleaning(spUserId, orderId);
 
         return ResponseEntity.ok("Order marked as INPROGRESS");
@@ -71,6 +88,7 @@ public class ServiceProviderOrderController {
             HttpServletRequest request) throws AccessDeniedException {
 
         String spUserId = getServiceProviderUserId(request);
+        checkIfBlocked(spUserId);
         serviceProviderOrderService.markOrderReadyForDelivery(spUserId, orderId);
 
         return ResponseEntity.ok("Order marked as READY_FOR_DELIVERY");
@@ -91,7 +109,8 @@ public class ServiceProviderOrderController {
             @PathVariable Long feedbackId,
             @RequestBody Map<String, String> requestBody) {
 
-        String spUserId = getServiceProviderUserId(request); // your method to get logged-in userId
+        String spUserId = getServiceProviderUserId(request);
+        checkIfBlocked(spUserId);
         String responseMessage = requestBody.get("response");
 
         serviceProviderOrderService.respondToFeedbackByUserId(spUserId, feedbackId, responseMessage);
@@ -99,25 +118,6 @@ public class ServiceProviderOrderController {
         return ResponseEntity.ok("Response submitted successfully");
     }
 
-    // feedback Response through Agent
-//    @PostMapping("/feedbackagent/respond/{feedbackId}")
-//    public ResponseEntity<String> respondToAgentFeedback(
-//            HttpServletRequest request,
-//            @PathVariable Long feedbackId,
-//            @RequestBody Map<String, String> requestBody) {
-//
-//        // Extract userId of the delivery agent from the JWT or session
-//        String agentUserId = getServiceProviderUserId(request); // implement this method according to your auth setup
-//
-//        String responseMessage = requestBody.get("response");
-//        if (responseMessage == null || responseMessage.trim().isEmpty()) {
-//            return ResponseEntity.badRequest().body("Response message cannot be empty");
-//        }
-//
-//        serviceProviderOrderService.respondToAgentFeedbackByUserId(agentUserId, feedbackId, responseMessage);
-//
-//        return ResponseEntity.ok("Response submitted successfully");
-//    }
 
     //to Fetch all feedbacks
     @GetMapping("{providerId}/feedbacks")

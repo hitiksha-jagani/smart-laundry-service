@@ -1,4 +1,5 @@
 package com.SmartLaundry.controller;
+
 import com.SmartLaundry.model.OtpPurpose;
 import com.SmartLaundry.service.OtpOrderTransitionService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class OtpOrderController {
 
     private final OtpOrderTransitionService otpOrderTransitionService;
+
     @PostMapping("/verify-pickup")
     public ResponseEntity<?> verifyPickupOtp(
             @RequestParam String orderId,
@@ -20,7 +22,6 @@ public class OtpOrderController {
         otpOrderTransitionService.verifyPickupOtp(orderId, otp, agentId);
         return ResponseEntity.ok("Pickup OTP verified. Order status updated accordingly.");
     }
-
 
     @PostMapping("/verify-handover")
     public ResponseEntity<?> verifyHandoverOtp(
@@ -42,6 +43,16 @@ public class OtpOrderController {
         return ResponseEntity.ok("Delivery OTP verified. Order marked as DELIVERED.");
     }
 
+    @PostMapping("/verify-confirm-for-cloths")
+    public ResponseEntity<?> verifyConfirmForClothsOtp(
+            @RequestParam String orderId,
+            @RequestParam String otp,
+            @RequestParam String agentId
+    ) {
+        otpOrderTransitionService.verifyConfirmForClothsOtp(orderId, otp, agentId);
+        return ResponseEntity.ok("OTP verified for cloth confirmation. Delivery OTP sent to customer.");
+    }
+
     @PostMapping("/resend-otp")
     public ResponseEntity<?> resendOtp(
             @RequestParam String orderId,
@@ -50,6 +61,4 @@ public class OtpOrderController {
         otpOrderTransitionService.resendOtp(orderId, purpose);
         return ResponseEntity.ok("OTP resent.");
     }
-
-
 }

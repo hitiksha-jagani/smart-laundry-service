@@ -2,14 +2,8 @@ package com.SmartLaundry.controller.Customer;
 
 import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
-import com.SmartLaundry.model.Bill;
-import com.SmartLaundry.model.BookingItem;
-import com.SmartLaundry.model.Order;
-import com.SmartLaundry.model.Promotion;
-import com.SmartLaundry.repository.BillRepository;
-import com.SmartLaundry.repository.OrderRepository;
-import com.SmartLaundry.repository.PaymentRepository;
-import com.SmartLaundry.repository.PromotionRepository;
+import com.SmartLaundry.model.*;
+import com.SmartLaundry.repository.*;
 import com.SmartLaundry.service.Customer.*;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -38,66 +34,118 @@ public class OrderController {
     private final BillRepository billRepository;
     @Autowired
     private PromotionEvaluatorService promotionEvaluatorService;
-
+    @Autowired
+    private final UserRepository usersRepository;
     private String extractUserIdFromRequest(HttpServletRequest request) {
         return (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
     }
+    private void checkIfUserIsBlocked(String userId) throws AccessDeniedException {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
+    }
 
     @PostMapping("/initial")
-    public ResponseEntity<String> saveInitialOrder(HttpServletRequest request, @RequestBody BookOrderRequestDto dto) {
+    public ResponseEntity<String> saveInitialOrder(HttpServletRequest request, @RequestBody BookOrderRequestDto dto) throws AccessDeniedException {
         String userId = extractUserIdFromRequest(request);
+
+        // ✅ Fetch the user and check if they are blocked
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
+
         String dummyOrderId = orderService.saveInitialOrderDetails(userId, dto);
-        return ResponseEntity.ok(dummyOrderId); // Return dummyOrderId instead of a message
+        return ResponseEntity.ok(dummyOrderId);
     }
+
 
     @PostMapping("/schedule-plan/{dummyOrderId}")
     public ResponseEntity<String> saveSchedulePlan(HttpServletRequest request,
                                                    @PathVariable String dummyOrderId,
-                                                   @RequestBody SchedulePlanRequestDto dto) {
+                                                   @RequestBody SchedulePlanRequestDto dto) throws AccessDeniedException {
         String userId = extractUserIdFromRequest(request);
-        orderService.saveSchedulePlan(userId, dummyOrderId, dto);
-        return ResponseEntity.ok("Schedule plan saved");
+        checkIfUserIsBlocked(userId);
+
+        try {
+            orderService.saveSchedulePlan(userId, dummyOrderId, dto);
+            return ResponseEntity.ok("Schedule plan saved");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 
     @PostMapping("/contact/{dummyOrderId}")
     public ResponseEntity<String> saveContactInfo(HttpServletRequest request,
                                                   @PathVariable String dummyOrderId,
-                                                  @RequestBody ContactDetailsDto dto) {
+                                                  @RequestBody ContactDetailsDto dto) throws AccessDeniedException {
         String userId = extractUserIdFromRequest(request);
+        checkIfUserIsBlocked(userId);
         orderService.saveContactInfo(userId, dummyOrderId, dto);
         return ResponseEntity.ok("Contact info saved");
     }
 
 
+    @GetMapping("/summary-from-redis")
+    public ResponseEntity<OrderResponseDto> getOrderSummaryFromRedis(
+            HttpServletRequest request,
+            @RequestParam String dummyOrderId) {
+
+        String userId = extractUserIdFromRequest(request);
+
+        // Fetch all Redis data
+        Map<Object, Object> redisData = orderService.getRedisData(userId, dummyOrderId);
+        if (redisData == null || redisData.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+
+        // Build a DTO for frontend display
+        OrderResponseDto dto = orderService.buildOrderResponseDtoFromRedisData(userId, redisData);
+        return ResponseEntity.ok(dto);
+    }
+
 
     @PostMapping("/place/{dummyOrderId}")
     public ResponseEntity<OrderResponseDto> finalizeOrder(HttpServletRequest request,
-                                                          @PathVariable String dummyOrderId) {
+                                                          @PathVariable String dummyOrderId) throws AccessDeniedException {
         String userId = extractUserIdFromRequest(request);
+        checkIfUserIsBlocked(userId);
         OrderResponseDto response = orderService.createOrder(userId, dummyOrderId);
         return ResponseEntity.ok(response);
     }
 
 
 
+
     @PostMapping("/cancel/{orderId}")
-    public ResponseEntity<String> cancelOrder(HttpServletRequest request, @PathVariable String orderId) {
+    public ResponseEntity<String> cancelOrder(HttpServletRequest request, @PathVariable String orderId) throws AccessDeniedException {
         String userId = extractUserIdFromRequest(request);
+        checkIfUserIsBlocked(userId);
         orderService.cancelOrder(userId, orderId);
         return ResponseEntity.ok("Order canceled successfully");
     }
+
 
 
     @PostMapping("/reschedule/{orderId}")
     public ResponseEntity<String> rescheduleOrder(
             HttpServletRequest request,
             @PathVariable String orderId,
-            @RequestBody RescheduleRequestDto dto) {
+            @RequestBody RescheduleRequestDto dto) throws AccessDeniedException {
 
         String userId = extractUserIdFromRequest(request);
+        checkIfUserIsBlocked(userId);
         orderService.rescheduleOrder(userId, orderId, dto);
         return ResponseEntity.ok("Order rescheduled successfully");
     }
+
 
 //    @PostMapping("/provider-feedback")
 //    public ResponseEntity<String> submitFeedback(HttpServletRequest request, @RequestBody FeedbackRequestDto dto) {
@@ -117,25 +165,29 @@ public class OrderController {
     public ResponseEntity<String> submitFeedback(
             HttpServletRequest request,
             @PathVariable String orderId,
-            @RequestBody FeedbackRequestDto dto) {
+            @RequestBody FeedbackRequestDto dto) throws AccessDeniedException {
 
         String userId = extractUserIdFromRequest(request);
+        checkIfUserIsBlocked(userId); // ✅
         dto.setOrderId(orderId);
         orderService.submitFeedbackProviders(userId, dto);
         return ResponseEntity.ok("Feedback submitted successfully");
     }
 
+
     @PostMapping("/agent-feedback/{orderId}")
     public ResponseEntity<String> submitFeedbackToAgent(
             HttpServletRequest request,
             @PathVariable String orderId,
-            @RequestBody FeedbackAgentRequestDto dto) {
+            @RequestBody FeedbackAgentRequestDto dto) throws AccessDeniedException {
 
         String userId = extractUserIdFromRequest(request);
+        checkIfUserIsBlocked(userId); // ✅
         dto.setOrderId(orderId);
         orderService.submitFeedbackAgents(userId, dto);
         return ResponseEntity.ok("Feedback submitted successfully");
     }
+
 
     @GetMapping("/track/{orderId}")
     public ResponseEntity<TrackOrderResponseDto> trackOrder(HttpServletRequest request, @PathVariable String orderId) {
@@ -179,9 +231,12 @@ public class OrderController {
 
     @PostMapping("/apply-promo")
     public ResponseEntity<?> applyPromoToOrder(
+            HttpServletRequest request,
             @RequestParam String orderId,
             @RequestParam String promotionId
-    ) {
+    ) throws AccessDeniedException {
+        String userId = extractUserIdFromRequest(request); // ✅ Extract user
+        checkIfUserIsBlocked(userId);
         Optional<Promotion> promotionOpt = promotionRepository.findById(promotionId);
         if (promotionOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -218,6 +273,8 @@ public class OrderController {
                     .appliedPromoCode(null)  // promo code not applied
                     .build());
         }
+
+
 
         // Only save promo to order if valid
         order.setPromotion(promotion);

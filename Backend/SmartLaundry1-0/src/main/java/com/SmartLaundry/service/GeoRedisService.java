@@ -41,11 +41,8 @@ public class GeoRedisService {
                 }
             }
         }
-
-
         System.out.println("Loaded " + count + " service providers into Redis geo set.");
     }
-
 }
 
 

@@ -23,7 +23,7 @@ public class ServiceProviderService {
     private final FeedbackProvidersRepository feedbackRepo;
     private final CacheService cacheService;
 
-    @Cacheable(value = "serviceProvidersCache", unless = "#result == null or #result.isEmpty()")
+   // @Cacheable(value = "serviceProvidersCache", unless = "#result == null or #result.isEmpty()")
     public List<CustomerServiceProviderDTO> getAllServiceProvidersForCustomer() {
         List<ServiceProvider> providers = serviceProviderRepository.findAllWithUserAddresses();
 
@@ -32,30 +32,85 @@ public class ServiceProviderService {
                 .collect(Collectors.toList());
     }
 
+//    public CustomerServiceProviderDTO getServiceProviderById(String serviceProviderId) {
+//        Optional<ServiceProvider> spOpt = serviceProviderRepository.findByIdWithUserAddress(serviceProviderId);
+//        ServiceProvider sp = spOpt.orElseThrow(() -> new RuntimeException("Service provider not found with id: " + serviceProviderId));
+//        return convertToCustomerDTO(sp);
+//    }
+
     public CustomerServiceProviderDTO getServiceProviderById(String serviceProviderId) {
-        Optional<ServiceProvider> spOpt = serviceProviderRepository.findByIdWithUserAddress(serviceProviderId);
-        ServiceProvider sp = spOpt.orElseThrow(() -> new RuntimeException("Service provider not found with id: " + serviceProviderId));
-        return convertToCustomerDTO(sp);
+        try {
+            System.out.println("Fetching provider with ID: " + serviceProviderId);
+            Optional<ServiceProvider> spOpt = serviceProviderRepository.findByIdWithUserAddress(serviceProviderId);
+            ServiceProvider sp = spOpt.orElseThrow(() -> new RuntimeException("Service provider not found with id: " + serviceProviderId));
+            return convertToCustomerDTO(sp);
+        } catch (Exception e) {
+            System.err.println("ERROR in getServiceProviderById: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
+
+    //    public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
+//
+//        // Map prices to PriceDTO list
+//        List<PriceDTO> priceDTOs = convertPricesToDTO(sp.getPrices());
+//
+//        // Extract unique items from prices and map to ItemDTO
+//        Set<ItemDTO> itemDTOs = sp.getPrices().stream()
+//                .map(price -> {
+//                    Items item = price.getItem();
+//                    return ItemDTO.builder()
+//                            .itemName(item.getItemName())
+//                            .serviceName(item.getService() != null ? item.getService().getServiceName() : null)
+//                            .subServiceName(item.getSubService() != null ? item.getSubService().getSubServiceName() : null)
+//                            .build();
+//                })
+//                .collect(Collectors.toSet()); // uses equals/hashCode to eliminate duplicates
+//
+//        // Feedback ratings and reviews
+//        List<FeedbackProviders> feedbacks = feedbackRepo.findByServiceProvider_ServiceProviderId(sp.getServiceProviderId());
+//        List<ReviewDTO> reviews = feedbacks.stream()
+//                .filter(fb -> fb.getReview() != null && fb.getUser() != null)
+//                .map(fb -> new ReviewDTO(buildFullName(fb.getUser()), fb.getReview()))
+//                .collect(Collectors.toList());
+//
+//        Long avgRating = (long) feedbacks.stream()
+//                .mapToInt(FeedbackProviders::getRating)
+//                .average()
+//                .orElse(0.0);
+//
+//        return CustomerServiceProviderDTO.builder()
+//                .serviceProviderId(sp.getServiceProviderId())
+//                .businessName(sp.getBusinessName())
+//                .photoImage(convertFilePathToPublicUrl(sp.getPhotoImage()))
+//                .address(getFirstAddress(sp.getUser()))
+//                .averageRating(avgRating)
+//                .reviews(reviews)
+//                .prices(priceDTOs)
+//                .items(new ArrayList<>(itemDTOs)) // convert Set to List
+//                .build();
+//    }
     public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
-
-        // Map prices to PriceDTO list
-        List<PriceDTO> priceDTOs = convertPricesToDTO(sp.getPrices());
-
-        // Extract unique items from prices and map to ItemDTO
-        Set<ItemDTO> itemDTOs = sp.getPrices().stream()
+        // Build PriceDTO list with full item info
+        List<PriceDTO> priceDTOs = sp.getPrices().stream()
+                .filter(p -> p.getItem() != null)
                 .map(price -> {
                     Items item = price.getItem();
-                    return ItemDTO.builder()
-                            .itemName(item.getItemName())
-                            .serviceName(item.getService() != null ? item.getService().getServiceName() : null)
-                            .subServiceName(item.getSubService() != null ? item.getSubService().getSubServiceName() : null)
+                    return PriceDTO.builder()
+                            .price(price.getPrice())
+                            .item(PriceDTO.ItemDTO.builder()
+                                    .itemId(item.getItemId())
+                                    .itemName(item.getItemName())
+                                    .serviceName(item.getService() != null ? item.getService().getServiceName() : null)
+                                    .subServiceName(item.getSubService() != null ? item.getSubService().getSubServiceName() : null)
+                                    .build())
                             .build();
                 })
-                .collect(Collectors.toSet()); // uses equals/hashCode to eliminate duplicates
+                .collect(Collectors.toList());
 
-        // Feedback ratings and reviews
+        // Reviews and ratings
         List<FeedbackProviders> feedbacks = feedbackRepo.findByServiceProvider_ServiceProviderId(sp.getServiceProviderId());
         List<ReviewDTO> reviews = feedbacks.stream()
                 .filter(fb -> fb.getReview() != null && fb.getUser() != null)
@@ -70,14 +125,28 @@ public class ServiceProviderService {
         return CustomerServiceProviderDTO.builder()
                 .serviceProviderId(sp.getServiceProviderId())
                 .businessName(sp.getBusinessName())
-                .photoImage(sp.getPhotoImage())
+                .photoImage(convertFilePathToPublicUrl(sp.getPhotoImage()))
                 .address(getFirstAddress(sp.getUser()))
                 .averageRating(avgRating)
                 .reviews(reviews)
                 .prices(priceDTOs)
-                .items(new ArrayList<>(itemDTOs)) // convert Set to List
                 .build();
     }
+
+
+
+    private String convertFilePathToPublicUrl(String absolutePath) {
+    if (absolutePath == null || absolutePath.isEmpty()) return null;
+
+    String baseDir = "D:\\MSCIT\\summerinternship\\images\\";
+
+    if (absolutePath.startsWith(baseDir)) {
+        String relativePath = absolutePath.substring(baseDir.length()).replace("\\", "/");
+        return "http://localhost:8080/images/" + relativePath;
+    }
+
+    return "http://localhost:8080/images/default-provider.jpg";
+}
 
     private String buildFullName(Users user) {
         if (user == null) return "Anonymous";
@@ -98,48 +167,6 @@ public class ServiceProviderService {
 
         return null;
     }
-//    public OrderResponseDto buildOrderResponseDto(Order order) {
-//        OrderResponseDto.OrderResponseDtoBuilder builder = OrderResponseDto.builder();
-//
-//        builder
-//                .orderId(order.getOrderId())
-//                .userId(order.getUser().getUserId())
-//                .serviceProviderId(order.getServiceProvider().getServiceProviderId())
-//                .contactName(order.getContactName())
-//                .contactPhone(order.getContactPhone())
-//                .contactAddress(order.getContactAddress())
-//                .latitude(order.getLatitude() != null ? order.getLatitude() : 0.0)
-//                .longitude(order.getLongitude() != null ? order.getLongitude() : 0.0)
-//                .pickupDate(order.getPickupDate())
-//                .pickupTime(order.getPickupTime())
-//                .status(order.getStatus())
-//                .needOfDeliveryAgent(order.getNeedOfDeliveryAgent());
-//
-//        // Booking items
-//        if (order.getBookingItems() != null) {
-//            List<OrderResponseDto.BookingItemDto> items = order.getBookingItems().stream()
-//                    .map(item -> OrderResponseDto.BookingItemDto.builder()
-//                            .itemId(item.getItem().getItemId())
-//                            .itemName(item.getItem().getItemName())
-//                            .quantity(item.getQuantity())
-//                            .finalPrice(item.getFinalPrice())
-//                            .build())
-//                    .toList();
-//            builder.bookingItems(items);
-//        }
-//
-//        // Schedule plan
-//        if (order.getOrderSchedulePlan() != null) {
-//            builder.schedulePlan(OrderResponseDto.SchedulePlanDto.builder()
-//                    .plan(order.getOrderSchedulePlan())
-//                    .payEachDelivery(order.getOrderSchedulePlan().isPayEachDelivery())
-//                    .payLastDelivery(order.getOrderSchedulePlan().isPayLastDelivery())
-//                    .build());
-//        }
-//
-//        return builder.build();
-//    }
-
 
     private AddressDTO mapAddress(UserAddress address) {
         if (address == null) return null;
@@ -156,15 +183,15 @@ public class ServiceProviderService {
                 .build();
     }
 
-    private List<PriceDTO> convertPricesToDTO(List<Price> prices) {
-        if (prices == null) return Collections.emptyList();
-
-        return prices.stream()
-                .map(price -> PriceDTO.builder()
-                        .price(price.getPrice())
-                        .item(new PriceDTO.ItemDTO(price.getItem().getItemId()))
-                        .serviceProvider(null)
-                        .build())
-                .collect(Collectors.toList());
-    }
+//    private List<PriceDTO> convertPricesToDTO(List<Price> prices) {
+//        if (prices == null) return Collections.emptyList();
+//
+//        return prices.stream()
+//                .map(price -> PriceDTO.builder()
+//                        .price(price.getPrice())
+//                        .item(new PriceDTO.ItemDTO(price.getItem().getItemId()))
+//                        .serviceProvider(null)
+//                        .build())
+//                .collect(Collectors.toList());
+//    }
 }
