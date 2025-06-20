@@ -25,5 +25,6 @@ public class BookOrderRequestDto {
     public boolean isPayLastDelivery() {
         return true;
     }
+
 }
 

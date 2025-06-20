@@ -2,6 +2,7 @@ package com.SmartLaundry.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,13 +48,13 @@ public class Items implements Serializable {
     @Schema(description = "The name of the item.", example = "T-shirt")
     private String itemName;
 
-    @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = true)
     private Services service;
 
-    @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_service_id", nullable = true)
     private SubService subService;
 

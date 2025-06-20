@@ -34,5 +34,8 @@ public class PriceDTO {
     @Builder
     public static class ItemDTO{
         private String itemId;
+        private String itemName;
+        private String serviceName;
+        private String subServiceName;
     }
 }

@@ -1,36 +1,39 @@
 package com.SmartLaundry.service.Customer;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
 import java.security.SecureRandom;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.Duration;
 
 @Service
+@RequiredArgsConstructor
 public class OTPService {
 
-    private final Map<String, OtpDetails> otpStorage = new ConcurrentHashMap<>();
-    private final Random random = new SecureRandom();
-    private static final int OTP_VALIDITY_MINUTES = 5;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final SecureRandom random = new SecureRandom();
+    private static final Duration OTP_TTL = Duration.ofMinutes(5);
 
-    public String generateOtp(String key) {
+    private String generateOtpKey(String identifier) {
+        return "OTP::" + identifier.toLowerCase().trim();
+    }
+
+    public String generateOtp(String identifier) {
+        String key = generateOtpKey(identifier);
         String otp = String.format("%06d", random.nextInt(1000000));
-        otpStorage.put(key, new OtpDetails(otp, OTP_VALIDITY_MINUTES));
+        redisTemplate.opsForValue().set(key, otp, OTP_TTL);
         return otp;
     }
 
-    public boolean validateOtp(String key, String otp) {
-        OtpDetails otpDetails = otpStorage.get(key);
-        if (otpDetails == null || otpDetails.isExpired()) {
-            otpStorage.remove(key); // Clean up expired or used OTP
-            return false;
+    public boolean validateOtp(String identifier, String otp) {
+        String key = generateOtpKey(identifier);
+        Object storedOtp = redisTemplate.opsForValue().get(key);
+        if (storedOtp != null && storedOtp.equals(otp)) {
+            redisTemplate.delete(key);
+            return true;
         }
-
-        boolean isValid = otpDetails.getOtp().equals(otp);
-        if (isValid) {
-            otpStorage.remove(key); // OTP is used, remove it
-        }
-
-        return isValid;
+        return false;
     }
-
 }
+

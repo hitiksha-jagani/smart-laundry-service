@@ -91,9 +91,9 @@ public class ServiceProvider implements Serializable {
     @ToString.Exclude
     private List<FeedbackProviders> feedbacks = new ArrayList<>();
 
-    public Object getUsers() {
-        return getUser();
-    }
+//    public Object getUsers() {
+//        return getUser();
+//    }
 
 
     //public void setItems(List<Items> providerItems) {

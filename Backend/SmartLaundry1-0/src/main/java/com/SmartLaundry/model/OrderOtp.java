@@ -3,7 +3,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-
+@Builder
 @Entity
 @Table(name = "Order_OTP")
 @Data
@@ -25,9 +25,10 @@ public class OrderOtp {
     @JoinColumn(name = "User_Id", nullable = false)
     private Users user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Agent_Id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "Agent_Id", nullable = true)
     private DeliveryAgent agent;
+
 
     @Column(name = "Otp_Code", nullable = false, length = 10)
     private String otpCode;
@@ -40,4 +41,9 @@ public class OrderOtp {
 
     @Column(name = "Is_Used", nullable = false)
     private Boolean isUsed = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "purpose", nullable = false)
+    private OtpPurpose purpose;
+
 }

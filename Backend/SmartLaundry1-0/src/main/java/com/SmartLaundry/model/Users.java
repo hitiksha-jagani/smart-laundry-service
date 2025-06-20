@@ -93,6 +93,12 @@ public class Users implements Serializable{
     @Column(name = "is_blocked")
     private boolean isBlocked = false;
 
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+
     public String getUsersId() {
         return userId;
     }

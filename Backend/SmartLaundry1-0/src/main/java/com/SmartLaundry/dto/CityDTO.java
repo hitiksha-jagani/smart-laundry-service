@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 @Data
 @Getter
 public class CityDTO {
+    private Long cityId;
     private String name;
     private StateDTO state;
 
     //Constructor
 
     public CityDTO(City city) {
+        this.cityId = city.getCityId();
         this.name = city.getCityName();
         this.state = new StateDTO(city.getState());
     }

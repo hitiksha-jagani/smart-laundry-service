@@ -105,6 +105,7 @@ public class ServiceProviderProfileDTO {
     @Builder
     public static class priceDTO {
         private String  itemId;
+        private String itemName;
         private Long price;
         private String serviceProviderId;
     }

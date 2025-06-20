@@ -3,6 +3,8 @@ package com.SmartLaundry.controller.ServiceProvider;
 import com.SmartLaundry.dto.ChangePasswordRequestDTO;
 import com.SmartLaundry.dto.Admin.ServiceProviderRequestDTO;
 import com.SmartLaundry.dto.ServiceProvider.ServiceProviderProfileDTO;
+import com.SmartLaundry.model.Users;
+import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.ChangePasswordService;
 import com.SmartLaundry.service.JWTService;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderProfileService;
@@ -32,6 +34,15 @@ public class ServiceProviderProfileController {
 
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private UserRepository userRepository;
+    private void checkIfBlocked(String userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.isBlocked()) {
+            throw new RuntimeException("Your account is blocked by admin. You cannot perform this action.");
+        }
+    }
 
 
     // http://localhost:8080/sp/complete-sp-profile/{userId}
@@ -45,6 +56,7 @@ public class ServiceProviderProfileController {
             @RequestPart("utilityBill") MultipartFile utilityBill,
             @RequestPart("profilePhoto") MultipartFile profilePhoto
     ) throws IOException {
+        checkIfBlocked(userId);
         ServiceProviderRequestDTO dto = objectMapper.readValue(data, ServiceProviderRequestDTO.class);
         return ResponseEntity.ok(serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto));
     }
@@ -66,7 +78,7 @@ public class ServiceProviderProfileController {
             @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO
     ) {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-
+        checkIfBlocked(userId);
         return ResponseEntity.ok(changePasswordService.changePassword(userId, changePasswordRequestDTO));
     }
 

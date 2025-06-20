@@ -208,7 +208,7 @@ public class DeliveriesService {
                 Double distProviderToCustomer = haversine(providerLat, providerLon, customerLat, customerLon);
                 totalKm = distAgentToProvider + distProviderToCustomer;
             }
-            
+
             if(totalKm > deliveryAgentEarnings.getBaseKm()){
                 Double netKm = totalKm - deliveryAgentEarnings.getBaseKm();
                 Double extraAmount = netKm * deliveryAgentEarnings.getExtraPerKmAmount();

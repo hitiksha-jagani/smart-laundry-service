@@ -19,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class ServiceProviderProfileService {
     @Autowired
@@ -136,95 +138,103 @@ public class ServiceProviderProfileService {
             MultipartFile utilityBill,
             MultipartFile profilePhoto
     ) throws IOException {
+        try {
+            // 1. User & Role Validation
+            Users user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
-        // 1. User & Role Validation
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+            if (!UserRole.SERVICE_PROVIDER.equals(user.getRole())) {
+                throw new ForbiddenAccessException("Access denied. Not a service provider.");
+            }
 
-        if (!UserRole.SERVICE_PROVIDER.equals(user.getRole())) {
-            throw new ForbiddenAccessException("Access denied. Not a service provider.");
+            // 2. Check duplicate request
+            if (serviceProviderRepository.getByUser(user).isPresent()) {
+                return "Your request is already submitted. Please wait for a response.";
+            }
+
+            // 3. Validate bank account fields
+            ServiceProviderRequestDTO.BankAccountDTO bankDTO = data.getBankAccount();
+            if (!bankDTO.getAccountHolderName().matches("^[A-Za-z\\s]+$")) {
+                throw new FormatException("Account holder name contains invalid characters.");
+            }
+            if (!bankDTO.getIfscCode().matches("^[A-Z]{4}0[A-Z0-9]{6}$")) {
+                throw new FormatException("Invalid IFSC Code format.");
+            }
+
+            // 4. Upload images
+            String uploadDir = path + userId + "/";
+            String aadharPath = saveFile(aadharCard, uploadDir, userId);
+            String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
+            String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
+            String profilePath = saveFile(profilePhoto, uploadDir, userId);
+
+            // 5. Save BankAccount entity
+            BankAccount bankAccount = BankAccount.builder()
+                    .bankName(bankDTO.getBankName())
+                    .ifscCode(bankDTO.getIfscCode())
+                    .bankAccountNumber(bankDTO.getBankAccountNumber())
+                    .accountHolderName(bankDTO.getAccountHolderName())
+                    .build();
+
+            bankAccountRepository.save(bankAccount);
+            log.info("Bank account saved with ID: {}", bankAccount.getBankAccountId());
+
+            // 6. Map and Save ServiceProvider
+            ServiceProvider serviceProvider = ServiceProvider.builder()
+                    .user(user)
+                    .businessName(data.getBusinessName())
+                    .businessLicenseNumber(data.getBusinessLicenseNumber())
+                    .gstNumber(data.getGstNumber())
+                    .needOfDeliveryAgent(data.getNeedOfDeliveryAgent())
+                    .aadharCardImage(aadharPath)
+                    .panCardImage(panPath)
+                    .businessUtilityBillImage(utilityBillPath)
+                    .photoImage(profilePath)
+                    .bankAccount(bankAccount)
+                    .schedulePlans(data.getSchedulePlans())
+                    .build();
+
+            serviceProviderRepository.save(serviceProvider);
+            log.info("Service provider saved for user: {}", userId);
+
+            // 7. Save Prices
+            if (data.getPriceDTO() != null && !data.getPriceDTO().isEmpty()) {
+                List<Price> prices = data.getPriceDTO().stream().map(priceDto -> {
+                    if (priceDto.getItem() == null || priceDto.getItem().getItemId() == null) {
+                        throw new RuntimeException("Item ID is missing in price data.");
+                    }
+
+                    String itemId = priceDto.getItem().getItemId();
+                    Items item = itemRepository.findById(itemId)
+                            .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
+
+                    return Price.builder()
+                            .item(item)
+                            .price(priceDto.getPrice())
+                            .serviceProvider(serviceProvider)
+                            .build();
+                }).toList();
+
+                priceRepository.saveAll(prices);
+                log.info("Saved {} price entries for service provider {}", prices.size(), serviceProvider.getServiceProviderId());
+            }
+
+            // 8. Send Notification
+            String message = "Congratulations! Your request to become a Service Provider has been submitted for review.";
+            String subject = "Service Provider Profile Submission";
+
+            smsService.sendSms(user.getPhoneNo(), message);
+            emailService.sendMail(user.getEmail(), subject, message);
+
+            log.info("Notification sent to user {} via SMS and email", userId);
+
+            return "Your request is sent successfully. Wait for a response.";
+
+        } catch (Exception e) {
+            log.error("Error in completing service provider profile for userId {}: {}", userId, e.getMessage(), e);
+            throw e; // Required for @Transactional rollback
         }
-
-        // 2. Check duplicate request
-        if (serviceProviderRepository.getByUser(user).isPresent()) {
-            return "Your request is already submitted. Please wait for a response.";
-        }
-
-        // 3. Validate bank account fields
-        ServiceProviderRequestDTO.BankAccountDTO bankDTO = data.getBankAccount();
-        if (!bankDTO.getAccountHolderName().matches("^[A-Za-z\\s]+$")) {
-            throw new FormatException("Account holder name contains invalid characters.");
-        }
-        if (!bankDTO.getIfscCode().matches("^[A-Z]{4}0[A-Z0-9]{6}$")) {
-            throw new FormatException("Invalid IFSC Code format.");
-        }
-
-        // 4. Upload images
-        String uploadDir = path + userId;
-        String aadharPath = saveFile(aadharCard, uploadDir, userId);
-        String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
-        String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
-        String profilePath = saveFile(profilePhoto, uploadDir, userId);
-
-        // 5. Save BankAccount entity
-        BankAccount bankAccount = BankAccount.builder()
-                .bankName(bankDTO.getBankName())
-                .ifscCode(bankDTO.getIfscCode())
-                .bankAccountNumber(bankDTO.getBankAccountNumber())
-                .accountHolderName(bankDTO.getAccountHolderName())
-                .build();
-
-        bankAccountRepository.save(bankAccount);
-
-        // 6. Map and Save ServiceProvider
-        ServiceProvider serviceProvider = ServiceProvider.builder()
-                .user(user)
-                .businessName(data.getBusinessName())
-                .businessLicenseNumber(data.getBusinessLicenseNumber())
-                .gstNumber(data.getGstNumber())
-                .needOfDeliveryAgent(data.getNeedOfDeliveryAgent())
-                .aadharCardImage(aadharPath)
-                .panCardImage(panPath)
-                .businessUtilityBillImage(utilityBillPath)
-                .photoImage(profilePath)
-                .bankAccount(bankAccount)
-                .schedulePlans(data.getSchedulePlans())
-                .build();
-
-        serviceProviderRepository.save(serviceProvider);
-
-        // 7. Save Prices
-        if (data.getPriceDTO() != null && !data.getPriceDTO().isEmpty()) {
-            List<Price> prices = data.getPriceDTO().stream().map(priceDto -> {
-                if (priceDto.getItem() == null || priceDto.getItem().getItemId() == null) {
-                    throw new RuntimeException("Item ID is missing in price data.");
-                }
-
-                String itemId = priceDto.getItem().getItemId();
-                Items item = itemRepository.findById(itemId)
-                        .orElseThrow(() -> new RuntimeException("Item not found with id: " + itemId));
-
-                return Price.builder()
-                        .item(item)
-                        .price(priceDto.getPrice())
-                        .serviceProvider(serviceProvider)
-                        .build();
-            }).toList();
-
-            priceRepository.saveAll(prices);
-        }
-
-        // 8. Send Notification
-        String message = "Congratulations! Your request to become a Service Provider has been submitted for review.";
-        String subject = "Service Provider Profile Submission";
-
-        smsService.sendSms(user.getPhoneNo(), message);
-        emailService.sendMail(user.getEmail(), subject, message);
-
-        return "Your request is sent successfully. Wait for a response.";
     }
-
-
 
     public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
 
