@@ -2,6 +2,8 @@ package com.SmartLaundry.controller.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackResponseDTO;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackSummaryResponseDTO;
+import com.SmartLaundry.model.Users;
+import com.SmartLaundry.service.Admin.RoleCheckingService;
 import com.SmartLaundry.service.DeliveryAgent.FeedbackService;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +30,9 @@ public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
 
+    @Autowired
+    private RoleCheckingService roleCheckingService;
+
     // http://localhost:8080/feedback-summary
     // Return summary of feedbacks for time filter.
     @GetMapping("/feedback-summary")
@@ -37,7 +42,9 @@ public class FeedbackController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        return ResponseEntity.ok(feedbackService.getSummary(userId, filter, startDate, endDate));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        return ResponseEntity.ok(feedbackService.getSummary(user, filter, startDate, endDate));
     }
 
     // http://localhoct:8080/feedbacks/
@@ -49,7 +56,9 @@ public class FeedbackController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws AccessDeniedException{
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        return ResponseEntity.ok(feedbackService.getFeedbacks(userId, filter, startDate, endDate));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        return ResponseEntity.ok(feedbackService.getFeedbacks(filter, startDate, endDate));
     }
 
 

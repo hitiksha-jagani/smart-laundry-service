@@ -23,4 +23,5 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     List<ServiceProvider> findAllWithUserAddresses();
     Optional<ServiceProvider> findByUserUserId(String userId);
 
+    List<ServiceProvider> findByBusinessNameContainingIgnoreCase(String keyword);
 }

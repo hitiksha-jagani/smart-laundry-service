@@ -9,11 +9,13 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class RevenueBreakDownResponseGraphDTO {
-    private LocalDate date;
     private Double serviceProviderRevenue;
     private Double deliveryAgentRevenue;
-    private Double adminRevenue;
+
+    public RevenueBreakDownResponseGraphDTO(Double serviceProviderRevenue, Double deliveryAgentRevenue) {
+        this.serviceProviderRevenue = serviceProviderRevenue;
+        this.deliveryAgentRevenue = deliveryAgentRevenue;
+    }
 }

@@ -28,7 +28,7 @@ public class TestingController {
     public ResponseEntity<String> assignOrder(@PathVariable String orderId) {
         try {
             logger.info("Assigning order: {}", orderId);
-            deliveriesService.assignToDeliveryAgent(orderId);
+            deliveriesService.assignToDeliveryAgentCustomerOrders(orderId);
             return ResponseEntity.ok("Assignment triggered for order: " + orderId);
         } catch (Exception e) {
             e.printStackTrace();

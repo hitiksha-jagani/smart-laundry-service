@@ -129,7 +129,7 @@ public class DeliveryAgent implements Serializable {
 
     @JsonIgnore
     @JsonManagedReference
-    @OneToMany(mappedBy = "deliveryAgent")
+    @OneToMany(mappedBy = "deliveryAgent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
 
     public String getDeliveryAgentId() {

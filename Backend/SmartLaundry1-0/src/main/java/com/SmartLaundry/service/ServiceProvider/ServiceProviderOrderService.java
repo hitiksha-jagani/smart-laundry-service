@@ -251,7 +251,7 @@ public class ServiceProviderOrderService {
 
             // Assign to delivery agent if selected
             if (sp.getNeedOfDeliveryAgent().equals(true)) {
-                deliveryService.assignToDeliveryAgent(order.getOrderId());
+                deliveryService.assignToDeliveryAgentCustomerOrders(order.getOrderId());
             }
 
             log.info("Order {} accepted by service provider {} for customer {}",

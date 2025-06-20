@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.*;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -51,12 +53,14 @@ public class Order implements Serializable {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "pickup_delivery_agent_id")
+    @JoinColumn(name = "pickup_delivery_agent_id", foreignKey = @ForeignKey(name = "fk_order_pickup_delivery_agent"), nullable = true)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private DeliveryAgent pickupDeliveryAgent;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "delivery_delivery_agent_id")
+    @JoinColumn(name = "delivery_delivery_agent_id", foreignKey = @ForeignKey(name = "fk_order_delivery_delivery_agent"), nullable = true)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private DeliveryAgent deliveryDeliveryAgent;
 
 
@@ -68,7 +72,8 @@ public class Order implements Serializable {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "service_provider_id", nullable = false)
+    @JoinColumn(name = "service_provider_id", foreignKey = @ForeignKey(name = "fk_order_service_provider"), nullable = true)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     @Schema(description = "Reference to the service provider assigned to the order.")
     private ServiceProvider serviceProvider;
 

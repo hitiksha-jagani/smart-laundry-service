@@ -1,6 +1,5 @@
 package com.SmartLaundry.dto.DeliveryAgent;
 
-import com.SmartLaundry.dto.Admin.DeliveryAgentResponseDTO;
 import com.SmartLaundry.model.GENDER;
 import com.SmartLaundry.model.UserAddress;
 import lombok.AllArgsConstructor;

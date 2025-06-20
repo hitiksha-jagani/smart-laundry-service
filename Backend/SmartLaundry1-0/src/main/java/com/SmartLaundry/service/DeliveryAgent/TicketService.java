@@ -35,14 +35,10 @@ public class TicketService {
     @Value("${DELIVERY_AGENT_TICKET}")
     private String path;
 
-    public String raiseTicket(String userId, RaiseTicketRequestDto raiseTicketRequestDto, MultipartFile image) throws IOException {
-
-        Users user = roleCheckingService.checkUser(userId);
-
-        roleCheckingService.isDeliveryAgent(user);
+    public String raiseTicket(Users user, RaiseTicketRequestDto raiseTicketRequestDto, MultipartFile image) throws IOException {
 
         String uploadDir = path + user.getUserId();
-        String photo = deliveryAgentProfileService.saveFile(image, uploadDir, userId);
+        String photo = deliveryAgentProfileService.saveFile(image, uploadDir, user.getUserId());
 
         Ticket ticket = Ticket.builder()
                 .title(raiseTicketRequestDto.getTitle())
@@ -61,18 +57,14 @@ public class TicketService {
     }
 
     // Return list of raised tickets
-    public List<RaiseTicketRequestDto> getAllTickets(String category, TicketStatus status, String userID) throws AccessDeniedException {
-
-        Users user = roleCheckingService.checkUser(userID);
-
-        roleCheckingService.isDeliveryAgent(user);
+    public List<RaiseTicketRequestDto> getAllTickets(String category, TicketStatus status, Users user) throws AccessDeniedException {
 
         List<Ticket> tickets;
 
         if(category != null && !category.isBlank()){
-            tickets = ticketRepository.findTicketsByCategoryAndUser(category, userID);
+            tickets = ticketRepository.findTicketsByCategoryAndUser(category, user.getUserId());
         } else if(status != null) {
-            tickets = ticketRepository.findTicketByStatusAndUser(status, userID);
+            tickets = ticketRepository.findTicketByStatusAndUser(status, user.getUserId());
         } else {
             tickets = ticketRepository.findByUser(user);
         }
