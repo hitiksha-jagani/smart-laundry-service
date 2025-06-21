@@ -1,37 +1,3 @@
-/* ✅ Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* ✅ Your global styles */
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  background-color: theme('colors.background'); /* optional fallback */
-  color: theme('colors.text'); /* optional fallback */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
-/* ✨ Input Field Styling (your theme) */
-.input {
-  @apply p-3 border border-border rounded-lg text-text w-full
-          focus:outline-none focus:ring-2 focus:ring-[#6C4D9F] bg-white placeholder-muted;
-}
-
-/* ✨ Orange Button Styling */
-.btn-orange {
-  @apply bg-orange-500 text-white font-semibold rounded-lg px-6 py-2
-          transition-all duration-300 ease-in-out hover:bg-orange-600 hover:scale-105 shadow-md;
-}
-
-/* ✨ File Input Styling */
-.file-input {
-  @apply w-full border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm;
-}

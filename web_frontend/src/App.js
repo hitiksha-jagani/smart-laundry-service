@@ -7,6 +7,14 @@ import OrderBookingWizard from "./pages/Customer/OrderBookingWizard";
 import NearbyServiceProviders from "./pages/Customer/NearbyServiceProviders"; 
 import ProviderDetail from "./pages/Customer/ProviderDetail";
 import CompleteServiceProviderForm from "./pages/ServiceProvider/CompleteServiceProviderForm";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
+
+// Delivery Agent
+import DeliveryPage from "./pages/DeliveryAgent/DeliveryPage";
+
+
 // Placeholder dashboards
 const ProviderDashboard = () => <h2>Service Provider Dashboard</h2>;
 const AgentDashboard = () => <h2>Delivery Agent Dashboard</h2>;
@@ -14,7 +22,7 @@ const AdminDashboard = () => <h2>AdminDashboard</h2>;
 
 function App() {
   return (
-    <BrowserRouter>
+    // <BrowserRouter>
       <Routes>
          {/* Customer */}
         <Route path="/" element={<CustomerHomePage />} />
@@ -32,8 +40,20 @@ function App() {
 
        {/* Service Provider */}
        <Route path="/sp/completeprofile" element={<CompleteServiceProviderForm />} />
+
+        {/* Delivery Agent */}
+        {/* <Route path="/deliveries/summary" element={<DeliveryPage />} /> */}
+
+        <Route path="/deliveries/summary" element={
+          <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+            <DeliveryPage />
+          </RoleProtectedRoute>
+        }/>
+
+        {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
+        {/* <Route path="*" element={<NotFound />} /> */}
+
       </Routes>
-    </BrowserRouter>
   );
 }
 

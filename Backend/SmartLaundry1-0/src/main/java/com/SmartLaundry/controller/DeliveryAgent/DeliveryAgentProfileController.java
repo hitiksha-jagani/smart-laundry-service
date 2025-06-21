@@ -26,7 +26,7 @@ import java.nio.file.AccessDeniedException;
 
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/profile")
 public class DeliveryAgentProfileController {
 
     @Autowired
@@ -57,9 +57,9 @@ public class DeliveryAgentProfileController {
     private RedisTemplate<String, Object> redisTemplate;
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/complete-agent-profile/{userId}
+    // http://localhost:8080/profile/complete/{userId}
     // Render a form for delivery agent to accept details of agent.
-    @PostMapping(value = "/complete-agent-profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/complete/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> completeDeliveryAgentProfile(
             @PathVariable String userId,
             @RequestPart("data") @Valid String  data,
@@ -75,18 +75,18 @@ public class DeliveryAgentProfileController {
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/agent-profile
+    // http://localhost:8080/profile/detail
     // Return a profile detail page of delivery agent.
-    @GetMapping("/agent-profile")
+    @GetMapping("/detail")
     public ResponseEntity<DeliveryAgentProfileDTO> getDeliveryAgentDetail(HttpServletRequest request){
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         return ResponseEntity.ok(deliveryAgentProfileService.getProfileDetail(userId));
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/agent-profile/edit
+    // http://localhost:8080/profile/detail/edit
     // Modify existing details.
-    @PutMapping("/agent-profile/edit")
+    @PutMapping("/detail/edit")
     public ResponseEntity<String> editDeliveryAgentDetail(HttpServletRequest request,@RequestBody DeliveryAgentProfileDTO deliveryAgentProfileDTO) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
@@ -98,9 +98,9 @@ public class DeliveryAgentProfileController {
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/agent-profile/change-password
+    // http://localhost:8080/profile/detail/change-password
     // Change password
-    @PutMapping("/agent-profile/change-password")
+    @PutMapping("/detail/change-password")
     public ResponseEntity<String> changeDeliveryAgentPassword(HttpServletRequest request, @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);

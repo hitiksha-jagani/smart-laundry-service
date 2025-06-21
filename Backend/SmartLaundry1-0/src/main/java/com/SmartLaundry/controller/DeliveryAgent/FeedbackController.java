@@ -21,7 +21,7 @@ import java.util.List;
 
 // @author Hitiksha Jagani
 @RestController
-@RequestMapping("")
+@RequestMapping("/feedback")
 public class FeedbackController {
 
     @Autowired
@@ -33,9 +33,9 @@ public class FeedbackController {
     @Autowired
     private RoleCheckingService roleCheckingService;
 
-    // http://localhost:8080/feedback-summary
+    // http://localhost:8080/feedback/summary
     // Return summary of feedbacks for time filter.
-    @GetMapping("/feedback-summary")
+    @GetMapping("/summary")
     public ResponseEntity<FeedbackSummaryResponseDTO> getFeedbackSummary(
             HttpServletRequest request,
             @RequestParam(defaultValue = "Overall") String filter,
@@ -47,9 +47,9 @@ public class FeedbackController {
         return ResponseEntity.ok(feedbackService.getSummary(user, filter, startDate, endDate));
     }
 
-    // http://localhoct:8080/feedbacks/
+    // http://localhoct:8080/feedback/list
     // Return list of feedback for time filter.
-    @GetMapping("/feedbacks")
+    @GetMapping("/list")
     public ResponseEntity<List<FeedbackResponseDTO>> getFeedbacks(
             HttpServletRequest request,
             @RequestParam(defaultValue = "Overall") String filter,

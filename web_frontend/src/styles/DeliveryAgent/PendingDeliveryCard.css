@@ -1,0 +1,45 @@
+.delivery-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.delivery-section {
+  margin-bottom: 15px;
+}
+
+.delivery-summary {
+  margin: 15px 0;
+}
+
+.route-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.delivery-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.accept-btn {
+  background-color: #22c55e;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+}
+
+.reject-btn {
+  background-color: #ef4444;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+}

@@ -232,7 +232,7 @@ const Login = () => {
             navigate("/provider/dashboard");
             break;
           case "DELIVERY_AGENT":
-            navigate("/agent/dashboard");
+            navigate("/deliveries/summary");
             break;
           case "ADMIN":
             navigate("/admin/dashboard");

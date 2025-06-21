@@ -6,6 +6,8 @@ import quality from "../../assets/quality.png";
 import support from "../../assets/support.png";
 import { FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import "../../styles/Main.css"; 
+
 
 export default function CustomerHomePage() {
   return (
@@ -22,10 +24,13 @@ export default function CustomerHomePage() {
           <p className="text-lg font-medium mb-8 opacity-90">
             Schedule pickups, track orders, and enjoy doorstep delivery.
           </p>
-          <Link to="/book"></Link>
-          <button className="inline-flex items-center gap-2 bg-white text-[#A566FF] font-semibold px-6 py-3 rounded-full shadow-lg hover:bg-[#f6e4ff] transition-all duration-300 animate-pulse">
+          <Link
+            to="/service-providers"
+            className="inline-flex items-center gap-2 bg-white text-[#A566FF] font-semibold px-6 py-3 rounded-full shadow-lg hover:bg-[#f6e4ff] transition-all duration-300 animate-pulse"
+          >
             Book Now <FaArrowRight className="mt-[2px]" />
-          </button>
+          </Link>
+
         </div>
 
         {/* Bottom curve */}

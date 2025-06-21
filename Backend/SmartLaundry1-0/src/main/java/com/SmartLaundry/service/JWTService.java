@@ -23,16 +23,17 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-    private String secretKey = "";
+//    private String secretKey = "";
+    private String secretKey = "U3VwZXJTZWNyZXRLZXlGb3JKV1QyMDI1QmFzZTY0RW5jb2RlZEtleSEyMyQkTnVsbEZvckRlbW9QdXJwb3Nlcw==";
 
     public JWTService() {
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA512");
-            SecretKey sk = keyGenerator.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e){
-            throw new RuntimeException(e);
-        }
+//        try {
+//            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA512");
+//            SecretKey sk = keyGenerator.generateKey();
+//            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+//        } catch (NoSuchAlgorithmException e){
+//            throw new RuntimeException(e);
+//        }
     }
 
     public String generateToken(String id, String username) {
