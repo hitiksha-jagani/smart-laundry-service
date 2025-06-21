@@ -1,8 +1,12 @@
+
 // import React, { useState } from "react";
 // import { useNavigate } from "react-router-dom";
+// import AuthLayout from "../../components/AuthLayout";
+// import { useAuth } from "../../context/AuthContext"; // ✅ import auth hook
 
 // const Login = () => {
 //   const navigate = useNavigate();
+//   const { login } = useAuth(); // ✅ get login function from context
 
 //   const [formData, setFormData] = useState({
 //     username: "",
@@ -15,6 +19,7 @@
 
 //   const handleChange = (e) => {
 //     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+//     setError("");
 //   };
 
 //   const handleLogin = async (e) => {
@@ -54,9 +59,11 @@
 
 //       if (res.ok) {
 //         alert("Login successful!");
-//         localStorage.setItem("token", data.jwtToken);
-//         localStorage.setItem("role", data.role);
 
+//         // ✅ Update AuthContext and localStorage
+//         login(data.jwtToken, data.role);
+
+//         // Redirect by role
 //         switch (data.role) {
 //           case "CUSTOMER":
 //             navigate("/customer/dashboard");
@@ -83,78 +90,87 @@
 //   };
 
 //   return (
-//     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-//       <div className="max-w-md w-full bg-card p-8 rounded-2xl shadow-2xl border border-border">
-//         <h2 className="text-3xl font-bold text-center text-primary mb-6">
-//           Login
-//         </h2>
+//     <AuthLayout title="Login to Your Account">
+//       {step === 1 ? (
+//         <form onSubmit={handleLogin} className="space-y-6">
+//           <div>
+//             <label className="block font-medium text-gray-700 mb-1">
+//               Phone or Email
+//             </label>
+//             <input
+//               type="text"
+//               name="username"
+//               value={formData.username}
+//               onChange={handleChange}
+//               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+//               placeholder="Enter phone or email"
+//               required
+//             />
+//           </div>
 
-//         {step === 1 ? (
-//           <form onSubmit={handleLogin} className="space-y-4">
-//             <div>
-//               <label className="block font-medium text-text mb-1">
-//                 Phone or Email
-//               </label>
-//               <input
-//                 type="text"
-//                 name="username"
-//                 value={formData.username}
-//                 onChange={handleChange}
-//                 className="input"
-//                 required
-//               />
-//             </div>
+//           <div>
+//             <label className="block font-medium text-gray-700 mb-1">
+//               Password
+//             </label>
+//             <input
+//   type="password"
+//   name="password"
+//   autoComplete="current-password"  // ✅ Added this line
+//   value={formData.password}
+//   onChange={handleChange}
+//   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+//   placeholder="Enter password"
+//   required
+// />
 
-//             <div>
-//               <label className="block font-medium text-text mb-1">
-//                 Password
-//               </label>
-//               <input
-//                 type="password"
-//                 name="password"
-//                 value={formData.password}
-//                 onChange={handleChange}
-//                 className="input"
-//                 required
-//               />
-//             </div>
+//           </div>
 
-//             {error && <p className="text-error text-sm">{error}</p>}
+//           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
-//             <button
-//               type="submit"
-//               className="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-hover transition"
+//           <button
+//             type="submit"
+//             className="w-full py-3 bg-[#A566FF] text-white font-semibold rounded-lg hover:bg-[#914be3] transition"
+//           >
+//             Send OTP
+//           </button>
+
+//           <p className="text-center text-sm text-muted mt-4">
+//             Don’t have an account?{" "}
+//             <a
+//               href="/register"
+//               className="text-[#A566FF] hover:text-[#FF6AC2] font-medium"
 //             >
-//               Send OTP
-//             </button>
-//           </form>
-//         ) : (
-//           <form onSubmit={handleOtpVerify} className="space-y-4">
-//             <div>
-//               <label className="block font-medium text-text mb-1">
-//                 Enter OTP
-//               </label>
-//               <input
-//                 type="text"
-//                 value={otp}
-//                 onChange={(e) => setOtp(e.target.value)}
-//                 className="input"
-//                 required
-//               />
-//             </div>
+//               Register here
+//             </a>
+//           </p>
+//         </form>
+//       ) : (
+//         <form onSubmit={handleOtpVerify} className="space-y-6">
+//           <div>
+//             <label className="block font-medium text-gray-700 mb-1">
+//               Enter OTP
+//             </label>
+//             <input
+//               type="text"
+//               value={otp}
+//               onChange={(e) => setOtp(e.target.value)}
+//               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+//               placeholder="Enter 6-digit OTP"
+//               required
+//             />
+//           </div>
 
-//             {error && <p className="text-error text-sm">{error}</p>}
+//           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
-//             <button
-//               type="submit"
-//               className="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-hover transition"
-//             >
-//               Verify OTP & Login
-//             </button>
-//           </form>
-//         )}
-//       </div>
-//     </div>
+//           <button
+//             type="submit"
+//             className="w-full py-3 bg-[#A566FF] text-white font-semibold rounded-lg hover:bg-[#914be3] transition"
+//           >
+//             Verify OTP & Login
+//           </button>
+//         </form>
+//       )}
+//     </AuthLayout>
 //   );
 // };
 
@@ -162,13 +178,15 @@
 
 
 
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/AuthLayout";
-
+import { useAuth } from "../../context/AuthContext"; // ✅ import auth hook
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ get login function from context
 
   const [formData, setFormData] = useState({
     username: "",
@@ -221,16 +239,25 @@ const Login = () => {
 
       if (res.ok) {
         alert("Login successful!");
-        localStorage.setItem("token", data.jwtToken);
-        localStorage.setItem("role", data.role);
 
+        // ✅ Update AuthContext and localStorage
+        login(data.jwtToken, data.role);
+
+        // Redirect by role
         switch (data.role) {
           case "CUSTOMER":
             navigate("/customer/dashboard");
             break;
           case "SERVICE_PROVIDER":
-            navigate("/provider/dashboard");
-            break;
+                const firstLoginDone = localStorage.getItem("providerFirstLoginDone");
+
+                if (!firstLoginDone) {
+                  localStorage.setItem("providerFirstLoginDone", "true");
+                  navigate("/provider/complete-profile"); 
+                } else {
+                  navigate("/provider/dashboard"); 
+                }
+                break;
           case "DELIVERY_AGENT":
             navigate("/agent/dashboard");
             break;
@@ -273,14 +300,16 @@ const Login = () => {
               Password
             </label>
             <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              placeholder="Enter password"
-              required
-            />
+  type="password"
+  name="password"
+  autoComplete="current-password"  // ✅ Added this line
+  value={formData.password}
+  onChange={handleChange}
+  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+  placeholder="Enter password"
+  required
+/>
+
           </div>
 
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
@@ -333,3 +362,4 @@ const Login = () => {
 };
 
 export default Login;
+

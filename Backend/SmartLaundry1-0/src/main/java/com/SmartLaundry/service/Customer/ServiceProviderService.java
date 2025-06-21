@@ -8,8 +8,10 @@ import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.ServiceProviderRepository;
 import com.SmartLaundry.repository.FeedbackProvidersRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,6 +24,7 @@ public class ServiceProviderService {
     private final ServiceProviderRepository serviceProviderRepository;
     private final FeedbackProvidersRepository feedbackRepo;
     private final CacheService cacheService;
+    private final StringRedisTemplate redisTemplate;
 
    // @Cacheable(value = "serviceProvidersCache", unless = "#result == null or #result.isEmpty()")
     public List<CustomerServiceProviderDTO> getAllServiceProvidersForCustomer() {
@@ -31,6 +34,24 @@ public class ServiceProviderService {
                 .map(this::convertToCustomerDTO)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void deleteProviderById(String providerId) {
+        // Fetch the provider to get the associated userId
+        ServiceProvider provider = serviceProviderRepository.findById(providerId)
+                .orElseThrow(() -> new RuntimeException("Service Provider not found with ID: " + providerId));
+
+        String userId = provider.getUser().getUserId(); // GeoRedis uses this as the Redis key
+
+        // Delete from DB
+        serviceProviderRepository.deleteById(providerId);
+
+        // Remove from Redis Geo data
+        redisTemplate.opsForGeo().remove("service_providers_geo", userId);
+
+        System.out.println("🗑️ Removed provider " + providerId + " and Redis geo key " + userId);
+    }
+
 
 //    public CustomerServiceProviderDTO getServiceProviderById(String serviceProviderId) {
 //        Optional<ServiceProvider> spOpt = serviceProviderRepository.findByIdWithUserAddress(serviceProviderId);

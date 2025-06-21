@@ -18,55 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-//@RestController
-//@RequestMapping("/customer")
-//@RequiredArgsConstructor
-//public class ServiceProviderController {
-//
-//    private final ServiceProviderService serviceProviderService;
-//    private final GeoRedisService geoRedisService;
-//    private final ServiceProviderRepository serviceProviderRepository;
-//    private final NearbyProviderService nearbyProviderService;
-//
-//    @GetMapping("/serviceProviders")
-//    public ResponseEntity<List<CustomerServiceProviderDTO>> getAllServiceProviders() {
-//        List<CustomerServiceProviderDTO> result = serviceProviderService.getAllServiceProvidersForCustomer();
-//        return ResponseEntity.ok(result);
-//    }
-//
-//    @PostMapping("/loadGeoData")
-//    public ResponseEntity<String> loadGeoData() {
-//        List<ServiceProvider> providers = serviceProviderRepository.findAll();
-//        geoRedisService.loadProviderGeoData(providers);
-//        return ResponseEntity.ok("Geo data loaded into Redis");
-//    }
-//
-//    // for Nearby Filter
-////    @GetMapping("/serviceProviders/nearby")
-////    public ResponseEntity<List<CustomerServiceProviderDTO>> getNearbyServiceProviders(
-////            @RequestParam Double latitude,
-////            @RequestParam Double longitude,
-////            @RequestParam(defaultValue = "10") double radiusKm) {
-////
-////        List<ServiceProvider> nearbyProviders = nearbyProviderService.getProvidersNearby(latitude, longitude, radiusKm);
-////        List<CustomerServiceProviderDTO> result = nearbyProviders.stream()
-////                .map(serviceProviderService::convertToCustomerDTO)
-////                .toList();
-////
-////        return ResponseEntity.ok(result);
-////    }
-//
-//    @GetMapping("/providers/nearby")
-//    public ResponseEntity<List<ServiceProvider>> getNearbyProviders(
-//            @RequestParam Double lat,
-//            @RequestParam Double lng,
-//            @RequestParam(defaultValue = "5") Double radiusKm
-//    ) {
-//        List<ServiceProvider> providers = nearbyProviderService.getProvidersNearby(lat, lng, radiusKm);
-//        return ResponseEntity.ok(providers);
-//    }
-//}
 @RestController
 @RequestMapping("/customer")
 @RequiredArgsConstructor
@@ -77,7 +28,6 @@ public class ServiceProviderController {
     private final ServiceProviderRepository serviceProviderRepository;
     private final NearbyProviderService nearbyProviderService;
     private final AddressRepository addressRepository;
-
     @GetMapping(value = "/serviceProviders", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CustomerServiceProviderDTO>> getAllServiceProviders() {
         List<CustomerServiceProviderDTO> result = serviceProviderService.getAllServiceProvidersForCustomer();
@@ -89,6 +39,12 @@ public class ServiceProviderController {
         List<ServiceProvider> providers = serviceProviderRepository.findAll();
         geoRedisService.loadProviderGeoData(providers);
         return ResponseEntity.ok("Geo data loaded into Redis");
+    }
+
+    @DeleteMapping("/serviceProviders/{id}")
+    public ResponseEntity<String> deleteProvider(@PathVariable String id) {
+        serviceProviderService.deleteProviderById(id);
+        return ResponseEntity.ok("Provider deleted from DB and Redis.");
     }
 
     @GetMapping("/serviceProviders/nearby")

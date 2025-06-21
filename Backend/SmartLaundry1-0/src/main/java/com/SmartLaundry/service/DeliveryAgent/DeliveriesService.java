@@ -197,9 +197,17 @@ public class DeliveriesService {
                 continue;
             }
 
-            Double distAgentToCustomer = haversine(agentLat, agentLon, customerLat, customerLon);
-            Double distCustomerToProvider = haversine(customerLat, customerLon, providerLat, providerLon);
-            double totalKm = distAgentToCustomer + distCustomerToProvider;
+            Double totalKm;
+
+            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
+                Double distAgentToCustomer = haversine(agentLat, agentLon, customerLat, customerLon);
+                Double distCustomerToProvider = haversine(customerLat, customerLon, providerLat, providerLon);
+                totalKm = distAgentToCustomer + distCustomerToProvider;
+            } else {
+                Double distAgentToProvider = haversine(agentLat, agentLon, providerLat, providerLon);
+                Double distProviderToCustomer = haversine(providerLat, providerLon, customerLat, customerLon);
+                totalKm = distAgentToProvider + distProviderToCustomer;
+            }
 
             if(totalKm > deliveryAgentEarnings.getBaseKm()){
                 Double netKm = totalKm - deliveryAgentEarnings.getBaseKm();
@@ -328,7 +336,7 @@ public class DeliveriesService {
     }
 
     // Sort delivery agent based on distance of delivery agent from customer
-    public void assignToDeliveryAgent(String orderId) throws JsonProcessingException {
+    public void assignToDeliveryAgentCustomerOrders(String orderId) throws JsonProcessingException {
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not exists."));
@@ -371,11 +379,11 @@ public class DeliveriesService {
             if (rejectedAgentIds.contains(key)) continue;
 
             // Check availability
-//            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
-//            if (!isAvailable) {
-//                logger.info("Agent {} is not available at {} on {}", key, now, today);
-//                continue;
-//            }
+            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
+            if (!isAvailable) {
+                logger.info("Agent {} is not available at {} on {}", key, now, today);
+                continue;
+            }
 
             String locationKey = "deliveryAgentLocation:" + key;
 
@@ -399,6 +407,75 @@ public class DeliveriesService {
                 .forEach(entry -> tryAssign(order, entry.getKey()));
     }
 
+    // Sort delivery agent based on distance of delivery agent from customer to delivery agent
+    public void assignToDeliveryAgentServiceProviderOrders(String orderId) throws JsonProcessingException {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not exists."));
+
+        if(order.getStatus() != OrderStatus.READY_FOR_DELIVERY){
+            throw new RuntimeException("Order is not accepted by service provider yet");
+        }
+
+        // Get customer lat/lng
+        Double custLat = order.getServiceProvider().getUser().getAddress().getLatitude();
+        Double custLng = order.getServiceProvider().getUser().getAddress().getLongitude();
+
+        // Fetch rejected agent list
+        @SuppressWarnings("unchecked")
+        Set<String> rejectedAgentIds =  (Set<String>)(Set<?>) redisTemplate.opsForSet().members("rejectedAgents:" + orderId);
+        if (rejectedAgentIds == null) rejectedAgentIds = Collections.emptySet();
+
+        // Get all delivery agent IDs and locations from Redis
+        Set<Object> activeAgents = redisTemplate.opsForSet().members("activeDeliveryAgents");
+
+        if (activeAgents == null || activeAgents.isEmpty()) {
+            logger.warn("No active delivery agents available. Cannot assign order: {}", orderId);
+            return; // or throw exception, or mark as pending
+        }
+
+        Set<String> agentIds = activeAgents != null
+                ? activeAgents.stream().map(Object::toString).collect(Collectors.toSet())
+                : Collections.emptySet();
+
+        Map<String, Double> agentDistances = new HashMap<>();
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        for (String key : agentIds) {
+
+            // Skip if already rejected
+            if (rejectedAgentIds.contains(key)) continue;
+
+            // Check availability
+            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
+            if (!isAvailable) {
+                logger.info("Agent {} is not available at {} on {}", key, now, today);
+                continue;
+            }
+
+            String locationKey = "deliveryAgentLocation:" + key;
+
+            @SuppressWarnings("unchecked")
+            Map<String, Double> loc = (Map<String, Double>) redisTemplate.opsForValue().get(locationKey);
+
+
+            if (loc != null) {
+
+                Double agentLat = loc.get("latitude");
+                Double agentLng = loc.get("longitude");
+
+                Double distance = haversine(custLat, custLng, agentLat, agentLng);
+                agentDistances.put(key, distance);
+            }
+        }
+
+        // Sort by distance and try to assign
+        agentDistances.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .forEach(entry -> tryAssign(order, entry.getKey()));
+    }
 
     // Calculates distance between two lat/lng points using Haversine formula.
     public double haversine(double custLat, double custLng, double agentLat, double agentLng) {
@@ -478,7 +555,7 @@ public class DeliveriesService {
                         redisTemplate.delete(redisKey);
 
                         // Retry assignment
-                        assignToDeliveryAgent(orderId);
+                        assignToDeliveryAgentCustomerOrders(orderId);
                     }
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();

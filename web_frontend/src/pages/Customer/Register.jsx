@@ -403,7 +403,7 @@ const Register = () => {
             Address Info
           </h3>
           <InputField
-            label="Contact Name"
+            label="Name"
             name="name"
             value={formData.addresses.name}
             onChange={handleChange}

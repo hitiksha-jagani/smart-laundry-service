@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "../../utils/axiosInstance";
+import PrimaryButton from "../../components/PrimaryButton"; 
 
 export default function InitialOrder({
   onNext,
@@ -17,11 +18,15 @@ export default function InitialOrder({
 
   const { pickupDate, pickupTime, items, goWithSchedulePlan } = initialOrderData;
 
-  const setField = (field, value) => {
-    setInitialOrderData((prev) => ({ ...prev, [field]: value }));
-  };
+  useEffect(() => {
+    if (providerId) {
+      setInitialOrderData((prev) => ({
+        ...prev,
+        serviceProviderId: providerId,
+      }));
+    }
+  }, [providerId, setInitialOrderData]);
 
-  // Fetch item list from backend
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -43,6 +48,10 @@ export default function InitialOrder({
     if (providerId) fetchItems();
   }, [providerId]);
 
+  const setField = (field, value) => {
+    setInitialOrderData((prev) => ({ ...prev, [field]: value }));
+  };
+
   const updateItem = (idx, field, value) => {
     const updated = [...items];
     updated[idx][field] = value;
@@ -50,7 +59,6 @@ export default function InitialOrder({
   };
 
   const addLine = () => setField("items", [...items, { itemId: "", quantity: 1 }]);
-
   const removeLine = (idx) => setField("items", items.filter((_, i) => i !== idx));
 
   const validate = () => {
@@ -67,18 +75,16 @@ export default function InitialOrder({
 
     setLoading(true);
     try {
-      const schedulePlanEnabled = goWithSchedulePlan;
-
       const res = await axios.post("/orders/initial", {
         serviceProviderId: providerId,
         pickupDate,
         pickupTime,
         items,
-        goWithSchedulePlan: schedulePlanEnabled,
+        goWithSchedulePlan,
       });
 
       setDummyOrderId(res.data);
-      onNext(schedulePlanEnabled);
+      onNext(goWithSchedulePlan);
     } catch (e) {
       setError(e.response?.data?.message || "Could not submit order");
     } finally {
@@ -87,15 +93,15 @@ export default function InitialOrder({
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-light rounded-xl shadow-lg mt-6">
-      <h2 className="text-2xl font-bold text-text mb-4">Start Your Laundry Order</h2>
+    <div className="p-6 max-w-3xl mx-auto bg-white shadow rounded">
+      <h2 className="text-xl font-semibold mb-4">Step 1: Start Your Laundry Order</h2>
 
       <div className="grid sm:grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-muted mb-1">Pickup Date</label>
           <input
             type="date"
-            className="w-full p-2 border border-border rounded"
+            className="w-full p-2 border border-gray-300 rounded"
             value={pickupDate}
             onChange={(e) => setField("pickupDate", e.target.value)}
           />
@@ -104,7 +110,7 @@ export default function InitialOrder({
           <label className="block text-muted mb-1">Pickup Time</label>
           <input
             type="time"
-            className="w-full p-2 border border-border rounded"
+            className="w-full p-2 border border-gray-300 rounded"
             value={pickupTime}
             onChange={(e) => setField("pickupTime", e.target.value)}
           />
@@ -117,7 +123,7 @@ export default function InitialOrder({
           <div className="flex-1">
             <label className="block text-muted mb-1">Item</label>
             <select
-              className="w-full p-2 border border-border rounded"
+              className="w-full p-2 border border-gray-300 rounded"
               value={it.itemId}
               onChange={(e) => updateItem(idx, "itemId", e.target.value)}
             >
@@ -134,14 +140,14 @@ export default function InitialOrder({
             <input
               type="number"
               min="1"
-              className="w-full p-2 border border-border rounded"
+              className="w-full p-2 border border-gray-300 rounded"
               value={it.quantity}
               onChange={(e) => updateItem(idx, "quantity", e.target.value)}
             />
           </div>
           {items.length > 1 && (
             <button
-              className="text-error mt-6 text-xl font-bold"
+              className="text-red-600 mt-6 text-xl font-bold"
               onClick={() => removeLine(idx)}
             >
               ✕
@@ -150,7 +156,7 @@ export default function InitialOrder({
         </div>
       ))}
 
-      <button className="text-accent2 hover:underline mb-6 font-medium" onClick={addLine}>
+      <button className="text-blue-600 hover:underline mb-6 font-medium" onClick={addLine}>
         + Add another item
       </button>
 
@@ -160,21 +166,17 @@ export default function InitialOrder({
             type="checkbox"
             checked={goWithSchedulePlan}
             onChange={() => setField("goWithSchedulePlan", !goWithSchedulePlan)}
-            className="accent-accent4"
+            className="accent-blue-600"
           />
           <span className="text-text font-medium">Enable Schedule Plan</span>
         </label>
       </div>
 
-      {error && <p className="text-error mb-4">{error}</p>}
+      {error && <p className="text-red-600 font-medium mb-4">{error}</p>}
 
-      <button
-        onClick={submit}
-        disabled={loading}
-        className="w-full py-3 bg-accent4 text-white font-semibold rounded hover:bg-accent2 disabled:opacity-50 transition"
-      >
+        <PrimaryButton onClick={submit} disabled={loading}>
         {loading ? "Submitting..." : "Next"}
-      </button>
+      </PrimaryButton>
     </div>
   );
 }

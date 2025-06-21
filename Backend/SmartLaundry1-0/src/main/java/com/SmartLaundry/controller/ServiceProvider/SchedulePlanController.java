@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -16,6 +18,14 @@ public class SchedulePlanController {
 
     public SchedulePlanController(ServiceProviderRepository serviceProviderRepository) {
         this.serviceProviderRepository = serviceProviderRepository;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<String>> getAllSchedulePlans() {
+        List<String> plans = Arrays.stream(SchedulePlan.values())
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(plans);
     }
 
     @GetMapping("/{providerId}")

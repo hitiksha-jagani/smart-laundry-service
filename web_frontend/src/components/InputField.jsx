@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 
 export default function InputField({
@@ -11,15 +12,14 @@ export default function InputField({
 }) {
   const [isFocused, setIsFocused] = useState(false);
 
+  const isFloating = isFocused || value;
+
   return (
     <div className="relative w-full mb-4">
       <label
         htmlFor={name}
-        className={`absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none transition-all duration-300 ease-in-out px-1
-        bg-background dark:bg-background
-        ${isFocused || value
-          ? "-top-2 text-sm text-primary"
-          : "text-base text-muted-foreground"}`}
+        className={`absolute left-4 transition-all duration-300 ease-in-out bg-background dark:bg-background px-1 pointer-events-none
+        ${isFloating ? "top-1 text-xs text-primary" : "top-3.5 text-sm text-muted-foreground"}`}
       >
         {label}
       </label>

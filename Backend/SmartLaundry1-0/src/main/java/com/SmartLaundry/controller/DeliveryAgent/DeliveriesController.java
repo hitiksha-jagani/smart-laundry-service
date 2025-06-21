@@ -43,9 +43,11 @@ public class DeliveriesController {
     // http://localhost:8080/deliveries/summary
     // Return total deliveries, pending deliveries and upcoming deliveries
     @GetMapping("/summary")
-    public ResponseEntity<DeliverySummaryResponseDTO> getDeliveriesSummary(HttpServletRequest request){
+    public ResponseEntity<DeliverySummaryResponseDTO> getDeliveriesSummary(HttpServletRequest request) throws AccessDeniedException {
         // Fetch agent id
         String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(agentId);
+        roleCheckingService.isDeliveryAgent(user);
         DeliverySummaryResponseDTO deliverySummaryResponseDTO = deliveriesService.deliveriesSummary(agentId);
         return ResponseEntity.ok(deliverySummaryResponseDTO);
     }
@@ -82,9 +84,10 @@ public class DeliveriesController {
         String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(agentId);
         roleCheckingService.isDeliveryAgent(user);
-        System.out.println("Enter service");
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
         deliveriesService.acceptOrder(orderId, agentId);
-
         return ResponseEntity.ok("Order accepted successfully.");
     }
 
@@ -99,15 +102,26 @@ public class DeliveriesController {
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
 
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
+
         // Add agent to rejected list in Redis
         redisTemplate.opsForSet().add("rejectedAgents:" + orderId, userId);
         redisTemplate.expire("rejectedAgents:" + orderId, Duration.ofMinutes(30));
+
+        Order order = orderRepository.findById(orderId).orElse(null);
+
+        RejectedOrders rejectedOrders = RejectedOrders.builder()
+                .order(order)
+                .users(user)
+                .build();
 
         // Remove current assignment to allow re-assignment
         redisTemplate.delete("assignment:" + orderId);
 
         // Logic to assign to next agent
-        deliveriesService.assignToDeliveryAgent(orderId);
+        deliveriesService.assignToDeliveryAgentCustomerOrders(orderId);
 
         return ResponseEntity.ok("Order rejected successfully.");
     }
@@ -120,6 +134,10 @@ public class DeliveriesController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
+
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
 
         return ResponseEntity.ok(deliveriesService.changeStatus(orderId));
     }

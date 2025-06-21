@@ -91,11 +91,9 @@ public class ServiceProvider implements Serializable {
     @ToString.Exclude
     private List<FeedbackProviders> feedbacks = new ArrayList<>();
 
-//    public Object getUsers() {
-//        return getUser();
-//    }
-
-
-    //public void setItems(List<Items> providerItems) {
-    //}
+    @NotNull(message = "Status is required.")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Schema(description = "Delivery agent is accepted or rejected.", example = "ACCEPTED")
+    private Status status = Status.PENDING;
 }

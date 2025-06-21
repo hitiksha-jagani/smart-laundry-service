@@ -1,111 +1,130 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "../../utils/axiosInstance";
+import PrimaryButton from "../../components/PrimaryButton";
 
-export default function SchedulePlan({ dummyOrderId, onNext, onPrev }) {
-  const [schedulePlan, setSchedulePlan] = useState("");
-  const [paymentOption, setPaymentOption] = useState(""); // "EACH" or "LAST"
+export default function SchedulePlan({
+  dummyOrderId,
+  onNext,
+  onPrev,
+  providerId,
+  initialOrderData,
+  setInitialOrderData,
+}) {
   const [error, setError] = useState("");
+  const [availablePlans, setAvailablePlans] = useState([]);
+  const [loading, setLoading] = useState(false);
 
- const handleSubmit = async () => {
-  if (!schedulePlan) {
-    setError("Please select a schedule plan.");
-    return;
-  }
+  const { schedulePlan, paymentOption } = initialOrderData;
 
-  const payEachDelivery = paymentOption === "EACH";
-  const payLastDelivery = paymentOption === "LAST";
+  useEffect(() => {
+    const fetchAvailablePlans = async () => {
+      try {
+        const res = await axios.get(`/schedule-plans/${providerId}`);
+        setAvailablePlans(res.data || []);
+      } catch (err) {
+        console.error("Error fetching schedule plans:", err);
+        setError("Could not load schedule plan options.");
+      }
+    };
 
-  // XOR validation: Only one should be true
-  if (payEachDelivery === payLastDelivery) {
-    setError("Please select exactly one payment option.");
-    return;
-  }
+    if (providerId) fetchAvailablePlans();
+  }, [providerId]);
 
-  try {
-    const response = await axios.post(
-      `/customer/schedule-plan/${dummyOrderId}`,
-      {
+  const setField = (field, value) => {
+    setInitialOrderData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async () => {
+    if (!schedulePlan) {
+      setError("Please select a schedule plan.");
+      return;
+    }
+
+    const payEachDelivery = paymentOption === "EACH";
+    const payLastDelivery = paymentOption === "LAST";
+
+    if (payEachDelivery === payLastDelivery) {
+      setError("Please select exactly one payment option.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.post(`/orders/schedule-plan/${dummyOrderId}`, {
         schedulePlan,
         payEachDelivery,
         payLastDelivery,
+      });
+
+      if (response.status === 200) {
+        onNext();
       }
-    );
-
-    if (response.status === 200) {
-      onNext();
+    } catch (err) {
+      console.error("Error saving schedule plan:", err);
+      setError("Failed to save schedule plan. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error saving schedule plan:", err);
-    setError("Failed to save schedule plan. Please try again.");
-  }
-};
-
+  };
 
   return (
     <div className="p-6 max-w-xl mx-auto bg-white shadow rounded">
       <h2 className="text-xl font-semibold mb-4">Step 2: Select Schedule Plan</h2>
 
       <div className="space-y-4">
-        {/* Schedule Plan Selection */}
         <div>
           <label className="block font-medium mb-1">Schedule Plan:</label>
           <select
             value={schedulePlan}
-            onChange={(e) => setSchedulePlan(e.target.value)}
-            className="w-full p-2 border rounded"
+            onChange={(e) => setField("schedulePlan", e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
           >
             <option value="">-- Select --</option>
-            <option value="DAILY">Daily</option>
-            <option value="WEEKLY">Weekly</option>
-            <option value="MONTHLY">Monthly</option>
+            {availablePlans.map((plan) => (
+              <option key={plan} value={plan}>
+                {plan.charAt(0) + plan.slice(1).toLowerCase().replace("_", " ")}
+              </option>
+            ))}
           </select>
         </div>
 
-        {/* Payment Option Radio Buttons */}
         <div>
           <label className="block font-medium mb-1">Payment Option:</label>
-
           <label className="flex items-center space-x-2">
             <input
               type="radio"
               name="paymentOption"
               value="EACH"
               checked={paymentOption === "EACH"}
-              onChange={() => setPaymentOption("EACH")}
+              onChange={() => setField("paymentOption", "EACH")}
             />
             <span>Pay After Each Delivery</span>
           </label>
-
           <label className="flex items-center space-x-2 mt-2">
             <input
               type="radio"
               name="paymentOption"
               value="LAST"
               checked={paymentOption === "LAST"}
-              onChange={() => setPaymentOption("LAST")}
+              onChange={() => setField("paymentOption", "LAST")}
             />
             <span>Pay After Last Delivery</span>
           </label>
         </div>
 
-        {/* Error Message */}
         {error && <p className="text-red-600 font-medium">{error}</p>}
 
-        {/* Buttons */}
         <div className="flex justify-between pt-4">
           <button
             onClick={onPrev}
-            className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+            className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"
           >
             Previous
           </button>
 
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Save & Continue
-          </button>
+          <PrimaryButton onClick={handleSubmit} disabled={loading}>
+            {loading ? "Saving..." : "Next"}
+          </PrimaryButton>
         </div>
       </div>
     </div>
