@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/register", "/login","/images/**","/emailotp", "/verify-otp","/complete-agent-profile/**", "/sp/complete-sp-profile/**", "/otp/**", "/publish/**" , "/customer/**" , "/service-provider/**" , "/cache/**" ,"/schedule-plans/**", "/orders/**","/provider/orders/**","/users/**","/sp/**","/paypal/**","/ticket/**","/faqs/**","/testing/**","/cities/**","/roles/**")
+                                .requestMatchers("/register", "/login","/images/**","/emailotp", "/verify-otp","/complete-agent-profile/**", "/sp/complete-sp-profile/**", "/otp/**", "/publish/**" , "/customer/serviceProviders/**","/customer/serviceProviders/nearby/**" , "/customer/loadGeoData/**","/customer/location/resolve-pin","/service-provider/**" , "/cache/**" ,"/schedule-plans/**", "/orders/**","/provider/orders/**","/users/**","/sp/**","/paypal/**","/ticket/**","/faqs/**","/testing/**","/cities/**","/roles/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )

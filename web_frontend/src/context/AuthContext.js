@@ -5,6 +5,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true); // new flag
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -14,6 +15,8 @@ export const AuthProvider = ({ children }) => {
       setToken(storedToken);
       setRole(storedRole);
     }
+
+    setLoading(false); // done loading after checking localStorage
   }, []);
 
   const login = (jwtToken, userRole) => {
@@ -33,8 +36,8 @@ export const AuthProvider = ({ children }) => {
   const isLoggedIn = !!token;
 
   return (
-    <AuthContext.Provider value={{ token, role, isLoggedIn, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ token, role, isLoggedIn, login, logout, loading }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

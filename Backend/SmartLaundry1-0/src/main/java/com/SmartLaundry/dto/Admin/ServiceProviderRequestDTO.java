@@ -63,13 +63,4 @@ public class ServiceProviderRequestDTO {
         private String accountHolderName;
     }
 
-//    @Data
-//    @NoArgsConstructor
-//    @AllArgsConstructor
-//    @Builder
-//    public static class priceDTO {
-//        private String  itemId;
-//        private Long price;
-//        private String serviceProviderId;
-//    }
 }

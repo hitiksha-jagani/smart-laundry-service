@@ -13,7 +13,8 @@ module.exports = {
         border: "#DDD6E0",         // Mist Gray
         text: "#2F2F3A",           // Deep Slate
         muted: "#6E6E73",          // Soft Gray
-
+        accent4: "#A566FF",
+        accent4Hover: "#914be3",
         success: "#BAA48F",
         error: "#9A3B3B",
         light: "#F4F0FA",

@@ -8,6 +8,7 @@ import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderOrderService;
 import com.SmartLaundry.service.Customer.OrderService;
 import com.SmartLaundry.service.JWTService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,13 +86,17 @@ public class ServiceProviderOrderController {
     @PutMapping("/{orderId}/ready-for-delivery")
     public ResponseEntity<String> markReadyForDelivery(
             @PathVariable String orderId,
-            HttpServletRequest request) throws AccessDeniedException {
+            HttpServletRequest request) throws AccessDeniedException, JsonProcessingException {
 
         String spUserId = getServiceProviderUserId(request);
         checkIfBlocked(spUserId);
         serviceProviderOrderService.markOrderReadyForDelivery(spUserId, orderId);
 
         return ResponseEntity.ok("Order marked as READY_FOR_DELIVERY");
+    }
+    @GetMapping("/pending-otp-verification")
+    public List<OtpPendingOrderDto> getOrdersPendingOtp() {
+        return orderService.getOrdersPendingOtp(); // filter by IN_CLEANING or OUT_FOR_DELIVERY
     }
 
 
@@ -102,6 +107,20 @@ public class ServiceProviderOrderController {
         return ResponseEntity.ok(activeOrders);
     }
 
+    @GetMapping("/delivered")
+    public ResponseEntity<List<ActiveOrderGroupedDto>> getDeliveredOrders(HttpServletRequest request) {
+        String spUserId = getServiceProviderUserId(request);
+        List<ActiveOrderGroupedDto> deliveredOrders = serviceProviderOrderService.getDeliveredOrdersForServiceProvider(spUserId);
+        return ResponseEntity.ok(deliveredOrders);
+    }
+
+//    @GetMapping("/serviceProviders/{providerId}/completed-orders")
+//    public ResponseEntity<List<OrderHistoryDto>> getCompletedOrdersForProvider(
+//            @PathVariable String providerId) {
+//
+//        List<OrderHistoryDto> orders = orderService.getCompletedOrdersForProvider(providerId);
+//        return ResponseEntity.ok(orders);
+//    }
 
     @PostMapping("/feedbackprovider/respond/{feedbackId}")
     public ResponseEntity<String> respondToFeedback(

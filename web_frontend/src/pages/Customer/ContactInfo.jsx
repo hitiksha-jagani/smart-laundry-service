@@ -1,26 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import InputField from "../../components/InputField";
 import axios from "../../utils/axiosInstance";
+import PrimaryButton from "../../components/PrimaryButton";
 
-export default function ContactInfo({ dummyOrderId, userId, onNext, onPrev }) {
-  const [formData, setFormData] = useState({
-    contactName: "",
-    contactPhone: "",
-    contactAddress: "",
-  });
+export default function ContactInfo({
+  dummyOrderId,
+  userId,
+  onNext,
+  onPrev,
+  initialOrderData,
+  setInitialOrderData,
+}) {
+  const { contactName = "", contactPhone = "", contactAddress = "" } = initialOrderData || {};
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+  const setField = (field, value) => {
+    setInitialOrderData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    const { contactName, contactPhone, contactAddress } = formData;
     setError("");
 
     if (!contactName || !contactPhone || !contactAddress) {
@@ -32,14 +32,11 @@ export default function ContactInfo({ dummyOrderId, userId, onNext, onPrev }) {
 
     try {
       setLoading(true);
-
-      // ✅ Fix the URL to match backend route
       await axios.post(`/orders/contact/${dummyOrderId}`, {
         contactName,
         contactPhone,
         contactAddress,
       });
-
       onNext();
     } catch (err) {
       console.error(err);
@@ -50,16 +47,15 @@ export default function ContactInfo({ dummyOrderId, userId, onNext, onPrev }) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-light rounded-xl shadow-lg mt-6">
-      <h2 className="text-2xl font-bold text-text mb-4">Step 3: Contact Information</h2>
+    <div className="p-6 max-w-xl mx-auto bg-white shadow rounded">
+      <h2 className="text-xl font-semibold mb-4">Step 3: Contact Information</h2>
 
       <div className="mb-4">
         <InputField
           label="Contact Name"
           name="contactName"
-          value={formData.contactName}
-          onChange={handleChange}
-          placeholder="" // avoid overlap
+          value={contactName}
+          onChange={(e) => setField("contactName", e.target.value)}
         />
       </div>
 
@@ -68,9 +64,8 @@ export default function ContactInfo({ dummyOrderId, userId, onNext, onPrev }) {
           label="Phone Number"
           name="contactPhone"
           type="tel"
-          value={formData.contactPhone}
-          onChange={handleChange}
-          placeholder=""
+          value={contactPhone}
+          onChange={(e) => setField("contactPhone", e.target.value)}
         />
       </div>
 
@@ -78,29 +73,24 @@ export default function ContactInfo({ dummyOrderId, userId, onNext, onPrev }) {
         <InputField
           label="Address"
           name="contactAddress"
-          value={formData.contactAddress}
-          onChange={handleChange}
-          placeholder=""
+          value={contactAddress}
+          onChange={(e) => setField("contactAddress", e.target.value)}
         />
       </div>
 
-      {error && <p className="text-error mb-4 font-medium">{error}</p>}
+      {error && <p className="text-red-600 font-medium mb-4">{error}</p>}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4">
         <button
           onClick={onPrev}
-          className="px-6 py-2 bg-border text-text rounded hover:bg-muted transition"
+          className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"
         >
           Previous
         </button>
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="px-6 py-2 bg-accent4 text-white font-semibold rounded hover:bg-accent2 transition disabled:opacity-50"
-        >
+        <PrimaryButton onClick={handleSubmit} disabled={loading}>
           {loading ? "Saving..." : "Next"}
-        </button>
+        </PrimaryButton>
       </div>
     </div>
   );

@@ -9,26 +9,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SchedulePlanRequestDto {
-    private SchedulePlan schedulePlan; // Enum
+
+    private SchedulePlan schedulePlan; // Enum: DAILY / WEEKLY / MONTHLY
     private boolean payEachDelivery;
     private boolean payLastDelivery;
 
-    /**
-     * Returns true if exactly one payment option is selected.
-     * Change this logic if both false is valid.
-     */
     public boolean isValidPaymentOption() {
-        return payEachDelivery ^ payLastDelivery; // XOR: true if exactly one is true
+        // Only one of them must be true
+        return payEachDelivery ^ payLastDelivery; // XOR
     }
 
-    /**
-     * Validates the DTO and throws IllegalArgumentException if invalid.
-     */
     public void validate() {
+        if (schedulePlan == null) {
+            throw new IllegalArgumentException("Schedule plan must be selected.");
+        }
         if (!isValidPaymentOption()) {
-            throw new IllegalArgumentException("Exactly one payment option must be selected: payEachDelivery or payLastDelivery.");
+            throw new IllegalArgumentException("Exactly one payment option must be selected: either 'Pay Each Delivery' or 'Pay Last Delivery'.");
         }
     }
 }
-
-

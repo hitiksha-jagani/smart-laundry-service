@@ -12,7 +12,9 @@ import com.SmartLaundry.service.Customer.SMSService;
 import com.SmartLaundry.service.DeliveryAgent.DeliveriesService;
 import com.SmartLaundry.service.OrderEmailOtpService;
 import com.SmartLaundry.service.OrderOtpService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,6 +164,48 @@ public class ServiceProviderOrderService {
         }).toList();
     }
 
+
+    public List<ActiveOrderGroupedDto> getDeliveredOrdersForServiceProvider(String spUserId) {
+        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
+                .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
+
+        List<Order> deliveredOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.DELIVERED);
+
+        return deliveredOrders.stream().map(order -> {
+            List<ActiveOrderDto> itemDtos = order.getBookingItems().stream().map(item -> {
+                Items itemEntity = item.getItem();
+
+                String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(sub -> sub.getServices())
+                        .map(Services::getServiceName)
+                        .orElse(Optional.ofNullable(itemEntity.getService())
+                                .map(Services::getServiceName)
+                                .orElse("N/A"));
+
+                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getSubServiceName)
+                        .orElse("N/A");
+
+                return ActiveOrderDto.builder()
+                        .itemName(itemEntity.getItemName())
+                        .service(serviceName)
+                        .subService(subServiceName)
+                        .quantity(item.getQuantity())
+                        .build();
+            }).toList();
+
+            return ActiveOrderGroupedDto.builder()
+                    .orderId(order.getOrderId())
+                    .pickupDate(order.getPickupDate())
+                    .pickupTime(order.getPickupTime())
+                    .status(order.getStatus())
+                    .items(itemDtos)
+                    .build();
+        }).toList();
+    }
+
+
+
     public OrderResponseDto acceptOrder(String spUserId, String orderId) {
         String lockKey = LOCK_PREFIX + orderId;
 
@@ -193,8 +237,8 @@ public class ServiceProviderOrderService {
             redisTemplate.opsForSet().remove(getPendingOrdersSetKey(sp.getServiceProviderId()), order.getOrderId());
 
             // Send notifications
-            smsService.sendOrderStatusNotification(order.getContactPhone(),
-                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
+//            smsService.sendOrderStatusNotification(order.getContactPhone(),
+//                    "Your LaundryService Order " + order.getOrderId() + " is Accepted");
             emailService.sendOrderStatusNotification(order.getUsers().getEmail(),
                     "Order Accepted",
                     "Your LaundryService Order " + order.getOrderId() + " is Accepted");
@@ -306,7 +350,7 @@ public class ServiceProviderOrderService {
         saveOrderStatusHistory(order, OrderStatus.IN_CLEANING);
     }
 
-    public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException {
+    public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
         Order order = orderRepository.findByorderId(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
@@ -330,6 +374,7 @@ public class ServiceProviderOrderService {
         //For SMS
 //        if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
 //            // Agent will come to collect clothes from provider —> send OTP to provider
+//        deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
 //            orderOtpService.generateAndSendOtp(
 //                    order,
 //                    sp.getUser(),
@@ -350,7 +395,7 @@ public class ServiceProviderOrderService {
 //        }
         //For Email
         if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
-            // Agent will come to collect clothes from provider —> send OTP to provider
+            deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
             orderEmailOtpService.generateAndSendOtp(
                     order,
                     sp.getUser(), // provider user

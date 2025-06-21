@@ -1,7 +1,9 @@
 package com.SmartLaundry.service.Customer;
 import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
+import com.SmartLaundry.dto.ServiceProvider.OrderHistoryDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
+import com.SmartLaundry.dto.ServiceProvider.OtpPendingOrderDto;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
 import com.SmartLaundry.service.GeocodingService;
@@ -27,7 +29,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-
+import java.util.stream.Collectors;
 
 
 @Service
@@ -111,10 +113,11 @@ public class OrderService implements OrderBookingService {
 
     // Save schedule plan details in Redis
     public void saveSchedulePlan(String userId, String dummyOrderId, SchedulePlanRequestDto dto) {
-        dto.validate();
         if (dto == null || dto.getSchedulePlan() == null) {
-            throw new IllegalArgumentException("Schedule plan or selection is missing");
+            throw new IllegalArgumentException("Schedule plan or selection is missing.");
         }
+
+        dto.validate(); // moved here
 
         String key = getRedisKey(userId, dummyOrderId);
 
@@ -123,6 +126,7 @@ public class OrderService implements OrderBookingService {
         redisTemplate.opsForHash().put(key, "payLastDelivery", String.valueOf(dto.isPayLastDelivery()));
         redisTemplate.expire(key, Duration.ofDays(7));
     }
+
 
     // Save contact info in Redis
     @Transactional
@@ -305,10 +309,10 @@ public class OrderService implements OrderBookingService {
 
         // Send notification
         ServiceProvider sp = order.getServiceProvider();
-        smsService.sendOrderStatusNotification(
-                sp.getUser().getPhoneNo(),
-                "New laundry order received from user " + order.getUsers().getFirstName()
-        );
+//        smsService.sendOrderStatusNotification(
+//                sp.getUser().getPhoneNo(),
+//                "New laundry order received from user " + order.getUsers().getFirstName()
+//        );
         emailService.sendOrderStatusNotification(
                 sp.getUser().getEmail(),
                 "New Laundry Order Request",
@@ -700,6 +704,82 @@ public class OrderService implements OrderBookingService {
         // Return the relative or absolute path
         return destination.getAbsolutePath();
     }
+
+    public List<OtpPendingOrderDto> getOrdersPendingOtp() {
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .filter(order -> {
+                    OrderStatus status = order.getStatus();
+                    return status == OrderStatus.ACCEPTED_BY_PROVIDER
+                            || status == OrderStatus.READY_FOR_DELIVERY
+                            || status == OrderStatus.OUT_FOR_DELIVERY;
+                })
+                .map(order -> {
+                    OrderStatus status = order.getStatus();
+
+                    boolean pickupOtp = status == OrderStatus.ACCEPTED_BY_PROVIDER;
+                    boolean deliveryOtp = status == OrderStatus.READY_FOR_DELIVERY || status == OrderStatus.OUT_FOR_DELIVERY;
+
+                    String agentId = pickupOtp
+                            ? (order.getPickupDeliveryAgent() != null ? order.getPickupDeliveryAgent().getDeliveryAgentId() : null)
+                            : (order.getDeliveryDeliveryAgent() != null ? order.getDeliveryDeliveryAgent().getDeliveryAgentId() : null);
+
+                    // ✅ Safely build customer name
+                    String customerName = order.getUsers() != null
+                            ? (order.getUsers().getFirstName() + " " + order.getUsers().getLastName())
+                            : "N/A";
+
+                    return new OtpPendingOrderDto(
+                            order.getOrderId(),
+                            agentId,
+                            order.getServiceProvider().getUser().getUserId(),
+                            pickupOtp,
+                            deliveryOtp,
+                            customerName
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderHistoryDto> getCompletedOrdersForProvider(String providerId) {
+        ServiceProvider sp = serviceProviderRepository.findById(providerId)
+                .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
+
+        List<Order> completedOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.DELIVERED);
+
+        return completedOrders.stream().map(order -> {
+            List<OrderHistoryDto.ItemDetail> itemDetails = order.getBookingItems().stream().map(item -> {
+                Items itemEntity = item.getItem();
+
+                String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(sub -> sub.getServices())
+                        .map(Services::getServiceName)
+                        .orElse(Optional.ofNullable(itemEntity.getService())
+                                .map(Services::getServiceName)
+                                .orElse("N/A"));
+
+                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getSubServiceName)
+                        .orElse("N/A");
+
+                return OrderHistoryDto.ItemDetail.builder()
+                        .itemName(itemEntity.getItemName())
+                        .serviceName(serviceName)
+                        .subServiceName(subServiceName)
+                        .quantity(item.getQuantity())
+                        .build();
+            }).toList();
+
+            return OrderHistoryDto.builder()
+                    .orderId(order.getOrderId())
+                    .status(order.getStatus().toString())
+                    .items(itemDetails)
+                    .build();
+        }).toList();
+    }
+
+
 
 
 

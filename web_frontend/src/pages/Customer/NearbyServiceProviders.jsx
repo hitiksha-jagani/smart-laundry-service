@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import { FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+import Navbar from "../../components/Navbar"; 
+import Footer from "../../components/Footer"; 
 
 export default function NearbyServiceProviders() {
   const [allProviders, setAllProviders] = useState([]);
@@ -12,6 +16,7 @@ export default function NearbyServiceProviders() {
   const [pinCode, setPinCode] = useState("");
 
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     fetchAllProviders();
@@ -84,114 +89,133 @@ export default function NearbyServiceProviders() {
   const providersToShow = showNearby ? nearbyProviders : allProviders;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4B00B5] to-[#FF4774] p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6 text-center">Service Providers</h1>
+    <div className="flex flex-col min-h-screen bg-white text-gray-900">
+      {/* Header */}
+      <Navbar />
 
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-        <button
-          onClick={fetchNearbyProviders}
-          disabled={loadingNearby}
-          className="bg-white text-[#4B00B5] font-semibold px-6 py-2 rounded-lg shadow hover:bg-gray-100 disabled:opacity-60"
-        >
-          {loadingNearby ? "Finding nearby..." : "Show Nearby Providers"}
-        </button>
+      {/* Content */}
+      <main className="flex-grow px-6 py-8">
+        <h1 className="text-3xl font-bold mb-6 text-center text-[#4B00B5]">Service Providers</h1>
 
-        <div className="flex flex-col sm:flex-row items-center gap-2">
-          <input
-            type="text"
-            placeholder="Enter PIN Code"
-            value={pinCode}
-            onChange={(e) => setPinCode(e.target.value)}
-            className="px-4 py-2 rounded-md text-gray-800 w-60"
-          />
+        <div className="flex flex-wrap justify-center gap-4 mb-6">
           <button
-            onClick={fetchNearbyByPin}
-            className="bg-white text-[#FF4774] font-semibold px-4 py-2 rounded-md hover:bg-gray-100"
+            onClick={fetchNearbyProviders}
+            disabled={loadingNearby}
+            className="bg-[#4B00B5] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#360088] disabled:opacity-60"
           >
-            Find by PIN
+            {loadingNearby ? "Finding nearby..." : "Show Nearby Providers"}
           </button>
+
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <input
+              type="text"
+              placeholder="Enter PIN Code"
+              value={pinCode}
+              onChange={(e) => setPinCode(e.target.value)}
+              className="px-4 py-2 rounded-md border border-gray-300 text-gray-800 w-60"
+            />
+            <button
+              onClick={fetchNearbyByPin}
+              className="bg-[#FF4774] text-white font-semibold px-4 py-2 rounded-md hover:bg-pink-600"
+            >
+              Find by PIN
+            </button>
+          </div>
+
+          {showNearby && (
+            <button
+              onClick={() => setShowNearby(false)}
+              className="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-md hover:bg-gray-300"
+            >
+              Show All Providers
+            </button>
+          )}
         </div>
 
-        {showNearby && (
-          <button
-            onClick={() => setShowNearby(false)}
-            className="bg-white text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-100"
-          >
-            Show All Providers
-          </button>
+        {error && <p className="text-center text-red-600 font-medium mb-4">{error}</p>}
+
+        {providersToShow.length === 0 && !error && (
+          <p className="text-center text-gray-700">Loading providers...</p>
         )}
-      </div>
 
-      {error && <p className="text-center text-red-200 font-medium mb-4">{error}</p>}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {providersToShow.map((provider) => (
+            <div
+              key={provider.serviceProviderId}
+              className="bg-white border border-gray-200 text-gray-900 rounded-xl shadow hover:shadow-lg transition duration-300 w-full max-w-sm mx-auto"
+            >
+              <img
+                src={provider.photoImage || "/default-provider.jpg"}
+                alt={provider.businessName}
+                onError={(e) => (e.target.src = "/default-provider.jpg")}
+                className="w-full h-48 object-contain bg-gray-100 rounded-t"
+              />
+              <div className="p-4">
+                <h2 className="text-xl font-semibold mb-1">{provider.businessName}</h2>
+                <p className="text-sm text-gray-600 mb-2">
+                  {provider.address?.areaName}, {provider.address?.city?.cityName}
+                </p>
 
-      {providersToShow.length === 0 && !error && (
-        <p className="text-center text-white">Loading providers...</p>
-      )}
+                <div className="flex items-center mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar
+                      key={i}
+                      className={`text-sm ${i < provider.averageRating ? "text-yellow-400" : "text-gray-300"}`}
+                    />
+                  ))}
+                  <span className="ml-2 text-sm">{provider.averageRating}/5</span>
+                </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {providersToShow.map((provider) => (
-          <div
-            key={provider.serviceProviderId}
-            className="bg-white text-gray-900 rounded-xl shadow-lg overflow-hidden w-full max-w-sm mx-auto hover:shadow-xl transition duration-300"
-          >
-            <img
-              src={provider.photoImage || "/default-provider.jpg"}
-              alt={provider.businessName}
-              onError={(e) => (e.target.src = "/default-provider.jpg")}
-              className="w-full h-48 object-contain bg-white rounded-t"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold mb-1">{provider.businessName}</h2>
-              <p className="text-sm text-gray-600 mb-2">
-                {provider.address?.areaName}, {provider.address?.city?.cityName}
-              </p>
+                <ul className="text-sm text-gray-700 mb-2">
+                  {provider.items?.slice(0, 3).map((item, i) => (
+                    <li key={i}>• {item.itemName}</li>
+                  ))}
+                </ul>
 
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar
-                    key={i}
-                    className={`text-sm ${i < provider.averageRating ? "text-yellow-400" : "text-gray-300"}`}
-                  />
-                ))}
-                <span className="ml-2 text-sm">{provider.averageRating}/5</span>
-              </div>
+                <div className="flex justify-between items-center mt-2">
+                  <button
+                    className="text-sm text-[#FF4774] font-semibold hover:underline"
+                    onClick={() =>
+                      navigate(`/provider/${provider.serviceProviderId}`, {
+                        state: {
+                          lat: provider.address?.latitude,
+                          lng: provider.address?.longitude,
+                        },
+                      })
+                    }
+                  >
+                    View Details
+                  </button>
 
-              <ul className="text-sm text-gray-700 mb-2">
-                {provider.items?.slice(0, 3).map((item, i) => (
-                  <li key={i}>• {item.itemName}</li>
-                ))}
-              </ul>
-
-              <div className="flex justify-between items-center mt-2">
-                <button
-                  className="text-sm text-[#FF4774] font-semibold hover:underline"
-                  onClick={() =>
-                    navigate(`/provider/${provider.serviceProviderId}`, {
-                      state: {
-                        lat: provider.address?.latitude,
-                        lng: provider.address?.longitude,
-                      },
-                    })
-                  }
-                >
-                  View Details
-                </button>
-
-                <button
-                  className="text-sm text-white bg-[#4B00B5] px-3 py-1 rounded hover:bg-[#360088]"
-                  onClick={() =>
-                    navigate("/order/book", {
-                      state: { providerId: provider.serviceProviderId },
-                    })
-                  }
-                >
-                  Book Now
-                </button>
+                  <button
+                    className={`text-sm px-3 py-1 rounded ${
+                      isLoggedIn
+                        ? "bg-[#4B00B5] text-white hover:bg-[#360088]"
+                        : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    }`}
+                    disabled={!isLoggedIn}
+                    onClick={() => {
+                      if (!isLoggedIn) {
+                        navigate("/login", { state: { redirectTo: "/order/book" } });
+                      } else {
+                        navigate("/order/book", {
+                          state: { providerId: provider.serviceProviderId },
+                        });
+                      }
+                    }}
+                  >
+                    Book Now
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </main>
+
+    
+      <Footer />
     </div>
   );
 }
+

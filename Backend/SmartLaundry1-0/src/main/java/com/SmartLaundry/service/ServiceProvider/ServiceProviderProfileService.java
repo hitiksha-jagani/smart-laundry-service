@@ -167,6 +167,10 @@ public class ServiceProviderProfileService {
             String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
             String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
             String profilePath = saveFile(profilePhoto, uploadDir, userId);
+            data.setAadharCardPhoto(aadharPath);
+            data.setPanCardPhoto(panPath);
+            data.setBusinessUtilityBillPhoto(utilityBillPath);
+            data.setProfilePhoto(profilePath);
 
             // 5. Save BankAccount entity
             BankAccount bankAccount = BankAccount.builder()
