@@ -1,7 +1,5 @@
 package com.SmartLaundry.service.DeliveryAgent;
 
-import com.SmartLaundry.dto.AddressDTO;
-import com.SmartLaundry.dto.Admin.DeliveryAgentResponseDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentProfileDTO;
 import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
@@ -99,10 +97,10 @@ public class DeliveryAgentProfileService {
         deliveryAgentProfileDTO.setDateOfBirth(deliveryAgent.getDateOfBirth());
         deliveryAgentProfileDTO.setGender(deliveryAgent.getGender());
         deliveryAgentProfileDTO.setVehicleNumber(deliveryAgent.getVehicleNumber());
-        deliveryAgentProfileDTO.setProfilePhoto("/image/profile/" + user.getUserId());
-        deliveryAgentProfileDTO.setPanCardPhoto("/image/pan/" + user.getUserId());
-        deliveryAgentProfileDTO.setAadharCardPhoto("/image/aadhar/" + user.getUserId());
-        deliveryAgentProfileDTO.setDrivingLicensePhoto("/image/license/" + user.getUserId());
+        deliveryAgentProfileDTO.setProfilePhoto("/image/agent/profile/" + user.getUserId());
+        deliveryAgentProfileDTO.setPanCardPhoto("/image/agent/pan/" + user.getUserId());
+        deliveryAgentProfileDTO.setAadharCardPhoto("/image/agent/aadhar/" + user.getUserId());
+        deliveryAgentProfileDTO.setDrivingLicensePhoto("/image/agent/license/" + user.getUserId());
         deliveryAgentProfileDTO.setBankName(deliveryAgent.getBankName());
         deliveryAgentProfileDTO.setAccountHolderName(deliveryAgent.getAccountHolderName());
         deliveryAgentProfileDTO.setBankAccountNumber(deliveryAgent.getBankAccountNumber());

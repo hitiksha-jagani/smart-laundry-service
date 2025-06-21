@@ -93,12 +93,14 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
-                totalComplaints = complaintsRepository.findTotalComplaintsCount();
-                customerComplaints = complaintsRepository.findComplaintsCount(UserRole.CUSTOMER);
-                deliveryAgentComplaints = complaintsRepository.findComplaintsCount(UserRole.DELIVERY_AGENT);
-                serviceProviderComplaints = complaintsRepository.findComplaintsCount(UserRole.SERVICE_PROVIDER);
-                respondedComplaints = complaintsRepository.findRespondedComplaintsCount();
-                nonRespondedComplaints = complaintsRepository.findNotRespondedComplaintsCount();
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = today;
+                totalComplaints = complaintsRepository.findTotalComplaintsCountByDateRange(start, end);
+                customerComplaints = complaintsRepository.findComplaintsCountByDateRangeAndRole(start, end, UserRole.CUSTOMER);
+                deliveryAgentComplaints = complaintsRepository.findComplaintsCountByDateRangeAndRole(start, end, UserRole.DELIVERY_AGENT);
+                serviceProviderComplaints = complaintsRepository.findComplaintsCountByDateRangeAndRole(start, end, UserRole.SERVICE_PROVIDER);
+                respondedComplaints = complaintsRepository.findRespondedComplaintsCountByDateRange(start, end);
+                nonRespondedComplaints = complaintsRepository.findNotRespondedComplaintsCountByDateRange(start, end);
         }
 
         ComplaintsSummaryResponseDTO complaintsSummaryResponseDTO = ComplaintsSummaryResponseDTO.builder()
@@ -151,7 +153,9 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
-                ticketList = complaintsRepository.findTotalComplaints();
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = today;
+                ticketList = complaintsRepository.findTotalComplaintsByDateRange(start, end);
         }
 
         List<ComplaintsListResponseDTO> dto = new ArrayList<>();
@@ -220,7 +224,9 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
-                ticketList = complaintsRepository.findComplaintsByRole(UserRole.CUSTOMER);
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = today;
+                ticketList = complaintsRepository.findComplaintsByDateRangeAndRole(start, end, UserRole.CUSTOMER);
         }
 
         List<ComplaintsListResponseDTO> dto = new ArrayList<>();
@@ -286,7 +292,9 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
-                ticketList = complaintsRepository.findComplaintsByRole(UserRole.DELIVERY_AGENT);
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = today;
+                ticketList = complaintsRepository.findComplaintsByDateRangeAndRole(start, end, UserRole.DELIVERY_AGENT);
         }
 
         List<ComplaintsListResponseDTO> dto = new ArrayList<>();
@@ -353,7 +361,9 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
-                ticketList = complaintsRepository.findComplaintsByRole(UserRole.SERVICE_PROVIDER);
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = today;
+                ticketList = complaintsRepository.findComplaintsByDateRangeAndRole(start, end, UserRole.SERVICE_PROVIDER);
         }
 
         List<ComplaintsListResponseDTO> dto = new ArrayList<>();
@@ -430,9 +440,11 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = today;
                 ticketList = filterByUserRole
-                        ? complaintsRepository.findRespondedComplaintsByRole(role)
-                        : complaintsRepository.findRespondedComplaints();
+                        ? complaintsRepository.findRespondedComplaintsByDateRangeAndRole(start, end, role)
+                        : complaintsRepository.findRespondedComplaintsByDateRange(start, end);
         }
 
         List<ComplaintsListResponseDTO> dto = new ArrayList<>();
@@ -507,9 +519,11 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = today;
                 ticketList = filterByUserRole
-                        ? complaintsRepository.findNotRespondedComplaintsByRole(role)
-                        : complaintsRepository.findNotRespondedComplaints();
+                        ? complaintsRepository.findNotRespondedComplaintsByDateRangeAndRole(start, end, role)
+                        : complaintsRepository.findNotRespondedComplaintsByDateRange(start, end);
         }
 
         List<ComplaintsListResponseDTO> dto = new ArrayList<>();
@@ -583,7 +597,7 @@ public class ComplaintsService {
                 break;
             case "overall":
             default:
-                start = LocalDate.of(2025, 6, 1).atStartOfDay();
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
                 break;
         }
 
@@ -637,7 +651,7 @@ public class ComplaintsService {
             break;
             case "overall" :
             default :
-                start = LocalDate.of(2025, 6, 1).atStartOfDay();
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
                 end = now;
         }
 

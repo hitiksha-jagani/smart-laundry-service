@@ -34,11 +34,7 @@ public class FeedbackService {
     private RoleCheckingService roleCheckingService;
 
     // Return summary count of feedback
-    public FeedbackSummaryResponseDTO getSummary(String userId, String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
-
-        Users user = roleCheckingService.checkUser(userId);
-
-        roleCheckingService.isDeliveryAgent(user);
+    public FeedbackSummaryResponseDTO getSummary(Users user, String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
 
         DeliveryAgent deliveryAgent = roleCheckingService.checkDeliveryAgent(user);
 
@@ -93,11 +89,7 @@ public class FeedbackService {
 
     }
 
-    public List<FeedbackResponseDTO> getFeedbacks(String userId, String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
-
-        Users user = roleCheckingService.checkUser(userId);
-
-        roleCheckingService.isDeliveryAgent(user);
+    public List<FeedbackResponseDTO> getFeedbacks(String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
 
         LocalDate today = LocalDate.now();
         LocalDate weekStart = today.with(DayOfWeek.MONDAY);

@@ -2,6 +2,8 @@ package com.SmartLaundry.controller.DeliveryAgent;
 
 import com.SmartLaundry.dto.Customer.RaiseTicketRequestDto;
 import com.SmartLaundry.model.TicketStatus;
+import com.SmartLaundry.model.Users;
+import com.SmartLaundry.service.Admin.RoleCheckingService;
 import com.SmartLaundry.service.DeliveryAgent.TicketService;
 import com.SmartLaundry.service.JWTService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +30,9 @@ public class DeliveryAgentTicketController {
     private TicketService ticketService;
 
     @Autowired
+    private RoleCheckingService roleCheckingService;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     // http://localhost:8080/raise-ticket
@@ -40,7 +45,12 @@ public class DeliveryAgentTicketController {
         ObjectMapper mapper = new ObjectMapper();
         RaiseTicketRequestDto dataJson = mapper.readValue(data, RaiseTicketRequestDto.class);
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        return ResponseEntity.ok(ticketService.raiseTicket(userId, dataJson, photo));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
+        return ResponseEntity.ok(ticketService.raiseTicket(user, dataJson, photo));
     }
 
     // http://localhost:8080/tickets
@@ -52,7 +62,9 @@ public class DeliveryAgentTicketController {
             HttpServletRequest request
     ) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        List<RaiseTicketRequestDto> serviceProviders = ticketService.getAllTickets(category, status, userId);
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        List<RaiseTicketRequestDto> serviceProviders = ticketService.getAllTickets(category, status, user);
         return ResponseEntity.ok(serviceProviders);
     }
 

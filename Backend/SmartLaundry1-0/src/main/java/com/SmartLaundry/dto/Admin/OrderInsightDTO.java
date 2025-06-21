@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChartPointDTO {
-    private String label;
-    private Long revenue;
+public class OrderInsightDTO {
+    private String orderId;
+    private Double orderValue;
 }
-

@@ -1,3 +1,4 @@
+
 package com.SmartLaundry.service.ServiceProvider;
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
@@ -242,6 +243,10 @@ public class ServiceProviderOrderService {
                     "Order Accepted",
                     "Your LaundryService Order " + order.getOrderId() + " is Accepted");
 
+            // Assign to delivery agent if selected
+//            if (sp.getNeedOfDeliveryAgent().equals(true)) {
+//                deliveryService.assignToDeliveryAgentCustomerOrders(order.getOrderId());
+//            }
             // Handle delivery logic through SMS
 //            if (sp.getNeedOfDeliveryAgent() != null && sp.getNeedOfDeliveryAgent()) {
 //

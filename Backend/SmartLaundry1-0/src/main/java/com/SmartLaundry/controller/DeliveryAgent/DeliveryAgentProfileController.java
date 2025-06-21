@@ -3,8 +3,10 @@ package com.SmartLaundry.controller.DeliveryAgent;
 import com.SmartLaundry.dto.ChangePasswordRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentProfileDTO;
+import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.Admin.RoleCheckingService;
 import com.SmartLaundry.service.ChangePasswordService;
 import com.SmartLaundry.service.DeliveryAgent.DeliveryAgentProfileService;
 import com.SmartLaundry.service.JWTService;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 
 @RestController
@@ -46,6 +49,9 @@ public class DeliveryAgentProfileController {
 
     @Autowired
     private DeliveryAgentRepository deliveryAgentRepository;
+
+    @Autowired
+    private RoleCheckingService roleCheckingService;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -81,8 +87,13 @@ public class DeliveryAgentProfileController {
     // http://localhost:8080/agent-profile/edit
     // Modify existing details.
     @PutMapping("/agent-profile/edit")
-    public ResponseEntity<String> editDeliveryAgentDetail(HttpServletRequest request,@RequestBody DeliveryAgentProfileDTO deliveryAgentProfileDTO){
+    public ResponseEntity<String> editDeliveryAgentDetail(HttpServletRequest request,@RequestBody DeliveryAgentProfileDTO deliveryAgentProfileDTO) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
         return ResponseEntity.ok(deliveryAgentProfileService.editDetail(userId, deliveryAgentProfileDTO));
     }
 
@@ -90,8 +101,13 @@ public class DeliveryAgentProfileController {
     // http://localhost:8080/agent-profile/change-password
     // Change password
     @PutMapping("/agent-profile/change-password")
-    public ResponseEntity<String> changeDeliveryAgentPassword(HttpServletRequest request, @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO){
+    public ResponseEntity<String> changeDeliveryAgentPassword(HttpServletRequest request, @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
         return ResponseEntity.ok(changePasswordService.changePassword(userId, changePasswordRequestDTO));
     }
 
