@@ -73,46 +73,7 @@ public class ServiceProviderService {
     }
 
 
-    //    public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
-//
-//        // Map prices to PriceDTO list
-//        List<PriceDTO> priceDTOs = convertPricesToDTO(sp.getPrices());
-//
-//        // Extract unique items from prices and map to ItemDTO
-//        Set<ItemDTO> itemDTOs = sp.getPrices().stream()
-//                .map(price -> {
-//                    Items item = price.getItem();
-//                    return ItemDTO.builder()
-//                            .itemName(item.getItemName())
-//                            .serviceName(item.getService() != null ? item.getService().getServiceName() : null)
-//                            .subServiceName(item.getSubService() != null ? item.getSubService().getSubServiceName() : null)
-//                            .build();
-//                })
-//                .collect(Collectors.toSet()); // uses equals/hashCode to eliminate duplicates
-//
-//        // Feedback ratings and reviews
-//        List<FeedbackProviders> feedbacks = feedbackRepo.findByServiceProvider_ServiceProviderId(sp.getServiceProviderId());
-//        List<ReviewDTO> reviews = feedbacks.stream()
-//                .filter(fb -> fb.getReview() != null && fb.getUser() != null)
-//                .map(fb -> new ReviewDTO(buildFullName(fb.getUser()), fb.getReview()))
-//                .collect(Collectors.toList());
-//
-//        Long avgRating = (long) feedbacks.stream()
-//                .mapToInt(FeedbackProviders::getRating)
-//                .average()
-//                .orElse(0.0);
-//
-//        return CustomerServiceProviderDTO.builder()
-//                .serviceProviderId(sp.getServiceProviderId())
-//                .businessName(sp.getBusinessName())
-//                .photoImage(convertFilePathToPublicUrl(sp.getPhotoImage()))
-//                .address(getFirstAddress(sp.getUser()))
-//                .averageRating(avgRating)
-//                .reviews(reviews)
-//                .prices(priceDTOs)
-//                .items(new ArrayList<>(itemDTOs)) // convert Set to List
-//                .build();
-//    }
+
     public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
         // Build PriceDTO list with full item info
         List<PriceDTO> priceDTOs = sp.getPrices().stream()
@@ -138,10 +99,9 @@ public class ServiceProviderService {
                 .map(fb -> new ReviewDTO(buildFullName(fb.getUser()), fb.getReview()))
                 .collect(Collectors.toList());
 
-        Long avgRating = (long) feedbacks.stream()
-                .mapToInt(FeedbackProviders::getRating)
-                .average()
-                .orElse(0.0);
+        Double avg = feedbackRepo.findAverageRatingByServiceProvider(sp.getServiceProviderId());
+        Double avgRating = avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
+
 
         return CustomerServiceProviderDTO.builder()
                 .serviceProviderId(sp.getServiceProviderId())

@@ -520,10 +520,10 @@ public class DeliveriesService {
                     .orElseThrow(() -> new RuntimeException("Delivery agent not found: " + userId ));
 
             // Send notification to delivery agent
-            smsService.sendOrderStatusNotification(
-                    deliveryAgent.getUsers().getPhoneNo(),
-                    "New order assigned to you from user " + order.getUsers().getFirstName()
-            );
+//            smsService.sendOrderStatusNotification(
+//                    deliveryAgent.getUsers().getPhoneNo(),
+//                    "New order assigned to you from user " + order.getUsers().getFirstName()
+//            );
             if(deliveryAgent.getUsers().getEmail() != null) {
                 emailService.sendOrderStatusNotification(
                         deliveryAgent.getUsers().getEmail(),
@@ -573,11 +573,9 @@ public class DeliveriesService {
         if (value == null) return false;
 
         try {
-
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> assignment;
 
-            // Handle both string and map types
             if (value instanceof String json) {
                 assignment = mapper.readValue(json, new TypeReference<>() {});
             } else if (value instanceof Map<?, ?> rawMap) {
@@ -589,8 +587,6 @@ public class DeliveriesService {
 
             String assignedAgentId = (String) assignment.get("agentId");
 
-
-            // Validate agent match
             if (!assignedAgentId.equals(agentId)) return false;
 
             // Fetch order and agent
@@ -601,7 +597,7 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
                     .orElseThrow(() -> new RuntimeException("Agent not found"));
 
-            // Assign delivery agent based on status
+            // Update order status and agent
             if (order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
                 order.setPickupDeliveryAgent(agent);
                 order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
@@ -610,8 +606,7 @@ public class DeliveriesService {
                 order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
             }
 
-
-            //  Retrieve delivery data from Redis
+            // Retrieve delivery data from Redis
             String deliveryRedisKey = "deliveryEarnings:" + orderId;
             Map<Object, Object> deliveryData = redisTemplate.opsForHash().entries(deliveryRedisKey);
 
@@ -621,34 +616,96 @@ public class DeliveriesService {
                 Double earning = deliveryData.get("earning") != null
                         ? Double.parseDouble(deliveryData.get("earning").toString()) : null;
 
-                //  Store totalKm to Order
+                // Save totalKm to Order
                 if (totalKm != null) {
                     order.setTotalKm(totalKm);
                 }
 
-                //  Store earning to Bill
-//                if (earning != null) {
-//                    Bill bill = billRepository.findByOrder(order);
-////                            .orElseThrow(() -> new RuntimeException("Bill not found for order: " + orderId));
-//                    bill.setDeliveryCharge(earning);
-//                    billRepository.save(bill);
-//                }
+                // Save deliveryCharge to Bill
+                if (earning != null) {
+                    Bill bill = billRepository.findByOrder(order);
 
-                //  Remove delivery data from Redis
+                    if (bill == null) {
+                        // Auto-create a minimal Bill if missing
+                        bill = Bill.builder()
+                                .order(order)
+                                .status(BillStatus.PENDING)
+                                .itemsTotalPrice(0.0)
+                                .gstAmount(0.0)
+                                .discountAmount(0.0)
+                                .finalPrice(0.0)
+                                .deliveryCharge(earning)
+                                .build();
+                    } else {
+                        bill.setDeliveryCharge(earning);
+                    }
+
+                    billRepository.save(bill);
+                }
                 redisTemplate.delete(deliveryRedisKey);
             }
 
             orderRepository.save(order);
-            redisTemplate.delete(redisKey); // Remove assignment info
+            redisTemplate.delete(redisKey);
 
             return true;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to accept order {} by agent {}: {}", orderId, agentId, e.getMessage(), e);
             return false;
         }
     }
 
+    // this function is called in accept order of service provider
+    public void calculateDeliveryChargeForProvider(Order order) {
+        Double providerLat = order.getServiceProvider().getUser().getAddress().getLatitude();
+        Double providerLon = order.getServiceProvider().getUser().getAddress().getLongitude();
+        Double customerLat = order.getLatitude();
+        Double customerLon = order.getLongitude();
+
+        // Calculate total distance (km)
+        Double totalKm = haversine(providerLat, providerLon, customerLat, customerLon);
+
+        // Fetch delivery earnings configuration
+        DeliveryAgentEarnings earnings = deliveryAgentEarningsRepository.findByCurrentStatus(CurrentStatus.ACTIVE);
+        if (earnings == null) {
+            throw new IllegalStateException("No active earnings configuration found.");
+        }
+
+        // Calculate charge based on base km logic
+        Double deliveryCharge;
+        if (totalKm > earnings.getBaseKm()) {
+            Double extraKm = totalKm - earnings.getBaseKm();
+            deliveryCharge = earnings.getFixedAmount() + (extraKm * earnings.getExtraPerKmAmount());
+        } else {
+            deliveryCharge = earnings.getFixedAmount();
+        }
+
+        // Round off
+        double roundedKm = round(totalKm, 2);
+        double roundedCharge = round(deliveryCharge, 2);
+
+        // Update order's total km
+        order.setTotalKm(roundedKm);
+
+        Bill bill = billRepository.findByOrder(order);
+        if (bill == null) {
+            // Auto-create a minimal Bill if missing
+            bill = Bill.builder()
+                    .order(order)
+                    .status(BillStatus.PENDING)
+                    .itemsTotalPrice(0.0)
+                    .gstAmount(0.0)
+                    .discountAmount(0.0)
+                    .finalPrice(0.0)
+                    .deliveryCharge(roundedCharge)
+                    .build();
+        } else {
+            bill.setDeliveryCharge(roundedCharge);
+        }
+
+        billRepository.save(bill);
+    }
 
     public String changeStatus(String orderId) {
         return "Status is updated successfully.";

@@ -29,8 +29,19 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
     // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProvider_ServiceProviderIdAndStatus(String serviceProviderId, OrderStatus status);
+    @Query("""
+    SELECT DISTINCT o FROM Order o
+    JOIN OrderOtp otp ON otp.order = o
+    WHERE o.serviceProvider.serviceProviderId = :providerId
+      AND otp.isUsed = false
+      AND (otp.purpose = 'PICKUP_CONFIRMATION' OR otp.purpose = 'DELIVERY_CONFIRMATION')
+""")
+    List<Order> findOrdersWithPendingOtpForProvider(@Param("providerId") String providerId);
+    // In OrderRepository.java
+    @Query("SELECT o FROM Order o WHERE o.serviceProvider = :provider AND o.status IN (com.SmartLaundry.model.OrderStatus.IN_CLEANING, com.SmartLaundry.model.OrderStatus.OUT_FOR_DELIVERY)")
+    List<Order> findAllByServiceProviderAndOtpVerificationRequired(@Param("provider") ServiceProvider provider);
 
-
+    List<Order> findByServiceProvider(ServiceProvider serviceProvider);
     List<Order> findByPickupDate(LocalDate pickupDate);
 
     List<Order> findByStatusAndPickupDeliveryAgent(@Param("orderStatus") OrderStatus orderStatus,@Param("deliveryAgent") DeliveryAgent deliveryAgent);

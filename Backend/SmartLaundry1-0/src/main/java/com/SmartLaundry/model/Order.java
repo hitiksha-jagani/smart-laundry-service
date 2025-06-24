@@ -63,7 +63,6 @@ public class Order implements Serializable {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     private DeliveryAgent deliveryDeliveryAgent;
 
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -143,9 +142,6 @@ public class Order implements Serializable {
 
     @Column(name = "total_km")
     private Double totalKm;
-
-//    @Column(name = "need_of_delivery_agent")
-//    public Boolean needOfDeliveryAgent;
 
     public Users getUser() {
         return users;
