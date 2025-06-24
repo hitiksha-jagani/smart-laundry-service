@@ -1,0 +1,73 @@
+.delivery-agent-body{
+    background-color: #E8F5E9;
+    color: #64748B;
+}
+ 
+.inter-font {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+
+h1{
+    font-weight: 900;
+    font-size: 30px;
+    color: #388E3C;
+}
+
+h2{
+    font-weight: 700;
+    font-size: 15px;
+    color: #388E3C;
+}
+
+h3 {
+    font-weight: 600;
+    font-size: 20px;
+    
+}
+
+h4{
+    font-weight: 500;
+    font-size: 15px;
+    color: #1C1C1C;
+}
+
+.input{
+    padding: '10px';
+    margin-top: '10px';
+    width: '250px';
+    border-radius: '5px';
+    border: '1px solid #ccc';
+    background-color: #E8F5E9;
+}
+
+.agent-btn{
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #4ADE80;
+    color: white;
+    font-weight: 900;
+    font-size: large;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.agent-btn:hover {
+    background-color: #16a34a;
+}
+
+hr {
+    border-top: 3px solid #4ADE80;
+    font-weight: 3;
+}
+
+.heading {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

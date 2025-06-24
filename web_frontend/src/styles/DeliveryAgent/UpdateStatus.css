@@ -1,0 +1,15 @@
+.status-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px); /* adjust if you have a header */
+  padding: 40px;
+}
+
+.status-box {
+  background-color: #F0FDF4;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}

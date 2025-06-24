@@ -20,7 +20,7 @@ import java.util.List;
 
 // @author Hitiksha Jagani
 @RestController
-@RequestMapping("")
+@RequestMapping("/agent-ticket")
 public class DeliveryAgentTicketController {
 
     @Autowired
@@ -35,9 +35,9 @@ public class DeliveryAgentTicketController {
     @Autowired
     ObjectMapper objectMapper;
 
-    // http://localhost:8080/raise-ticket
+    // http://localhost:8080/agent-ticket/raise
     // Render form to submit ticket
-    @PostMapping("/raise-ticket")
+    @PostMapping("/raise")
     public ResponseEntity<String> raiseTicket(@RequestPart("data") @Valid String  data,
                                               @RequestPart(value = "photo", required = false) MultipartFile photo,
                                               HttpServletRequest request) throws IOException {
@@ -53,9 +53,9 @@ public class DeliveryAgentTicketController {
         return ResponseEntity.ok(ticketService.raiseTicket(user, dataJson, photo));
     }
 
-    // http://localhost:8080/tickets
+    // http://localhost:8080/agent-ticket/list
     // Return list of tickets based on search
-    @GetMapping("/tickets")
+    @GetMapping("/list")
     public ResponseEntity<List<RaiseTicketRequestDto>> getAllTickets(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) TicketStatus status,

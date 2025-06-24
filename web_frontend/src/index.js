@@ -17,19 +17,39 @@
 // reportWebVitals();
 
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css'; // Tailwind CSS
-import App from './App';
-import './i18n'; // ✅ Import i18n for translations
-import reportWebVitals from './reportWebVitals';
+// import React from 'react';
+// import ReactDOM from 'react-dom/client';
+// import './index.css'; // Tailwind CSS
+// import App from './App';
+// import './i18n'; // ✅ Import i18n for translations
+// import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+// const root = ReactDOM.createRoot(document.getElementById('root'));
+// root.render(
+//   <React.StrictMode>
+//     <App />
+//   </React.StrictMode>
+// );
+
+// // For measuring performance (optional)
+// reportWebVitals();
+
+// src/index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
-// For measuring performance (optional)
-reportWebVitals();
+

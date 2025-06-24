@@ -14,8 +14,8 @@ public interface DeliveriesRepository extends JpaRepository<DeliveryAgent, Strin
 //    Integer countDeliveriesByAgent(@Param("agentId") String agentId);
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 'ACCEPTED_BY_AGENT' AND o.pickupDate = :today AND o.pickupDeliveryAgent.deliveryAgentId = :agentId")
-    Integer countAcceptedPickupOrdersForToday(@Param("today") LocalDate today,@Param("deliveryAgentId") String deliveryAgentId);
+    Integer countAcceptedPickupOrdersForToday(@Param("today") LocalDate today,@Param("agentId") String agentId);
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 'READY_FOR_DELIVERY' AND o.pickupDate = :today AND o.deliveryDeliveryAgent.deliveryAgentId = :agentId")
-    Integer countAcceptedDeliveryOrdersForToday(@Param("today") LocalDate today,@Param("deliveryAgentId")  String deliveryAgentId);
+    Integer countAcceptedDeliveryOrdersForToday(@Param("today") LocalDate today,@Param("agentId")  String agentId);
 }

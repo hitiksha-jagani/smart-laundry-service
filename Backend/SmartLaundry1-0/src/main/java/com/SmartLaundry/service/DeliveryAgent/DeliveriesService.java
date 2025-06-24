@@ -91,6 +91,7 @@ public class DeliveriesService {
         deliverySummaryResponseDTO.setTodayDeliveries(
                 deliveriesRepository.countAcceptedDeliveryOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()) +
                         deliveriesRepository.countAcceptedPickupOrdersForToday(LocalDate.now(), deliveryAgent.getDeliveryAgentId()));
+        deliverySummaryResponseDTO.setTotalDeliveries(deliverySummaryResponseDTO.getPendingDeliveries() + deliverySummaryResponseDTO.getTodayDeliveries());
 
         return deliverySummaryResponseDTO;
     }
@@ -200,13 +201,15 @@ public class DeliveriesService {
             Double totalKm;
 
             if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
-                Double distAgentToCustomer = haversine(agentLat, agentLon, customerLat, customerLon);
-                Double distCustomerToProvider = haversine(customerLat, customerLon, providerLat, providerLon);
-                totalKm = distAgentToCustomer + distCustomerToProvider;
+//                Double distAgentToCustomer = haversine(agentLat, agentLon, customerLat, customerLon);
+//                Double distCustomerToProvider = haversine(customerLat, customerLon, providerLat, providerLon);
+//                totalKm = distAgentToCustomer + distCustomerToProvider;
+                totalKm = haversine(customerLat, customerLon, providerLat, providerLon);
             } else {
-                Double distAgentToProvider = haversine(agentLat, agentLon, providerLat, providerLon);
-                Double distProviderToCustomer = haversine(providerLat, providerLon, customerLat, customerLon);
-                totalKm = distAgentToProvider + distProviderToCustomer;
+//                Double distAgentToProvider = haversine(agentLat, agentLon, providerLat, providerLon);
+//                Double distProviderToCustomer = haversine(providerLat, providerLon, customerLat, customerLon);
+//                totalKm = distAgentToProvider + distProviderToCustomer;
+                totalKm = haversine(providerLat, providerLon, customerLat, customerLon);
             }
 
             if(totalKm > deliveryAgentEarnings.getBaseKm()){
@@ -242,24 +245,48 @@ public class DeliveriesService {
                 bookingItemDTOS.add(bookingItemDTO);
             }
 
-            String deliveryType = order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)
-                    ? "Customer -> Service Provider"
-                    : "Service Provider -> Customer";
+            String deliveryType;
+            PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO;
 
-            PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
-                    .orderId(order.getOrderId())
-                    .deliveryType(deliveryType)
-                    .deliveryEarning(round(earning, 2))
-                    .km(round(totalKm, 2))
-                    .customerName(order.getContactName())
-                    .customerPhone(order.getContactPhone())
-                    .customerAddress(order.getContactAddress())
-                    .providerName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
-                    .providerPhone(order.getServiceProvider().getUser().getPhoneNo())
-                    .providerAddress(address)
-                    .totalQuantity(quantity)
-                    .bookingItemDTOList(bookingItemDTOS)
-                    .build();
+            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
+                deliveryType = "Customer -> Service Provider";
+
+                pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
+                        .orderId(order.getOrderId())
+                        .deliveryType(deliveryType)
+                        .deliveryEarning(round(earning, 2))
+                        .km(round(totalKm, 2))
+                        .pickupDate(order.getPickupDate())
+                        .pickupTime(order.getPickupTime())
+                        .pickupName(order.getContactName())
+                        .pickupPhone(order.getContactPhone())
+                        .pickupAddress(order.getContactAddress())
+                        .deliveryName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
+                        .deliveryPhone(order.getServiceProvider().getUser().getPhoneNo())
+                        .deliveryAddress(address)
+                        .totalQuantity(quantity)
+                        .bookingItemDTOList(bookingItemDTOS)
+                        .build();
+            } else {
+                deliveryType = "Service Provider -> Customer";
+
+                pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
+                        .orderId(order.getOrderId())
+                        .deliveryType(deliveryType)
+                        .deliveryEarning(round(earning, 2))
+                        .km(round(totalKm, 2))
+                        .pickupDate(order.getDeliveryDate())
+                        .pickupTime(order.getDeliveryTime())
+                        .pickupName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
+                        .pickupPhone(order.getServiceProvider().getUser().getPhoneNo())
+                        .pickupAddress(address)
+                        .deliveryName(order.getContactName())
+                        .deliveryPhone(order.getContactPhone())
+                        .deliveryAddress(order.getContactAddress())
+                        .totalQuantity(quantity)
+                        .bookingItemDTOList(bookingItemDTOS)
+                        .build();
+            }
 
             pendingDeliveriesResponseDTOList.add(pendingDeliveriesResponseDTO);
         }
@@ -308,26 +335,47 @@ public class DeliveriesService {
             }
 
             String deliveryType;
-            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_AGENT)) {
+            PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO;
+
+            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
                 deliveryType = "Customer -> Service Provider";
+
+                pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
+                        .orderId(order.getOrderId())
+                        .deliveryType(deliveryType)
+                        .deliveryEarning(bill.getDeliveryCharge())
+                        .km(order.getTotalKm())
+                        .pickupDate(order.getPickupDate())
+                        .pickupTime(order.getPickupTime())
+                        .pickupName(order.getContactName())
+                        .pickupPhone(order.getContactPhone())
+                        .pickupAddress(order.getContactAddress())
+                        .deliveryName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
+                        .deliveryPhone(order.getServiceProvider().getUser().getPhoneNo())
+                        .deliveryAddress(address)
+                        .totalQuantity(quantity)
+                        .bookingItemDTOList(bookingItemDTOS)
+                        .build();
             } else {
                 deliveryType = "Service Provider -> Customer";
-            }
 
-            PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
-                    .orderId(order.getOrderId())
-                    .deliveryType(deliveryType)
-                    .deliveryEarning(bill.getDeliveryCharge())
-                    .km(order.getTotalKm())
-                    .customerName(order.getContactName())
-                    .customerPhone(order.getContactPhone())
-                    .customerAddress(order.getContactAddress())
-                    .providerName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
-                    .providerPhone(order.getServiceProvider().getUser().getPhoneNo())
-                    .providerAddress(address)
-                    .totalQuantity(quantity)
-                    .bookingItemDTOList(bookingItemDTOS)
-                    .build();
+                pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
+                        .orderId(order.getOrderId())
+                        .deliveryType(deliveryType)
+                        .deliveryEarning(bill.getDeliveryCharge())
+                        .km(order.getTotalKm())
+                        .pickupDate(order.getDeliveryDate())
+                        .pickupTime(order.getDeliveryTime())
+                        .pickupName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
+                        .pickupPhone(order.getServiceProvider().getUser().getPhoneNo())
+                        .pickupAddress(address)
+                        .deliveryName(order.getContactName())
+                        .deliveryPhone(order.getContactPhone())
+                        .deliveryAddress(order.getContactAddress())
+                        .totalQuantity(quantity)
+                        .bookingItemDTOList(bookingItemDTOS)
+                        .build();
+            }
 
             pendingDeliveriesResponseDTOList.add(pendingDeliveriesResponseDTO);
         }

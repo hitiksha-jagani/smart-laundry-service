@@ -1,6 +1,7 @@
 package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Parameter;
@@ -84,6 +85,7 @@ public class Users implements Serializable{
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserAddress address;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Ticket> tickets = new ArrayList<>();
 

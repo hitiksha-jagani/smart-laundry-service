@@ -24,18 +24,10 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-    //    private String secretKey = "";
     @Value("${SECRET_KEY}")
     private String secretKey;
 
     public JWTService() {
-//        try {
-//            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA512");
-//            SecretKey sk = keyGenerator.generateKey();
-//            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-//        } catch (NoSuchAlgorithmException e){
-//            throw new RuntimeException(e);
-//        }
     }
 
     public String generateToken(String id, String username) {

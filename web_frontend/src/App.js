@@ -17,15 +17,24 @@ import PickupOtpVerify from "./pages/ServiceProvider/PickupOtpVerify";
 import DeliveryOtpVerify from "./pages/ServiceProvider/DeliveryOtpVerify";
 import ReadyForDelivery from "./pages/ServiceProvider/ReadyForDelivery";
 import OtpVerificationOrders from "./pages/ServiceProvider/OtpVerificationOrders";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
+
+// Delivery Agent
+import DeliveryPage from "./pages/DeliveryAgent/DeliveryPage";
+import UpdateStatus from "./pages/DeliveryAgent/UpdateStatus";
+
 // Optional placeholder dashboards
 const AgentDashboard = () => <h2>Delivery Agent Dashboard</h2>;
 const AdminDashboard = () => <h2>Admin Dashboard</h2>;
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    // <AuthProvider>
+      
         <Routes>
+
           {/* Customer */}
           <Route path="/" element={<CustomerHomePage />} />
           <Route path="/register" element={<Register />} />
@@ -49,19 +58,58 @@ function App() {
           <Route path="/provider/delivered-orders" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><DeliveredOrders /></PrivateRoute>} />
           <Route path="/sp/completeprofile" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><CompleteServiceProviderForm /></PrivateRoute>} />
 
-          {/* Order OTP Verification – Unified Component */}
-        <Route path="/serviceprovider/verify-pickup-otp" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><PickupOtpVerify /></PrivateRoute>} />
-        <Route path="/serviceprovider/verify-delivery-otp" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><DeliveryOtpVerify /></PrivateRoute>}/>
-        <Route path="/serviceprovider/mark-ready" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><ReadyForDelivery /></PrivateRoute>}/>
-        <Route path="/serviceprovider/otp-verification-orders" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><OtpVerificationOrders /></PrivateRoute>}/>
+          {/* Service Provider */}
+          <Route path="/sp/completeprofile" element={<CompleteServiceProviderForm />} />
 
+          {/* Order OTP Verification – Unified Component */}
+          <Route path="/serviceprovider/verify-pickup-otp" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><PickupOtpVerify /></PrivateRoute>} />
+          <Route path="/serviceprovider/verify-delivery-otp" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><DeliveryOtpVerify /></PrivateRoute>}/>
+          <Route path="/serviceprovider/mark-ready" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><ReadyForDelivery /></PrivateRoute>}/>
+          <Route path="/serviceprovider/otp-verification-orders" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><OtpVerificationOrders /></PrivateRoute>}/>
+
+
+          {/* Delivery Agent */}
+          <Route path="/deliveries/summary" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <DeliveryPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/update-status" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/emailotp/verify-pickup" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>   
+          <Route path="/emailotp/verify-handover" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/emailotp/verify-delivery" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/emailotp/verify-confirm-for-cloths" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>          
 
           {/* Other Dashboards */}
           <Route path="/agent/dashboard" element={<AgentDashboard />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+          {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
+          {/* <Route path="*" element={<NotFound />} /> */}
+
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+
+    // </AuthProvider>
   );
 }
 
