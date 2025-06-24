@@ -1,4 +1,9 @@
 .app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
@@ -37,5 +42,5 @@
 }
 
 .logout-icon:hover {
-  color: #e63946;
+  color: #388E3C;
 }

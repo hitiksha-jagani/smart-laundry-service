@@ -1,12 +1,18 @@
 // Author : Hitiksha Jagani
-// Description : Pending delivery cards in delivery agent dashboard.
+// Description : Today delivery cards in delivery agent dashboard.
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/DeliveryAgent/PendingDeliveryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import { FaUser, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
-const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
+const TodayDeliveryCard = ({ delivery }) => {
+    const navigate = useNavigate();
+
+    const handleUpdateStatus = () => {
+        navigate('/update-status', { state: { delivery } }); 
+    };
 
     const {
       orderId, deliveryType, deliveryEarning, km,
@@ -55,7 +61,7 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
 
                     </div>
 
-                    <button
+                     <button
                         className="route-btn agent-btn"
                         style={{width: '65%'}}
                         onClick={() =>
@@ -67,33 +73,34 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
                     >
                         View Route (You ➝ Pickup)
                     </button>
+                    
 
-                  </div>
+                </div>
 
-                  <div className="contact-box">
+                <div className="contact-box">
 
-                      <h2 className="contact-title">🚚 Delivery Contact</h2>
+                    <h2 className="contact-title">🚚 Delivery Contact</h2>
 
-                      <div className="contact-info service-box" style={{backgroundColor:'#ecfdf5'}}>
+                    <div className="contact-info service-box" style={{backgroundColor:'#ecfdf5'}}>
 
-                          <div className="info-line">
-                              <FaUser className="info-icon" />
-                              <span className="info-value">{deliveryName}</span>
-                          </div>
+                        <div className="info-line">
+                            <FaUser className="info-icon" />
+                            <span className="info-value">{deliveryName}</span>
+                        </div>
 
-                          <div className="info-line">
-                              <FaPhoneAlt className="info-icon" />
-                              <span className="info-value">{deliveryPhone}</span>
-                          </div>
+                        <div className="info-line">
+                            <FaPhoneAlt className="info-icon" />
+                            <span className="info-value">{deliveryPhone}</span>
+                        </div>
 
-                          <div className="info-line">
-                              <FaMapMarkerAlt className="info-icon" />
-                              <span className="info-value">{deliveryAddress}</span>
-                          </div>
+                        <div className="info-line">
+                            <FaMapMarkerAlt className="info-icon" />
+                            <span className="info-value">{deliveryAddress}</span>
+                        </div>
 
-                      </div>
+                    </div>
 
-                      <button
+                    <button
                           className="route-btn agent-btn"
                           style={{width: '65%'}}
                           onClick={() =>
@@ -102,13 +109,13 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
                               '_blank'
                             )
                           }
-                      >
-                            View Route (Pickup ➝ Delivery)
-                      </button>
-
-                  </div>
+                    >
+                        View Route (Pickup ➝ Delivery)
+                    </button>
 
                 </div>
+
+            </div>
 
 
             <h4 className="item-list-title">Item List</h4>
@@ -164,8 +171,7 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
 
             <div className="delivery-actions">
 
-                <button className="accept-btn" onClick={() => onAccept(orderId)}>Accept</button>
-                <button className="reject-btn" onClick={() => onReject(orderId)}>Reject</button>
+                <button className="agent-btn" style={{width: '24%'}} onClick={handleUpdateStatus}>Update Status</button>
             
             </div>
 
@@ -174,4 +180,4 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
     );
 };
 
-export default PendingDeliveryCard;
+export default TodayDeliveryCard;

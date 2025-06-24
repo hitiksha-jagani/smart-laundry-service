@@ -6,7 +6,7 @@ import quality from "../../assets/quality.png";
 import support from "../../assets/support.png";
 import { FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import "../../style/Main.css";
+import "../../styles/Main.css";
 
 export default function CustomerHomePage() {
   return (

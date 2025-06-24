@@ -2,31 +2,41 @@
 // src/components/Layout/DashboardLayout.jsx
 
 import React from 'react';
+import { useEffect } from "react";
 import '../../styles/DeliveryAgent/DeliveryAgentDashboardLayout.css'
 import Header from '../DeliveryAgent/Header';
 import DeliveryAgentSidebar from '../DeliveryAgent/DeliveryAgentSidebar';
 
 const DeliveryAgentDashboardLayout = ({ user, children }) => {
+
+    useEffect(() => {
+        document.body.classList.add("delivery-agent-body");
+
+        return () => {
+            document.body.classList.remove("delivery-agent-body");
+        };
+    }, []);
   
-  return (
-    <>
+    return (
+    
+        <>
+    
+            <Header userName={`${user?.firstName || ''} ${user?.lastName || ''}`} />
 
-    <Header userName={`${user?.firstName || ''} ${user?.lastName || ''}`} />
+                {/* Page Layout: Sidebar + Main Content side-by-side */}
+                <div className="delivery-dashboard flex inter-font">
 
-    {/* Page Layout: Sidebar + Main Content side-by-side */}
-    <div className="delivery-dashboard flex">
+                    {/* Sidebar */} 
+                    <DeliveryAgentSidebar agent={user} />
 
-      {/* Sidebar */} 
-      <DeliveryAgentSidebar agent={user} />
+                    {/* Main Dashboard Content */}
+                    <main className="dashboard-content-area">
+                        {children}
+                    </main>
 
-      {/* Main Dashboard Content */}
-      <main className="dashboard-content-area">
-        {children}
-      </main>
+                </div>
 
-    </div>
-
-    </>
+        </>
   );
 };
 

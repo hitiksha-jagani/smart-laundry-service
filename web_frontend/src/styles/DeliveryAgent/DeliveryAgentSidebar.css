@@ -36,7 +36,7 @@
 }
 
 .sidebar-link:hover {
-    background-color: #e0f7fa;
+    background-color: #cccccc;
 }
 
 .sidebar-link.active {
@@ -67,7 +67,9 @@
 
 .contact-info p {
     margin: 2px 0;
-    font-size: 15px;
+    font-weight: 500;
+    font-size: 15.5px;
+    color: #333;
 }
 
 hr {

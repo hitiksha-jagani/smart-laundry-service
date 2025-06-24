@@ -23,10 +23,7 @@ import RoleProtectedRoute from "./components/RoleProtectedRoute";
 
 // Delivery Agent
 import DeliveryPage from "./pages/DeliveryAgent/DeliveryPage";
-
-
-// Placeholder dashboards
-const ProviderDashboard = () => <h2>Service Provider Dashboard</h2>;
+import UpdateStatus from "./pages/DeliveryAgent/UpdateStatus";
 
 // Optional placeholder dashboards
 const AgentDashboard = () => <h2>Delivery Agent Dashboard</h2>;
@@ -34,7 +31,7 @@ const AdminDashboard = () => <h2>Admin Dashboard</h2>;
 
 function App() {
   return (
-    <AuthProvider>
+    // <AuthProvider>
       
         <Routes>
 
@@ -72,11 +69,34 @@ function App() {
 
 
           {/* Delivery Agent */}
-          {/* <Route path="/deliveries/summary" element={<DeliveryPage />} /> */}
-
           <Route path="/deliveries/summary" element={
             <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
               <DeliveryPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/update-status" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/emailotp/verify-pickup" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>   
+          <Route path="/emailotp/verify-handover" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/emailotp/verify-delivery" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/emailotp/verify-confirm-for-cloths" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
             </RoleProtectedRoute>
           }/>          
 
@@ -89,7 +109,7 @@ function App() {
 
         </Routes>
 
-    </AuthProvider>
+    // </AuthProvider>
   );
 }
 

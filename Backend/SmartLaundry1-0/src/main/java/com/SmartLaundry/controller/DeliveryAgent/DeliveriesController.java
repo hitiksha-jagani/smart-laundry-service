@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.AccessDeniedException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/deliveries")
@@ -43,13 +44,37 @@ public class DeliveriesController {
     // http://localhost:8080/deliveries/summary
     // Return total deliveries, pending deliveries and upcoming deliveries
     @GetMapping("/summary")
-    public ResponseEntity<DeliverySummaryResponseDTO> getDeliveriesSummary(HttpServletRequest request) throws AccessDeniedException {
+    public ResponseEntity<?> getDeliveriesSummary(HttpServletRequest request) throws AccessDeniedException {
         // Fetch agent id
-        String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-        Users user = roleCheckingService.checkUser(agentId);
-        roleCheckingService.isDeliveryAgent(user);
-        DeliverySummaryResponseDTO deliverySummaryResponseDTO = deliveriesService.deliveriesSummary(agentId);
-        return ResponseEntity.ok(deliverySummaryResponseDTO);
+        try {
+            String token = jwtService.extractTokenFromHeader(request);
+            System.out.println("Extracted token: " + token);
+
+            String agentId = (String) jwtService.extractUserId(token);
+            System.out.println("Agent ID: " + agentId);
+
+            Users user = roleCheckingService.checkUser(agentId);
+            System.out.println("User: " + user);
+
+            roleCheckingService.isDeliveryAgent(user);
+            System.out.println("User is delivery agent");
+
+            DeliverySummaryResponseDTO summary = deliveriesService.deliveriesSummary(agentId);
+            System.out.println("Summary: " + summary);
+
+            return ResponseEntity.ok(summary);
+        } catch (Exception ex) {
+            ex.printStackTrace();  // log full error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to fetch summary", "message", ex.getMessage()));
+        }
+
+//        String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+//        System.out.println("Extracted token: " + token);
+//        Users user = roleCheckingService.checkUser(agentId);
+//        roleCheckingService.isDeliveryAgent(user);
+//        DeliverySummaryResponseDTO deliverySummaryResponseDTO = deliveriesService.deliveriesSummary(agentId);
+//        return ResponseEntity.ok(deliverySummaryResponseDTO);
     }
 
     // @author Hitiksha Jagani
