@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PayoutSummaryResponseDTO {
     private Double totalEarnings;
+    private Double paidPayouts;
     private Double pendingPayouts;
 }

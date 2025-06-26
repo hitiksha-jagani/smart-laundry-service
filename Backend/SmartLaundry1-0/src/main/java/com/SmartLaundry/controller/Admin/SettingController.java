@@ -1,7 +1,9 @@
 package com.SmartLaundry.controller.Admin;
 
 import com.SmartLaundry.dto.Admin.*;
+import com.SmartLaundry.model.APIProviders;
 import com.SmartLaundry.model.DeliveryAgentEarnings;
+import com.SmartLaundry.model.GeocodingConfig;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.service.Admin.RoleCheckingService;
 import com.SmartLaundry.service.Admin.SettingService;
@@ -13,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/configurations")
@@ -27,6 +29,53 @@ public class SettingController {
 
     @Autowired
     private RoleCheckingService roleCheckingService;
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/configurations/providers
+    // Get all api providers
+    @GetMapping("/providers")
+    public ResponseEntity<List<Map<String, String>>> getSupportedProviders() {
+        List<Map<String, String>> providers = Arrays.stream(APIProviders.values())
+                .map(p -> Map.of(
+                        "name", p.name(),
+                        "label", p.getLabel()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(providers);
+    }
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/configurations/save
+    // Save api key
+    @PostMapping("/save")
+    public ResponseEntity<String> saveSetting(@RequestBody Map<String, String> payload,
+                                              HttpServletRequest request) throws AccessDeniedException {
+
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isAdmin(user);
+
+        String provider = payload.get("provider");
+        String apiKey = payload.get("apiKey");
+
+        settingService.saveConfig(provider, apiKey, userId);
+        return ResponseEntity.ok("Configuration saved successfully");
+    }
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/configurations/history
+    // Fatch past api key
+    @GetMapping("/history")
+    public ResponseEntity<List<GeocodingConfig>> getAllConfigs(HttpServletRequest request) throws AccessDeniedException {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isAdmin(user);
+
+        List<GeocodingConfig> configs = settingService.getAllConfigs();
+        return ResponseEntity.ok(configs);
+    }
+
 
     // @author Hitiksha Jagani
     // http://localhost:8080/configurations/complaint-category

@@ -63,7 +63,6 @@ public class Order implements Serializable {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     private DeliveryAgent deliveryDeliveryAgent;
 
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

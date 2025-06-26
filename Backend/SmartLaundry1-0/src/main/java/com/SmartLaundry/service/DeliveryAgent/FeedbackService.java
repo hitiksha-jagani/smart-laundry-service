@@ -10,6 +10,7 @@ import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.FeedbackAgentsRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.Admin.RevenueService;
 import com.SmartLaundry.service.Admin.RoleCheckingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +33,9 @@ public class FeedbackService {
 
     @Autowired
     private RoleCheckingService roleCheckingService;
+
+    @Autowired
+    private RevenueService revenueService;
 
     // Return summary count of feedback
     public FeedbackSummaryResponseDTO getSummary(Users user, String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
@@ -82,41 +86,47 @@ public class FeedbackService {
 
         FeedbackSummaryResponseDTO feedbackSummaryResponseDTO = FeedbackSummaryResponseDTO.builder()
                 .totalReviews(totalReviews)
-                .averageRating(avgRating)
+                .averageRating(revenueService.round(avgRating, 2))
                 .build();
 
         return feedbackSummaryResponseDTO;
 
     }
 
-    public List<FeedbackResponseDTO> getFeedbacks(String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
+    public List<FeedbackResponseDTO> getFeedbacks(String userId, String filter, LocalDate startDate, LocalDate endDate) throws AccessDeniedException {
 
-        LocalDate today = LocalDate.now();
-        LocalDate weekStart = today.with(DayOfWeek.MONDAY);
-        LocalDate monthStart = today.withDayOfMonth(1);
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime start, end;
 
         List<FeedbackAgents> feedbackAgents = new ArrayList<>();
 
         switch (filter.toLowerCase()) {
             case "today":
-                feedbackAgents = feedbackAgentsRepository.findByDate(today, today);
+                start = LocalDate.now().atStartOfDay();
+                end = today;
+                feedbackAgents = feedbackAgentsRepository.findByDateAndId(userId, start, end);
                 break;
             case "this week":
-                feedbackAgents = feedbackAgentsRepository.findByDate(weekStart, today);
+                start = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
+                end = today;
+                feedbackAgents = feedbackAgentsRepository.findByDateAndId(userId, start, end);
                 break;
             case "this month":
-                feedbackAgents = feedbackAgentsRepository.findByDate(monthStart, today);
+                start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+                end = today;
+                feedbackAgents = feedbackAgentsRepository.findByDateAndId(userId, start, end);
                 break;
             case "custom":
-                if (startDate != null && endDate != null) {
-                    feedbackAgents = feedbackAgentsRepository.findByDate(startDate, endDate);
-                } else {
-                    throw new IllegalArgumentException("Start and End date required for custom filter.");
+                if (startDate == null || endDate == null) {
+                    throw new IllegalArgumentException("Start and end date required for custom filter");
                 }
+                start = startDate.atStartOfDay();
+                end = endDate.atTime(LocalTime.MAX);
+                feedbackAgents = feedbackAgentsRepository.findByDateAndId(userId, start, end);
                 break;
             case "overall":
             default:
-                feedbackAgents = feedbackAgentsRepository.findAll();
+                feedbackAgents = feedbackAgentsRepository.findById(userId);
         }
 
         return feedbackAgents.stream().map(this::mapToFeedbackResponseDTO).collect(Collectors.toList());

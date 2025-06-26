@@ -1,15 +1,44 @@
 // Author: Hitiksha Patel
-// src/components/Shared/SummaryCard.jsx
-import React from 'react';
-import '../../styles/DeliveryAgent/SummaryCard.css'; // optional for styles
+// Description : Summary card for delivery agent dashboard.
 
-const SummaryCard = ({ title, count }) => {
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../../styles/DeliveryAgent/SummaryCard.css'; 
+
+const SummaryCard = ({ title, prefix, user, count, link, data, filterParams }) => {
+
+    const linkState = {
+        data,
+        user,
+        filter: filterParams?.filter,
+        ...(filterParams?.filter === 'custom' && {
+            startDate: filterParams.startDate,
+            endDate: filterParams.endDate
+        })
+    };
+
     return (
 
-      <div className="summary-card inter-font">
+      <div className="summary-card">
       
-          <h3 className="summary-title">{title}</h3>
-          <p className="summary-count">{count}</p>
+          <h3 className="summary-title h3-agent">{title}</h3>
+          {/* <p className="summary-count">{prefix} {count}</p> */}
+
+          {link ? (
+
+              <Link 
+                  to={link} 
+                  state={linkState}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                  <p className="summary-count">{prefix}{count}</p>
+              </Link>
+
+          ) : (
+              
+              <p className="summary-count">{prefix}{count}</p>
+
+          )}
 
       </div>
 
@@ -17,3 +46,4 @@ const SummaryCard = ({ title, count }) => {
 };
 
 export default SummaryCard;
+ 

@@ -13,8 +13,11 @@ import java.util.List;
 
 public interface FeedbackAgentsRepository extends JpaRepository<FeedbackAgents, Long> {
 
-    @Query("SELECT f FROM FeedbackAgents f WHERE f.createdAt BETWEEN :start AND :end")
-    List<FeedbackAgents> findByDate(@Param("start") LocalDate start, @Param("end") LocalDate end);
+    @Query("SELECT f FROM FeedbackAgents f WHERE f.createdAt BETWEEN :start AND :end AND f.deliveryAgent.users.userId = :userId")
+    List<FeedbackAgents> findByDateAndId(@Param("userId") String userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT f FROM FeedbackAgents f WHERE f.deliveryAgent.users.userId = :userId")
+    List<FeedbackAgents> findById(@Param("userId") String userId);
 
     @Query("SELECT COUNT(*) FROM FeedbackAgents f WHERE f.deliveryAgent.deliveryAgentId = :agentId AND f.createdAt BETWEEN :start AND :end")
     Long findReviewCountByAgentIdAndDateRange(

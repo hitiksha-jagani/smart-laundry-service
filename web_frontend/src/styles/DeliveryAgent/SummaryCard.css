@@ -4,9 +4,9 @@
   align-items: center;
   justify-content: center;
   background-color: #f0fdf4;
-  /* background-color: #FFFFFF; */
   padding: 16px;
   border-radius: 12px;
+  border: 1px solid #388E3C;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
   gap: 10px;
@@ -16,18 +16,23 @@
 
 .summary-container {
   display: flex;
-  flex-wrap: wrap; /* Allows cards to wrap */
-  justify-content: center; /* Center horizontally */
+  flex-wrap: wrap; 
+  justify-content: center;
   align-items: center; 
   gap: 40px;
   margin-top: 50px;
   margin-bottom: 50px;
-  /* min-height: 100vh; Full page height for vertical centering */
 }
 
 .summary-count {
   color: #388E3C;
-  font-size: 50px;
+  font-size: 35px;
   font-weight: bold;
   margin: 4px 0 0 0;
+  transition: color 0.3s;
+}
+
+.summary-card a:hover .summary-count {
+    color: #1d4ed8;
+    font-weight: bold;
 }

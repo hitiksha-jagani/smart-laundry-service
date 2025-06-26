@@ -47,6 +47,7 @@ public class PayoutService {
         LocalDateTime start, end;
 
         Double totalEarnings;
+        Double paidPayouts;
         Double pendingPayouts;
 
         String id = user.getUserId();
@@ -57,18 +58,21 @@ public class PayoutService {
                 start = LocalDate.now().atStartOfDay();
                 end = today;
                 totalEarnings = payoutRepository.findTotalEarningsByUserIdAndDateRange(id, start, end);
+                paidPayouts = payoutRepository.findPaidPayoutsByUserIdAndDateRange(id, start, end);
                 pendingPayouts = payoutRepository.findPendingPayoutsByUserIdAndDateRange(id, start, end);
                 break;
             case "this week":
                 start = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
                 end = today;
                 totalEarnings = payoutRepository.findTotalEarningsByUserIdAndDateRange(id, start, end);
+                paidPayouts = payoutRepository.findPaidPayoutsByUserIdAndDateRange(id, start, end);
                 pendingPayouts = payoutRepository.findPendingPayoutsByUserIdAndDateRange(id, start, end);
                 break;
             case "this month":
                 start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
                 end = today;
                 totalEarnings = payoutRepository.findTotalEarningsByUserIdAndDateRange(id, start, end);
+                paidPayouts = payoutRepository.findPaidPayoutsByUserIdAndDateRange(id, start, end);
                 pendingPayouts = payoutRepository.findPendingPayoutsByUserIdAndDateRange(id, start, end);
                 break;
             case "custom":
@@ -78,16 +82,19 @@ public class PayoutService {
                 start = startDate.atStartOfDay();
                 end = endDate.atTime(LocalTime.MAX);
                 totalEarnings = payoutRepository.findTotalEarningsByUserIdAndDateRange(id, start, end);
+                paidPayouts = payoutRepository.findPaidPayoutsByUserIdAndDateRange(id, start, end);
                 pendingPayouts = payoutRepository.findPendingPayoutsByUserIdAndDateRange(id, start, end);
                 break;
             case "overall":
             default:
-                totalEarnings = payoutRepository.findTotalEarningsByUserId(user.getUserId());
-                pendingPayouts = payoutRepository.findPendingPayoutsByUserId(user.getUserId());
+                totalEarnings = payoutRepository.findTotalEarningsByUserId(id);
+                paidPayouts = payoutRepository.findPaidPayoutsByUserId(id);
+                pendingPayouts = payoutRepository.findPendingPayoutsByUserId(id);
         }
 
         PayoutSummaryResponseDTO payoutSummaryResponseDTO = PayoutSummaryResponseDTO.builder()
                 .totalEarnings(totalEarnings)
+                .paidPayouts(paidPayouts)
                 .pendingPayouts(pendingPayouts)
                 .build();
 
@@ -131,7 +138,7 @@ public class PayoutService {
                 break;
             case "overall":
             default:
-                payouts = payoutRepository.findAll();
+                payouts = payoutRepository.findTotalPayoutsByUserId(id);
         }
 
         return payouts.stream().map(this::mapToPayoutResponseDTO).collect(Collectors.toList());
@@ -152,6 +159,47 @@ public class PayoutService {
         return dto;
     }
 
+    public List<PayoutResponseDTO> getPaidPayouts(Users user, String filter, LocalDate startDate, LocalDate endDate) {
+
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime start, end;
+
+        String id = user.getUserId();
+
+        List<Payout> payouts = new ArrayList<>();
+
+        switch (filter.toLowerCase()) {
+            case "today":
+                start = LocalDate.now().atStartOfDay();
+                end = today;
+                payouts = payoutRepository.findPaidPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                break;
+            case "this week":
+                start = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
+                end = today;
+                payouts = payoutRepository.findPaidPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                break;
+            case "this month":
+                start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+                end = today;
+                payouts = payoutRepository.findPaidPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                break;
+            case "custom":
+                if (startDate == null || endDate == null) {
+                    throw new IllegalArgumentException("Start and end date required for custom filter");
+                }
+                start = startDate.atStartOfDay();
+                end = endDate.atTime(LocalTime.MAX);
+                payouts = payoutRepository.findPaidPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                break;
+            case "overall":
+            default:
+                payouts = payoutRepository.findPaidPayoutsByUserIdAndStatus(id);
+        }
+
+        return payouts.stream().map(this::mapToPayoutResponseDTO).collect(Collectors.toList());
+    }
+
     public List<PayoutResponseDTO> getPendingPayouts(Users user, String filter, LocalDate startDate, LocalDate endDate) {
 
         LocalDateTime today = LocalDateTime.now();
@@ -165,17 +213,17 @@ public class PayoutService {
             case "today":
                 start = LocalDate.now().atStartOfDay();
                 end = today;
-                payouts = payoutRepository.findPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                payouts = payoutRepository.findPendingPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
                 break;
             case "this week":
                 start = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
                 end = today;
-                payouts = payoutRepository.findPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                payouts = payoutRepository.findPendingPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
                 break;
             case "this month":
                 start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
                 end = today;
-                payouts = payoutRepository.findPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                payouts = payoutRepository.findPendingPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
                 break;
             case "custom":
                 if (startDate == null || endDate == null) {
@@ -183,11 +231,11 @@ public class PayoutService {
                 }
                 start = startDate.atStartOfDay();
                 end = endDate.atTime(LocalTime.MAX);
-                payouts = payoutRepository.findPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
+                payouts = payoutRepository.findPendingPayoutsByUserIdAndDateRangeAndStatus(id, start, end);
                 break;
             case "overall":
             default:
-                payouts = payoutRepository.findAll();
+                payouts = payoutRepository.findPendingPayoutsByUserIdAndStatus(id);
         }
 
         return payouts.stream().map(this::mapToPayoutResponseDTO).collect(Collectors.toList());

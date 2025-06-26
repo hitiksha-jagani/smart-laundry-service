@@ -10,36 +10,36 @@
   font-style: normal;
 }
 
-h1{
+.h1-agent{
     font-weight: 900;
     font-size: 30px;
     color: #388E3C;
 }
 
-h2{
+.h2-agent{
     font-weight: 700;
     font-size: 15px;
     color: #388E3C;
 }
 
-h3 {
+.h3-agent {
     font-weight: 600;
     font-size: 20px;
     
 }
 
-h4{
+.h4-agent{
     font-weight: 500;
     font-size: 15px;
     color: #1C1C1C;
 }
 
-.input{
-    padding: '10px';
-    margin-top: '10px';
-    width: '250px';
-    border-radius: '5px';
-    border: '1px solid #ccc';
+.input-agent{
+    padding: 10px;
+    margin-top: 10px;
+    width: 250px;
+    border-radius: 5px;
+    border: 1px solid #4ADE80;
     background-color: #E8F5E9;
 }
 
@@ -60,12 +60,12 @@ h4{
     background-color: #16a34a;
 }
 
-hr {
+.hr-agent {
     border-top: 3px solid #4ADE80;
     font-weight: 3;
 }
 
-.heading {
+.heading-agent {
     text-align: center;
     font-size: 28px;
     font-weight: bold;

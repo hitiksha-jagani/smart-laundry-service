@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useLocation } from 'react-router-dom';
 import '../../styles/Toast.css';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
+import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import '../../styles/DeliveryAgent/UpdateStatus.css';
 import axios from 'axios';
 
@@ -149,11 +150,12 @@ const UpdateStatus = () => {
                     {/* <h1 className="heading inter-font">UPDATE STATUS</h1> */}
 
                     <input
-                        className='input'
+                        className='input-agent'
                         type="text"
-                        placeholder="Enter OTP"
+                        placeholder="OTP"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
+                        // style={{padding: '50px'}}
                     />
 
                     <br /><br />
@@ -162,7 +164,7 @@ const UpdateStatus = () => {
                         className="route-btn agent-btn"
                         onClick={handleUpdateStatus}
                         disabled={loading || !otp}
-                        style={{width: '80%'}}
+                        style={{width: '100%'}}
                     >
                         {loading ? 'Verifying...' : 'Verify OTP & Update'}
                     </button>

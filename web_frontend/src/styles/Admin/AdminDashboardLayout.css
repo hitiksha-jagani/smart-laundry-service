@@ -1,0 +1,9 @@
+.dashboard-content-area {
+  margin-left: 240px;
+  width: calc(100% - 240px); 
+  /* padding: 24px; */
+  padding-top: 90px;
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+  overflow-x: auto;
+}

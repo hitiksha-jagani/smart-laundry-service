@@ -58,7 +58,7 @@ public class FeedbackController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
-        return ResponseEntity.ok(feedbackService.getFeedbacks(filter, startDate, endDate));
+        return ResponseEntity.ok(feedbackService.getFeedbacks(userId, filter, startDate, endDate));
     }
 
 

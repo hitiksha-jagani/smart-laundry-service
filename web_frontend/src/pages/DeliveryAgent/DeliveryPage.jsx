@@ -6,12 +6,9 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import SummaryCard from '../../components/DeliveryAgent/SummaryCard';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
-import DeliverySummary from "../../components/DeliveryAgent/DeliverySummary";
-import PendingDeliveries from "../../components/DeliveryAgent/PendingDeliveries";
-import TodayDeliveries from "../../components/DeliveryAgent/TodayDeliveries";
+import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/SummaryCard.css';
-import { BsController } from 'react-icons/bs';
 
 const mockDeliveries = [
   {
@@ -164,7 +161,6 @@ const DeliveryPage = () => {
     const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem("token");
-    console.log(token);
 
     const axiosInstance = axios.create({
         baseURL: "http://localhost:8080",
@@ -178,7 +174,6 @@ const DeliveryPage = () => {
             let decoded;
             try {
                 decoded = jwtDecode(token);
-                // console.log(decoded)
                 console.log("user Id : ", decoded.id)
             } catch (err) {
                 console.error('Invalid token:', err);
@@ -219,6 +214,7 @@ const DeliveryPage = () => {
 
                 setPending(pendingRes.data);
                 console.log("pending deliveries : ", pendingRes.data);
+                console.log("id : " , pending?.orderId)
 
                 setToday(todayRes.data);
                 console.log("todays delivery : ", todayRes.data);
@@ -236,28 +232,45 @@ const DeliveryPage = () => {
     if (loading) return <p className="text-center">Loading...</p>;
 
     return (
+
         <>
 
             <DeliveryAgentDashboardLayout user={user}>
-                <h1 className='heading inter-font'>DELIVERY DASHBOARD</h1>
 
-                <div className="summary-container inter-font">
-                    <SummaryCard title="TOTAL ORDERS" count={pending.length + today.length} />
-                    <SummaryCard title="PENDING ORDERS" count={pending.length} />
-                    <SummaryCard title="TODAY'S ORDERS" count={today.length}/>
+                <h1 className='heading-agent h1-agent'>DELIVERY DASHBOARD</h1>
+
+                {/* Summary Data  */}
+                <div className="summary-container" style={{ marginTop: '200px' }}>
+
+                    {/* <SummaryCard 
+                        title="TOTAL ORDERS" 
+                        user={user}
+                        count={pending.length + today.length} /> */}
+                        
+                    {/* Pendin Orders  */}
+                    <SummaryCard 
+                        title="PENDING ORDERS"
+                        user={user} 
+                        count={pending.length}
+                        link="/deliveries/pending" 
+                        data={pending}
+                    />
+
+                    {/* Today's Orders  */}
+                    <SummaryCard 
+                        title="TODAY'S ORDERS"
+                        user={user}  
+                        count={today.length}
+                        link="/deliveries/today" 
+                        data={today}
+                    /> 
+
                 </div>
-
-                <h2 className='pending-heading heading inter-font'>PENDING DELIVERIES</h2>
-                {/* <PendingDeliveries deliveries={pending}/> */}
-                <PendingDeliveries deliveries={mockDeliveries} token={token} />
-
-                <h2 className='pending-heading heading inter-font' style={{marginTop: '50px'}}>TODAY'S DELIVERIES</h2>
-                {/* <TodayDeliveries deliveries={today} /> */}
-                <TodayDeliveries deliveries={mockDeliveries} token={token} />
                 
             </DeliveryAgentDashboardLayout>
     
         </>
+
     );
 };
 
