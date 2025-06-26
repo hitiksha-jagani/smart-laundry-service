@@ -23,6 +23,11 @@ public class OrderResponseDto {
     private String contactName;
     private String contactPhone;
     private String contactAddress;
+    private String customerName;
+    private Boolean requiresPickupOtp;
+    private Boolean requiresDeliveryOtp;
+    private String agentId;
+    private String providerId;
 
     @Builder.Default
     private double latitude = 0.0;

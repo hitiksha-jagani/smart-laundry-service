@@ -18,7 +18,7 @@ public class CustomerServiceProviderDTO {
  private String businessName;
  private String photoImage;
  private AddressDTO address; // Use structured address DTO
- private Long averageRating;
+ private Double averageRating;
  private List<ReviewDTO> reviews;
  private List<PriceDTO> prices;
  //private List<ItemDTO> items;

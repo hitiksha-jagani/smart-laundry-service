@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-import Navbar from "../../components/Navbar"; 
-import Footer from "../../components/Footer"; 
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 export default function NearbyServiceProviders() {
   const [allProviders, setAllProviders] = useState([]);
@@ -90,10 +90,8 @@ export default function NearbyServiceProviders() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
-      {/* Header */}
       <Navbar />
 
-      {/* Content */}
       <main className="flex-grow px-6 py-8">
         <h1 className="text-3xl font-bold mb-6 text-center text-[#4B00B5]">Service Providers</h1>
 
@@ -157,13 +155,22 @@ export default function NearbyServiceProviders() {
                 </p>
 
                 <div className="flex items-center mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <FaStar
-                      key={i}
-                      className={`text-sm ${i < provider.averageRating ? "text-yellow-400" : "text-gray-300"}`}
-                    />
-                  ))}
-                  <span className="ml-2 text-sm">{provider.averageRating}/5</span>
+                  {Array.from({ length: 5 }).map((_, index) => {
+                    const rating = provider.averageRating || 0;
+                    const full = index + 1 <= Math.floor(rating);
+                    const half = index + 1 - rating <= 0.5 && index + 1 > rating;
+
+                    return full ? (
+                      <FaStar key={index} className="text-yellow-400 text-sm" />
+                    ) : half ? (
+                      <FaStarHalfAlt key={index} className="text-yellow-300 text-sm" />
+                    ) : (
+                      <FaRegStar key={index} className="text-gray-300 text-sm" />
+                    );
+                  })}
+                  <span className="ml-2 text-sm">
+                    {provider.averageRating?.toFixed(1) || "0.0"}/5
+                  </span>
                 </div>
 
                 <ul className="text-sm text-gray-700 mb-2">
@@ -213,9 +220,7 @@ export default function NearbyServiceProviders() {
         </div>
       </main>
 
-    
       <Footer />
     </div>
   );
 }
-

@@ -40,16 +40,18 @@ public class OrderSummaryService {
         // Step 1: Try fetching existing bill
         Bill existingBill = billRepository.findByOrder(order);
 
-        double deliveryCharge = 30;
+        double deliveryCharge = 0.0;
         double discount = 0.0;
         String promoMessage = "";
         boolean isValidPromotion = false;
 
-        // Step 2: Require delivery charge from existing bill
-//        if (existingBill == null || existingBill.getDeliveryCharge() == null) {
-//            throw new IllegalStateException("Delivery charge is not calculated yet. Please try again later.");
-//        }
-//        deliveryCharge = existingBill.getDeliveryCharge();
+
+        if (existingBill == null || existingBill.getDeliveryCharge() == null) {
+            throw new IllegalStateException("Delivery charge is not calculated yet. Please try again later.");
+        }
+        double singleLegCharge = existingBill.getDeliveryCharge();
+        deliveryCharge = singleLegCharge * 2;
+
 
         // Step 3: Validate and apply promotion (if any)
         if (promo != null) {
@@ -80,12 +82,13 @@ public class OrderSummaryService {
 
         // Step 5: Create bill only if not present
         if (existingBill == null) {
+            // New bill creation
             Bill bill = Bill.builder()
                     .order(order)
                     .status(BillStatus.PENDING_FOR_PAYMENT)
                     .itemsTotalPrice(itemsTotal)
                     .gstAmount(gstAmount)
-//                    .deliveryCharge(deliveryCharge)
+                    .deliveryCharge(deliveryCharge)
                     .discountAmount(isValidPromotion ? discount : 0.0)
                     .finalPrice(finalAmount)
                     .build();
@@ -93,7 +96,42 @@ public class OrderSummaryService {
             List<BookingItem> copiedItems = copyBookingItems(bookingItems, bill, order);
             bill.setBookingItems(copiedItems);
             billRepository.save(bill);
+        } else {
+
+            boolean updated = false;
+
+
+            double currentSingleLegCharge = existingBill.getDeliveryCharge() != null ? existingBill.getDeliveryCharge() : 0.0;
+            if (currentSingleLegCharge != deliveryCharge) {
+                existingBill.setDeliveryCharge(deliveryCharge);
+                updated = true;
+            }
+
+            if (existingBill.getItemsTotalPrice() == 0.0) {
+                existingBill.setItemsTotalPrice(itemsTotal);
+                updated = true;
+            }
+
+            if (existingBill.getGstAmount() == 0.0) {
+                existingBill.setGstAmount(gstAmount);
+                updated = true;
+            }
+
+            if (existingBill.getDiscountAmount() == 0.0 && isValidPromotion) {
+                existingBill.setDiscountAmount(discount);
+                updated = true;
+            }
+
+            if (existingBill.getFinalPrice() == 0.0) {
+                existingBill.setFinalPrice(finalAmount);
+                updated = true;
+            }
+
+            if (updated) {
+                billRepository.save(existingBill);
+            }
         }
+
 
         // Step 6: Build item summaries
         List<OrderSummaryDto.ItemSummary> itemSummaries = bookingItems.stream().map(item -> {

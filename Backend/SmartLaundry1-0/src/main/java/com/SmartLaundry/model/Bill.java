@@ -82,6 +82,5 @@ public class Bill implements Serializable {
     @Schema(description = "Payment associated with this bill.")
     private Payment payment;
 
-
 }
 

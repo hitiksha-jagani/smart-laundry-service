@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDTO {
-    private String Name;
+    private String name;
     private String review;
 }
 

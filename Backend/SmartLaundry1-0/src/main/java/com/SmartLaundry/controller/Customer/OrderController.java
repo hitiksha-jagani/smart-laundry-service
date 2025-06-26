@@ -1,12 +1,16 @@
 package com.SmartLaundry.controller.Customer;
 
+import com.SmartLaundry.dto.Admin.DeliveryAgentEarningSettingRequestDTO;
 import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import com.SmartLaundry.service.Admin.RoleCheckingService;
+import com.SmartLaundry.service.Admin.SettingService;
 import com.SmartLaundry.service.Customer.*;
 import com.SmartLaundry.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +36,8 @@ public class OrderController {
     private final PromotionService promotionService;
     private final OrderRepository orderRepository;
     private final BillRepository billRepository;
+    private final RoleCheckingService roleCheckingService;
+    private final SettingService settingService;
     @Autowired
     private PromotionEvaluatorService promotionEvaluatorService;
     @Autowired
@@ -209,9 +215,14 @@ public class OrderController {
             promo = promotionRepository.findActiveByPromoCode(promoCode)
                     .orElse(null);
         }
-
         OrderSummaryDto summary = orderSummaryService.generateOrderSummary(orderId, promo);
         return ResponseEntity.ok(summary);
+    }
+
+    @PostMapping("/{orderId}/mark-paid")
+    public ResponseEntity<String> markBillAsPaid(@PathVariable String orderId) {
+        billService.markBillAsPaid(orderId);
+        return ResponseEntity.ok("Bill marked as PAID");
     }
 
     @GetMapping("/available-promotions")

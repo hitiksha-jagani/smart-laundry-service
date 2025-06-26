@@ -164,6 +164,12 @@ public class ServiceProviderOrderService {
         }).toList();
     }
 
+    public List<OrderResponseDto> getOtpPendingOrders(String providerId) {
+        List<Order> orders = orderRepository.findOrdersWithPendingOtpForProvider(providerId);
+        return orders.stream()
+                .map(orderMapper::toOrderResponseDto)
+                .collect(Collectors.toList());
+    }
 
     public List<ActiveOrderGroupedDto> getDeliveredOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
@@ -244,9 +250,13 @@ public class ServiceProviderOrderService {
                     "Your LaundryService Order " + order.getOrderId() + " is Accepted");
 
             // Assign to delivery agent if selected
-//            if (sp.getNeedOfDeliveryAgent().equals(true)) {
-//                deliveryService.assignToDeliveryAgentCustomerOrders(order.getOrderId());
-//            }
+            if (Boolean.FALSE.equals(sp.getNeedOfDeliveryAgent())) {
+                deliveryService.calculateDeliveryChargeForProvider(order);
+                orderRepository.save(order); // Save totalKm
+            } else {
+                // Assign to delivery agent if needed
+                deliveryService.assignToDeliveryAgentCustomerOrders(order.getOrderId());
+            }
             // Handle delivery logic through SMS
 //            if (sp.getNeedOfDeliveryAgent() != null && sp.getNeedOfDeliveryAgent()) {
 //

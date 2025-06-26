@@ -59,4 +59,41 @@ public class OrderMapper {
 
         return builder.build();
     }
+
+
+    public OrderResponseDto toOtpVerificationDto(Order order) {
+        if (order == null) return null;
+
+        String userId = order.getUsers() != null ? order.getUsers().getUserId() : null;
+        String serviceProviderId = order.getServiceProvider() != null ? order.getServiceProvider().getServiceProviderId() : null;
+        String customerName = order.getUsers() != null
+                ? order.getUsers().getFirstName() + " " + order.getUsers().getLastName()
+                : "Customer";
+
+        // You may replace this logic with your actual OTP check logic if needed
+        boolean requiresPickupOtp = order.getStatus().name().equals("IN_CLEANING");
+        boolean requiresDeliveryOtp = order.getStatus().name().equals("OUT_FOR_DELIVERY");
+
+        return OrderResponseDto.builder()
+                .orderId(order.getOrderId())
+                .userId(userId)
+                .serviceProviderId(serviceProviderId)
+                .contactName(order.getContactName())
+                .contactPhone(order.getContactPhone())
+                .contactAddress(order.getContactAddress())
+                .latitude(order.getLatitude())
+                .longitude(order.getLongitude())
+                .pickupDate(order.getPickupDate())
+                .pickupTime(order.getPickupTime())
+                .status(order.getStatus())
+                .customerName(customerName)
+                .requiresPickupOtp(requiresPickupOtp)
+                .requiresDeliveryOtp(requiresDeliveryOtp)
+                .agentId(order.getPickupDeliveryAgent() != null
+                        ? order.getPickupDeliveryAgent().getDeliveryAgentId()
+                        : null)
+                .providerId(serviceProviderId)
+                .build();
+    }
+
 }
