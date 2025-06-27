@@ -11,9 +11,7 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Items, String> {
     List<Items> findAllByOrderByItemIdAsc(); //IT001
-
-
     Optional<Items> findByItemNameAndServiceAndSubService(String itemName, Services service, SubService subService);
-
+    List<Items> findByService_ServiceIdAndSubService_SubServiceId(String serviceId, String subServiceId);
     Optional<Items> findByItemName(String itemName);
 }

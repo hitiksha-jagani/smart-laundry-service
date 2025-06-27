@@ -5,60 +5,70 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bfec3e60-f7db-4ec7-90a0-755973f2e8a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/dump.rdb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/FetchUserController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/dump.rdb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/avatar-icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/avatar-icon.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/credit-card-icon.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/edit-document-icon.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/export-share-icon.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/home-icon.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/speech-bubble-line-icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/triangle-right-arrow-icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/assets/working-time-icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/DeliveryAgentSidebar.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/DeliverySummary.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/Header.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/PendingDeliveries.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/PendingDeliveryCard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/SummaryCard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveries.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveryCard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/Layout/DeliveryAgentDashboardLayout.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/ProtectedRoute.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/components/RoleProtectedRoute.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/DeliveryPage.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/UpdateStatus.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/DeliveryAgentCommon.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/DeliveryAgentDashboardLayout.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/DeliveryAgentSidebar.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/DeliveryPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/Header.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/PendingDeliveryCard.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/SummaryCard.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/UpdateStatus.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_frontend/src/styles/Toast.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/DeliveriesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/DeliveriesController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/DeliveryAgentProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/DeliveryAgentProfileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/DeliveryAgentTicketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/DeliveryAgentTicketController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/FeedbackController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/DeliveryAgent/FeedbackController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/DeliveryAgent/PendingDeliveriesResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/DeliveryAgent/PendingDeliveriesResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Ticket.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Ticket.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Users.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/DeliveriesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/DeliveriesRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/PayPalConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/PayPalConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/OtpOrderEmailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/OtpOrderEmailController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/PayPalController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ItemController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ProviderMyProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ProviderMyProfileController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderOrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderOrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/ServiceProvider/ServiceProviderProfileController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Admin/PriceDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Admin/PriceDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/OrderResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/OrderResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/OrderSummaryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/OrderSummaryDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/TrackOrderResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/TrackOrderResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/OtpVerificationResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/OtpVerificationResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/ServiceProvider/OrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/ServiceProvider/OrderMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Bill.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Bill.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Order.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/OrderOtp.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/OrderOtp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Payment.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Payment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/PaymentStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/PaymentStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/ItemRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/ItemRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/ItemsRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/OrderRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/OrderStatusHistoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/OrderStatusHistoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/PaymentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/PaymentRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/PriceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/PriceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/SubServiceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/repository/SubServiceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/BillService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/BillService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderSummaryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/OrderSummaryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/ServiceProviderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/Customer/ServiceProviderService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/DeliveryAgent/DeliveriesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/DeliveryAgent/DeliveriesService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/JWTService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/JWTService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/OtpOrderEmailTransitionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/OtpOrderEmailTransitionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/PayPalService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/PayPalService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ProviderMyProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ProviderMyProfileService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ServiceProviderOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/ServiceProvider/ServiceProviderOrderService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/context/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/context/AuthContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/PendingDeliveries.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/PendingDeliveries.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveries.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveries.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveryCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/components/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/components/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/i18n.js" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/i18n.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/CustomerHomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/CustomerHomePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/InitialOrder.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/InitialOrder.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/OrderBookingWizard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/OrderBookingWizard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/ProviderDetail.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/ProviderDetail.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/Register.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/style/Main.css" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/styles/Main.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/DeliveryPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/DeliveryPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/CompleteServiceProviderForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/CompleteServiceProviderForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/DeliveredOrders.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/DeliveredOrders.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/DeliveryOtpVerify.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/OtpVerificationOrders.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/OtpVerificationOrders.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/PickupOtpVerify.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/PickupOtpVerify.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/ProviderDashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/ProviderDashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/ReadyForDelivery.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/DeliveryAgentCommon.css" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/styles/DeliveryAgent/DeliveryAgentCommon.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/styles/Main.css" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/styles/Main.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

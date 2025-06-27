@@ -3,6 +3,7 @@ package com.SmartLaundry.controller.Customer;
 import com.SmartLaundry.dto.Admin.DeliveryAgentEarningSettingRequestDTO;
 import com.SmartLaundry.dto.Customer.*;
 import com.SmartLaundry.dto.DeliveryAgent.FeedbackAgentRequestDto;
+import com.SmartLaundry.dto.Customer.OrderHistoryDto;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
 import com.SmartLaundry.service.Admin.RoleCheckingService;
@@ -22,6 +23,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
@@ -117,6 +119,24 @@ public class OrderController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Order>> getOrdersByUser(@PathVariable String userId) {
+        List<Order> orders = orderRepository.findByUsers_UserId(userId);
+        return ResponseEntity.ok(orders);
+    }
+    @GetMapping("/user/{userId}/stats")
+    public ResponseEntity<Map<String, Long>> getOrderStats(@PathVariable String userId) {
+        List<Order> orders = orderRepository.findByUsers_UserId(userId);
+
+        long completedCount = orders.stream().filter(o -> o.getStatus() == OrderStatus.DELIVERED).count();
+        long cancelledCount = orders.stream().filter(o -> o.getStatus() == OrderStatus.CANCELLED).count();
+
+        return ResponseEntity.ok(Map.of(
+                "completed", completedCount,
+                "cancelled", cancelledCount
+        ));
+    }
+
 
     @PostMapping("/place/{dummyOrderId}")
     public ResponseEntity<OrderResponseDto> finalizeOrder(HttpServletRequest request,
@@ -152,21 +172,6 @@ public class OrderController {
         return ResponseEntity.ok("Order rescheduled successfully");
     }
 
-
-//    @PostMapping("/provider-feedback")
-//    public ResponseEntity<String> submitFeedback(HttpServletRequest request, @RequestBody FeedbackRequestDto dto) {
-//        String userId = extractUserIdFromRequest(request);
-//        orderService.submitFeedbackProviders(userId, dto);
-//        return ResponseEntity.ok("Feedback submitted successfully");
-//    }
-//
-//    @PostMapping("/agent-feedback")
-//    public ResponseEntity<String> submitFeedbackToAgent(HttpServletRequest request, @RequestBody FeedbackAgentRequestDto dto) {
-//        String userId = extractUserIdFromRequest(request);
-//        orderService.submitFeedbackAgents(userId, dto);
-//        return ResponseEntity.ok("Feedback submitted successfully");
-//    }
-
     @PostMapping("/provider-feedback/{orderId}")
     public ResponseEntity<String> submitFeedback(
             HttpServletRequest request,
@@ -174,7 +179,7 @@ public class OrderController {
             @RequestBody FeedbackRequestDto dto) throws AccessDeniedException {
 
         String userId = extractUserIdFromRequest(request);
-        checkIfUserIsBlocked(userId); // ✅
+        checkIfUserIsBlocked(userId);
         dto.setOrderId(orderId);
         orderService.submitFeedbackProviders(userId, dto);
         return ResponseEntity.ok("Feedback submitted successfully");
@@ -221,7 +226,7 @@ public class OrderController {
 
     @PostMapping("/{orderId}/mark-paid")
     public ResponseEntity<String> markBillAsPaid(@PathVariable String orderId) {
-        billService.markBillAsPaid(orderId);
+        orderSummaryService.markBillAsPaid(orderId);
         return ResponseEntity.ok("Bill marked as PAID");
     }
 
@@ -240,61 +245,43 @@ public class OrderController {
         return ResponseEntity.ok(promo);
     }
 
+
     @PostMapping("/apply-promo")
-    public ResponseEntity<?> applyPromoToOrder(
-            HttpServletRequest request,
+    public ResponseEntity<OrderSummaryDto> applyPromotionToOrder(
             @RequestParam String orderId,
-            @RequestParam String promotionId
-    ) throws AccessDeniedException {
-        String userId = extractUserIdFromRequest(request); // ✅ Extract user
-        checkIfUserIsBlocked(userId);
-        Optional<Promotion> promotionOpt = promotionRepository.findById(promotionId);
-        if (promotionOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Promotion not found with ID: " + promotionId);
-        }
+            @RequestParam String promotionId) {
 
-        Optional<Order> orderOpt = orderRepository.findById(orderId);
-        if (orderOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Order not found with ID: " + orderId);
-        }
+        Promotion promo = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new RuntimeException("Promotion not found"));
 
-        Order order = orderOpt.get();
-        Promotion promotion = promotionOpt.get();
-
-        // TEMPORARILY try to apply the promo — only if valid, save it
-        List<BookingItem> items = order.getBookingItems();
-        BigDecimal totalBeforeDiscount = BigDecimal.valueOf(
-                items.stream().mapToDouble(b -> b.getFinalPrice() != null ? b.getFinalPrice() : 0.0).sum()
-                        + (items.stream().mapToDouble(b -> b.getFinalPrice() != null ? b.getFinalPrice() : 0.0).sum() * 0.18)
-                        + 30.0 // assuming fixed delivery charge
-        );
-
-        String validationMessage = promotionEvaluatorService.getPromotionValidationMessage(
-                promotion, items, totalBeforeDiscount, order.getCreatedAt()
-        );
-
-        if (validationMessage != null) {
-            // Don’t save the promo to the order if it's invalid
-            return ResponseEntity.ok(OrderSummaryDto.builder()
-                    .orderId(orderId)
-                    .promotionMessage(validationMessage)
-                    .isPromotionApplied(false)
-                    .appliedPromoCode(null)  // promo code not applied
-                    .build());
-        }
-
-
-
-        // Only save promo to order if valid
-        order.setPromotion(promotion);
-        orderRepository.save(order);
-
-        // Now build summary with discount applied
-        OrderSummaryDto summary = orderSummaryService.generateOrderSummary(orderId, promotion);
-
+        OrderSummaryDto summary = orderSummaryService.generateOrderSummary(orderId, promo);
         return ResponseEntity.ok(summary);
+    }
+
+
+    @GetMapping("/history")
+    public ResponseEntity<List<OrderHistoryDto>> getOrderHistory(HttpServletRequest request) throws AccessDeniedException {
+        String userId = extractUserIdFromRequest(request);
+        checkIfUserIsBlocked(userId);
+
+        List<Order> orders = orderRepository.findByUsers_UserId(userId);
+
+        List<OrderHistoryDto> history = orders.stream()
+                .map(order -> OrderHistoryDto.builder()
+                        .orderId(order.getOrderId())
+                        .pickupDate(order.getPickupDate())
+                        .pickupTime(order.getPickupTime())
+                        .deliveryDate(order.getDeliveryDate())
+                        .deliveryTime(order.getDeliveryTime())
+                        .status(order.getStatus())
+                        .contactName(order.getContactName())
+                        .contactPhone(order.getContactPhone())
+                        .contactAddress(order.getContactAddress())
+                        .createdAt(order.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(history);
     }
 
 }

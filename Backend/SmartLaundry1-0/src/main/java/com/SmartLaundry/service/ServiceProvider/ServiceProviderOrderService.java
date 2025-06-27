@@ -85,46 +85,6 @@ public class ServiceProviderOrderService {
     }
 
 
-    public List<ActiveOrderGroupedDto> getActiveOrdersForServiceProvider(String spUserId) {
-        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-                .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
-
-        List<Order> activeOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.IN_CLEANING);
-
-        return activeOrders.stream().map(order -> {
-            List<ActiveOrderDto> itemDtos = order.getBookingItems().stream().map(item -> {
-                Items itemEntity = item.getItem();
-
-                String serviceName = Optional.ofNullable(itemEntity.getSubService())
-                        .map(sub -> sub.getServices())
-                        .map(Services::getServiceName)
-                        .orElse(Optional.ofNullable(itemEntity.getService())
-                                .map(Services::getServiceName)
-                                .orElse("N/A"));
-
-                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
-                        .map(SubService::getSubServiceName)
-                        .orElse("N/A");
-
-                return ActiveOrderDto.builder()
-                        .itemName(itemEntity.getItemName())
-                        .service(serviceName)
-                        .subService(subServiceName)
-                        .quantity(item.getQuantity())
-                        .build();
-            }).toList();
-
-            return ActiveOrderGroupedDto.builder()
-                    .orderId(order.getOrderId())
-                    .pickupDate(order.getPickupDate())
-                    .pickupTime(order.getPickupTime())
-                    .status(order.getStatus())
-                    .items(itemDtos)
-                    .build();
-        }).toList();
-    }
-
-
     public List<ActiveOrderGroupedDto> getPendingOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
@@ -136,11 +96,12 @@ public class ServiceProviderOrderService {
                 Items itemEntity = item.getItem();
 
                 String serviceName = Optional.ofNullable(itemEntity.getSubService())
-                        .map(sub -> sub.getServices())
+                        .map(SubService::getServices)
                         .map(Services::getServiceName)
-                        .orElse(Optional.ofNullable(itemEntity.getService())
-                                .map(Services::getServiceName)
-                                .orElse("N/A"));
+                        .orElseGet(() ->
+                                Optional.ofNullable(itemEntity.getService())
+                                        .map(Services::getServiceName)
+                                        .orElse("N/A"));
 
                 String subServiceName = Optional.ofNullable(itemEntity.getSubService())
                         .map(SubService::getSubServiceName)
@@ -164,11 +125,44 @@ public class ServiceProviderOrderService {
         }).toList();
     }
 
-    public List<OrderResponseDto> getOtpPendingOrders(String providerId) {
-        List<Order> orders = orderRepository.findOrdersWithPendingOtpForProvider(providerId);
-        return orders.stream()
-                .map(orderMapper::toOrderResponseDto)
-                .collect(Collectors.toList());
+    public List<ActiveOrderGroupedDto> getActiveOrdersForServiceProvider(String spUserId) {
+        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
+                .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
+
+        List<Order> activeOrders = orderRepository.findByServiceProviderAndStatus(sp, OrderStatus.IN_CLEANING);
+
+        return activeOrders.stream().map(order -> {
+            List<ActiveOrderDto> itemDtos = order.getBookingItems().stream().map(item -> {
+                Items itemEntity = item.getItem();
+
+                String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getServices)
+                        .map(Services::getServiceName)
+                        .orElseGet(() ->
+                                Optional.ofNullable(itemEntity.getService())
+                                        .map(Services::getServiceName)
+                                        .orElse("N/A"));
+
+                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getSubServiceName)
+                        .orElse("N/A");
+
+                return ActiveOrderDto.builder()
+                        .itemName(itemEntity.getItemName())
+                        .service(serviceName)
+                        .subService(subServiceName)
+                        .quantity(item.getQuantity())
+                        .build();
+            }).toList();
+
+            return ActiveOrderGroupedDto.builder()
+                    .orderId(order.getOrderId())
+                    .pickupDate(order.getPickupDate())
+                    .pickupTime(order.getPickupTime())
+                    .status(order.getStatus())
+                    .items(itemDtos)
+                    .build();
+        }).toList();
     }
 
     public List<ActiveOrderGroupedDto> getDeliveredOrdersForServiceProvider(String spUserId) {
@@ -182,11 +176,12 @@ public class ServiceProviderOrderService {
                 Items itemEntity = item.getItem();
 
                 String serviceName = Optional.ofNullable(itemEntity.getSubService())
-                        .map(sub -> sub.getServices())
+                        .map(SubService::getServices)
                         .map(Services::getServiceName)
-                        .orElse(Optional.ofNullable(itemEntity.getService())
-                                .map(Services::getServiceName)
-                                .orElse("N/A"));
+                        .orElseGet(() ->
+                                Optional.ofNullable(itemEntity.getService())
+                                        .map(Services::getServiceName)
+                                        .orElse("N/A"));
 
                 String subServiceName = Optional.ofNullable(itemEntity.getSubService())
                         .map(SubService::getSubServiceName)
@@ -210,6 +205,46 @@ public class ServiceProviderOrderService {
         }).toList();
     }
 
+    public List<ActiveOrderGroupedDto> getCompletedOrdersForServiceProvider(String spUserId) {
+        ServiceProvider provider = serviceProviderRepository.findByUserUserId(spUserId)
+                .orElseThrow(() -> new RuntimeException("Service provider not found"));
+
+        List<Order> completedOrders = orderRepository
+                .findByServiceProvider_ServiceProviderIdAndStatus(provider.getServiceProviderId(), OrderStatus.COMPLETED);
+
+        return completedOrders.stream().map(order -> {
+            List<ActiveOrderDto> itemDtos = order.getBookingItems().stream().map(item -> {
+                Items itemEntity = item.getItem();
+
+                String serviceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getServices)
+                        .map(Services::getServiceName)
+                        .orElseGet(() ->
+                                Optional.ofNullable(itemEntity.getService())
+                                        .map(Services::getServiceName)
+                                        .orElse("N/A"));
+
+                String subServiceName = Optional.ofNullable(itemEntity.getSubService())
+                        .map(SubService::getSubServiceName)
+                        .orElse("N/A");
+
+                return ActiveOrderDto.builder()
+                        .itemName(itemEntity.getItemName())
+                        .service(serviceName)
+                        .subService(subServiceName)
+                        .quantity(item.getQuantity())
+                        .build();
+            }).toList();
+
+            return ActiveOrderGroupedDto.builder()
+                    .orderId(order.getOrderId())
+                    .pickupDate(order.getPickupDate())
+                    .pickupTime(order.getPickupTime())
+                    .status(order.getStatus())
+                    .items(itemDtos)
+                    .build();
+        }).toList();
+    }
 
 
     public OrderResponseDto acceptOrder(String spUserId, String orderId) {
@@ -360,70 +395,115 @@ public class ServiceProviderOrderService {
         saveOrderStatusHistory(order, OrderStatus.IN_CLEANING);
     }
 
-    public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
-        Order order = orderRepository.findByorderId(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-
-        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-                .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
-
-        if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
-            throw new AccessDeniedException("Unauthorized to update this order");
-        }
-
-        if (order.getStatus() != OrderStatus.IN_CLEANING) {
-            throw new IllegalStateException("Order must be IN_CLEANING to mark as READY_FOR_DELIVERY");
-        }
-
-        order.setStatus(OrderStatus.READY_FOR_DELIVERY);
-        order.setDeliveryDate(LocalDate.now());
-
-        saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
-        orderRepository.save(order);
-        saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
-        //For SMS
+//    public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
+//        Order order = orderRepository.findByorderId(orderId)
+//                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+//
+//        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
+//                .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
+//
+//        if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
+//            throw new AccessDeniedException("Unauthorized to update this order");
+//        }
+//
+//        if (order.getStatus() != OrderStatus.IN_CLEANING) {
+//            throw new IllegalStateException("Order must be IN_CLEANING to mark as READY_FOR_DELIVERY");
+//        }
+//
+//        order.setStatus(OrderStatus.READY_FOR_DELIVERY);
+//        order.setDeliveryDate(LocalDate.now());
+//
+//        saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
+//        orderRepository.save(order);
+//        saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
+//        //For SMS
+////        if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
+////            // Agent will come to collect clothes from provider —> send OTP to provider
+////        deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
+////            orderOtpService.generateAndSendOtp(
+////                    order,
+////                    sp.getUser(),
+////                    null,
+////                    OtpPurpose.CONFIRM_FOR_CLOTHS,
+////                    sp.getUser().getPhoneNo()
+////
+////            );
+////        } else {
+////            // Provider will deliver directly to customer —> send delivery OTP to customer
+////            orderOtpService.generateAndSendOtp(
+////                    order,
+////                    order.getUsers(),
+////                    null,
+////                    OtpPurpose.DELIVERY_CUSTOMER,
+////                    order.getUsers().getPhoneNo()
+////            );
+////        }
+//        //For Email
 //        if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
-//            // Agent will come to collect clothes from provider —> send OTP to provider
-//        deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
-//            orderOtpService.generateAndSendOtp(
+//            deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
+//            orderEmailOtpService.generateAndSendOtp(
 //                    order,
-//                    sp.getUser(),
+//                    sp.getUser(), // provider user
 //                    null,
 //                    OtpPurpose.CONFIRM_FOR_CLOTHS,
-//                    sp.getUser().getPhoneNo()
-//
+//                    sp.getUser().getEmail()
 //            );
 //        } else {
 //            // Provider will deliver directly to customer —> send delivery OTP to customer
-//            orderOtpService.generateAndSendOtp(
+//            orderEmailOtpService.generateAndSendOtp(
 //                    order,
 //                    order.getUsers(),
 //                    null,
 //                    OtpPurpose.DELIVERY_CUSTOMER,
-//                    order.getUsers().getPhoneNo()
+//                    order.getUsers().getEmail()
 //            );
 //        }
-        //For Email
-        if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
-            deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
-            orderEmailOtpService.generateAndSendOtp(
-                    order,
-                    sp.getUser(), // provider user
-                    null,
-                    OtpPurpose.CONFIRM_FOR_CLOTHS,
-                    sp.getUser().getEmail()
-            );
-        } else {
-            // Provider will deliver directly to customer —> send delivery OTP to customer
-            orderEmailOtpService.generateAndSendOtp(
-                    order,
-                    order.getUsers(),
-                    null,
-                    OtpPurpose.DELIVERY_CUSTOMER,
-                    order.getUsers().getEmail()
-            );
+//    }
+
+        public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
+            Order order = orderRepository.findByorderId(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+            ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
+                    .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
+
+            if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
+                throw new AccessDeniedException("Unauthorized to update this order");
+            }
+
+            if (order.getStatus() != OrderStatus.IN_CLEANING) {
+                throw new IllegalStateException("Order must be IN_CLEANING to mark as READY_FOR_DELIVERY");
+            }
+
+            order.setStatus(OrderStatus.READY_FOR_DELIVERY);
+            order.setDeliveryDate(LocalDate.now());
+
+            saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
+            orderRepository.save(order);
+
+            // Log for debug
+            log.info("Order {} marked READY_FOR_DELIVERY. Agent Needed: {}", orderId, sp.getNeedOfDeliveryAgent());
+
+            if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
+                deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
+
+                orderEmailOtpService.generateAndSendOtp(
+                        order,
+                        sp.getUser(),
+                        null,
+                        OtpPurpose.CONFIRM_FOR_CLOTHS,
+                        sp.getUser().getEmail()
+                );
+            } else {
+                orderEmailOtpService.generateAndSendOtp(
+                        order,
+                        order.getUsers(),
+                        null,
+                        OtpPurpose.DELIVERY_CUSTOMER,
+                        order.getUsers().getEmail()
+                );
+            }
         }
-    }
 
     private void saveOrderStatusHistory(Order order, OrderStatus status) {
         orderStatusHistoryRepository.save(OrderStatusHistory.builder()

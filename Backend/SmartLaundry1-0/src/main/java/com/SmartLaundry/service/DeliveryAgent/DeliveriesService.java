@@ -634,7 +634,6 @@ public class DeliveriesService {
             }
 
             String assignedAgentId = (String) assignment.get("agentId");
-
             if (!assignedAgentId.equals(agentId)) return false;
 
             // Fetch order and agent
@@ -673,6 +672,8 @@ public class DeliveriesService {
                 if (earning != null) {
                     Bill bill = billRepository.findByOrder(order);
 
+                    double totalDeliveryCharge = earning * 2; // pickup + delivery
+
                     if (bill == null) {
                         // Auto-create a minimal Bill if missing
                         bill = Bill.builder()
@@ -682,14 +683,16 @@ public class DeliveriesService {
                                 .gstAmount(0.0)
                                 .discountAmount(0.0)
                                 .finalPrice(0.0)
-                                .deliveryCharge(earning)
+                                .deliveryCharge(totalDeliveryCharge)
                                 .build();
-                    } else {
-                        bill.setDeliveryCharge(earning);
+                        billRepository.save(bill);
+                    } else if (bill.getDeliveryCharge() == null) {
+                        bill.setDeliveryCharge(totalDeliveryCharge);
+                        billRepository.save(bill);
                     }
-
-                    billRepository.save(bill);
+                    // ⚠️ Do NOT update delivery charge if already set!
                 }
+
                 redisTemplate.delete(deliveryRedisKey);
             }
 
@@ -703,6 +706,7 @@ public class DeliveriesService {
             return false;
         }
     }
+
 
     // this function is called in accept order of service provider
     public void calculateDeliveryChargeForProvider(Order order) {
@@ -721,24 +725,24 @@ public class DeliveriesService {
         }
 
         // Calculate charge based on base km logic
-        Double deliveryCharge;
+        Double singleLegCharge;
         if (totalKm > earnings.getBaseKm()) {
             Double extraKm = totalKm - earnings.getBaseKm();
-            deliveryCharge = earnings.getFixedAmount() + (extraKm * earnings.getExtraPerKmAmount());
+            singleLegCharge = earnings.getFixedAmount() + (extraKm * earnings.getExtraPerKmAmount());
         } else {
-            deliveryCharge = earnings.getFixedAmount();
+            singleLegCharge = earnings.getFixedAmount();
         }
 
         // Round off
         double roundedKm = round(totalKm, 2);
-        double roundedCharge = round(deliveryCharge, 2);
+        double totalDeliveryCharge = round(singleLegCharge * 2, 2); // pickup + delivery
 
         // Update order's total km
         order.setTotalKm(roundedKm);
 
+        // Get bill and apply delivery charge only if not set
         Bill bill = billRepository.findByOrder(order);
         if (bill == null) {
-            // Auto-create a minimal Bill if missing
             bill = Bill.builder()
                     .order(order)
                     .status(BillStatus.PENDING)
@@ -746,13 +750,15 @@ public class DeliveriesService {
                     .gstAmount(0.0)
                     .discountAmount(0.0)
                     .finalPrice(0.0)
-                    .deliveryCharge(roundedCharge)
+                    .deliveryCharge(totalDeliveryCharge)
                     .build();
-        } else {
-            bill.setDeliveryCharge(roundedCharge);
+            billRepository.save(bill);
+        } else if (bill.getDeliveryCharge() == null) {
+            bill.setDeliveryCharge(totalDeliveryCharge);
+            billRepository.save(bill);
         }
 
-        billRepository.save(bill);
+        // Note: If deliveryCharge is already set, we do not override it.
     }
 
     public String changeStatus(String orderId) {

@@ -74,6 +74,46 @@ public class ServiceProviderService {
 
 
 
+//    public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
+//        // Build PriceDTO list with full item info
+//        List<PriceDTO> priceDTOs = sp.getPrices().stream()
+//                .filter(p -> p.getItem() != null)
+//                .map(price -> {
+//                    Items item = price.getItem();
+//                    return PriceDTO.builder()
+//                            .price(price.getPrice())
+//                            .item(PriceDTO.ItemDTO.builder()
+//                                    .itemId(item.getItemId())
+//                                    .itemName(item.getItemName())
+//                                    .serviceName(item.getService() != null ? item.getService().getServiceName() : null)
+//                                    .subServiceName(item.getSubService() != null ? item.getSubService().getSubServiceName() : null)
+//                                    .build())
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
+//
+//        // Reviews and ratings
+//        List<FeedbackProviders> feedbacks = feedbackRepo.findByServiceProvider_ServiceProviderId(sp.getServiceProviderId());
+//        List<ReviewDTO> reviews = feedbacks.stream()
+//                .filter(fb -> fb.getReview() != null && fb.getUser() != null)
+//                .map(fb -> new ReviewDTO(buildFullName(fb.getUser()), fb.getReview()))
+//                .collect(Collectors.toList());
+//
+//        Double avg = feedbackRepo.findAverageRatingByServiceProvider(sp.getServiceProviderId());
+//        Double avgRating = avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
+//
+//
+//        return CustomerServiceProviderDTO.builder()
+//                .serviceProviderId(sp.getServiceProviderId())
+//                .businessName(sp.getBusinessName())
+//                .photoImage(convertFilePathToPublicUrl(sp.getPhotoImage()))
+//                .address(getFirstAddress(sp.getUser()))
+//                .averageRating(avgRating)
+//                .reviews(reviews)
+//                .prices(priceDTOs)
+//                .build();
+//    }
+
     public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
         // Build PriceDTO list with full item info
         List<PriceDTO> priceDTOs = sp.getPrices().stream()
@@ -85,7 +125,9 @@ public class ServiceProviderService {
                             .item(PriceDTO.ItemDTO.builder()
                                     .itemId(item.getItemId())
                                     .itemName(item.getItemName())
+                                    .serviceId(item.getService() != null ? item.getService().getServiceId() : null)
                                     .serviceName(item.getService() != null ? item.getService().getServiceName() : null)
+                                    .subServiceId(item.getSubService() != null ? item.getSubService().getSubServiceId() : null)
                                     .subServiceName(item.getSubService() != null ? item.getSubService().getSubServiceName() : null)
                                     .build())
                             .build();
@@ -102,7 +144,6 @@ public class ServiceProviderService {
         Double avg = feedbackRepo.findAverageRatingByServiceProvider(sp.getServiceProviderId());
         Double avgRating = avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
 
-
         return CustomerServiceProviderDTO.builder()
                 .serviceProviderId(sp.getServiceProviderId())
                 .businessName(sp.getBusinessName())
@@ -113,7 +154,6 @@ public class ServiceProviderService {
                 .prices(priceDTOs)
                 .build();
     }
-
 
 
     private String convertFilePathToPublicUrl(String absolutePath) {

@@ -1,18 +1,27 @@
 package com.SmartLaundry.controller.ServiceProvider;
 
+import com.SmartLaundry.dto.ServiceProvider.ServiceProviderDto;
 import com.SmartLaundry.dto.ServiceProvider.ServiceProviderProfileDTO;
+import com.SmartLaundry.model.ServiceProvider;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.ServiceProvider.ProviderMyProfileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.SmartLaundry.service.JWTService;
+
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import com.SmartLaundry.service.ServiceProvider.ServiceProviderProfileService;
+import org.springframework.web.multipart.MultipartFile;
+
 @RestController
 @RequestMapping("sp")
 @RequiredArgsConstructor
@@ -24,6 +33,10 @@ public class ProviderMyProfileController {
     @Autowired
     private final UserRepository usersRepository;
 
+    private String getUserIdFromRequest(HttpServletRequest request) {
+        String token = JWTService.extractTokenFromHeader(request);
+        return jwtService.extractUserId(token).toString();
+    }
     @PostMapping("/block-days")
     public ResponseEntity<?> blockDays(
             @RequestParam String providerId,
@@ -46,20 +59,25 @@ public class ProviderMyProfileController {
         return ResponseEntity.ok(availabilityService.getBlockOffDays(providerId));
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/sp-profile/edit")
+    @Transactional
     public ResponseEntity<String> editServiceProviderProfile(
-            HttpServletRequest request,
-            @RequestBody ServiceProviderProfileDTO profileDTO
-    ) {
-        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+            @RequestParam("profile") String profileJson,
+            @RequestParam(value = "aadharCard", required = false) MultipartFile aadharCard,
+            @RequestParam(value = "panCard", required = false) MultipartFile panCard,
+            @RequestParam(value = "utilityBill", required = false) MultipartFile utilityBill,
+            @RequestParam(value = "profilePhoto", required = false) MultipartFile profilePhoto,
+            HttpServletRequest request
+    ) throws IOException {
 
-        Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        if (user.isBlocked()) {
-            return ResponseEntity.status(403).body("Your account is blocked by admin. You cannot perform this action.");
-        }
+        ObjectMapper mapper = new ObjectMapper();
+        ServiceProviderProfileDTO profileDTO = mapper.readValue(profileJson, ServiceProviderProfileDTO.class);
 
-        return ResponseEntity.ok(availabilityService.editServiceProviderDetail(userId, profileDTO));
+        String userId = getUserIdFromRequest(request);
+
+        String result = availabilityService.editServiceProviderDetail(userId, profileDTO, aadharCard, panCard, utilityBill, profilePhoto);
+
+        return ResponseEntity.ok(result);
     }
 
 }

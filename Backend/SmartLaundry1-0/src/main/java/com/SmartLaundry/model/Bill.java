@@ -2,6 +2,7 @@ package com.SmartLaundry.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Parameter;
@@ -51,6 +52,7 @@ public class Bill implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @Schema(description = "Status of the bill.", example = "PAID")
+    @JsonProperty("status")
     private BillStatus status = BillStatus.PENDING;
 
     @DecimalMin(value = "0.0", inclusive = true)

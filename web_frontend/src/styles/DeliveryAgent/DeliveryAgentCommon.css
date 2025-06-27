@@ -10,31 +10,31 @@
   font-style: normal;
 }
 
-h1{
+.h1-agent{
     font-weight: 900;
     font-size: 30px;
     color: #388E3C;
 }
 
-h2{
+.h2-agent{
     font-weight: 700;
     font-size: 15px;
     color: #388E3C;
 }
 
-h3 {
+.h3-agent {
     font-weight: 600;
     font-size: 20px;
     
 }
 
-h4{
+.h4-agent{
     font-weight: 500;
     font-size: 15px;
     color: #1C1C1C;
 }
 
-.input{
+.input-agent{
     padding: '10px';
     margin-top: '10px';
     width: '250px';

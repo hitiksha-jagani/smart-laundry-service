@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface OrderStatusHistoryRepository extends JpaRepository<OrderStatusHistory, Long> {
     Optional<OrderStatusHistory> findTopByOrderOrderByChangedAtDesc(Order order);
     List<OrderStatusHistory> findByOrderOrderIdOrderByChangedAtDesc(String orderId);
+    List<OrderStatusHistory> findByOrderOrderIdOrderByChangedAtAsc(String orderId);
 }
 

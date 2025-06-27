@@ -1,25 +1,48 @@
 package com.SmartLaundry.controller;
+import com.SmartLaundry.dto.Customer.OrderResponseDto;
+import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
+import com.SmartLaundry.model.Order;
 import com.SmartLaundry.model.OtpPurpose;
+import com.SmartLaundry.model.ServiceProvider;
+import com.SmartLaundry.repository.OrderRepository;
 import com.SmartLaundry.service.OtpOrderEmailTransitionService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/emailotp")
 @RequiredArgsConstructor
+@Slf4j
 public class OtpOrderEmailController {
 
     private final OtpOrderEmailTransitionService otpOrderEmailTransitionService;
+    private final OrderRepository orderRepository;
+
+//    @PostMapping("/verify-pickup")
+//    public ResponseEntity<?> verifyPickupOtp(
+//            @RequestParam String orderId,
+//            @RequestParam String otp,
+//            @RequestParam(required = false) String agentId
+//    ) {
+//        otpOrderEmailTransitionService.verifyPickupOtp(orderId, otp, agentId);
+//        return ResponseEntity.ok("Pickup OTP verified via email. Order status updated accordingly.");
+//    }
 
     @PostMapping("/verify-pickup")
-    public ResponseEntity<?> verifyPickupOtp(
-            @RequestParam String orderId,
-            @RequestParam String otp,
-            @RequestParam(required = false) String agentId
-    ) {
-        otpOrderEmailTransitionService.verifyPickupOtp(orderId, otp, agentId);
+    public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request) {
+        otpOrderEmailTransitionService.verifyPickupOtp(request.getOrderId(), request.getOtp(), request.getAgentId());
         return ResponseEntity.ok("Pickup OTP verified via email. Order status updated accordingly.");
+    }
+
+    @Data
+    public static class OtpRequest {
+        private String orderId;
+        private String otp;
+        private String agentId; // optional
     }
 
     @PostMapping("/verify-handover")
@@ -60,5 +83,7 @@ public class OtpOrderEmailController {
         otpOrderEmailTransitionService.resendOtp(orderId, purpose);
         return ResponseEntity.ok("OTP resent via email.");
     }
+
+
 }
 

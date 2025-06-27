@@ -61,15 +61,6 @@ public class ServiceProviderProfileController {
         return ResponseEntity.ok(serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto));
     }
 
-    // http://localhost:8080/sp/US00004
-    // Return profile detail page of service provider.
-    @GetMapping("/sp-profile")
-    public ResponseEntity<ServiceProviderProfileDTO> getServiceProviderProfile(HttpServletRequest request) {
-        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-
-        return ResponseEntity.ok(serviceProviderProfileService.getServiceProviderProfileDetail(userId));
-    }
-
     // http://localhost:8080/sp-profile/change-password
     // Change password for service provider
     @PutMapping("/change-password")
@@ -80,6 +71,12 @@ public class ServiceProviderProfileController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         checkIfBlocked(userId);
         return ResponseEntity.ok(changePasswordService.changePassword(userId, changePasswordRequestDTO));
+    }
+    // Fetch service provider profile
+    @GetMapping("/sp-profile")
+    public ResponseEntity<ServiceProviderProfileDTO> getServiceProviderProfile(HttpServletRequest request) {
+        String userId = (String)jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        return ResponseEntity.ok(serviceProviderProfileService.getServiceProviderProfileDetail(userId));
     }
 
     @GetMapping("{userId}")

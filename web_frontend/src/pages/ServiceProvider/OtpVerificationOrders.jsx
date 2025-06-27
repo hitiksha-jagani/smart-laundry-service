@@ -1,87 +1,86 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import ProviderSidebar from "./ServiceProviderSidebar";
 
-const OtpVerificationOrders = () => {
+export default function OtpVerificationOrders() {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const toggleSidebar = () => setCollapsed(prev => !prev);
 
   useEffect(() => {
-    const fetchOtpOrders = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const response = await axios.get(
-          "http://localhost:8080/provider/orders/pending-otp-verification",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setOrders(response.data);
-      } catch (err) {
-        console.error("Failed to fetch OTP orders", err);
-      }
-    };
-
-    fetchOtpOrders();
+    axios
+      .get("/provider/orders/pending-otp-verification")
+      .then(res => setOrders(res.data))
+      .catch(console.error);
   }, []);
 
   return (
-    <div className="min-h-screen bg-orange-50 px-6 py-8">
-      <h2 className="text-3xl font-bold text-orange-600 mb-6 text-center">
-        Orders Requiring OTP Verification
-      </h2>
-      {orders.length === 0 ? (
-        <p className="text-center text-gray-500">No OTP verifications pending.</p>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {orders.map((order) => (
-            <div
-              key={order.orderId}
-              className="bg-white p-6 shadow rounded-2xl border border-orange-200"
-            >
-              <h3 className="text-xl font-semibold text-orange-700 mb-2">
-                Order ID: {order.orderId}
-              </h3>
-              <p className="text-sm text-gray-600 mb-3">
-                Customer: {order.customerName}
-              </p>
-              <div className="flex gap-3">
-                {order.requiresPickupOtp && (
-                  <button
-                    onClick={() =>
-                      navigate(
-                        `/serviceprovider/verify-pickup-otp?orderId=${order.orderId}&agentId=${order.agentId}`
-                      )
-                    }
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm"
-                  >
-                    Verify Pickup OTP
-                  </button>
-                )}
-                {order.requiresDeliveryOtp && (
-                  <button
-                    onClick={() =>
-                      navigate(
-                        `/serviceprovider/verify-delivery-otp?orderId=${order.orderId}&verifierId=${order.providerId}`
-                      )
-                    }
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-sm"
-                  >
-                    Verify Delivery OTP
-                  </button>
-                )}
+    <div className="flex bg-orange-50 min-h-screen">
+      {/* Fixed Sidebar */}
+      <div className="fixed top-0 left-0 h-full z-40">
+        <ProviderSidebar collapsed={collapsed} toggleSidebar={toggleSidebar} />
+      </div>
+
+      {/* Main Content wrapper with left margin to account for fixed sidebar */}
+     
+        <div
+          className={`flex-1 transition-all duration-300 ${
+            collapsed ? "ml-20" : "ml-64"
+          }`}
+        >
+
+        {/* Sticky Header */}
+        <header className="bg-orange-600 text-white py-4 px-6 text-center text-2xl font-bold shadow sticky top-0 z-30">
+          Pending OTP Verifications
+        </header>
+
+        {/* Scrollable Main Content */}
+        <main className="p-6 space-y-4">
+          {orders.length === 0 ? (
+            <p className="text-center text-gray-600">No OTP verifications pending.</p>
+          ) : (
+            orders.map(order => (
+              <div
+                key={order.orderId}
+                className="bg-white p-4 rounded-2xl shadow-md border border-orange-200"
+              >
+                <p className="text-sm text-gray-700">
+                  <strong>Order ID:</strong> {order.orderId}
+                </p>
+                <p className="text-sm text-gray-700">
+                  <strong>Customer:</strong> {order.customerName}
+                </p>
+                <p className="text-sm text-gray-700">
+                  <strong>Status:</strong>{" "}
+                  <span className="font-medium text-orange-600">{order.status}</span>
+                </p>
+
+                <div className="mt-3 flex gap-3">
+                  {order.status === "ACCEPTED_BY_PROVIDER" && (
+                    <button
+                      onClick={() => navigate(`/provider/otp/verify/pickup/${order.orderId}`)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm"
+                    >
+                      Verify Pickup OTP
+                    </button>
+                  )}
+                  {order.status === "READY_FOR_DELIVERY" && (
+                    <button
+                      onClick={() => navigate(`/provider/otp/verify/delivery/${order.orderId}`)}
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm"
+                    >
+                      Verify Delivery OTP
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))
+          )}
+        </main>
+      </div>
     </div>
   );
-};
-
-export default OtpVerificationOrders;
-
+}
