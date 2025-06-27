@@ -28,7 +28,7 @@ const TodayDeliveryCard = ({ delivery }) => {
 
         <div className="delivery-card">
 
-            <h4 className="item-list-title">Overview</h4>
+            <h4 className="item-list-title h4-agent">Overview</h4>
 
             <div className="delivery-summary service-box">
 
@@ -37,11 +37,11 @@ const TodayDeliveryCard = ({ delivery }) => {
 
             </div>
 
-            <h4 className="item-list-title">Contact Info</h4>
+            <h4 className="item-list-title h4-agent">Contact Info</h4>
             <div className="contact-grid">
                 <div className="contact-box">
 
-                    <h2 className="contact-title">📦 Pickup Contact</h2>
+                    <h2 className="contact-title h2-agent">📦 Pickup Contact</h2>
 
                     <div className="contact-info service-box" style={{backgroundColor:'#ecfdf5'}}>
 
@@ -80,7 +80,7 @@ const TodayDeliveryCard = ({ delivery }) => {
 
                 <div className="contact-box">
 
-                    <h2 className="contact-title">🚚 Delivery Contact</h2>
+                    <h2 className="contact-title h2-agent">🚚 Delivery Contact</h2>
 
                     <div className="contact-info service-box" style={{backgroundColor:'#ecfdf5'}}>
 
@@ -119,7 +119,7 @@ const TodayDeliveryCard = ({ delivery }) => {
             </div>
 
 
-            <h4 className="item-list-title">Item List</h4>
+            <h4 className="item-list-title h4-agent">Item List</h4>
 
             <div className="service-group-container">
 
@@ -160,7 +160,7 @@ const TodayDeliveryCard = ({ delivery }) => {
 
             </div>
 
-            <h4 className="item-list-title">Totals</h4>
+            <h4 className="item-list-title h4-agent">Totals</h4>
 
             <div className="delivery-summary service-box">
 
@@ -181,4 +181,4 @@ const TodayDeliveryCard = ({ delivery }) => {
     );
 };
 
-export default TodayDeliveryCard;
+export default TodayDeliveryCard; 

@@ -1,10 +1,11 @@
 // Author: Hitiksha Patel
-// src/components/Layout/DashboardLayout.jsx
+// Delivery Agent dashboard layout(template).
 
 import React from 'react';
 import { useEffect } from "react";
-import '../../styles/DeliveryAgent/DeliveryAgentDashboardLayout.css'
-import Header from '../DeliveryAgent/Header';
+import '../../styles/DeliveryAgent/DeliveryAgentDashboardLayout.css';
+import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
+import Header from '../DeliveryAgent/DeliveryAgentHeader';
 import DeliveryAgentSidebar from '../DeliveryAgent/DeliveryAgentSidebar';
 
 const DeliveryAgentDashboardLayout = ({ user, children }) => {
@@ -24,7 +25,7 @@ const DeliveryAgentDashboardLayout = ({ user, children }) => {
             <Header userName={`${user?.firstName || ''} ${user?.lastName || ''}`} />
 
                 {/* Page Layout: Sidebar + Main Content side-by-side */}
-                <div className="delivery-dashboard flex inter-font">
+                <div className="inter-font">
 
                     {/* Sidebar */} 
                     <DeliveryAgentSidebar agent={user} />

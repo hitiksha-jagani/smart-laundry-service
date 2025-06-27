@@ -7,11 +7,13 @@ import axiosInstance from "../../utils/axiosInstance";
 
 import SummaryCard from '../../components/DeliveryAgent/SummaryCard';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
+
 import PendingDeliveries from "../../components/DeliveryAgent/PendingDeliveries";
 import TodayDeliveries from "../../components/DeliveryAgent/TodayDeliveries";
 
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/SummaryCard.css';
+import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 
 const DeliveryPage = () => {
   const [user, setUser] = useState(null);
@@ -46,6 +48,8 @@ const DeliveryPage = () => {
         setUser(userRes.data);
         setPending(pendingRes.data);
         setToday(todayRes.data);
+
+        console.log("Pending Deliveries:", pendingRes.data);
       } catch (error) {
         console.error("Failed to fetch delivery dashboard data:", error);
       } finally {
@@ -64,8 +68,8 @@ const DeliveryPage = () => {
 
       <div className="summary-container inter-font">
         <SummaryCard title="TOTAL ORDERS" count={pending.length + today.length} />
-        <SummaryCard title="PENDING ORDERS" count={pending.length} />
-        <SummaryCard title="TODAY'S ORDERS" count={today.length} />
+        <SummaryCard title="PENDING ORDERS" count={pending.length} link="/deliveries/pending" data={pending} />
+        <SummaryCard title="TODAY'S ORDERS" count={today.length} link="/deliveries/today" data={today} />
       </div>
 
       <h2 className='pending-heading heading inter-font'>PENDING DELIVERIES</h2>

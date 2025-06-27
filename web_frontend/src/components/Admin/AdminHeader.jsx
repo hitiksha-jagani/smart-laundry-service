@@ -6,17 +6,11 @@ import { FiLogOut } from "react-icons/fi";
 import Profile  from "../../assets/avatar-icon.png";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { FiAvr } from "react-icons/ai";
-import "../../styles/DeliveryAgent/Header.css";
+import "../../styles/Admin/AdminHeader.css";
 
-const Header = ({ userName }) => {
+const AdminHeader = ({ userName }) => { 
     const { logout } = useAuth();
     const navigate = useNavigate();
-
-    // const handleLogout = () => {
-    //     localStorage.clear();
-    //     window.location.href = "/login";
-    // };
 
     const handleLogout = () => {
         logout();
@@ -25,17 +19,17 @@ const Header = ({ userName }) => {
 
     return (
     
-    <div className="app-header inter-font">
+    <div className="admin-app-header inter-font">
 
         <div className="header-left">
-            <h1>Smart Laundry</h1>
+            <h1 className="h1-admin">Smart Laundry</h1>
         </div>
 
-        <div className="header-right">
+        <div className="admin-header-right">
             
-            <img className="profile-image" src={Profile} alt="" />
-            <span className="user-name">{userName || "User"}</span>
-            <FiLogOut className="logout-icon" onClick={handleLogout} />
+            <img className="admin-profile-image" src={Profile} alt="" />
+            <span className="admin-user-name">{userName || "User"}</span>
+            <FiLogOut className="admin-logout-icon" onClick={handleLogout} />
 
         </div>
 
@@ -44,4 +38,4 @@ const Header = ({ userName }) => {
   );
 };
 
-export default Header;
+export default AdminHeader;

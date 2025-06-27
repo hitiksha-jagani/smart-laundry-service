@@ -6,14 +6,16 @@ import '../../styles/DeliveryAgent/PendingDeliveryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import { FaUser, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
-const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
+const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
+
+    console.log("order id : " + data?.userId);
 
     const {
       orderId, deliveryType, deliveryEarning, km,
       pickupDate, pickupTime, pickupName, pickupPhone, pickupAddress,
       deliveryName, deliveryPhone, deliveryAddress,
       bookingItemDTOList, totalQuantity
-    } = delivery;
+    } = data;
 
     const mapRouteLink = `https://www.google.com/maps/dir/?api=1&origin=START_LOCATION&destination=END_LOCATION`;
 
@@ -21,7 +23,7 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
 
         <div className="delivery-card">
 
-            <h4 className="item-list-title">Overview</h4>
+            <h4 className="item-list-title h4-agent">Overview</h4>
 
             <div className="delivery-summary service-box">
 
@@ -34,7 +36,7 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
             <div className="contact-grid">
                 <div className="contact-box">
 
-                    <h2 className="contact-title">📦 Pickup Contact</h2>
+                    <h2 className="contact-title h2-agent">📦 Pickup Contact</h2>
 
                     <div className="contact-info service-box" style={{backgroundColor:'#ecfdf5'}}>
 
@@ -72,7 +74,7 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
 
                   <div className="contact-box">
 
-                      <h2 className="contact-title">🚚 Delivery Contact</h2>
+                      <h2 className="contact-title h2-agent">🚚 Delivery Contact</h2>
 
                       <div className="contact-info service-box" style={{backgroundColor:'#ecfdf5'}}>
 
@@ -111,7 +113,7 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
                 </div>
 
 
-            <h4 className="item-list-title">Item List</h4>
+            <h4 className="item-list-title h4-agent">Item List</h4>
 
             <div className="service-group-container">
 
@@ -152,7 +154,7 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
 
             </div>
 
-            <h4 className="item-list-title">Totals</h4>
+            <h4 className="item-list-title h4-agent">Totals</h4>
 
             <div className="delivery-summary service-box">
 
@@ -174,4 +176,4 @@ const PendingDeliveryCard = ({ delivery, onAccept, onReject }) => {
     );
 };
 
-export default PendingDeliveryCard;
+export default PendingDeliveryCard; 

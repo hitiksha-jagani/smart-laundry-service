@@ -4,6 +4,7 @@ import com.SmartLaundry.dto.Admin.*;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.ComplaintCategoryRepository;
 import com.SmartLaundry.repository.DeliveryAgentEarningsRepository;
+import com.SmartLaundry.repository.GeocodingConfigRepository;
 import com.SmartLaundry.repository.RevenueBreakDownRepository;
 import com.twilio.rest.monitor.v1.Alert;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class SettingService {
@@ -25,6 +27,30 @@ public class SettingService {
 
     @Autowired
     private DeliveryAgentEarningsRepository deliveryAgentEarningsRepository;
+
+    @Autowired
+    private GeocodingConfigRepository configRepository;
+
+    public void saveConfig(String apiProvider, String apiKey, String userId) {
+        GeocodingConfig config = new GeocodingConfig(apiProvider, apiKey, userId);
+        configRepository.save(config);
+    }
+
+    public Optional<GeocodingConfig> getLatestConfig() {
+        return Optional.ofNullable(configRepository.findTopByOrderByCreatedAtDesc());
+    }
+
+    public List<GeocodingConfig> getAllConfigs() {
+        return configRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public String getCurrentProvider() {
+        return getLatestConfig().map(GeocodingConfig::getApiProvider).orElse("Open Cage");
+    }
+
+    public String getCurrentApiKey() {
+        return getLatestConfig().map(GeocodingConfig::getApiKey).orElse("");
+    }
 
     // Set complaint category
     public ComplaintCategoryResponseDTO setComplaintCategory(ComplaintCategorySetDTO complaintCategorySetDTO) {

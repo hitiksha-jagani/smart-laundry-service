@@ -1,0 +1,82 @@
+.admin-sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 240px;
+    height: calc(100vh - 60px);
+    background-color: #F1F5F9;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 10px;
+    box-sizing: border-box;
+}
+
+.admin-sidebar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-sidebar-links li {
+    margin-bottom: 15px;
+}
+
+.admin-sidebar-link {
+    display: grid;
+    grid-template-columns: 24px auto;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.admin-sidebar-link:hover {
+    background-color: #e0f2fe;
+    color: #1d4ed8;
+}
+
+.admin-sidebar-link.active {
+    background-color: #0EA5E9;
+    font-weight: bold;
+    color: #fafafa;
+}
+
+.admin-sidebar-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.admin-sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    text-align: center;  
+}
+
+.user-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    justify-content: center;
+}
+
+.contact-info p {
+    margin: 2px 0;
+    font-weight: 500;
+    font-size: 15.5px;
+    color: #333;
+}
+
+/* .hr-admin {
+    width: 85%;
+    margin: 10px 20px 10px 20px;
+    border: none;
+    border-top: 1px solid #ddd;
+} */
+

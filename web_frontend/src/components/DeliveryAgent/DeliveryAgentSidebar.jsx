@@ -62,14 +62,14 @@ const DeliveryAgentSidebar = ({ agent }) => {
 
             <div className="sidebar-bottom">
             
-                <hr />
+                <hr className="hr-agent" />
 
                 <div className="user-name">
                     <img className="sidebar-icon" src={profile} alt="" />
                     <p>{agent?.firstName} {agent?.lastName}</p>
                 </div>
 
-                <hr />
+                <hr className="hr-agent" />
 
                 <div className="contact-info">
                     <p>{agent?.phoneNo || 'Loading...'}</p>
@@ -81,6 +81,6 @@ const DeliveryAgentSidebar = ({ agent }) => {
         </div>
    
     );
-};
+}; 
 
 export default DeliveryAgentSidebar;

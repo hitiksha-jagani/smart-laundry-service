@@ -123,7 +123,7 @@ const Login = () => {
             navigate("/deliveries/summary");
             break;
           case "ADMIN":
-            navigate("/admin/dashboard");
+            navigate("/revenue/summary");
             break;
           default:
             setError("Unknown user role");

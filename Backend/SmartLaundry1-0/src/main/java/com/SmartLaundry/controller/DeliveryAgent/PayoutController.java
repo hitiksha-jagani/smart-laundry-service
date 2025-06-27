@@ -37,7 +37,7 @@ public class PayoutController {
     // http://localhost:8080/payouts/summary
     // Return count of  Total earnings, pending payouts
     @GetMapping("/summary")
-    public ResponseEntity<PayoutSummaryResponseDTO> getFeedbackSummary(
+    public ResponseEntity<PayoutSummaryResponseDTO> getFPayoutSummary(
             HttpServletRequest request,
             @RequestParam(defaultValue = "Overall") String filter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -61,6 +61,21 @@ public class PayoutController {
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
         return ResponseEntity.ok(payoutService.getPayouts(user, filter, startDate, endDate));
+    }
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/payouts/paid
+    // Return list of  Total earnings
+    @GetMapping("/paid")
+    public ResponseEntity<List<PayoutResponseDTO>> getPaidPayouts(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "Overall") String filter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws AccessDeniedException {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+        return ResponseEntity.ok(payoutService.getPaidPayouts(user, filter, startDate, endDate));
     }
 
     // @author Hitiksha Jagani

@@ -28,6 +28,15 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
     @Query("SELECT COALESCE(SUM(p.finalAmount), 0.0) FROM Payout p WHERE p.users.userId = :id")
     Double findTotalEarningsByUserId(@Param("id") String id);
 
+    @Query("SELECT COALESCE(SUM(p.finalAmount), 0.0) FROM Payout p WHERE p.users.userId = :id AND p.status = 'PAID' AND p.createdAt BETWEEN :start AND :end")
+    Double findPaidPayoutsByUserIdAndDateRange(
+            @Param("id") String id,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(p.finalAmount), 0.0) FROM Payout p WHERE p.users.userId = :id AND p.status = 'PAID'")
+    Double findPaidPayoutsByUserId(@Param("id") String id);
+
     @Query("SELECT COALESCE(SUM(p.finalAmount), 0.0) FROM Payout p WHERE p.users.userId = :id AND p.status = 'PENDING' AND p.createdAt BETWEEN :start AND :end")
     Double findPendingPayoutsByUserIdAndDateRange(
             @Param("id") String id,
@@ -38,10 +47,22 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
     Double findPendingPayoutsByUserId(@Param("id") String id);
 
     @Query("SELECT p FROM Payout p WHERE p.createdAt BETWEEN :start AND :end")
-    List<Payout> findPayoutsByUserIdAndDateRange(String id, LocalDateTime start, LocalDateTime end);
+    List<Payout> findPayoutsByUserIdAndDateRange(@Param("id") String id,@Param("start") LocalDateTime start,@Param("end")  LocalDateTime end);
 
-    @Query("SELECT p FROM Payout p WHERE p.createdAt BETWEEN :start AND :end")
-    List<Payout> findPayoutsByUserIdAndDateRangeAndStatus(String id, LocalDateTime start, LocalDateTime end);
+    @Query("SELECT p FROM Payout p WHERE p.users.userId = :id")
+    List<Payout> findTotalPayoutsByUserId(@Param("id") String id);
+
+    @Query("SELECT p FROM Payout p WHERE p.createdAt BETWEEN :start AND :end AND p.status = 'PAID'")
+    List<Payout> findPaidPayoutsByUserIdAndDateRangeAndStatus(@Param("id") String id,@Param("start") LocalDateTime start,@Param("end")  LocalDateTime end);
+
+    @Query("SELECT p FROM Payout p WHERE p.users.userId = :id AND p.status = 'PAID'")
+    List<Payout> findPaidPayoutsByUserIdAndStatus(@Param("id") String id);
+
+    @Query("SELECT p FROM Payout p WHERE p.createdAt BETWEEN :start AND :end AND p.status = 'PENDING'")
+    List<Payout> findPendingPayoutsByUserIdAndDateRangeAndStatus(@Param("id") String id,@Param("start") LocalDateTime start,@Param("end")  LocalDateTime end);
+
+    @Query("SELECT p FROM Payout p WHERE p.users.userId = :id AND p.status = 'PENDING'")
+    List<Payout> findPendingPayoutsByUserIdAndStatus(@Param("id") String id);
 
     List<Payout> findByPayment(Payment payment);
 
@@ -124,4 +145,5 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
     FROM Payout p
     WHERE p.createdAt BETWEEN :start AND :end""")
     Double getTotalPayoutBetween(LocalDateTime start, LocalDateTime end);
+
 }
