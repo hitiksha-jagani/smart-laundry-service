@@ -22,7 +22,7 @@ const DeliveryAgentDashboardLayout = ({ user, children }) => {
     
         <>
     
-            <Header userName={`${user?.firstName || ''} ${user?.lastName || ''}`} />
+            <Header userName={${user?.firstName || ''} ${user?.lastName || ''}} />
 
                 {/* Page Layout: Sidebar + Main Content side-by-side */}
                 <div className="inter-font">

@@ -74,7 +74,7 @@ const AdminDashboard = () => <h2>Admin Dashboard</h2>;
 
 function App() {
   return (
-    <BrowserRouter>
+
       <Routes>
 
         {/* Common */}
@@ -152,7 +152,7 @@ function App() {
         <Route path="/agent/dashboard" element={<AgentDashboard />} />
 
       </Routes>
-    </BrowserRouter>
+   
   );
 }
 
