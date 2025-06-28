@@ -28,11 +28,6 @@ const PendingDeliveries = () => {
 
   const token = localStorage.getItem('token');
 
-  const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080',
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
   const handleAccept = async (orderId) => {
     try {
       const response = await axios.post(
@@ -40,8 +35,8 @@ const PendingDeliveries = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         }
       );
       showToast('Order accepted successfully.', 'success');
@@ -52,7 +47,7 @@ const PendingDeliveries = () => {
       const msg = error.response?.data || 'Error accepting order.';
       showToast(msg, 'error');
       console.error('Error accepting order:', error.response?.data || error.message);
-      alert(error.response?.data || 'Something went wrong while accepting the order.');
+      alert(msg);
     }
   };
 
@@ -63,8 +58,8 @@ const PendingDeliveries = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         }
       );
       showToast('Order rejected successfully.', 'success');
@@ -85,7 +80,7 @@ const PendingDeliveries = () => {
     <DeliveryAgentDashboardLayout user={user}>
       <h2 className="pending-heading heading-agent h2-agent">PENDING DELIVERIES</h2>
 
-      {!data || data.length === 0 ? (
+      {data.length === 0 ? (
         <div
           style={{
             display: 'flex',
@@ -97,7 +92,7 @@ const PendingDeliveries = () => {
             borderRadius: '1rem',
             margin: '2rem auto',
             width: '80%',
-            color: '#777',
+            color: '#777'
           }}
         >
           <MdInbox size={64} color="#ccc" />
@@ -112,13 +107,19 @@ const PendingDeliveries = () => {
             onReject={handleReject}
           />
 
-          <div
-            style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}
-          >
-            <button className="nav-btn" onClick={() => setCurrentIndex(currentIndex - 1)} disabled={!hasPrev}>
+          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <button
+              className="nav-btn"
+              onClick={() => setCurrentIndex(currentIndex - 1)}
+              disabled={!hasPrev}
+            >
               ⬅ Prev
             </button>
-            <button className="nav-btn" onClick={() => setCurrentIndex(currentIndex + 1)} disabled={!hasNext}>
+            <button
+              className="nav-btn"
+              onClick={() => setCurrentIndex(currentIndex + 1)}
+              disabled={!hasNext}
+            >
               Next ➡
             </button>
           </div>
@@ -130,7 +131,7 @@ const PendingDeliveries = () => {
               textAlign: 'center',
               fontSize: '20px',
               fontWeight: '900',
-              marginBottom: '50px',
+              marginBottom: '50px'
             }}
           >
             Order {currentIndex + 1} of {data.length}
@@ -138,11 +139,7 @@ const PendingDeliveries = () => {
         </div>
       )}
 
-      {toast.visible && (
-        <div className={`custom-toast ${toast.type}`}>
-          {toast.message}
-        </div>
-      )}
+      {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
     </DeliveryAgentDashboardLayout>
   );
 };

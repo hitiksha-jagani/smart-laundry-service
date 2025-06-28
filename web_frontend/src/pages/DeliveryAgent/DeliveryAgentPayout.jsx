@@ -167,8 +167,8 @@ const DeliveryAgentPayout = () => {
                     {/* Filter */}
                     <DeliveryAgentTimeFilter onChange={setFilterParams} />
 
-                    {/* Summary Data */}
-                    <div className="summary-container" style={{ marginTop: '100px' }}>
+                    {/* Summary Data */} 
+                    <div className="summary-container" style={{ marginTop: '150px' }}>
                         
                         {/* Total Payouts */}
                         <SummaryCard 

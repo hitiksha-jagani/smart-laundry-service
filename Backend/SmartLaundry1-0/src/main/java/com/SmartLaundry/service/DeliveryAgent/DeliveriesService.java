@@ -426,10 +426,12 @@ public class DeliveriesService {
             // Skip if already rejected
             if (rejectedAgentIds.contains(key)) continue;
 
+            DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
+
             // Check availability
-            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
+            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
             if (!isAvailable) {
-                logger.info("Agent {} is not available at {} on {}", key, now, today);
+                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
                 continue;
             }
 
@@ -496,10 +498,12 @@ public class DeliveriesService {
             // Skip if already rejected
             if (rejectedAgentIds.contains(key)) continue;
 
+            DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
+
             // Check availability
-            boolean isAvailable = availabilityRepository.isAgentAvailable(key, LocalDate.now(), LocalTime.now());
+            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
             if (!isAvailable) {
-                logger.info("Agent {} is not available at {} on {}", key, now, today);
+                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
                 continue;
             }
 

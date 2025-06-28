@@ -165,7 +165,7 @@ const DeliveryPage = () => {
 
     const axiosInstance = axios.create({
         baseURL: "http://localhost:8080",
-        headers: { Authorization: Bearer ${token} },
+        headers: { Authorization: `Bearer ${token}` },
     });
 
     useEffect(() => {
@@ -188,7 +188,7 @@ const DeliveryPage = () => {
                 const [userRes, summaryRes, pendingRes, todayRes] = await Promise.all([
                     
                     // Fetch user data
-                    axiosInstance.get(/user-detail/${userId}).catch(err => {
+                    axiosInstance.get(`/user-detail/${userId}`).catch(err => {
                         console.error("User detail fetch failed", err);
                         return { data: null };
                     }),
@@ -196,7 +196,7 @@ const DeliveryPage = () => {
                     // Fetch summary ofe deliveries
                     axiosInstance.get("/deliveries/summary", {
                         headers: {
-                            Authorization: Bearer ${token}
+                            Authorization: `Bearer ${token}`
                         }
                     }).catch(err => {
                         console.error("Summary delivery data fetch failed", err);
@@ -206,7 +206,7 @@ const DeliveryPage = () => {
                     // Fetch pending deliveries list
                     axiosInstance.get("/deliveries/pending", {
                         headers: {
-                            Authorization: Bearer ${token}
+                            Authorization: `Bearer ${token}`
                         }
                     }).catch(err => {
                         console.error("Pending delivery data fetch failed", err);
@@ -216,7 +216,7 @@ const DeliveryPage = () => {
                     // Fetch today's delivery list
                     axiosInstance.get("/deliveries/today", {
                         headers: {
-                            Authorization: Bearer ${token}
+                            Authorization: `Bearer ${token}`
                         }
                     }).catch(err => {
                         console.error("Today delivery data fetch failed", err);
