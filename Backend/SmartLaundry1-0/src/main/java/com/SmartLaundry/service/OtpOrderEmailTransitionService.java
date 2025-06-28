@@ -5,9 +5,10 @@ import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OtpOrderEmailTransitionService {
 
     private final OrderRepository orderRepository;
@@ -92,15 +93,27 @@ public class OtpOrderEmailTransitionService {
 
         Boolean needsAgent = order.getServiceProvider().getNeedOfDeliveryAgent();
 
+//        if (Boolean.TRUE.equals(needsAgent)) {
+//            deliveryAgentRepository.findById(verifierId)
+//                    .orElseThrow(() -> new IllegalArgumentException("Delivery agent not found"));
+//        } else {
+//            String providerId = order.getServiceProvider().getUser().getUserId();
+//            if (!providerId.equals(verifierId)) {
+//                throw new IllegalArgumentException("Unauthorized");
+//            }
+//        }
+
         if (Boolean.TRUE.equals(needsAgent)) {
-            deliveryAgentRepository.findById(verifierId)
-                    .orElseThrow(() -> new IllegalArgumentException("Delivery agent not found"));
+            if (order.getDeliveryDeliveryAgent() == null ||
+                    !order.getDeliveryDeliveryAgent().getUsers().getUserId().equals(verifierId)) {
+                throw new IllegalArgumentException("Only assigned delivery agent can verify this OTP.");
+            }
         } else {
-            String providerId = order.getServiceProvider().getUser().getUserId();
-            if (!providerId.equals(verifierId)) {
-                throw new IllegalArgumentException("Unauthorized");
+            if (!order.getServiceProvider().getUser().getUserId().equals(verifierId)) {
+                throw new IllegalArgumentException("Only assigned service provider can verify this OTP.");
             }
         }
+
         if (!orderEmailOtpService.validateOtp(order, otpInput, OtpPurpose.DELIVERY_CUSTOMER)) {
             throw new IllegalArgumentException("Invalid or expired OTP");
         }

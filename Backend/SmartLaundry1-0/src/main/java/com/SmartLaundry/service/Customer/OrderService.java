@@ -73,6 +73,9 @@ public class OrderService implements OrderBookingService {
     @Autowired
     private final DeliveryAgentRepository deliveryAgentRepository;
     @Autowired
+    private OrderStatusHistoryRepository orderStatusHistoryRepository;
+
+    @Autowired
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     @Autowired
     private final GeocodingService geocodingService;
@@ -481,7 +484,7 @@ public class OrderService implements OrderBookingService {
         ServiceProvider sp = order.getServiceProvider();
         String message = "Order " + order.getOrderId() + " from user " + userId + " has been cancelled.";
 
-        smsService.sendOrderStatusNotification(sp.getUser().getPhoneNo(), message);
+        //smsService.sendOrderStatusNotification(sp.getUser().getPhoneNo(), message);
         emailService.sendOrderStatusNotification(
                 sp.getUser().getEmail(),
                 "Order Cancelled Notification",
@@ -524,7 +527,7 @@ public class OrderService implements OrderBookingService {
         String message = String.format("Order %s from user %s has been rescheduled to %s at %s.",
                 order.getOrderId(), userId, dto.getDate(), dto.getSlot());
 
-        smsService.sendOrderStatusNotification(sp.getUser().getPhoneNo(), message);
+//        smsService.sendOrderStatusNotification(sp.getUser().getPhoneNo(), message);
         emailService.sendOrderStatusNotification(
                 sp.getUser().getEmail(),
                 "Order Rescheduled Notification",
@@ -544,46 +547,21 @@ public class OrderService implements OrderBookingService {
             throw new RuntimeException("You are not authorized to track this order");
         }
 
+        List<OrderStatusHistory> historyList = orderStatusHistoryRepository.findByOrderOrderIdOrderByChangedAtAsc(orderId);
+
+        List<StatusHistoryDto> historyDtos = historyList.stream()
+                .map(h -> new StatusHistoryDto(h.getStatus().name(), h.getChangedAt()))
+                .collect(Collectors.toList());
+
         TrackOrderResponseDto dto = new TrackOrderResponseDto();
         dto.setOrderId(order.getOrderId());
         dto.setStatus(order.getStatus().name());
         dto.setPickupDate(order.getPickupDate());
         dto.setPickupTime(order.getPickupTime());
+        dto.setStatusHistory(historyDtos); // ✅ add timeline
 
         return dto;
     }
-
-//    public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
-//        Users user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
-//                .orElseThrow(() -> new RuntimeException("Service Provider not found"));
-//
-//        FeedbackProviders feedback = new FeedbackProviders();
-//        feedback.setUser(user);
-//        feedback.setServiceProvider(provider);
-//        feedback.setRating(dto.getRating());
-//        feedback.setReview(dto.getReview());
-//
-//        feedbackProvidersRepository.save(feedback);
-//    }
-//    //for Delivery Agent
-//    public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
-//        Users user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
-//                .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
-//
-//        FeedbackAgents feedback = new FeedbackAgents();
-//        feedback.setUser(user);
-//        feedback.setAgent(agent);
-//        feedback.setRating(dto.getRating());
-//        feedback.setReview(dto.getReview());
-//
-//        feedbackAgentsRepository.save(feedback);
-//    }
 
 
     public void submitFeedbackProviders(String userId, FeedbackRequestDto dto) {
@@ -593,13 +571,15 @@ public class OrderService implements OrderBookingService {
         Order order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        //  Ensure order belongs to this user
+        // Ensure the order belongs to this user
         if (!order.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("You are not allowed to give feedback on this order");
         }
 
-        ServiceProvider provider = serviceProviderRepository.findById(dto.getServiceProviderId())
-                .orElseThrow(() -> new RuntimeException("Service Provider not found"));
+        ServiceProvider provider = order.getServiceProvider();
+        if (provider == null) {
+            throw new RuntimeException("Service Provider is not assigned to this order.");
+        }
 
         FeedbackProviders feedback = new FeedbackProviders();
         feedback.setUser(user);
@@ -610,6 +590,7 @@ public class OrderService implements OrderBookingService {
 
         feedbackProvidersRepository.save(feedback);
     }
+
 
     public void submitFeedbackAgents(String userId, FeedbackAgentRequestDto dto) {
         Users user = userRepository.findById(userId)
@@ -622,8 +603,11 @@ public class OrderService implements OrderBookingService {
             throw new RuntimeException("You are not allowed to give feedback on this order");
         }
 
-        DeliveryAgent agent = deliveryAgentRepository.findById(dto.getAgentId())
-                .orElseThrow(() -> new RuntimeException("Delivery Agent not found"));
+        // 💡 Fetch delivery agent directly from order
+        DeliveryAgent agent = order.getDeliveryDeliveryAgent(); // or getPickupDeliveryAgent()
+        if (agent == null) {
+            throw new RuntimeException("Delivery Agent not assigned to this order");
+        }
 
         FeedbackAgents feedback = new FeedbackAgents();
         feedback.setUser(user);
@@ -634,8 +618,6 @@ public class OrderService implements OrderBookingService {
 
         feedbackAgentsRepository.save(feedback);
     }
-
-
 
     public void raiseTicket(String userId, RaiseTicketRequestDto dto, MultipartFile photoFile) throws IOException {
         Users user = userRepository.findById(userId)

@@ -127,7 +127,7 @@ export default function OrderBookingWizard() {
             onPrev={() => setStep(3)}
             onOrderCreated={(order) => {
               console.log("Order placed:", order);
-              navigate("/order-success", { state: order });
+              navigate("/order/success", { state: order });
             }}
           />
         )}

@@ -2,12 +2,15 @@ package com.SmartLaundry.dto.ServiceProvider;
 
 
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
+import com.SmartLaundry.model.BillStatus;
 import com.SmartLaundry.model.BookingItem;
 import com.SmartLaundry.model.Order;
+import com.SmartLaundry.model.OtpPurpose;
 import com.SmartLaundry.repository.BookingItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,6 +36,11 @@ public class OrderMapper {
                                 .build())
                         .toList();
 
+        // ✅ Determine bill status
+        BillStatus billStatus = (order.getBill() != null)
+                ? order.getBill().getStatus()
+                : BillStatus.PENDING_FOR_PAYMENT;
+
         OrderResponseDto.OrderResponseDtoBuilder builder = OrderResponseDto.builder()
                 .orderId(order.getOrderId())
                 .userId(userId)
@@ -45,7 +53,8 @@ public class OrderMapper {
                 .pickupDate(order.getPickupDate())
                 .pickupTime(order.getPickupTime())
                 .status(order.getStatus())
-                .bookingItems(itemDtos);
+                .bookingItems(itemDtos)
+                .billStatus(billStatus);
 
         if (order.getOrderSchedulePlan() != null) {
             OrderResponseDto.SchedulePlanDto schedulePlanDto = OrderResponseDto.SchedulePlanDto.builder()
@@ -56,9 +65,9 @@ public class OrderMapper {
             builder.schedulePlan(schedulePlanDto);
         }
 
-
         return builder.build();
     }
+
 
 
     public OrderResponseDto toOtpVerificationDto(Order order) {
@@ -69,8 +78,6 @@ public class OrderMapper {
         String customerName = order.getUsers() != null
                 ? order.getUsers().getFirstName() + " " + order.getUsers().getLastName()
                 : "Customer";
-
-        // You may replace this logic with your actual OTP check logic if needed
         boolean requiresPickupOtp = order.getStatus().name().equals("IN_CLEANING");
         boolean requiresDeliveryOtp = order.getStatus().name().equals("OUT_FOR_DELIVERY");
 
@@ -96,4 +103,29 @@ public class OrderMapper {
                 .build();
     }
 
+    public List<ActiveOrderGroupedDto> groupOrdersByOrderId(List<Order> orders) {
+        if (orders == null || orders.isEmpty()) return Collections.emptyList();
+
+        return orders.stream().map(order -> {
+            List<ActiveOrderDto> itemDtos = order.getBookingItems().stream()
+                    .map(b -> ActiveOrderDto.builder()
+                            .itemName(b.getItem().getItemName())
+                            .quantity(b.getQuantity())
+                            .service(b.getItem().getService().getServiceName())
+                            .subService(b.getItem().getSubService() != null
+                                    ? b.getItem().getSubService().getSubServiceName()
+                                    : null)
+                            .build())
+                    .toList();
+
+            return ActiveOrderGroupedDto.builder()
+                    .orderId(order.getOrderId())
+                    .pickupDate(order.getPickupDate())
+                    .pickupTime(order.getPickupTime())
+                    .status(order.getStatus())
+                    .items(itemDtos)
+                    .build();
+
+        }).toList();
+    }
 }

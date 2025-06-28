@@ -4,19 +4,20 @@
 @tailwind utilities;
 
 /* ✅ Your global styles */
-/* body {
+body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  background-color: theme('colors.background'); 
-  color: theme('colors.text'); 
+  background-color: #FAF6FF; /* ✅ your custom theme value */
+  color: #2F2F3A;             /* ✅ your custom text color */
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-} */
+}
 
 /* ✨ Input Field Styling (your theme) */
 .input {

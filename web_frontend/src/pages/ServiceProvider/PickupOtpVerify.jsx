@@ -1,85 +1,37 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../utils/axiosInstance";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
-const PickupOtpVerify = () => {
+export default function VerifyPickupOtp() {
+  const { orderId } = useParams();
   const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const orderId = searchParams.get("orderId");
-  const agentId = searchParams.get("agentId");
-
-  useEffect(() => {
-    if (!orderId) {
-      setError("Order ID is missing in the URL.");
-    }
-    console.log("Pickup OTP Params:", { orderId, agentId });
-  }, [orderId, agentId]);
 
   const handleVerify = async () => {
-    if (!orderId || !otp) {
-      setError("Order ID or OTP is missing.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
     try {
-      const res = await axios.post("/emailotp/verify-pickup", null, {
-        params: { orderId, otp, agentId },
-      });
-
-      setSuccess(res.data || "OTP verified successfully");
-
-      setTimeout(() => {
-        navigate("/provider/active-orders");
-      }, 2000);
+      await axios.post("/emailotp/verify-pickup", { orderId, otp });
+      setMessage("Pickup OTP verified! Redirecting...");
+      setTimeout(() => navigate("/provider/orders/verify-otps"), 1500); 
     } catch (err) {
-      const msg = err?.response?.data || "Something went wrong";
-      setError(typeof msg === "string" ? msg : msg.message || "OTP verification failed");
-    } finally {
-      setLoading(false);
+      setMessage("Verification failed: " + (err.response?.data || "Try again."));
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-orange-50 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-orange-300">
-        <h2 className="text-2xl font-bold text-orange-600 mb-4 text-center">
-          Pickup OTP Verification
-        </h2>
-        <p className="text-sm text-gray-500 text-center mb-6">
-          Please enter the 6-digit OTP sent to your registered email.
-        </p>
-
-        <input
-          type="text"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          maxLength={6}
-          placeholder="Enter OTP"
-          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 mb-4"
-        />
-
-        {error && <p className="text-red-600 text-sm mb-3 text-center">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-3 text-center">{success}</p>}
-
-        <button
-          onClick={handleVerify}
-          disabled={loading || !otp}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-xl transition duration-200"
-        >
-          {loading ? "Verifying..." : "Verify OTP"}
-        </button>
-      </div>
+    <div className="p-4">
+      <h2 className="text-xl font-semibold mb-4">Verify Pickup OTP</h2>
+      <input
+        className="border p-2 mr-2"
+        placeholder="Enter OTP"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value)}
+      />
+      <button className="bg-blue-600 text-white px-4 py-2" onClick={handleVerify}>
+        Verify
+      </button>
+      {message && <p className="mt-4">{message}</p>}
     </div>
   );
-};
-
-export default PickupOtpVerify;
+}

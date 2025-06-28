@@ -143,6 +143,14 @@ public class Order implements Serializable {
     @Column(name = "total_km")
     private Double totalKm;
 
+    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Bill bill;
+
+//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<OrderOtp> otpList;
+
+
     public Users getUser() {
         return users;
     }

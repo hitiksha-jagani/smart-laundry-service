@@ -35,7 +35,9 @@ public class PriceDTO {
     public static class ItemDTO{
         private String itemId;
         private String itemName;
+        private String serviceId;
         private String serviceName;
+        private String subServiceId;
         private String subServiceName;
     }
 }

@@ -21,6 +21,8 @@ public class Payment {
     @JoinColumn(name = "invoiceNumber", nullable = false)
     private Bill bill;
 
+    private String method;
+
     @Column(name = "transaction_id", nullable = false)
     private String transactionId;
 

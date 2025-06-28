@@ -35,11 +35,19 @@
 }
 
 .input-agent{
+
+    padding: '10px';
+    margin-top: '10px';
+    width: '250px';
+    border-radius: '5px';
+    border: '1px solid #ccc';
+
     padding: 10px;
     margin-top: 10px;
     width: 250px;
     border-radius: 5px;
     border: 1px solid #4ADE80;
+
     background-color: #E8F5E9;
 }
 

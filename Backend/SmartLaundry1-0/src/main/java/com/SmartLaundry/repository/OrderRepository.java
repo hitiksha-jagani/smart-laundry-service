@@ -3,10 +3,7 @@ package com.SmartLaundry.repository;
 import com.SmartLaundry.dto.Admin.DeliveryAgentInsightDTO;
 import com.SmartLaundry.dto.Admin.InsightResponseDTO;
 import com.SmartLaundry.dto.Admin.OrderInsightDTO;
-import com.SmartLaundry.model.DeliveryAgent;
-import com.SmartLaundry.model.Order;
-import com.SmartLaundry.model.OrderStatus;
-import com.SmartLaundry.model.ServiceProvider;
+import com.SmartLaundry.model.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,20 +23,41 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     // To list all orders sorted by OrderId in ascending order
     List<Order> findAllByOrderByOrderIdAsc();
     Optional<Order> findByorderId(String orderId);
+    List<Order> findByUsers_UserId(String userId);
 
     // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProvider_ServiceProviderIdAndStatus(String serviceProviderId, OrderStatus status);
     @Query("""
-    SELECT DISTINCT o FROM Order o
-    JOIN OrderOtp otp ON otp.order = o
-    WHERE o.serviceProvider.serviceProviderId = :providerId
-      AND otp.isUsed = false
-      AND (otp.purpose = 'PICKUP_CONFIRMATION' OR otp.purpose = 'DELIVERY_CONFIRMATION')
+    SELECT o FROM Order o
+    WHERE o.serviceProvider = :provider
+      AND (
+        (o.status = 'ACCEPTED_BY_PROVIDER' AND EXISTS (
+          SELECT otp FROM OrderOtp otp
+          WHERE otp.order.orderId = o.orderId
+            AND otp.purpose = 'PICKUP_CUSTOMER'
+            AND otp.isUsed = false
+        ))
+        OR
+        (o.status = 'PICKED_UP' AND EXISTS (
+          SELECT otp FROM OrderOtp otp
+          WHERE otp.order.orderId = o.orderId
+            AND otp.purpose = 'HANDOVER_TO_PROVIDER'
+            AND otp.isUsed = false
+        ))
+        OR
+        (o.status = 'READY_FOR_DELIVERY' AND EXISTS (
+          SELECT otp FROM OrderOtp otp
+          WHERE otp.order.orderId = o.orderId
+            AND (
+              (otp.purpose = 'CONFIRM_FOR_CLOTHS' AND otp.isUsed = false)
+              OR
+              (otp.purpose = 'DELIVERY_CUSTOMER' AND otp.isUsed = false)
+            )
+        ))
+      )
 """)
-    List<Order> findOrdersWithPendingOtpForProvider(@Param("providerId") String providerId);
-    // In OrderRepository.java
-    @Query("SELECT o FROM Order o WHERE o.serviceProvider = :provider AND o.status IN (com.SmartLaundry.model.OrderStatus.IN_CLEANING, com.SmartLaundry.model.OrderStatus.OUT_FOR_DELIVERY)")
     List<Order> findAllByServiceProviderAndOtpVerificationRequired(@Param("provider") ServiceProvider provider);
+
 
     List<Order> findByServiceProvider(ServiceProvider serviceProvider);
     List<Order> findByPickupDate(LocalDate pickupDate);

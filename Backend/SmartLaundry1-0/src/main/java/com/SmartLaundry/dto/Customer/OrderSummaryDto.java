@@ -1,4 +1,5 @@
 package com.SmartLaundry.dto.Customer;
+import com.SmartLaundry.model.BillStatus;
 import com.SmartLaundry.model.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,9 +31,9 @@ public class OrderSummaryDto {
     @Builder.Default
     private boolean isPromotionApplied = false;
     private String promotionMessage;
-    private OrderStatus orderStatus;
+    private BillStatus status;
     private String appliedPromoCode;
-
+    private String invoiceNumber;
 
 
     @Data

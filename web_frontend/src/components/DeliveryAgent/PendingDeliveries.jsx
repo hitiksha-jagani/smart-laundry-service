@@ -1,7 +1,7 @@
 // Author : Hitiksha Jagani
 // Description : Pending delivery list in delivery agent dashboard.
- 
-import React, { useState } from 'react';
+
+import React, {  useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';

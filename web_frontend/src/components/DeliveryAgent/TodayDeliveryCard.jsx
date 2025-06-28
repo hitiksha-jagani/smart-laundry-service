@@ -15,7 +15,8 @@ const TodayDeliveryCard = ({ delivery }) => {
     };
 
     const {
-      orderId, deliveryType, deliveryEarning, km,
+      orderId,
+       deliveryType, deliveryEarning, km,
       pickupDate, pickupTime, pickupName, pickupPhone, pickupAddress,
       deliveryName, deliveryPhone, deliveryAddress,
       bookingItemDTOList, totalQuantity

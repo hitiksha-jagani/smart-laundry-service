@@ -1,7 +1,12 @@
 // Author : Hitiksha Jagani
 // Description : Today's delivery list in delivery agent dashboard.
 
-import React, { useEffect, useState } from 'react';
+
+// Author : Hitiksha Jagani
+// Description : Pending delivery list in delivery agent dashboard.
+
+import React, { useState } from 'react';
+// import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
@@ -18,13 +23,13 @@ const TodayDeliveries = () => {
 
     const [toast, setToast] = useState({ message: '', type: '', visible: false });
 
-    const showToast = (message, type = 'success') => {
-      setToast({ message, type, visible: true });
+    // const showToast = (message, type = 'success') => {
+    //   setToast({ message, type, visible: true });
 
-      setTimeout(() => {
-        setToast({ message: '', type: '', visible: false });
-      }, 5000);
-    };
+    //   setTimeout(() => {
+    //     setToast({ message: '', type: '', visible: false });
+    //   }, 5000);
+    // };
     
     const [currentIndex, setCurrentIndex] = useState(0);
 

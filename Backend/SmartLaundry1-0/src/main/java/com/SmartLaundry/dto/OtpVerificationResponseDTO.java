@@ -15,7 +15,7 @@ public class OtpVerificationResponseDTO {
     private String customerName;
     private boolean requiresPickupOtp;
     private boolean requiresDeliveryOtp;
-    private String agentId;
+    private String verifierId;
     private String providerId;
 }
 

@@ -1,5 +1,6 @@
 package com.SmartLaundry.dto.Customer;
 
+import com.SmartLaundry.model.BillStatus;
 import com.SmartLaundry.model.Order;
 import com.SmartLaundry.model.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class OrderResponseDto {
     private Boolean requiresDeliveryOtp;
     private String agentId;
     private String providerId;
+    private BillStatus billStatus;
 
     @Builder.Default
     private double latitude = 0.0;

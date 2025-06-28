@@ -1,79 +1,193 @@
 //package com.SmartLaundry.service;
-//import com.SmartLaundry.model.Bill;
-//import com.SmartLaundry.model.PaymentStatus;
-//import com.SmartLaundry.model.Payments;
+//
+//import com.paypal.orders.Order;
+//import com.SmartLaundry.config.PayPalClient;
+//import com.SmartLaundry.model.*;
 //import com.SmartLaundry.repository.BillRepository;
 //import com.SmartLaundry.repository.PaymentRepository;
-//import com.paypal.api.payments.*;
-//import com.paypal.base.rest.APIContext;
-//import com.paypal.base.rest.PayPalRESTException;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.annotation.Value;
+//import com.paypal.http.HttpResponse;
+//import com.paypal.orders.*;
+//import lombok.RequiredArgsConstructor;
 //import org.springframework.stereotype.Service;
 //
+//import java.io.IOException;
 //import java.time.LocalDateTime;
-//import java.util.ArrayList;
 //import java.util.List;
 //
 //@Service
+//@RequiredArgsConstructor
 //public class PayPalService {
 //
-//    @Autowired
-//    private APIContext apiContext;
+//    private final PayPalClient payPalClient;
+//    private final BillRepository billRepository;
+//    private final PaymentRepository paymentRepository;
 //
-//    @Autowired
-//    private PaymentRepository paymentRepository;
+//    private static final double USD_TO_INR = 83.00;
 //
-//    @Autowired
-//    private BillRepository billRepository;
+//    public String createPayment(Bill bill, double totalAmountInINR) {
+//        double amountUSD = totalAmountInINR / USD_TO_INR;  // Convert to USD
 //
-//    @Value("${paypal.client.id}")
-//    private String clientId;
+//        OrderRequest orderRequest = new OrderRequest();
+//        orderRequest.checkoutPaymentIntent("CAPTURE");
 //
-//    @Value("${paypal.client.secret}")
-//    private String clientSecret;
+//        orderRequest.applicationContext(new ApplicationContext()
+//                .returnUrl("http://localhost:3000/payment/success?billId=" + bill.getInvoiceNumber())
+//                .cancelUrl("http://localhost:3000/payment/cancel")
+//                .brandName("SmartLaundry")
+//                .landingPage("LOGIN")
+//                .userAction("PAY_NOW")
+//                .shippingPreference("NO_SHIPPING"));
 //
-//    @Value("${paypal.mode}")
-//    private String mode;
+//        PurchaseUnitRequest purchaseUnit = new PurchaseUnitRequest()
+//                .referenceId(bill.getInvoiceNumber())
+//                .description("SmartLaundry Payment")
+//                .amountWithBreakdown(new AmountWithBreakdown()
+//                        .currencyCode("USD")
+//                        .value(String.format("%.2f", amountUSD)));  // Pass USD to PayPal
 //
-//    public Payment createPayment(Double total, String currency, String method,
-//                                 String intent, String description, String cancelUrl, String successUrl,
-//                                 String invoiceNumber) throws PayPalRESTException {
+//        orderRequest.purchaseUnits(List.of(purchaseUnit));
+//        OrdersCreateRequest request = new OrdersCreateRequest().requestBody(orderRequest);
 //
-//        Amount amount = new Amount();
-//        amount.setCurrency(currency);
-//        amount.setTotal(String.format("%.2f", total));
-//
-//        Transaction transaction = new Transaction();
-//        transaction.setDescription(description);
-//        transaction.setAmount(amount);
-//        transaction.setInvoiceNumber(invoiceNumber); // important!
-//
-//        List<Transaction> transactions = new ArrayList<>();
-//        transactions.add(transaction);
-//
-//        Payer payer = new Payer();
-//        payer.setPaymentMethod(method.toUpperCase());
-//
-//        Payment payment = new Payment();
-//        payment.setIntent(intent);
-//        payment.setPayer(payer);
-//        payment.setTransactions(transactions);
-//
-//        RedirectUrls redirectUrls = new RedirectUrls();
-//        redirectUrls.setCancelUrl(cancelUrl);
-//        redirectUrls.setReturnUrl(successUrl);
-//        payment.setRedirectUrls(redirectUrls);
-//
-//        return payment.create(apiContext);
+//        try {
+//            HttpResponse<Order> response = payPalClient.client().execute(request);
+//            return response.result().id();
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to create PayPal order", e);
+//        }
 //    }
 //
+//    public void captureAndStorePayment(String orderId, Bill bill) {
+//        OrdersCaptureRequest request = new OrdersCaptureRequest(orderId);
+//        request.requestBody(new OrderRequest());
 //
-//    public Payment execute(String paymentId, String payerId) throws PayPalRESTException {
-//        Payment payment = new Payment();
-//        payment.setId(paymentId);
-//        PaymentExecution paymentExecution = new PaymentExecution();
-//        paymentExecution.setPayerId(payerId);
-//        return payment.execute(apiContext, paymentExecution);
+//        try {
+//            HttpResponse<Order> response = payPalClient.client().execute(request);
+//            Order order = response.result();
+//
+//            Capture capture = order.purchaseUnits().get(0).payments().captures().get(0);
+//            String transactionId = capture.id();
+//
+//            // Save Payment
+//            Payment payment = Payment.builder()
+//                    .transactionId(transactionId)
+//                    .status(PaymentStatus.PAID)
+//                    .method("PayPal")
+//                    .dateTime(LocalDateTime.now())
+//                    .bill(bill)
+//                    .build();
+//            paymentRepository.save(payment);
+//
+//            // Update Bill
+//            bill.setPayment(payment);
+//            bill.setStatus(BillStatus.PAID);
+//            billRepository.save(bill);
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("PayPal capture failed", e);
+//        }
 //    }
 //}
+//
+package com.SmartLaundry.service;
+
+import com.paypal.orders.Order;
+import com.SmartLaundry.config.PayPalClient;
+import com.SmartLaundry.model.*;
+import com.SmartLaundry.repository.BillRepository;
+import com.SmartLaundry.repository.PaymentRepository;
+import com.paypal.http.HttpResponse;
+import com.paypal.orders.*;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class PayPalService {
+
+    private final PayPalClient payPalClient;
+    private final BillRepository billRepository;
+    private final PaymentRepository paymentRepository;
+
+    private static final double USD_TO_INR = 83.00;
+
+    public String createPayment(Bill bill, double totalAmountInINR) {
+        double amountUSD = totalAmountInINR / USD_TO_INR;  // Convert to USD
+
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.checkoutPaymentIntent("CAPTURE");
+
+        orderRequest.applicationContext(new ApplicationContext()
+                .returnUrl("http://localhost:3000/payment/success?billId=" + bill.getInvoiceNumber())
+                .cancelUrl("http://localhost:3000/payment/cancel")
+                .brandName("SmartLaundry")
+                .landingPage("LOGIN")
+                .userAction("PAY_NOW")
+                .shippingPreference("NO_SHIPPING"));
+
+        PurchaseUnitRequest purchaseUnit = new PurchaseUnitRequest()
+                .referenceId(bill.getInvoiceNumber())
+                .description("SmartLaundry Payment")
+                .amountWithBreakdown(new AmountWithBreakdown()
+                        .currencyCode("USD")
+                        .value(String.format("%.2f", amountUSD)));  // Pass USD to PayPal
+
+        orderRequest.purchaseUnits(List.of(purchaseUnit));
+        OrdersCreateRequest request = new OrdersCreateRequest().requestBody(orderRequest);
+
+        try {
+            HttpResponse<Order> response = payPalClient.client().execute(request);
+            return response.result().id();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create PayPal order", e);
+        }
+    }
+
+    public void captureAndStorePayment(String orderId, Bill bill) {
+        // 1. Check if payment already exists for this bill
+        if (paymentRepository.existsByBillInvoiceNumberAndStatus(bill.getInvoiceNumber(), PaymentStatus.PAID)) {
+            // Avoid double capture attempt
+            return;
+        }
+
+        OrdersCaptureRequest request = new OrdersCaptureRequest(orderId);
+        request.requestBody(new OrderRequest());
+
+        try {
+            HttpResponse<Order> response = payPalClient.client().execute(request);
+            Order order = response.result();
+
+            if (order.purchaseUnits() == null || order.purchaseUnits().isEmpty()
+                    || order.purchaseUnits().get(0).payments() == null
+                    || order.purchaseUnits().get(0).payments().captures() == null
+                    || order.purchaseUnits().get(0).payments().captures().isEmpty()) {
+                throw new RuntimeException("Invalid PayPal capture response");
+            }
+
+            Capture capture = order.purchaseUnits().get(0).payments().captures().get(0);
+            String transactionId = capture.id();
+
+            Payment payment = Payment.builder()
+                    .transactionId(transactionId)
+                    .status(PaymentStatus.PAID)
+                    .method("PayPal")
+                    .dateTime(LocalDateTime.now())
+                    .bill(bill)
+                    .build();
+            paymentRepository.save(payment);
+
+            bill.setPayment(payment);
+            bill.setStatus(BillStatus.PAID);
+            billRepository.save(bill);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("PayPal capture failed", e);
+        }
+    }
+
+}

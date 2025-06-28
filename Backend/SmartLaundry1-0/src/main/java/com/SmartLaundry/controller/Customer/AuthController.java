@@ -119,6 +119,9 @@ public class AuthController {
                 .role(user.getRole().toString())
                 .build();
         return ResponseEntity.ok(response);
+
+
+
     }
 
 

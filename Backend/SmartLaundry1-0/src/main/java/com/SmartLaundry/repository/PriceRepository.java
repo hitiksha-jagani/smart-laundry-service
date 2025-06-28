@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface PriceRepository extends JpaRepository<Price, Long> {
     List<Price> findByServiceProvider(ServiceProvider serviceProvider);
     Optional<Price> findByServiceProviderAndItem(ServiceProvider serviceProvider, Items item);
+    void deleteByServiceProvider(ServiceProvider serviceProvider);
 }

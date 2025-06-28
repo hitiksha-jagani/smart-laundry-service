@@ -10,10 +10,11 @@ const Footer = () => {
           <h4 className="font-semibold mb-3 text-[#FFD200]">Company</h4>
           <ul className="space-y-2">
             <li><Link to="/" className="text-white hover:text-[#FF9F40] transition">Home</Link></li>
-            <li><Link to="/about" className="text-white hover:text-[#FF9F40] transition">About Us</Link></li>
-            <li><Link to="/services" className="text-white hover:text-[#FF9F40] transition">Services</Link></li>
-            <li><Link to="/pricing" className="text-white hover:text-[#FF9F40] transition">Pricing</Link></li>
+            {/* <li><Link to="/about" className="text-white hover:text-[#FF9F40] transition">About Us</Link></li> */}
+            {/* <li><Link to="/services" className="text-white hover:text-[#FF9F40] transition">Services</Link></li>
+            <li><Link to="/pricing" className="text-white hover:text-[#FF9F40] transition">Pricing</Link></li> */}
             <li><Link to="/contact" className="text-white hover:text-[#FF9F40] transition">Contact</Link></li>
+            <li><Link to="/customer/Orderhistory" className="text-white hover:text-[#FF9F40] transition">Order History</Link></li>
           </ul>
         </div>
 
@@ -21,15 +22,15 @@ const Footer = () => {
         <div>
           <h4 className="font-semibold mb-3 text-[#FFD200]">Support</h4>
           <ul className="space-y-2">
-            <li><Link to="/faq" className="text-white hover:text-[#FF9F40] transition">FAQs</Link></li>
+            {/* <li><Link to="/faq" className="text-white hover:text-[#FF9F40] transition">FAQs</Link></li> */}
             <li><Link to="/track-order" className="text-white hover:text-[#FF9F40] transition">Track Order</Link></li>
-            <li><Link to="/support" className="text-white hover:text-[#FF9F40] transition">Raise Ticket</Link></li>
+            <li><Link to="/ticket/raise" className="text-white hover:text-[#FF9F40] transition">Raise Ticket</Link></li>
             <li><Link to="/login" className="text-white hover:text-[#FF9F40] transition">Login</Link></li>
             <li><Link to="/register" className="text-white hover:text-[#FF9F40] transition">Sign Up</Link></li>
           </ul>
         </div>
 
-        {/* Services */}
+        {/* Services
         <div>
           <h4 className="font-semibold mb-3 text-[#FFD200]">Services</h4>
           <ul className="space-y-2">
@@ -39,7 +40,7 @@ const Footer = () => {
             <li><Link to="/home-pickup" className="text-white hover:text-[#FF9F40] transition">Home Pickup</Link></li>
             <li><Link to="/express-delivery" className="text-white hover:text-[#FF9F40] transition">Express Delivery</Link></li>
           </ul>
-        </div>
+        </div> */}
 
         {/* Contact */}
         <div>
@@ -56,8 +57,8 @@ const Footer = () => {
           <h4 className="font-semibold mb-3 text-[#FFD200]">Legal</h4>
           <ul className="space-y-2">
             <li><Link to="/terms" className="text-white hover:text-[#FF9F40] transition">Terms of Service</Link></li>
-            <li><Link to="/privacy" className="text-white hover:text-[#FF9F40] transition">Privacy Policy</Link></li>
-            <li><Link to="/refund" className="text-white hover:text-[#FF9F40] transition">Refund Policy</Link></li>
+            <li><Link to="/terms" className="text-white hover:text-[#FF9F40] transition">Privacy Policy</Link></li>
+            <li><Link to="/terms" className="text-white hover:text-[#FF9F40] transition">Refund Policy</Link></li>
           </ul>
         </div>
       </div>

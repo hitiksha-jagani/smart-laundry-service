@@ -4,13 +4,16 @@ import axios from "../../utils/axiosInstance";
 import { useAuth } from "../../context/AuthContext";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; 
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 export default function ProviderDetail() {
   const { providerId } = useParams();
+  console.log("providerId from URL:", providerId); 
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+
   const [provider, setProvider] = useState(null);
+  const [completedOrders, setCompletedOrders] = useState([]);
 
   useEffect(() => {
     async function fetchProviderDetails() {
@@ -22,8 +25,30 @@ export default function ProviderDetail() {
       }
     }
 
+    async function fetchCompletedOrders() {
+      try {
+        const res = await axios.get(
+          `/provider/orders/${providerId}/order-history?status=COMPLETED`
+        );
+        setCompletedOrders(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch completed orders", err);
+      }
+    }
+
     fetchProviderDetails();
+    fetchCompletedOrders();
   }, [providerId]);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "N/A";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   if (!provider)
     return <p className="text-center text-gray-700 mt-10">Loading...</p>;
@@ -117,6 +142,7 @@ export default function ProviderDetail() {
           )}
         </ul>
 
+    
         {/* Book Now Button */}
         <button
           className={`mt-8 px-6 py-2 rounded font-semibold ${
