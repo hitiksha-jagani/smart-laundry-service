@@ -123,7 +123,7 @@ const DeliveryAgentFeedback = () => {
             <DeliveryAgentTimeFilter onChange={setFilterParams} />
 
             {/* Summary Data */}
-            <div className="summary-container" style={{ marginTop: '100px' }}>
+            <div className="summary-container" style={{ marginTop: '150px' }}>
                 
                 {/* Total Reviews */}
                 <SummaryCard 

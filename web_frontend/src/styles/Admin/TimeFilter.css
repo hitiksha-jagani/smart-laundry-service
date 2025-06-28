@@ -1,60 +1,54 @@
 .time-filter-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
     margin-bottom: 1rem;
     position: relative;
+    margin-top: 80px;
 }
 
 .time-filter-toggle {
-    background-color: #FFFFFF;
+    background-color: #ffffff;
+    width: 300px;
     color: #111827;
     padding: 0.8rem 2rem;
-    font-size: 0.95rem;
+    font-size: 0.95rem;  
     border-radius: 10px;
     border: 1px solid #0EA5E9;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    justify-content: flex-end;
-    margin-right: 140px;
-    gap: 2rem;
+    justify-content: center;
+    gap: 3rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .time-filter-dropdown {
+
+    position: absolute; 
+    top: 100%;        
+    z-index: 999;
+
     margin-top: 0.5rem;
-    /* padding: 1rem; */
     padding: 0.8rem 2rem;
-    border: 1px solid #0EA5E9;
     border-radius: 10px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 1rem;
-    margin-right: 140px;
-    /* width: fit-content; */
+    align-items: center;
+    justify-content: center;
+    gap: 1rem; 
 }
 
 .time-filter-dropdown select {
-    padding: 0.6rem 1rem;
+    padding: 0.8rem 2rem;
     font-size: 0.95rem;
     border-radius: 8px;
-    /* border: 1px solid #0EA5E9;    */
-    border: none;
+    border: 1px solid #0EA5E9;
     background-color: #ffffff;
     color: #111827;
-    /* width: 200px; */
     outline: none;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: border-color 0.2s ease-in-out;
-}
-
-.time-filter-dropdown select:focus {
-    /* border-color: #0284c7; */
-    background-color: #fff;
 }
 
 .date-range-inputs {
@@ -67,15 +61,12 @@
     padding: 0.6rem 0.8rem;
     font-size: 0.95rem;
     border-radius: 8px;
-    /* border: 1px solid #0EA5E9; */
-    background-color: #f9f9f9;
+    background-color: #ffffff; 
+    border: 1px solid #0EA5E9;
     color: #111827;
     outline: none;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: border-color 0.2s ease-in-out;
 }
 
-.date-range-inputs input[type="date"]:focus {
-    border-color: #0284c7;
-    background-color: #fff;
-}
+

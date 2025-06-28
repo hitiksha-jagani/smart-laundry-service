@@ -22,8 +22,7 @@ const SummaryCard = ({ title, prefix, user, count, link, data, filterParams }) =
       <div className="summary-card">
       
           <h3 className="summary-title h3-agent">{title}</h3>
-          {/* <p className="summary-count">{prefix} {count}</p> */}
-
+ 
           {link ? (
 
               <Link 

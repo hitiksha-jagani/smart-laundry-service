@@ -9,7 +9,7 @@ import PendingDeliveryCard  from './PendingDeliveryCard';
 import { MdInbox } from 'react-icons/md';
 import '../../styles/Toast.css'; 
 
-const PendingDeliveries = ({ token }) => {
+const PendingDeliveries = () => {
 
     const location = useLocation();
     const state = location.state || {};
@@ -27,6 +27,15 @@ const PendingDeliveries = ({ token }) => {
         setToast({ message: '', type: '', visible: false });
       }, 5000);
     };
+
+    const token = localStorage.getItem("token");
+
+    const axiosInstance = axios.create({
+        baseURL: "http://localhost:8080",
+        headers: { Authorization: `Bearer ${token}` },
+    });
+
+    console.log("token : ", token);
     
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -78,7 +87,7 @@ const PendingDeliveries = ({ token }) => {
             const msg = error.response?.data || "Error rejecting order.";
             showToast(msg, "error");
             console.error("Error rejecting order:", error.response?.data || error.message);
-            alert(error.response?.data || "Something went wrong while rejecting the order.");
+            // alert(error.response?.data || "Something went wrong while rejecting the order.");
         }
 
     };

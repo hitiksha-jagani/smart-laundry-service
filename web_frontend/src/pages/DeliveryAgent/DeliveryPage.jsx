@@ -156,6 +156,7 @@ const mockDeliveries = [
 
 const DeliveryPage = () => {
     const [user, setUser] = useState(null);
+    const [summary, setSummary] = useState([]);
     const [pending, setPending] = useState([]);
     const [today, setToday] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -184,12 +185,25 @@ const DeliveryPage = () => {
 
             try {
                 // Fetch all data in parallel
-                const [userRes, pendingRes, todayRes] = await Promise.all([
+                const [userRes, summaryRes, pendingRes, todayRes] = await Promise.all([
                     
+                    // Fetch user data
                     axiosInstance.get(`/user-detail/${userId}`).catch(err => {
                         console.error("User detail fetch failed", err);
                         return { data: null };
                     }),
+
+                    // Fetch summary ofe deliveries
+                    axiosInstance.get("/deliveries/summary", {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).catch(err => {
+                        console.error("Summary delivery data fetch failed", err);
+                        return { data: null };
+                    }),
+
+                    // Fetch pending deliveries list
                     axiosInstance.get("/deliveries/pending", {
                         headers: {
                             Authorization: `Bearer ${token}`
@@ -198,6 +212,8 @@ const DeliveryPage = () => {
                         console.error("Pending delivery data fetch failed", err);
                         return { data: null };
                     }),
+
+                    // Fetch today's delivery list
                     axiosInstance.get("/deliveries/today", {
                         headers: {
                             Authorization: `Bearer ${token}`
@@ -211,6 +227,9 @@ const DeliveryPage = () => {
 
                 setUser(userRes.data);
                 console.log("User data : " ,userRes.data);
+
+                setSummary(summaryRes.data);
+                console.log("Summary data : ", summaryRes.data)
 
                 setPending(pendingRes.data);
                 console.log("pending deliveries : ", pendingRes.data);
@@ -251,18 +270,20 @@ const DeliveryPage = () => {
                     <SummaryCard 
                         title="PENDING ORDERS"
                         user={user} 
-                        count={pending.length}
+                        // count={summary?.pendingDeliveries}
+                        count={pending.length ?? 0}
                         link="/deliveries/pending" 
-                        data={pending}
+                        data={pending ?? []}
                     />
 
                     {/* Today's Orders  */}
                     <SummaryCard 
                         title="TODAY'S ORDERS"
                         user={user}  
-                        count={today.length}
+                        // count={summary?.todayDeliveries}
+                        count={today.length ?? 0}
                         link="/deliveries/today" 
-                        data={today}
+                        data={today ?? []}
                     /> 
 
                 </div>
