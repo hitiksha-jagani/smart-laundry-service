@@ -1,14 +1,19 @@
 package com.SmartLaundry.controller;
 import com.SmartLaundry.dto.Customer.OrderResponseDto;
 import com.SmartLaundry.dto.ServiceProvider.OrderMapper;
-import com.SmartLaundry.model.Order;
-import com.SmartLaundry.model.OtpPurpose;
-import com.SmartLaundry.model.ServiceProvider;
+import com.SmartLaundry.model.*;
+import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.OrderRepository;
+import com.SmartLaundry.service.Admin.RoleCheckingService;
+import com.SmartLaundry.service.JWTService;
 import com.SmartLaundry.service.OtpOrderEmailTransitionService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OtpOrderEmailController {
+
+    @Autowired
+    private RoleCheckingService roleCheckingService;
+
+    @Autowired
+    private JWTService jwtService;
+
+    @Autowired
+    private DeliveryAgentRepository deliveryAgentRepository;
 
     private final OtpOrderEmailTransitionService otpOrderEmailTransitionService;
     private final OrderRepository orderRepository;
@@ -32,9 +46,26 @@ public class OtpOrderEmailController {
 //        return ResponseEntity.ok("Pickup OTP verified via email. Order status updated accordingly.");
 //    }
 
+//    @PostMapping("/verify-pickup")
+//    public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request) {
+//        otpOrderEmailTransitionService.verifyPickupOtp(request.getOrderId(), request.getOtp(), request.getAgentId());
+//        return ResponseEntity.ok("Pickup OTP verified via email. Order status updated accordingly.");
+//    }
+
     @PostMapping("/verify-pickup")
-    public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request) {
-        otpOrderEmailTransitionService.verifyPickupOtp(request.getOrderId(), request.getOtp(), request.getAgentId());
+    public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request, HttpServletRequest token) {
+
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
+        Users user = roleCheckingService.checkUser(userId);
+
+        String id = null;
+
+        if(user.getRole().equals(UserRole.DELIVERY_AGENT)) {
+            DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElse(null);
+            id = deliveryAgent.getDeliveryAgentId();
+        }
+
+        otpOrderEmailTransitionService.verifyPickupOtp(request.getOrderId(), request.getOtp(), id);
         return ResponseEntity.ok("Pickup OTP verified via email. Order status updated accordingly.");
     }
 
@@ -49,9 +80,20 @@ public class OtpOrderEmailController {
     public ResponseEntity<?> verifyHandoverOtp(
             @RequestParam String orderId,
             @RequestParam String otp,
-            @RequestParam String agentId
+            HttpServletRequest token
     ) {
-        otpOrderEmailTransitionService.verifyHandoverOtp(orderId, otp, agentId);
+
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
+        Users user = roleCheckingService.checkUser(userId);
+
+        String id = null;
+
+        if(user.getRole().equals(UserRole.DELIVERY_AGENT)) {
+            DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElse(null);
+            id = deliveryAgent.getDeliveryAgentId();
+        }
+
+        otpOrderEmailTransitionService.verifyHandoverOtp(orderId, otp, id);
         return ResponseEntity.ok("Handover OTP verified via email. Order marked as IN_CLEANING.");
     }
 
@@ -59,9 +101,20 @@ public class OtpOrderEmailController {
     public ResponseEntity<?> verifyDeliveryOtp(
             @RequestParam String orderId,
             @RequestParam String otp,
-            @RequestParam String verifierId
+            HttpServletRequest token
     ) {
-        otpOrderEmailTransitionService.verifyDeliveryOtp(orderId, otp, verifierId);
+
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
+        Users user = roleCheckingService.checkUser(userId);
+
+        String id = null;
+
+        if(user.getRole().equals(UserRole.DELIVERY_AGENT)) {
+            DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElse(null);
+            id = deliveryAgent.getDeliveryAgentId();
+        }
+
+        otpOrderEmailTransitionService.verifyDeliveryOtp(orderId, otp, id);
         return ResponseEntity.ok("Delivery OTP verified via email. Order marked as DELIVERED.");
     }
 
@@ -69,9 +122,20 @@ public class OtpOrderEmailController {
     public ResponseEntity<?> verifyConfirmForClothsOtp(
             @RequestParam String orderId,
             @RequestParam String otp,
-            @RequestParam String agentId
+            HttpServletRequest token
     ) {
-        otpOrderEmailTransitionService.verifyConfirmForClothsOtp(orderId, otp, agentId);
+
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
+        Users user = roleCheckingService.checkUser(userId);
+
+        String id = null;
+
+        if(user.getRole().equals(UserRole.DELIVERY_AGENT)) {
+            DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElse(null);
+            id = deliveryAgent.getDeliveryAgentId();
+        }
+        
+        otpOrderEmailTransitionService.verifyConfirmForClothsOtp(orderId, otp, id);
         return ResponseEntity.ok("OTP for cloth confirmation verified via email. Delivery OTP sent to customer.");
     }
 

@@ -74,7 +74,7 @@ const AdminDashboard = () => <h2>Admin Dashboard</h2>;
 
 function App() {
   return (
-    <BrowserRouter>
+    // <BrowserRouter>
       <Routes>
 
         {/* Common */}
@@ -119,7 +119,89 @@ function App() {
         <Route path="/provider/orders/verify-otps" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><OtpVerificationOrders /></PrivateRoute>} />
 
         {/* Delivery Agent */}
-        <Route path="/deliveries/summary" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryPage /></RoleProtectedRoute>} />
+        <Route path="/deliveries/summary" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <DeliveryPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/deliveries/pending" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <PendingDeliveries />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/deliveries/today" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <TodayDeliveries />
+            </RoleProtectedRoute>
+          }/>
+
+          {/* Update Status Page  */}
+          <Route path="/update-status" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/emailotp/verify-pickup" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>   
+          <Route path="/emailotp/verify-handover" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/emailotp/verify-delivery" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/emailotp/verify-confirm-for-cloths" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <UpdateStatus />
+            </RoleProtectedRoute>
+          }/>
+
+          {/* Payout Page   */}Add commentMore actions
+          <Route path="/payouts/summary" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <DeliveryAgentPayout />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/payouts/all" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <AllPayouts />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/payouts/paid" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <PaidPayouts />
+            </RoleProtectedRoute>
+          }/>   
+          <Route path="/payouts/pending" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <PendingPayouts />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/payouts/pending" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <PendingPayouts />
+            </RoleProtectedRoute>
+          }/>  
+
+          {/* Feedback Page  */}
+          <Route path="/feedback/summary" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <DeliveryAgentFeedback />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/feedback/list" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <DeliveryAgentFeedbackList />
+            </RoleProtectedRoute>
+          }/>           
+          
+        {/* <Route path="/deliveries/summary" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryPage /></RoleProtectedRoute>} />
         <Route path="/deliveries/pending" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><PendingDeliveries /></RoleProtectedRoute>} />
         <Route path="/deliveries/today" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><TodayDeliveries /></RoleProtectedRoute>} />
         <Route path="/update-status" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><UpdateStatus /></RoleProtectedRoute>} />
@@ -132,10 +214,67 @@ function App() {
         <Route path="/payouts/pending" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><PendingPayouts /></RoleProtectedRoute>} />
         <Route path="/payouts/paid" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><PaidPayouts /></RoleProtectedRoute>} />
         <Route path="/feedback/summary" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryAgentFeedback /></RoleProtectedRoute>} />
-        <Route path="/feedback/list" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryAgentFeedbackList /></RoleProtectedRoute>} />
+        <Route path="/feedback/list" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryAgentFeedbackList /></RoleProtectedRoute>} /> */}
 
         {/* Admin */}
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/revenue/summary" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <RevenuePage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/reports/order/summary" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <Reports />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/provider-requests" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <Requests />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/users/customer/graphs" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <UsersPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/revenue/summary" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <SendMessage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/complaints/summary" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <Complaints />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/admin-profile" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ManageServiceListing />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/admin-profile" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <Promotion />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/admin-profile" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminProfile />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/configurations/save-google-key" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <Configurations />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/configurations/save" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <GeoCodingSetting />
+            </RoleProtectedRoute>
+          }/>
+
+        {/* Admin */}
+        {/* <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/revenue/summary" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><RevenuePage /></RoleProtectedRoute>} />
         <Route path="/reports/order/summary" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Reports /></RoleProtectedRoute>} />
         <Route path="/provider-requests" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Requests /></RoleProtectedRoute>} />
@@ -146,13 +285,10 @@ function App() {
         <Route path="/admin/promotions" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Promotion /></RoleProtectedRoute>} />
         <Route path="/admin-profile" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><AdminProfile /></RoleProtectedRoute>} />
         <Route path="/configurations/save-google-key" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Configurations /></RoleProtectedRoute>} />
-        <Route path="/configurations/save" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><GeoCodingSetting /></RoleProtectedRoute>} />
+        <Route path="/configurations/save" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><GeoCodingSetting /></RoleProtectedRoute>} /> */}
 
-        {/* Placeholder */}
-        <Route path="/agent/dashboard" element={<AgentDashboard />} />
 
       </Routes>
-    </BrowserRouter>
   );
 }
 

@@ -78,60 +78,51 @@ const UpdateStatus = () => {
             fetchAllData();
         }, []);
 
-    const handleUpdateStatus = async () => {
-        setLoading(true);
-        setResponseMsg('');
+        const handleUpdateStatus = async () => {
 
-        const orderId = delivery.orderId;
-        const status = delivery.status;
+            setLoading(true);
+            setResponseMsg('');
 
-        let endpoint = '';
-        const formData = new URLSearchParams();
-        formData.append('orderId', orderId);
-        formData.append('otp', otp);
+            const orderId = delivery.orderId;
+            const status = delivery.status;
 
-        try {
+            let endpoint = '';
+            const payload = {
+                orderId: orderId,
+                otp: otp
+            };
 
             switch (status) {
-
                 case 'ACCEPTED_BY_AGENT':
                     endpoint = '/emailotp/verify-pickup';
                     break;
-
                 case 'PICKED_UP':
                     endpoint = '/emailotp/verify-handover';
                     break;
-
                 case 'READY_FOR_DELIVERY':
                     endpoint = '/emailotp/verify-confirm-for-cloths';
                     break;
-
                 case 'OUT_FOR_DELIVERY':
                     endpoint = '/emailotp/verify-delivery';
                     break;
-
                 default:
                     setResponseMsg('Unsupported order status: ' + status);
                     setLoading(false);
                     return;
             }
 
-            const res = await axios.post(`http://localhost:8080${endpoint}`, formData, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-            });
+            try {
+                const res = await axiosInstance.post(endpoint, payload); // axiosInstance already has Authorization header
 
-            showToast("Status updated successfully.", "success");
+                showToast("Status updated successfully.", "success");
+            } catch (error) {
+                showToast("Failed to update status", "error");
+                console.error("Failed to update status:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        } catch (error) {
-            showToast("Failed to update status", "error")
-            console.error("Failed to update status");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (!delivery) {
         return <div>No delivery data found.</div>;
