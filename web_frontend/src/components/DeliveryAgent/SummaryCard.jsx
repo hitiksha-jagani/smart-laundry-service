@@ -45,4 +45,3 @@ const SummaryCard = ({ title, prefix, user, count, link, data, filterParams }) =
 };
 
 export default SummaryCard;
- 

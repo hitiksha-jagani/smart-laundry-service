@@ -23,7 +23,7 @@ const Footer = () => {
           <h4 className="font-semibold mb-3 text-[#FFD200]">Support</h4>
           <ul className="space-y-2">
             {/* <li><Link to="/faq" className="text-white hover:text-[#FF9F40] transition">FAQs</Link></li> */}
-            <li><Link to="/track-order" className="text-white hover:text-[#FF9F40] transition">Track Order</Link></li>
+            <li><Link to="/customer/Orderhistory" className="text-white hover:text-[#FF9F40] transition">Track Order</Link></li>
             <li><Link to="/ticket/raise" className="text-white hover:text-[#FF9F40] transition">Raise Ticket</Link></li>
             <li><Link to="/login" className="text-white hover:text-[#FF9F40] transition">Login</Link></li>
             <li><Link to="/register" className="text-white hover:text-[#FF9F40] transition">Sign Up</Link></li>
