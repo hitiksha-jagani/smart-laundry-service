@@ -6,28 +6,51 @@ export default function ReviewAndConfirm({ dummyOrderId, onOrderCreated }) {
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+const token = localStorage.getItem("token");
 
+    const axiosInstance = axios.create({
+        baseURL: "http://localhost:8080",
+        headers: { Authorization: `Bearer ${token}` },
+    });
+
+
+ console.log(token);
   useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const res = await axios.get("/orders/summary-from-redis", {
-          params: { dummyOrderId },
-        });
-        setSummary(res.data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load order summary. Please try again.");
-      }
-    };
+  const fetchSummary = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("/orders/summary-from-redis", {
+        params: { dummyOrderId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setSummary(res.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load order summary. Please try again.");
+    }
+  };
 
-    fetchSummary();
-  }, [dummyOrderId]);
+  fetchSummary();
+}, [dummyOrderId]);
 
   const handleConfirm = async () => {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post(`/orders/place/${dummyOrderId}`);
+      const token = localStorage.getItem("token");
+
+const res = await axios.post(
+  `/orders/place/${dummyOrderId}`,
+  {},
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
       onOrderCreated(res.data);
     } catch (err) {
       console.error(err);
