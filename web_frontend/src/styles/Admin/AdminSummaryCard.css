@@ -1,22 +1,22 @@
 .admin-summary-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #FFFFFF;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #0EA5E9;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 16px;
-  gap: 10px;
-  width: 300px;
-  height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFFFFF;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #0EA5E9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    gap: 10px;
+    width: 300px;
+    height: 200px;
 }
 
 .admin-summary-count {
-  color: #0EA5E9;
-  font-size: 30px;
-  font-weight: bold;
-  margin: 4px 0 0 0;
+    color: #0EA5E9;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 4px 0 0 0;
 }

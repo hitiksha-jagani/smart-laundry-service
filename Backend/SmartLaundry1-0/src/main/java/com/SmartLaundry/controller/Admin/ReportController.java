@@ -41,7 +41,7 @@ public class ReportController {
     @GetMapping("/order/trend")
     public ResponseEntity<OrderTrendGraphDTO> getOrderTrendGraph(
             HttpServletRequest request,
-            @RequestParam(defaultValue = "Overall") String filter) throws AccessDeniedException {
+            @RequestParam(defaultValue = "monthly") String filter) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isAdmin(user);
@@ -66,18 +66,19 @@ public class ReportController {
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/reports/order/user-report-list/graph/{userId}
+    // http://localhost:8080/reports/order/user-report-list/graph/{id}
     // Return graph of service provider/delivery agent order analytics based on filter
-    @GetMapping("/order/user-report-list/graph/{userId}")
+    @GetMapping("/order/user-report-list/graph/{id}")
     public ResponseEntity<OrderTrendGraphDTO> getProviderAgentOrderTrendGraph(
             HttpServletRequest request,
-            @PathVariable String userId,
+            @PathVariable String id,
             @RequestParam(defaultValue = "monthly") String filter
     ) throws AccessDeniedException {
         String adminId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(adminId);
         roleCheckingService.isAdmin(user);
-        return ResponseEntity.ok(reportService.getOrderGraphForUser(userId, filter));
+        System.out.println("Id : " + id);
+        return ResponseEntity.ok(reportService.getOrderGraphForUser(id, filter));
     }
 
 

@@ -56,7 +56,7 @@ public class AvailabilityController {
     // http://localhost:8080/availability/manage/delete/{id}
     // Delete selected availability
     @DeleteMapping("/manage/delete/{id}")
-    public ResponseEntity<?> deleteAvailability(HttpServletRequest request, @PathVariable Long id) throws AccessDeniedException {
+    public ResponseEntity<?> deleteAvailability(HttpServletRequest request, @PathVariable String id) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
@@ -71,7 +71,7 @@ public class AvailabilityController {
     // http://localhost:8080/availability/manage/edit/{id}
     // Edit selected availability
     @PutMapping("/manage/edit/{id}")
-    public ResponseEntity<?> updateAvailability(@PathVariable Long id,
+    public ResponseEntity<?> updateAvailability(@PathVariable String id,
                                                 @RequestBody AvailabilityDTO dto,
                                                 HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));

@@ -59,37 +59,3 @@
     color: #fafafa;
 }
 
-/* .nested-menu {
-  position: relative;
-}
-
-.geo-submenu {
-  position: absolute;
-  left: 100%;
-  top: 0;
-  background-color: #ffffff;
-  border-left: 1px solid #e5e7eb;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05);
-  min-width: 200px;
-  z-index: 99;
-}
-
-.geo-submenu li {
-  padding: 0.5rem 1rem;
-}
-
-.geo-submenu li:hover {
-  background-color: #f3f4f6;
-}
-
-.config-submenu-link {
-  display: block;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  color: #111827;
-}
-
-.config-submenu-link.active {
-  background-color: #e0f2fe;
-  font-weight: 600;
-} */

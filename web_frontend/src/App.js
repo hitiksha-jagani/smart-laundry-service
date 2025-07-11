@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AutoRedirect from "./components/AutoRedirect";
 
 // Auth & Customer Pages
@@ -38,39 +38,66 @@ import EditServiceProviderProfile from "./pages/ServiceProvider/EditServiceProvi
 import PickupOtpVerify from "./pages/ServiceProvider/PickupOtpVerify";
 import VerifyDeliveryOtp from "./pages/ServiceProvider/VerifyDeliveryOtp";
 import OtpVerificationOrders from "./pages/ServiceProvider/OtpVerificationOrders";
+import NotAvailablePage from "./pages/NotAvailablePage";
 
 // Delivery Agent
+// Delivery Page
 import DeliveryPage from "./pages/DeliveryAgent/DeliveryPage";
 import PendingDeliveries from "./components/DeliveryAgent/PendingDeliveries";
 import TodayDeliveries from "./components/DeliveryAgent/TodayDeliveries";
+// Manage Availability Page
+import Availability from "./pages/DeliveryAgent/Availability";
+import SavedAvailability from "./pages/DeliveryAgent/SavedAvailability";
+// Update status page
 import UpdateStatus from "./pages/DeliveryAgent/UpdateStatus";
+// Payout page
 import DeliveryAgentPayout from "./pages/DeliveryAgent/DeliveryAgentPayout";
 import AllPayouts from "./components/DeliveryAgent/AllPayouts";
 import PendingPayouts from "./components/DeliveryAgent/PendingPayouts";
 import PaidPayouts from "./components/DeliveryAgent/PaidPayouts";
+// Feedback Page
 import DeliveryAgentFeedback from "./pages/DeliveryAgent/DeliveryAgentFeedback";
 import DeliveryAgentFeedbackList from "./components/DeliveryAgent/DeliveryAgentFeedbackList";
 
 // Admin
-import RevenuePage from "./pages/Admin/RevenuePage";
-import Reports from "./pages/Admin/Reports";
-import Requests from "./pages/Admin/Requests";
-import UsersPage from "./pages/Admin/UsersPage";
-import SendMessage from "./pages/Admin/SendMessage";
-import Complaints from "./pages/Admin/Complaints";
-import ManageServiceListing from "./pages/Admin/ManageServiceListing";
-import Promotion from "./pages/Admin/PromotionPage";
+// Revenue Page
+import RevenueSummaryPage from "./pages/Admin/RevenueSummaryPage";
+import TotalRevenuePage from "./pages/Admin/TotalRevenuePage";
+import ProviderRevenuePage from "./pages/Admin/ProviderRevenuePage";
+import RevenueBreakdownPage from "./pages/Admin/RevenueBreakdownPage";
+import RevenueTrendsPage from "./pages/Admin/RevenueTrendsPage";
+import AgentRevenuePage from "./pages/Admin/AgentRevenuePage";
+// Report Page
+import OrderReportPage from "./pages/Admin/OrderReportPage";
+import UserWiseOrderReportPage from "./pages/Admin/UserWiseOrderReportPage";
+import UserwiseGraphReportPage from "./pages/Admin/UserwiseGraphReportPage";
+// Request Page
+import ServiceProviderRequestPage from "./pages/Admin/ServiceProviderRequestPage";
+import DeliveryAgentRequestPage from "./pages/Admin/DeliveryAgentRequestPage";
+// User Page
+import CustomerGraphPage from "./pages/Admin/CustomerGraphPage";
+import ServiceProviderGraphPage from "./pages/Admin/ServiceProviderGraphPage";
+import DeliveryAgentGraphPage from "./pages/Admin/DeliveryAgentGraphPage";
+import CustomerTablePage from "./pages/Admin/CustomerTablePage";
+import ServiceProviderTablePage from "./pages/Admin/ServiceProviderTablePage";
+import DeliveryAgentTablePage from "./pages/Admin/DeliveryAgentTablePage";
+// Service Page
+import ServiceSummaryPage from "./pages/Admin/ServiceSummaryPage";
+import ItemPage from "./pages/Admin/ItemPage";
+import SubServicePage from "./pages/Admin/SubServicePage";
+import ServicePage from "./pages/Admin/ServicePage";
+// Profile Page
 import AdminProfile from "./pages/Admin/AdminProfile";
-import Configurations from "./pages/Admin/Configurations";
+import EditProfilePage from "./pages/Admin/EditProfilePage";
+import ChangePasswordPage from "./pages/Admin/ChangePasswordPage";
+// Configuration Page
+import RevenueBreakdownConfigPage from "./pages/Admin/RevenueBreakdownConfigPage";
+import AgentEarningConfigPage from "./pages/Admin/AgentEarningConfigPage";
 import GeoCodingSetting from "./pages/Admin/GeoCodingSetting";
 
 // Protected Routes
 import PrivateRoute from "./components/PrivateRoute";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
-
-// Dummy dashboards
-const AgentDashboard = () => <h2>Delivery Agent Dashboard</h2>;
-const AdminDashboard = () => <h2>Admin Dashboard</h2>;
 
 function App() {
   return (
@@ -118,7 +145,7 @@ function App() {
         <Route path="/provider/orders/verify-otps" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><OtpVerificationOrders /></PrivateRoute>} />
 
         {/* Delivery Agent */}
-        <Route path="/deliveries/summary" element={
+          <Route path="/deliveries/summary" element={
             <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
               <DeliveryPage />
             </RoleProtectedRoute>
@@ -129,6 +156,28 @@ function App() {
             </RoleProtectedRoute>
           }/>
           <Route path="/deliveries/today" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <TodayDeliveries />
+            </RoleProtectedRoute>
+          }/>
+
+          {/* Manage Availability */}
+          <Route path="/availability/manage" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <Availability />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/availability/saved" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <SavedAvailability />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/availability/manage/delete/:id" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <TodayDeliveries />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/availability/manage/edit/:id" element={
             <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
               <TodayDeliveries />
             </RoleProtectedRoute>
@@ -161,7 +210,7 @@ function App() {
             </RoleProtectedRoute>
           }/>
 
-          {/* Payout Page   */}Add commentMore actions
+          {/* Payout Page   */}
           <Route path="/payouts/summary" element={
             <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
               <DeliveryAgentPayout />
@@ -200,92 +249,175 @@ function App() {
             </RoleProtectedRoute>
           }/>           
           
-        {/* <Route path="/deliveries/summary" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryPage /></RoleProtectedRoute>} />
-        <Route path="/deliveries/pending" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><PendingDeliveries /></RoleProtectedRoute>} />
-        <Route path="/deliveries/today" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><TodayDeliveries /></RoleProtectedRoute>} />
-        <Route path="/update-status" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><UpdateStatus /></RoleProtectedRoute>} />
-        <Route path="/emailotp/verify-pickup" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><UpdateStatus /></RoleProtectedRoute>} />
-        <Route path="/emailotp/verify-handover" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><UpdateStatus /></RoleProtectedRoute>} />
-        <Route path="/emailotp/verify-delivery" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><UpdateStatus /></RoleProtectedRoute>} />
-        <Route path="/emailotp/verify-confirm-for-cloths" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><UpdateStatus /></RoleProtectedRoute>} />
-        <Route path="/payouts/summary" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryAgentPayout /></RoleProtectedRoute>} />
-        <Route path="/payouts/all" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><AllPayouts /></RoleProtectedRoute>} />
-        <Route path="/payouts/pending" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><PendingPayouts /></RoleProtectedRoute>} />
-        <Route path="/payouts/paid" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><PaidPayouts /></RoleProtectedRoute>} />
-        <Route path="/feedback/summary" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryAgentFeedback /></RoleProtectedRoute>} />
-        <Route path="/feedback/list" element={<RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}><DeliveryAgentFeedbackList /></RoleProtectedRoute>} /> */}
+          {/* Feature Not Available Page */}
+          <Route path="/not-available" element={<NotAvailablePage />} />
 
         {/* Admin */}
+        {/* Revenue Page */}
           <Route path="/revenue/summary" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <RevenuePage />
+              <RevenueSummaryPage />
             </RoleProtectedRoute>
           }/>
-          <Route path="/reports/order/summary" element={
+          <Route path="/revenue/total-revenue" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <Reports />
+              <TotalRevenuePage />
             </RoleProtectedRoute>
           }/>
+          <Route path="/revenue/provider-analytics-list" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProviderRevenuePage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/revenue/breakdown/graph" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <RevenueBreakdownPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/revenue/trends" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <RevenueTrendsPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/revenue/provider-analytics-list" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProviderRevenuePage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/revenue/agent-analytics-list" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AgentRevenuePage />
+            </RoleProtectedRoute>
+          }/>
+
+          {/* Report Page */}
+          <Route path="/reports/order/trend" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <OrderReportPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/reports/order/user-report-list" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <UserWiseOrderReportPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/reports/order/user-report-list/graph/:id" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <UserwiseGraphReportPage />
+            </RoleProtectedRoute>
+          }/>
+
+          {/* Request Page */}
           <Route path="/provider-requests" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <Requests />
+              <ServiceProviderRequestPage />
             </RoleProtectedRoute>
           }/>
+          <Route path="/provider/:type/:userID" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ServiceProviderRequestPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/agent-requests" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <DeliveryAgentRequestPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/agent/:type/:userID" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <DeliveryAgentRequestPage />
+            </RoleProtectedRoute>
+          }/>
+          
+          {/* User Page */}
           <Route path="/users/customer/graphs" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <UsersPage />
+              <CustomerGraphPage />
             </RoleProtectedRoute>
           }/>
-          <Route path="/revenue/summary" element={
+          <Route path="/users/customers/table" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <SendMessage />
+              <CustomerTablePage />
             </RoleProtectedRoute>
-          }/>
-          <Route path="/complaints/summary" element={
+          }/> 
+          <Route path="/users/service-providers/graphs" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <Complaints />
+              <ServiceProviderGraphPage />
             </RoleProtectedRoute>
-          }/>
-          <Route path="/admin-profile" element={
+          }/> 
+          <Route path="/users/service-providers/table" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <ManageServiceListing />
+              <ServiceProviderTablePage />
             </RoleProtectedRoute>
-          }/>
-          <Route path="/admin-profile" element={
+          }/> 
+          <Route path="/users/delivery-agents/graphs" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <Promotion />
+              <DeliveryAgentGraphPage />
+            </RoleProtectedRoute>
+          }/>  
+          <Route path="/users/delivery-agents/table" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <DeliveryAgentTablePage />
+            </RoleProtectedRoute>
+          }/>        
+
+          {/* Service Page */}
+          <Route path="/service/summary" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ServiceSummaryPage />
             </RoleProtectedRoute>
           }/>
+          <Route path="/service/add-items" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ItemPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/service/add-services" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ServicePage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/service/add-subservices" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <SubServicePage />
+            </RoleProtectedRoute>
+          }/>
+
+          {/* Profile Page */}
           <Route path="/admin-profile" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminProfile />
             </RoleProtectedRoute>
           }/>
-          <Route path="/configurations/save-google-key" element={
+          <Route path="/admin-profile/edit" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
-              <Configurations />
+              <EditProfilePage />
             </RoleProtectedRoute>
           }/>
-          <Route path="/configurations/save" element={
+          <Route path="/admin-profile/change-password" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <ChangePasswordPage />
+            </RoleProtectedRoute>
+          }/>
+
+          {/* Configuration Page */}
+          <Route path="/configurations/providers" element={
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <GeoCodingSetting />
             </RoleProtectedRoute>
           }/>
+          <Route path="/configurations/revenue-breakdown" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <RevenueBreakdownConfigPage />
+            </RoleProtectedRoute>
+          }/>
+          <Route path="/configurations/agent-earnings" element={
+            <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+              <AgentEarningConfigPage />
+            </RoleProtectedRoute>
+          }/>
 
-        {/* Admin */}
-        {/* <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/revenue/summary" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><RevenuePage /></RoleProtectedRoute>} />
-        <Route path="/reports/order/summary" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Reports /></RoleProtectedRoute>} />
-        <Route path="/provider-requests" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Requests /></RoleProtectedRoute>} />
-        <Route path="/users/customer/graphs" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><UsersPage /></RoleProtectedRoute>} />
-        <Route path="/send-message" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><SendMessage /></RoleProtectedRoute>} />
-        <Route path="/complaints/summary" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Complaints /></RoleProtectedRoute>} />
-        <Route path="/admin/manage-listing" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><ManageServiceListing /></RoleProtectedRoute>} />
-        <Route path="/admin/promotions" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Promotion /></RoleProtectedRoute>} />
-        <Route path="/admin-profile" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><AdminProfile /></RoleProtectedRoute>} />
-        <Route path="/configurations/save-google-key" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><Configurations /></RoleProtectedRoute>} />
-        <Route path="/configurations/save" element={<RoleProtectedRoute allowedRoles={["ADMIN"]}><GeoCodingSetting /></RoleProtectedRoute>} /> */}
-
+        <Route path="*" element={<h1>404 Not Found</h1>} />
 
       </Routes>
    

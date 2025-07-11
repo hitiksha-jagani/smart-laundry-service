@@ -43,7 +43,7 @@ const RevenuePage = () => {
     
             try {
                 // Fetch all data in parallel
-                const [userRes, summaryRes] = await Promise.all([
+                const [userRes, summaryRes, totalRes] = await Promise.all([
                         
                     // Fetch user data
                     axiosInstance.get(`/user-detail/${userId}`).catch(err => {
@@ -84,23 +84,6 @@ const RevenuePage = () => {
                         console.error("Total revenue data fetch failed", err);
                         return { data: null };
                     }),
-
-                    // Fetch total revenue data
-                    axiosInstance.get("/revenue/total-revenue", {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        },
-                        params: {
-                            filter: filterParams.filter, 
-                            ...(filterParams.filter === "custom" && {
-                            startDate: filterParams.startDate,
-                            endDate: filterParams.endDate
-                            })
-                        }
-                    }).catch(err => {
-                        console.error("Total revenue data fetch failed", err);
-                        return { data: null };
-                    })
     
                 ]);
     
@@ -109,6 +92,9 @@ const RevenuePage = () => {
 
                 setSummary(summaryRes.data);
                 console.log("User data : " ,summaryRes.data);
+
+                setTotal(totalRes.data);
+                console.log("Total revenue : ", totalRes.data);
         
             } catch (error) {
                 console.error("Failed to fetch one or more data:", error);
@@ -126,7 +112,7 @@ const RevenuePage = () => {
 
     return ( 
         <>
-
+ 
             <AdminDashboardLayout user={user}>
                 <h1 className='heading-admin h1-admin'>REVENUE DASHBOARD</h1>
 

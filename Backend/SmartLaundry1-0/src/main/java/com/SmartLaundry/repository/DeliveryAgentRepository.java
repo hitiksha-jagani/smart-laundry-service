@@ -20,4 +20,6 @@ public interface DeliveryAgentRepository extends JpaRepository<DeliveryAgent, St
 
     List<DeliveryAgent> findByStatus(Status status);
     Optional<DeliveryAgent> findByDeliveryAgentId(String deliveryAgentId);
+
+    DeliveryAgent findByUsersUserId(String id);
 }

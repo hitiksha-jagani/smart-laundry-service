@@ -127,10 +127,12 @@ public class DeliveryAgent implements Serializable {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "deliveryAgent", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @JsonManagedReference
-    @OneToMany(mappedBy = "deliveryAgent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeliveryAgentAvailability> deliveryAgentAvailabilities;
+
 
     public String getDeliveryAgentId() {
         return this.deliveryAgentId;

@@ -9,6 +9,7 @@ import feedback from '../../assets/edit-document-icon.svg'
 import orderHistory from '../../assets/working-time-icon.png'
 import ticket from '../../assets/speech-bubble-line-icon.png'
 import profile from '../../assets/avatar-icon.png'
+import NotAvailablePage from '../../pages/NotAvailablePage';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 
@@ -23,7 +24,13 @@ const DeliveryAgentSidebar = ({ agent }) => {
                     <li>
                         <NavLink to="/deliveries/summary" className="sidebar-link">
                             <img className="sidebar-icon" src={home} alt="" />
-                            <span>Home</span>
+                            <span>Deliveries</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/availability/manage" className="sidebar-link">
+                            <img className="sidebar-icon" src={home} alt="" />
+                            <span>Manage Availability</span>
                         </NavLink>
                     </li>
                     <li>
@@ -45,7 +52,7 @@ const DeliveryAgentSidebar = ({ agent }) => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/agent-ticket/raise" className="sidebar-link">
+                        <NavLink to="/not-available" className="sidebar-link">
                             <img className="sidebar-icon" src={ticket} alt="" />
                             <span>Raise A Ticket</span>
                         </NavLink>

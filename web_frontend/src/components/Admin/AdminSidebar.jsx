@@ -15,6 +15,7 @@ import promotion from '../../assets/new-product-icon.png';
 import profile from '../../assets/avatar-icon.png';
 import configuration from '../../assets/working-time-icon.png';
 import ConfigurationsMenu, { configRoutes } from './ConfigurationsMenu';
+import NotAvailablePage from '../../pages/NotAvailablePage';
 import '../../styles/Admin/AdminSidebar.css';
 import '../../styles/Admin/AdminCommon.css';
 import '../../styles/Admin/ConfigurationMenu.css';  
@@ -24,13 +25,13 @@ const AdminSidebar = ({ admin }) => {
     const isConfigActive = configRoutes.some(path => location.pathname.startsWith(path));
 
     const [isConfigMenuOpen, setConfigMenuOpen] = useState(false);
-
+    
     const handleConfigClick = () => {
         setConfigMenuOpen(prev => !prev);
     };
 
     const handleMouseEnter = () => setConfigMenuOpen(true);
-    const handleMouseLeave = () => setConfigMenuOpen(false)
+    const handleMouseLeave = () => setConfigMenuOpen(false);
 
     return (
         <div className="admin-sidebar">
@@ -45,7 +46,7 @@ const AdminSidebar = ({ admin }) => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/reports/order/summary" className="admin-sidebar-link">
+                        <NavLink to="/reports/order/trend" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={report} alt="" />
                             <span>Reports</span>
                         </NavLink>
@@ -63,25 +64,25 @@ const AdminSidebar = ({ admin }) => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/agent-ticket/raise" className="admin-sidebar-link">
+                        <NavLink to="/not-available" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={message} alt="" />
                             <span>Send Message</span>
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/complaints/summary" className="admin-sidebar-link">
+                        <NavLink to="/not-available" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={ticket} alt="" />
                             <span>Complaints</span>
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/profile" className="admin-sidebar-link">
+                        <NavLink to="/service/summary" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={manage} alt="" />
                             <span>Manage Service Listing</span>
                         </NavLink>
-                    </li>
+                    </li> 
                     <li>
-                        <NavLink to="/profile" className="admin-sidebar-link">
+                        <NavLink to="/not-available" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={promotion} alt="" />
                             <span>Promotion</span>
                         </NavLink>
@@ -92,20 +93,11 @@ const AdminSidebar = ({ admin }) => {
                             <span>My Profile</span>
                         </NavLink>
                     </li>
-                    <li
-                        className="sidebar-menu-with-submenu"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        >
-                        <div
-                            className={`admin-sidebar-link submenu-parent ${isConfigActive ? 'active' : ''}`}
-                            onClick={handleConfigClick}
-                        >
+                    <li>
+                        <NavLink to="/configurations/providers" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={configuration} alt="" />
                             <span>Configurations</span>
-                        </div>
-
-                        {isConfigMenuOpen && <ConfigurationsMenu />}
+                        </NavLink>
                     </li>
                 </ul>
 

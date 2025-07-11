@@ -123,7 +123,10 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query("SELECT COUNT(o) FROM Order o WHERE " +
             "(o.pickupDeliveryAgent.deliveryAgentId = :agentId OR o.deliveryDeliveryAgent.deliveryAgentId = :agentId) " +
             "AND o.createdAt BETWEEN :start AND :end")
-    long countByDeliveryDeliveryAgentOrPickupAgentBetween(String agentId, LocalDateTime start, LocalDateTime end);
+    long countByDeliveryDeliveryAgentOrPickupAgentBetween(
+            @Param("agentId") String agentId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.serviceProvider.serviceProviderId = :id AND o.createdAt BETWEEN :start AND :end")
     long countByServiceProviderIdAndCreatedAtBetween(String id, LocalDateTime start, LocalDateTime end);
@@ -132,9 +135,15 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     long countByAgentIdAndCreatedAtBetween(String id, LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.serviceProvider.serviceProviderId = :id AND o.status = :status AND o.createdAt BETWEEN :start AND :end")
-    long countByServiceProviderIdAndStatusAndCreatedAtBetween(String id, OrderStatus status, LocalDateTime start, LocalDateTime end);
+    long countByServiceProviderIdAndStatusAndCreatedAtBetween(@Param("id") String id,
+                                                              @Param("status") OrderStatus status,
+                                                              @Param("start") LocalDateTime start,
+                                                              @Param("end") LocalDateTime end);
 
     @Query("SELECT COUNT(o) FROM Order o WHERE (o.pickupDeliveryAgent.deliveryAgentId = :id OR o.deliveryDeliveryAgent.deliveryAgentId = :id) AND o.status = :status AND o.createdAt BETWEEN :start AND :end")
-    long countByAgentIdAndStatusAndCreatedAtBetween(String id, OrderStatus status, LocalDateTime start, LocalDateTime end);
+    long countByAgentIdAndStatusAndCreatedAtBetween(@Param("id") String id,
+                                                    @Param("status") OrderStatus status,
+                                                    @Param("start") LocalDateTime start,
+                                                    @Param("end") LocalDateTime end);
 
 }

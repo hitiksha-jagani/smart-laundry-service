@@ -189,7 +189,7 @@ const DeliveryAgentPayout = () => {
                             count={summary?.paidPayouts} 
                             link="/payouts/paid" 
                             data={paid}
-                            filterParams={filterParams}
+                            filterParams={filterParams} 
                         />
 
                         {/* Pending Payouts */}

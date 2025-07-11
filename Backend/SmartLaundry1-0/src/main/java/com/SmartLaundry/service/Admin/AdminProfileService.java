@@ -51,7 +51,7 @@ public class AdminProfileService {
 
     //@author Hitiksha Jagani
     // Logic to fetch profile details
-    @Cacheable(value = "adminProfileCache", key = "#userId")
+//    @Cacheable(value = "adminProfileCache", key = "#userId")
     public AdminProfileResponseDTO getProfileDetail(String userId) throws AccessDeniedException {
 
         Users user = roleCheckingService.checkUser(userId);
@@ -93,28 +93,41 @@ public class AdminProfileService {
             user.setLastName(request.getLastName());
         }
 
-        AdminEditProfileRequestDTO.AddressDTO addr = request.getAddresses();
-        if (addr != null) {
-            if (addr.getPincode() != null && !addr.getPincode().matches("^[0-9]{6}$")) {
-                throw new ExceptionMsg("Pincode must be 6 digits.");
+            AdminEditProfileRequestDTO.AddressDTO addr = request.getAddresses();
+            if (addr != null) {
+                // Validate pincode
+                if (addr.getPincode() != null && !addr.getPincode().trim().isEmpty()
+                        && !addr.getPincode().matches("^[0-9]{6}$")) {
+                    throw new ExceptionMsg("Pincode must be 6 digits.");
+                }
+
+                // Find existing address — required
+                UserAddress existingAddress = userAddressRepository.findByUsers(user);
+                if (existingAddress == null) {
+                    throw new RuntimeException("Address does not exist for this user.");
+                }
+
+                // Optional: validate city if changing
+                if (addr.getCityName() != null && !addr.getCityName().trim().isEmpty()) {
+                    City city = cityRepository.findByCityName(addr.getCityName())
+                            .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
+                    existingAddress.setCity(city);
+                }
+
+                // Update only non-null and non-empty fields
+                if (addr.getName() != null && !addr.getName().trim().isEmpty()) {
+                    existingAddress.setName(addr.getName());
+                }
+                if (addr.getAreaName() != null && !addr.getAreaName().trim().isEmpty()) {
+                    existingAddress.setAreaName(addr.getAreaName());
+                }
+                if (addr.getPincode() != null && !addr.getPincode().trim().isEmpty()) {
+                    existingAddress.setPincode(addr.getPincode());
+                }
+
+                // Save updated address
+                userAddressRepository.save(existingAddress);
             }
-
-            City city = null;
-            if (addr.getCityName() != null) {
-                city = cityRepository.findByCityName(addr.getCityName())
-                        .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
-            }
-
-            UserAddress addresses = userAddressRepository.findByUsers(user);
-
-            if (addr.getName() != null) addresses.setName(addr.getName());
-            if (addr.getAreaName() != null) addresses.setAreaName(addr.getAreaName());
-            if (addr.getPincode() != null) addresses.setPincode(addr.getPincode());
-            if (city != null) addresses.setCity(city);
-
-            userAddressRepository.save(addresses);
-            user.setAddress(addresses);
-        }
 
         userRepository.save(user);
 

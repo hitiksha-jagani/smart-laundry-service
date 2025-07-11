@@ -66,10 +66,10 @@ public class DeliveryAgentAvailability implements Serializable {
     @Schema(description = "Selected day is holiday or not.", example = "True")
     private boolean holiday = false;
 
-    @JsonIgnore
-    @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_agent_id", nullable = false)
-    @Schema(description = "Id of the delivery agent.", example = "DA0001", accessMode = Schema.AccessMode.READ_ONLY)
+    @JsonBackReference
     private DeliveryAgent deliveryAgent;
+
 }

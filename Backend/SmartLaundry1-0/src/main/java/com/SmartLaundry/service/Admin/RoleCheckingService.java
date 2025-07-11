@@ -36,7 +36,12 @@ public class RoleCheckingService {
 
     // Check user address exist or not and if exist then return user address
     public UserAddress checkUserAddress(Users user){
-        UserAddress address = userAddressRepository.findByUsers(user);
+        UserAddress address = user.getAddress();
+        if (address == null) {
+            System.out.println("No address found for user: " + user.getUserId());
+        } else {
+            System.out.println("Address found: " + address);
+        }
         return address;
     }
 

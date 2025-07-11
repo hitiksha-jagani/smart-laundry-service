@@ -2,20 +2,21 @@ package com.SmartLaundry.service.Admin;
 
 import com.SmartLaundry.dto.Admin.OrderTrendGraphDTO;
 import com.SmartLaundry.dto.Admin.PerUserReportResponseDTO;
-import com.SmartLaundry.model.DeliveryAgent;
-import com.SmartLaundry.model.OrderStatus;
-import com.SmartLaundry.model.RejectedOrders;
-import com.SmartLaundry.model.ServiceProvider;
+import com.SmartLaundry.dto.Admin.RevenueGraphPointDTO;
+import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.OrderRepository;
 import com.SmartLaundry.repository.RejectedOrdersRepository;
 import com.SmartLaundry.repository.ServiceProviderRepository;
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,8 @@ public class ReportService {
     @Autowired
     private DeliveryAgentRepository deliveryAgentRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
+
     public OrderTrendGraphDTO getOrderTrendGraph(String filter) {
         LocalDate today = LocalDate.now();
         LocalDateTime end = today.atTime(23, 59, 59);
@@ -49,7 +52,6 @@ public class ReportService {
 
         switch (filter.toLowerCase()) {
             case "yearly" :
-                start = LocalDate.of(today.getYear(), 1, 1).atStartOfDay();
                 for (int month = 1; month <= today.getMonthValue(); month++) {
                     LocalDateTime monthStart = LocalDate.of(today.getYear(), month, 1).atStartOfDay();
                     LocalDateTime monthEnd = monthStart.plusMonths(1).minusNanos(1);
@@ -62,24 +64,24 @@ public class ReportService {
                             orderRepository.countByStatusAndCreatedAtBetween(OrderStatus.CANCELLED, monthStart, monthEnd)));
 
                     rejected.add(new OrderTrendGraphDTO.DataPoint(label,
-                            rejectedOrdersRepository.countDistinctOrdersByCreatedAtBetween(monthStart, monthEnd)));
+                            rejectedOrdersRepository.countDistinctOrders(monthStart, monthEnd)));
 
                     labels.add(label);
                 }
                 break;
 
             case "quarterly" :
-                int month = today.getMonthValue();
-                int quarter = (month - 1) / 3 + 1;
-                int startMonth = (quarter - 1) * 3 + 1;
-                start = LocalDate.of(today.getYear(), startMonth, 1).atStartOfDay();
 
-                for (int m = startMonth; m < startMonth + 3; m++) {
-                    if (m > today.getMonthValue()) break;
+                int currentMonth = today.getMonthValue();
+
+                for (int i = 2; i >= 0; i--) {
+                    int m = currentMonth - i;
+                    if (m <= 0) continue;
 
                     LocalDateTime monthStart = LocalDate.of(today.getYear(), m, 1).atStartOfDay();
-                    LocalDateTime monthEnd = monthStart.plusMonths(1).minusNanos(1);
-                    String label = monthStart.getMonth().name().substring(0, 3);
+                    LocalDateTime monthEnd = monthStart.plusMonths(1).minusNanos(1); // exclusive
+
+                    String label = monthStart.getMonth().name().substring(0, 3); // "May", "Jun", etc.
 
                     orders.add(new OrderTrendGraphDTO.DataPoint(label,
                             orderRepository.countByCreatedAtBetween(monthStart, monthEnd)));
@@ -88,7 +90,7 @@ public class ReportService {
                             orderRepository.countByStatusAndCreatedAtBetween(OrderStatus.CANCELLED, monthStart, monthEnd)));
 
                     rejected.add(new OrderTrendGraphDTO.DataPoint(label,
-                            rejectedOrdersRepository.countDistinctOrdersByCreatedAtBetween(monthStart, monthEnd)));
+                            rejectedOrdersRepository.countDistinctOrders(monthStart, monthEnd)));
 
                     labels.add(label);
                 }
@@ -96,7 +98,6 @@ public class ReportService {
 
             case "monthly" :
             default :
-                    start = today.withDayOfMonth(1).atStartOfDay();
                     int daysInMonth = today.getDayOfMonth();
 
                     for (int d = 1; d <= daysInMonth; d++) {
@@ -111,7 +112,7 @@ public class ReportService {
                                 orderRepository.countByStatusAndCreatedAtBetween(OrderStatus.CANCELLED, dayStart, dayEnd)));
 
                         rejected.add(new OrderTrendGraphDTO.DataPoint(label,
-                                rejectedOrdersRepository.countDistinctOrdersByCreatedAtBetween(dayStart, dayEnd)));
+                                rejectedOrdersRepository.countDistinctOrders(dayStart, dayEnd)));
 
                         labels.add(label);
                     }
@@ -129,16 +130,21 @@ public class ReportService {
         LocalDateTime end = LocalDateTime.now();
 
         switch (filter.toLowerCase()) {
-            case "yearly" : start = LocalDate.of(LocalDate.now().getYear(), 1, 1).atStartOfDay();
+            case "yearly" :
+                start = LocalDate.now().withDayOfYear(1).atStartOfDay();
                 break;
             case "quarterly" :
-                int q = (LocalDate.now().getMonthValue() - 1) / 3 + 1;
-                int startMonth = (q - 1) * 3 + 1;
-                start = LocalDate.of(LocalDate.now().getYear(), startMonth, 1).atStartOfDay();
+                LocalDate today = LocalDate.now();
+                LocalDate startDate = today.minusMonths(2).withDayOfMonth(1);
+                start = startDate.atStartOfDay();
                 break;
             case "monthly":
-            default : start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+            default :
+                start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
         }
+
+        System.out.println("Start: " + start);
+        System.out.println("End: " + end);
 
         if ("service provider".equalsIgnoreCase(role)) {
 
@@ -147,8 +153,9 @@ public class ReportService {
                     : serviceProviderRepository.findAll();
 
             return providers.stream().map(provider -> {
+                logger.info("Service provider id : {}", provider.getServiceProviderId());
                 long orderCount = orderRepository.countByServiceProviderAndCreatedAtBetween(provider, start, end);
-                long rejectedCount = rejectedOrdersRepository.countDistinctOrdersByServiceProvider(provider.getServiceProviderId(), start, end);
+                long rejectedCount = rejectedOrdersRepository.countDistinctOrdersByAgent(provider.getUser().getUserId(), start, end);
 
                 return PerUserReportResponseDTO.builder()
                         .userId(provider.getUser().getUserId())
@@ -167,8 +174,9 @@ public class ReportService {
             List<DeliveryAgent> agents = deliveryAgentRepository.findAll();
 
             return agents.stream().map(agent -> {
+                logger.info("Delivery agent id : {}",agent.getDeliveryAgentId());
                 long orderCount = orderRepository.countByDeliveryDeliveryAgentOrPickupAgentBetween(agent.getDeliveryAgentId(), start, end);
-                long rejectedCount = rejectedOrdersRepository.countDistinctOrdersByAgent(agent.getDeliveryAgentId(), start, end);
+                long rejectedCount = rejectedOrdersRepository.countDistinctOrdersByAgent(agent.getUsers().getUserId(), start, end);
 
                 return PerUserReportResponseDTO.builder()
                         .userId(agent.getUsers().getUserId())
@@ -189,10 +197,15 @@ public class ReportService {
 
     public OrderTrendGraphDTO getOrderGraphForUser(String id, String filter) {
         String role = determineRoleFromId(id);
+        System.out.println("Role is : " + role);
+
         return getProviderAgentOrderGraph(role, id, filter);
     }
 
     private String determineRoleFromId(String id) {
+
+        System.out.println("Id :" + id);
+
         if (id.startsWith("SP") && serviceProviderRepository.existsById(id)) {
             return "provider";
         }
@@ -204,13 +217,25 @@ public class ReportService {
 
 
     public OrderTrendGraphDTO getProviderAgentOrderGraph(String role, String id, String filter) {
-        LocalDateTime start;
+        LocalDateTime start = null;
         LocalDateTime end = LocalDateTime.now();
         DateTimeFormatter formatter;
 
         List<OrderTrendGraphDTO.DataPoint> orderTrend = new ArrayList<>();
         List<OrderTrendGraphDTO.DataPoint> cancelledTrend = new ArrayList<>();
         List<OrderTrendGraphDTO.DataPoint> rejectedTrend = new ArrayList<>();
+
+        System.out.println("Id : " + id);
+        String re_id;
+        if(role.equals("provider")) {
+            ServiceProvider provider = serviceProviderRepository.findById(id).orElse(null);
+            logger.info("Provider data is : {}", provider );
+            re_id = provider.getUser().getUsersId();
+        } else {
+            DeliveryAgent agent = deliveryAgentRepository.findById(id).orElse(null);
+            logger.info("Agent data is : {}", agent );
+            re_id = agent.getUsers().getUsersId();
+        }
 
         switch (filter.toLowerCase()) {
 
@@ -224,7 +249,7 @@ public class ReportService {
                     String label = formatter.format(s);
                     orderTrend.add(new OrderTrendGraphDTO.DataPoint(label, countOrders(role, id, s, e)));
                     cancelledTrend.add(new OrderTrendGraphDTO.DataPoint(label, countCancelledOrders(role, id, s, e)));
-                    rejectedTrend.add(new OrderTrendGraphDTO.DataPoint(label, countRejectedOrders(role, id, s, e)));
+                    rejectedTrend.add(new OrderTrendGraphDTO.DataPoint(label, countRejectedOrders(role, re_id, s, e)));
                 }
                 break;
 
@@ -248,7 +273,7 @@ public class ReportService {
 
                     orderTrend.add(new OrderTrendGraphDTO.DataPoint(label, countOrders(role, id, s, e)));
                     cancelledTrend.add(new OrderTrendGraphDTO.DataPoint(label, countCancelledOrders(role, id, s, e)));
-                    rejectedTrend.add(new OrderTrendGraphDTO.DataPoint(label, countRejectedOrders(role, id, s, e)));
+                    rejectedTrend.add(new OrderTrendGraphDTO.DataPoint(label, countRejectedOrders(role, re_id, s, e)));
                 }
                 break;
 
@@ -264,10 +289,13 @@ public class ReportService {
                     String label = formatter.format(s);
                     orderTrend.add(new OrderTrendGraphDTO.DataPoint(label, countOrders(role, id, s, e)));
                     cancelledTrend.add(new OrderTrendGraphDTO.DataPoint(label, countCancelledOrders(role, id, s, e)));
-                    rejectedTrend.add(new OrderTrendGraphDTO.DataPoint(label, countRejectedOrders(role, id, s, e)));
+                    rejectedTrend.add(new OrderTrendGraphDTO.DataPoint(label, countRejectedOrders(role, re_id, s, e)));
                 }
                 break;
         }
+
+        System.out.println("Start time : " + start);
+        System.out.println("End time : " + end);
 
         return OrderTrendGraphDTO.builder()
                 .orderVolumeTrend(orderTrend)

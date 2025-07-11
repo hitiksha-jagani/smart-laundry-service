@@ -19,6 +19,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class RequestProfileDTO implements Serializable{
+    private String userId;
     private String firstName;
     private String lastName;
     private String phoneNo;

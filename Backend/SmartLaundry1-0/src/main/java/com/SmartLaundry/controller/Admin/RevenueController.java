@@ -55,7 +55,7 @@ public class RevenueController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isAdmin(user);
-        return ResponseEntity.ok(revenueService.getBreakdownTable(user, filter, startDate, endDate));
+        return ResponseEntity.ok(revenueService.getBreakdownTable( filter, startDate, endDate));
     }
 
     // @author Hitiksha Jagani
@@ -70,7 +70,7 @@ public class RevenueController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isAdmin(user);
-        return ResponseEntity.ok(revenueService.getBreakdownGraph(user, filter, startDate, endDate));
+        return ResponseEntity.ok(revenueService.getBreakdownGraph( filter, startDate, endDate));
     }
 
     // @author Hitiksha Jagani
@@ -107,7 +107,7 @@ public class RevenueController {
     // based on filter monthly, quarterly, yearly
     @GetMapping("/trends")
     public ResponseEntity<RevenueTrendDTO> getRevenueTrendsGraph(HttpServletRequest request,
-                                                                       @RequestParam(defaultValue = "gross_sales") String type,
+                                                                       @RequestParam(defaultValue = "gross sales") String type,
                                                                  @RequestParam(defaultValue = "monthly") String filter) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
@@ -116,24 +116,12 @@ public class RevenueController {
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/revenue/insights
-    // Return best performing service provider, most active delivery agent and highest value order
-//    @GetMapping("/insights")
-//    public ResponseEntity<InsightResponseDTO> getInsights(HttpServletRequest request,
-//                                                          @RequestParam(defaultValue = "monthly") String filter) throws AccessDeniedException {
-//        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-//        Users user = roleCheckingService.checkUser(userId);
-//        roleCheckingService.isAdmin(user);
-//        return ResponseEntity.ok(revenueService.getInsights(filter));
-//    }
-
-    // @author Hitiksha Jagani
     // http://localhost:8080/revenue/provider-analytics-list
     // Return revenue analytics list of service providers
     @GetMapping("/provider-analytics-list")
     public ResponseEntity<List<ServiceProviderRevenueTableDTO>> getServiceProviderRevenueTable(
             HttpServletRequest request,
-            @RequestParam(defaultValue = "Overall") String filter) throws AccessDeniedException {
+            @RequestParam(defaultValue = "monthly") String filter) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isAdmin(user);
@@ -155,7 +143,7 @@ public class RevenueController {
     }
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/revenue/agent-analytics-list
+        // http://localhost:8080/revenue/agent-analytics-list
     // Return revenue analytics list of delivery agents
     @GetMapping("/agent-analytics-list")
     public ResponseEntity<List<DeliveryAgentRevenueTableDTO>> getDeliveryAgentRevenueTable(
@@ -166,7 +154,7 @@ public class RevenueController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isAdmin(user);
-        return ResponseEntity.ok(revenueService.getAgentRevenueTable(filter, startDate, endDate));
+        return ResponseEntity.ok(revenueService.getAgentRevenueTable(filter));
     }
 
     // @author Hitiksha Jagani

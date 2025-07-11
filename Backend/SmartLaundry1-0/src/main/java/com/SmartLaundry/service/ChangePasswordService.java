@@ -23,8 +23,8 @@ public class ChangePasswordService {
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
         // Check whether old password match with stored password or not.
-        if(passwordEncoder.matches(user.getPassword(), changePasswordRequestDTO.getOldPassword())){
-            return "Old password not match.";
+        if (!passwordEncoder.matches(changePasswordRequestDTO.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password does not match.");
         }
 
         // Check if new password not match with old password
