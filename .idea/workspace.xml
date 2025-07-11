@@ -6,8 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="bfec3e60-f7db-4ec7-90a0-755973f2e8a9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/CustomerOrderHistory.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/CustomerOrderHistory.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/CORSConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/CORSConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/Customer/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_frontend/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
