@@ -429,11 +429,11 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
-            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
-            if (!isAvailable) {
-                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
-                continue;
-            }
+//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+//            if (!isAvailable) {
+//                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
+//                continue;
+//            }
 
             String locationKey = "deliveryAgentLocation:" + key;
 
@@ -501,11 +501,11 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
-            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
-            if (!isAvailable) {
-                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
-                continue;
-            }
+//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+//            if (!isAvailable) {
+//                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
+//                continue;
+//            }
 
             String locationKey = "deliveryAgentLocation:" + key;
 
