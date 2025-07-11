@@ -57,7 +57,7 @@ const AdminSidebar = ({ admin }) => {
                             <span>Requests</span>
                         </NavLink>
                     </li>
-                    <li>
+                    <li> 
                         <NavLink to="/users/customer/graphs" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={users} alt="" />
                             <span>Users</span>

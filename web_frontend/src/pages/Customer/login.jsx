@@ -113,14 +113,34 @@ const Login = () => {
           console.error("Error fetching provider ID:", err);
           setError("Unable to retrieve service provider info.");
         }
-      } else {
+      } else if (data.role === "DELIVERY_AGENT") {
+  login(data.jwtToken, data.role, userId); // store token, userId in localStorage
+
+  try {
+    const agentRes = await fetch(`http://localhost:8080/profile/exist/${userId}`);
+
+
+    if (!agentRes.ok) {
+      throw new Error("Failed to check agent existence.");
+    }
+
+    const exists = await agentRes.json(); // parse boolean response
+
+    if (exists) {
+      navigate("/deliveries/summary");
+    } else {
+      navigate("/profile/complete"); // token is already saved by login()
+    }
+  } catch (err) {
+    console.error("Error checking delivery agent existence:", err);
+    setError("Unable to verify agent profile. Try again.");
+  }
+}
+ else {
         login(data.jwtToken, data.role, userId);
         switch (data.role) {
           case "CUSTOMER":
             navigate("/customer/dashboard");
-            break;
-          case "DELIVERY_AGENT":
-            navigate("/deliveries/summary");
             break;
           case "ADMIN":
             navigate("/revenue/summary");

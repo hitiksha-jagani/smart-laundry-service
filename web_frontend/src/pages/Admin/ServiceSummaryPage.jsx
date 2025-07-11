@@ -56,12 +56,12 @@ const ServiceSummaryPage = () => {
                     }),
 
                     // Fetch revenue breakdown
-                    axiosInstance.get("/configurations/revenue-breakdown/history", {
+                    axiosInstance.get("/service/summary", {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
                     }).catch(err => {
-                        console.error("Revenue breakdown data fetch failed", err);
+                        console.error("Service summary data fetch failed", err);
                         return { data: null };
                     }),
             
@@ -71,7 +71,7 @@ const ServiceSummaryPage = () => {
                 console.log("User data : " ,userRes.data);
 
                 setData(dataRes.data);
-                console.log("Delivery agent earning data : ", dataRes.data);
+                console.log("Service summary data : ", dataRes.data);
                     
             } catch (error) {
                 console.error("Failed to fetch one or more data:", error);
@@ -100,6 +100,19 @@ const ServiceSummaryPage = () => {
                     <p className='p-admin' style={{ padding: '0 30px' }}>Organize and assign clothing items under the appropriate services offered.</p>
 
                     <h2 className="h2-admin">SERVICES SUMMARY</h2>
+
+                    <div className="summary-container" style={{ marginTop: '150px', marginLeft: '30px' }}>
+
+                        {/* <AdminSummaryCard 
+                                title="TOTAL REVENUE" 
+                                // prefix='₹' 
+                                user={user}
+                                count={summary?.totalRevenue  || 0}
+                                // link="/revenue/total-revenue"  
+                                data={total}
+                            /> */}
+
+                    </div>
 
                     {/* Right Sidebar */}
                     <ServiceMenu />

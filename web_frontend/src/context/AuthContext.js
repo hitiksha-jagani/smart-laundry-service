@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
 
   const [userId, setUserId] = useState(null);
   const [providerId, setProviderId] = useState(null);
+  const [agentId, setAgentId] = useState(null);
   const [loading, setLoading] = useState(true); // new flag
 
 

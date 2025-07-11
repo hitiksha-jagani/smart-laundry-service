@@ -8,8 +8,7 @@ import payout from '../../assets/credit-card-icon.svg'
 import feedback from '../../assets/edit-document-icon.svg'
 import orderHistory from '../../assets/working-time-icon.png'
 import ticket from '../../assets/speech-bubble-line-icon.png'
-import profile from '../../assets/avatar-icon.png'
-import NotAvailablePage from '../../pages/NotAvailablePage';
+import profile from '../../assets/avatar-icon.png';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 
@@ -40,7 +39,7 @@ const DeliveryAgentSidebar = ({ agent }) => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/feedback/summary" className="sidebar-link">
+                        <NavLink to="/not-available" className="sidebar-link">
                             <img className="sidebar-icon" src={feedback} alt="" />
                             <span>Feedback</span>
                         </NavLink>
@@ -58,7 +57,7 @@ const DeliveryAgentSidebar = ({ agent }) => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/profile" className="sidebar-link">
+                        <NavLink to="/profile/detail" className="sidebar-link">
                             <img className="sidebar-icon" src={profile} alt="" />
                             <span>My Profile</span>
                         </NavLink>

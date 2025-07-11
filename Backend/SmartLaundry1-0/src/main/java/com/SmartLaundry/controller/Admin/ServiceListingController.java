@@ -24,7 +24,7 @@ public class ServiceListingController {
 
     // http://localhost:8080/service/summary
     // Return count of services
-    @GetMapping("/service/summary")
+    @GetMapping("/summary")
     public ResponseEntity<?> getSummary(HttpServletRequest request) {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         return ResponseEntity.ok("Hello");
@@ -32,7 +32,7 @@ public class ServiceListingController {
 
     // http://localhost:8080/service/add-items
     // Render a form to submit items
-    @PostMapping("/service/add-items")
+    @PostMapping("/add-items")
     public ResponseEntity<String> addItems(@Valid @RequestBody ManageServiceListingRequestDTO manageServiceListingRequestDTO,
                                              HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
@@ -41,7 +41,7 @@ public class ServiceListingController {
 
     // http://localhost:8080/service/add-services
     // Render a form to submit services
-    @PostMapping("/service/add-services")
+    @PostMapping("/add-services")
     public ResponseEntity<String> addService(@Valid @RequestBody ManageServiceListingRequestDTO manageServiceListingRequestDTO,
                                              HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
@@ -50,7 +50,7 @@ public class ServiceListingController {
 
     // http://localhost:8080/service/add-subservices
     // Render a form to submit sub-service
-    @PostMapping("/service/add-subservices")
+    @PostMapping("/add-subservices")
     public ResponseEntity<String> addSubService(@Valid @RequestBody ManageServiceListingRequestDTO manageServiceListingRequestDTO,
                                                 HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));

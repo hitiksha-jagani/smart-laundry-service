@@ -90,6 +90,7 @@ public class DeliveryAgentProfileService {
                 .build();
 
         DeliveryAgentProfileDTO deliveryAgentProfileDTO = new DeliveryAgentProfileDTO();
+        deliveryAgentProfileDTO.setUserId(userId);
         deliveryAgentProfileDTO.setFirstName(user.getFirstName());
         deliveryAgentProfileDTO.setLastName(user.getLastName());
         deliveryAgentProfileDTO.setEmail(user.getEmail());

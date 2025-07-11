@@ -4,6 +4,8 @@ import com.SmartLaundry.dto.Admin.*;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentProfileDTO;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,6 +39,11 @@ public class AdminUserService {
 
     @Autowired
     private UserAddressRepository userAddressRepository;
+
+    @Autowired
+    private BankAccountRepository bankAccountRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminUserService.class);
 
     public CustomerGraphOverviewDTO getGraphsForUsers(UserRole role) {
         LocalDate today = LocalDate.now();
@@ -150,10 +157,10 @@ public class AdminUserService {
     @Transactional
     public List<ServiceProviderResponseDTO> getFilteredServiceProviders(String keyword, LocalDate startDate, LocalDate endDate, String sortBy) {
 
-        Specification<Users> spec = null;
+        Specification<Users> spec = (root, query, cb) -> cb.equal(root.get("role"), UserRole.SERVICE_PROVIDER);
 
         // Always filter by customer role
-        spec = addSpec(spec, (root, query, cb) -> cb.equal(root.get("role"), UserRole.SERVICE_PROVIDER));
+//        spec = addSpec(spec, (root, query, cb) -> cb.equal(root.get("role"), UserRole.SERVICE_PROVIDER));
 
         if (keyword != null && !keyword.isBlank()) {
             spec = addSpec(spec, UserSpecification.searchByEmailOrPhone(keyword));
@@ -184,7 +191,11 @@ public class AdminUserService {
         dto.setEmail(user.getEmail());
         dto.setJoinedAt(user.getCreatedAt());
 
-        ServiceProvider serviceProvider = serviceProviderRepository.findByUser(user);
+        ServiceProvider serviceProvider = serviceProviderRepository.getByUser(user)
+                .orElse(null);
+        if (serviceProvider == null) {
+            return null;
+        }
 
         List<Price> prices = priceRepository.findByServiceProvider(serviceProvider);
 
@@ -208,10 +219,10 @@ public class AdminUserService {
                 .build();
 
         ServiceProviderResponseDTO.BankAccountDTO bankAccountDTO = ServiceProviderResponseDTO.BankAccountDTO.builder()
-                        .bankAccountNumber(serviceProvider.getBankAccount().getBankAccountNumber())
-                        .bankName(serviceProvider.getBankAccount().getBankName())
-                        .accountHolderName(serviceProvider.getBankAccount().getAccountHolderName())
-                        .ifscCode(serviceProvider.getBankAccount().getIfscCode())
+                        .bankAccountNumber(serviceProvider.getBankAccount() != null ? serviceProvider.getBankAccount().getBankAccountNumber() : null)
+                        .bankName(serviceProvider.getBankAccount() != null ? serviceProvider.getBankAccount().getBankName() : null)
+                        .accountHolderName(serviceProvider.getBankAccount() != null ? serviceProvider.getBankAccount().getAccountHolderName() : null)
+                        .ifscCode(serviceProvider.getBankAccount() != null ? serviceProvider.getBankAccount().getIfscCode() : null)
                         .build();
 
         dto.setServiceProviderId(serviceProvider.getServiceProviderId());
@@ -234,10 +245,10 @@ public class AdminUserService {
     @Transactional
     public List<DeliveryAgentResponseDTO> getFilteredDeliveryAgents(String keyword, LocalDate startDate, LocalDate endDate, String sortBy) {
 
-        Specification<Users> spec = null;
+        Specification<Users> spec = (root, query, cb) -> cb.equal(root.get("role"), UserRole.DELIVERY_AGENT);;
 
         // Always filter by customer role
-        spec = addSpec(spec, (root, query, cb) -> cb.equal(root.get("role"), UserRole.DELIVERY_AGENT));
+//        spec = addSpec(spec, (root, query, cb) -> cb.equal(root.get("role"), UserRole.DELIVERY_AGENT));
 
         if (keyword != null && !keyword.isBlank()) {
             spec = addSpec(spec, UserSpecification.searchByEmailOrPhone(keyword));
@@ -250,12 +261,14 @@ public class AdminUserService {
             spec = addSpec(spec, UserSpecification.joinDateBetween(startDate, endDate));
         }
 
-
         Sort sort = "joinDate".equalsIgnoreCase(sortBy)
                 ? Sort.by(Sort.Direction.ASC, "createdAt")
                 : Sort.by(Sort.Direction.ASC, "userId");
 
         List<Users> users = userRepository.findAll(spec, sort);
+
+        // Log for debugging
+        users.forEach(u -> System.out.println(u.getUserId() + " | " + u.getFirstName() + " | " + u.getRole()));
 
         return users.stream().map(this::mapToDeliveryAgentDTO).collect(Collectors.toList());
     }

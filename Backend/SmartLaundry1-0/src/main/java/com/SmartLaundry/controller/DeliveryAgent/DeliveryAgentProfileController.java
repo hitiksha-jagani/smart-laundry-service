@@ -3,6 +3,7 @@ package com.SmartLaundry.controller.DeliveryAgent;
 import com.SmartLaundry.dto.ChangePasswordRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentProfileDTO;
+import com.SmartLaundry.model.DeliveryAgent;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserRepository;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.Optional;
 
 
 @RestController
@@ -57,17 +60,30 @@ public class DeliveryAgentProfileController {
     private RedisTemplate<String, Object> redisTemplate;
 
     // @author Hitiksha Jagani
-    // http://localhost:8080/profile/complete/{userId}
+    // http://localhost:8080/profile/exist/{userId}
+    // Check whether delivery agent has an entry in delivery agent model or not.
+    @GetMapping("/exist/{userId}")
+    public ResponseEntity<Boolean> checkAgentExistence(@PathVariable String userId) {
+        boolean exists = deliveryAgentRepository.existsByUsers_UserId(userId);
+        return ResponseEntity.ok(exists);
+    }
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/profile/complete
     // Render a form for delivery agent to accept details of agent.
-    @PostMapping(value = "/complete/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> completeDeliveryAgentProfile(
-            @PathVariable String userId,
+            HttpServletRequest request,
             @RequestPart("data") @Valid String  data,
             @RequestPart("aadharCard") MultipartFile aadharCard,
             @RequestPart(value = "panCard", required = false) MultipartFile panCard,
             @RequestPart("drivingLicense") MultipartFile drivingLicense,
             @RequestPart("profilePhoto") MultipartFile profilePhoto
     ) throws IOException {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+
         // Parse JSON string to DTO
         ObjectMapper mapper = new ObjectMapper();
         DeliveryAgentCompleteProfileRequestDTO dataJson = mapper.readValue(data, DeliveryAgentCompleteProfileRequestDTO.class);

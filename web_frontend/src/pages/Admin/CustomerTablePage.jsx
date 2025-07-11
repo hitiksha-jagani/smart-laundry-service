@@ -155,23 +155,21 @@ const CustomerTablePage = () => {
 
                                 <tbody>
 
-                                    {data.map((user, index) => (
+                                    {data.map((customer, index) => (
                                     
-                                    <tr key={user.userId}>
+                                    <tr key={customer.userId}>
 
                                         <td>{index + 1}</td>
-                                        <td>{user.userId}</td>
-                                        <td>{user.firstName}</td>
-                                        <td>{user.lastName}</td>
-                                        <td>{user.phone}</td>
-                                        <td>{user.email}</td>
+                                        <td>{customer.userId}</td>
+                                        <td>{customer.firstName}</td>
+                                        <td>{customer.lastName}</td>
+                                        <td>{customer.phone}</td>
+                                        <td>{customer.email}</td>
                                         <td>
                                             <button
-                                                onClick={() =>
-                                                    navigate(`/reports/order/user-report-list/graph/${user.userId}`, {
-                                                    state: {
-                                                        // filter,
-                                                    },
+                                                onClick={ () => 
+                                                    navigate('/users/customer/table/more', {
+                                                        state: { data: customer }
                                                     })
                                                 }
                                                 className="admin-btn"
