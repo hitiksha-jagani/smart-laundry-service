@@ -32,8 +32,8 @@ public class RevenueBreakDown {
     private CurrentStatus currentStatus;
 
     @CreationTimestamp
-    @Column(name = "crated_at", nullable = false)
-    private LocalDateTime createAt;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "active_at")
     private LocalDateTime activeAt;

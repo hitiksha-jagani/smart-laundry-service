@@ -14,7 +14,6 @@ const AllPayouts = () => {
     const state = location.state || {};
     const user = state.user;
     const data = state.data || [];
-    const { filter, startDate, endDate } = state;
 
     return (
 
@@ -75,8 +74,8 @@ const AllPayouts = () => {
 
                                         <td>{index + 1}</td> 
                                         <td>{payout.orderId}</td>
-                                        <td>{payout.deliveryEarning?.toFixed(2)}</td>
-                                        <td>{payout.charge?.toFixed(2)}</td>
+                                        <td>{payout.deliveryEarning ? payout.deliveryEarning?.toFixed(2) : '-'}</td>
+                                        <td>{payout.charge ? payout.charge?.toFixed(2) : '-'}</td>
                                         <td>{payout.finalAmount?.toFixed(2)}</td>
                                         <td>{payout.dateTime ? new Date(payout.dateTime).toLocaleString() : '-'}</td>
                                         <td>{payout.payoutStatus}</td>

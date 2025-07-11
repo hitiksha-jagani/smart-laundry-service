@@ -31,14 +31,72 @@ public class SettingService {
     @Autowired
     private GeocodingConfigRepository configRepository;
 
-    public void saveConfig(String apiProvider, String apiKey, String userId) {
-        GeocodingConfig config = new GeocodingConfig(apiProvider, apiKey, userId);
-        configRepository.save(config);
+    public void saveConfig(GeocodingConfig geocodingConfig, Users user) {
+
+        Boolean activeStatus = geocodingConfig.isActiveStatus();
+        LocalDateTime active = null;
+        GeocodingConfig geo = new GeocodingConfig();
+
+        // Raise popup for confirmation( logic is available in frontend for that )
+        if(activeStatus == true){
+
+            active = LocalDateTime.now();
+
+            GeocodingConfig config = configRepository.findByActiveStatus(true);
+
+            if(config != null){
+                config.setActiveStatus(false);
+                config.setDeactivateAt(LocalDateTime.now());
+                configRepository.save(config);
+            }
+
+            geo.setActiveAt(LocalDateTime.now());
+        }
+
+        geo.setActiveStatus(geocodingConfig.isActiveStatus());
+        geo.setApiProvider(geocodingConfig.getApiProvider());
+        geo.setApiKey(geocodingConfig.getApiKey());
+        geo.setUsers(user);
+
+        configRepository.save(geo);
+
     }
 
     public Optional<GeocodingConfig> getLatestConfig() {
         return Optional.ofNullable(configRepository.findTopByOrderByCreatedAtDesc());
     }
+
+    public String changeGeoCodingStatus(Long id) {
+
+        GeocodingConfig geocodingConfig = configRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Geocoding config not found for ID: " + id));
+
+        boolean currentStatus = geocodingConfig.isActiveStatus();
+        System.out.println("Current status : " + currentStatus);
+
+        if (currentStatus) {
+            // This config is already active, so deactivate it
+            geocodingConfig.setActiveStatus(false);
+            geocodingConfig.setDeactivateAt(LocalDateTime.now());
+        } else {
+            // Make this config active and deactivate any other active one
+            GeocodingConfig activeConfig = configRepository.findByActiveStatus(true);
+            if (activeConfig != null && !activeConfig.getId().equals(geocodingConfig.getId())) {
+                activeConfig.setActiveStatus(false);
+                activeConfig.setDeactivateAt(LocalDateTime.now());
+                configRepository.save(activeConfig);
+            }
+
+            geocodingConfig.setActiveStatus(true);
+            geocodingConfig.setActiveAt(LocalDateTime.now());
+        }
+
+        configRepository.save(geocodingConfig);
+
+        return "Status of ID " + geocodingConfig.getId() + " changed successfully to " +
+                (geocodingConfig.isActiveStatus() ? "ACTIVE" : "INACTIVE");
+    }
+
 
     public List<GeocodingConfig> getAllConfigs() {
         return configRepository.findAllByOrderByCreatedAtDesc();
@@ -67,9 +125,28 @@ public class SettingService {
     // Set revenue breakdown
     public RevenueSettingResponseDTO setRevenue(RevenueSettingRequestDTO revenueSettingRequestDTO) {
 
+        CurrentStatus status = revenueSettingRequestDTO.getCurrentStatus();
+        LocalDateTime active = null;
+
+        // Raise popup for confirmation( logic is available in frontend for that )
+        if(status.equals(CurrentStatus.ACTIVE)){
+
+            active = LocalDateTime.now();
+
+            RevenueBreakDown breakDown = revenueBreakDownRepository.findByCurrentStatus(CurrentStatus.ACTIVE);
+
+            if(breakDown != null){
+                breakDown.setCurrentStatus(CurrentStatus.INACTIVE);
+                breakDown.setDeactivateAt(LocalDateTime.now());
+                revenueBreakDownRepository.save(breakDown);
+            }
+
+        }
+
         RevenueBreakDown revenueBreakDown = RevenueBreakDown.builder()
                 .deliveryAgent(revenueSettingRequestDTO.getDeliveryAgentRevenue())
                 .serviceProvider(revenueSettingRequestDTO.getServiceProviderRevenue())
+                .currentStatus(revenueSettingRequestDTO.getCurrentStatus())
                 .build();
 
         revenueBreakDownRepository.save(revenueBreakDown);
@@ -78,6 +155,28 @@ public class SettingService {
                 revenueSettingRequestDTO.getDeliveryAgentRevenue(),
                 "Revenue is set as Delivery Agent : " + revenueSettingRequestDTO.getDeliveryAgentRevenue()
                         + "% Service Provider : " + revenueSettingRequestDTO.getServiceProviderRevenue() + "%");
+
+    }
+
+    public List<RevenueBreakDown> getRevenue() {
+        List<RevenueBreakDown> revenueBreakDowns = revenueBreakDownRepository.findAll();
+        return revenueBreakDowns;
+    }
+
+    public String changeRevenueBreakdownStatus(Long id) {
+        RevenueBreakDown revenueBreakDown = revenueBreakDownRepository.findById(id).orElse(null);
+
+        if(revenueBreakDown.getCurrentStatus() == CurrentStatus.INACTIVE){
+            revenueBreakDown.setCurrentStatus(CurrentStatus.ACTIVE);
+            revenueBreakDown.setActiveAt(LocalDateTime.now());
+        } else {
+            revenueBreakDown.setCurrentStatus(CurrentStatus.INACTIVE);
+            revenueBreakDown.setDeactivateAt(LocalDateTime.now());
+        }
+
+        revenueBreakDownRepository.save(revenueBreakDown);
+
+        return "Status of " + revenueBreakDown.getRevenueId() + "is changed successfully.";
     }
 
     public String setAgentEarnings(@Valid DeliveryAgentEarningSettingRequestDTO deliveryAgentEarningSettingRequestDTO) {
@@ -139,4 +238,7 @@ public class SettingService {
 
         return "Status of " + deliveryAgentEarnings.getEarningId() + "is changed successfully.";
     }
+
+
+
 }

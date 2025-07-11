@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -28,6 +29,7 @@ public class GeocodingConfig {
     @Column(name = "api_key", nullable = false, length = 500)
     private String apiKey;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -37,15 +39,28 @@ public class GeocodingConfig {
     private Users users;
 
     @Column(name = "active_status", nullable = false)
-    private boolean active = true;
+    private boolean activeStatus;
 
-    public GeocodingConfig(String apiProvider, String apiKey, String userId) {
+    @Column(name = "active_at")
+    private LocalDateTime activeAt;
+
+    @Column(name = "deactivate_at")
+    private LocalDateTime deactivateAt;
+
+    public GeocodingConfig(String apiProvider, String apiKey, String userId, boolean activeStatus) {
         this.apiProvider = apiProvider;
         this.apiKey = apiKey;
         this.createdAt = LocalDateTime.now();
         this.users = new Users();
         this.users.setUserId(userId);
-        this.active = true;
+        this.activeStatus = activeStatus;
     }
 
+    public boolean isActiveStatus() {
+        return activeStatus;
+    }
+
+    public void setActiveStatus(boolean activeStatus) {
+        this.activeStatus = activeStatus;
+    }
 }

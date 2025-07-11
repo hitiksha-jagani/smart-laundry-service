@@ -87,6 +87,23 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
             @Param("end") LocalDateTime end);
 
 
+//    @Query("SELECT new com.SmartLaundry.dto.Admin.ServiceProviderRevenueTableDTO(" +
+//            "sp.serviceProviderId, " +
+//            "SUM(p.finalAmount), " +
+//            "SUM(p.charge), " +
+//            "MAX(p.dateTime), " +
+//            "COUNT(p)) " +
+//            "FROM Payout p " +
+//            "JOIN p.users u " +
+//            "JOIN ServiceProvider sp ON sp.user = u " +
+//            "WHERE p.dateTime BETWEEN :start AND :end " +
+//            "GROUP BY sp.serviceProviderId " +
+//            "ORDER BY SUM(p.finalAmount) DESC")
+//    List<ServiceProviderRevenueTableDTO> findAllProviderRevenuesInRange(
+//            @Param("start") LocalDateTime start,
+//            @Param("end") LocalDateTime end
+//    );
+
     @Query("SELECT new com.SmartLaundry.dto.Admin.ServiceProviderRevenueTableDTO(" +
             "sp.serviceProviderId, " +
             "SUM(p.finalAmount), " +
@@ -97,12 +114,14 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
             "JOIN p.users u " +
             "JOIN ServiceProvider sp ON sp.user = u " +
             "WHERE p.dateTime BETWEEN :start AND :end " +
+            "AND u.role = 'SERVICE_PROVIDER' " +
             "GROUP BY sp.serviceProviderId " +
             "ORDER BY SUM(p.finalAmount) DESC")
     List<ServiceProviderRevenueTableDTO> findAllProviderRevenuesInRange(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
 
     @Query("SELECT SUM(p.finalAmount) FROM Payout p WHERE p.users.userId = :userId AND p.dateTime BETWEEN :start AND :end")
     Double getRevenueForUserInRange(@Param("userId") String userId,

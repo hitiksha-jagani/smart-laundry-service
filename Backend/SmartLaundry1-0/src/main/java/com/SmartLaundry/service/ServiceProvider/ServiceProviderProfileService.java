@@ -196,6 +196,7 @@ public class ServiceProviderProfileService {
                     .photoImage(profilePath)
                     .bankAccount(bankAccount)
                     .schedulePlans(data.getSchedulePlans())
+                    .status(Status.PENDING)
                     .build();
 
             serviceProviderRepository.save(serviceProvider);

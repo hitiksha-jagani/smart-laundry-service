@@ -7,16 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 
 // @author Hitiksha Jagani
 @RestController
-@RequestMapping("")
+@RequestMapping("/service")
 public class ServiceListingController {
 
     @Autowired
@@ -25,33 +22,35 @@ public class ServiceListingController {
     @Autowired
     private ServiceListingService serviceListingService;
 
-    // http://localhost:8080/service-summary
+    // http://localhost:8080/service/summary
     // Return count of services
-//    public ResponseEntity<>
+    @GetMapping("/service/summary")
+    public ResponseEntity<?> getSummary(HttpServletRequest request) {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        return ResponseEntity.ok("Hello");
+    }
 
-
-
-    // http://localhost:8080/add-items
+    // http://localhost:8080/service/add-items
     // Render a form to submit items
-    @PostMapping("/add-items")
+    @PostMapping("/service/add-items")
     public ResponseEntity<String> addItems(@Valid @RequestBody ManageServiceListingRequestDTO manageServiceListingRequestDTO,
                                              HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         return ResponseEntity.ok(serviceListingService.addItemDetails(userId, manageServiceListingRequestDTO));
     }
 
-    // http://localhost:8080/add-services
+    // http://localhost:8080/service/add-services
     // Render a form to submit services
-    @PostMapping("/add-services")
+    @PostMapping("/service/add-services")
     public ResponseEntity<String> addService(@Valid @RequestBody ManageServiceListingRequestDTO manageServiceListingRequestDTO,
                                              HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         return ResponseEntity.ok(serviceListingService.addServiceDetails(userId, manageServiceListingRequestDTO));
     }
 
-    // http://localhost:8080/add-subservices
+    // http://localhost:8080/service/add-subservices
     // Render a form to submit sub-service
-    @PostMapping("/add-subservices")
+    @PostMapping("/service/add-subservices")
     public ResponseEntity<String> addSubService(@Valid @RequestBody ManageServiceListingRequestDTO manageServiceListingRequestDTO,
                                                 HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));

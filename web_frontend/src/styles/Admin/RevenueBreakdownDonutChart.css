@@ -1,0 +1,49 @@
+.donut-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 450px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    max-width: 1000px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.revenue-overview {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.revenue-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #334155;
+    background: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #0EA5E9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.revenue-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.revenue-color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #cbd5e1;
+    flex-shrink: 0;
+}

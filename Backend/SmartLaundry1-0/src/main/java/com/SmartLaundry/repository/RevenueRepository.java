@@ -44,48 +44,34 @@ public interface RevenueRepository extends JpaRepository<AdminRevenue, Long> {
 //            "GROUP BY FUNCTION('DATE', a.createdAt) ORDER BY FUNCTION('DATE', a.createdAt)")
 //    List<RevenueBreakDownResponseGraphDTO> getRevenueBreakdownGroupedByDate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+//    @Query("SELECT NEW com.SmartLaundry.dto.Admin.RevenueBreakDownResponseGraphDTO(" +
+//            "SUM(a.profitFromServiceProvider), " +
+//            "SUM(a.profitFromDeliveryAgent)) " +  // removed the trailing comma
+//            "FROM AdminRevenue a " +
+//            "WHERE a.createdAt BETWEEN :start AND :end " +
+//            "GROUP BY FUNCTION('DATE', a.createdAt) " +
+//            "ORDER BY FUNCTION('DATE', a.createdAt)")
+//    RevenueBreakDownResponseGraphDTO getRevenueBreakdownGroupedByDate(
+//            @Param("start") LocalDateTime start,
+//            @Param("end") LocalDateTime end);
+
     @Query("SELECT NEW com.SmartLaundry.dto.Admin.RevenueBreakDownResponseGraphDTO(" +
             "SUM(a.profitFromServiceProvider), " +
-            "SUM(a.profitFromDeliveryAgent)) " +  // removed the trailing comma
+            "SUM(a.profitFromDeliveryAgent)) " +
             "FROM AdminRevenue a " +
             "WHERE a.createdAt BETWEEN :start AND :end " +
             "GROUP BY FUNCTION('DATE', a.createdAt) " +
             "ORDER BY FUNCTION('DATE', a.createdAt)")
-    RevenueBreakDownResponseGraphDTO getRevenueBreakdownGroupedByDate(
+    List<RevenueBreakDownResponseGraphDTO> getRevenueBreakdownGroupedByDate(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
+
 
 
     @Query(value = "SELECT * FROM orders WHERE created_at BETWEEN :start AND :end", nativeQuery = true)
     List<Order> findOrdersByDateRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     AdminRevenue findByPayment(Payment payment);
-
-//    @Query("""
-//SELECT new com.SmartLaundry.dto.Admin.TotalRevenueDTO(
-//    o.orderId,
-//    ar.createdAt,
-//    CONCAT(c.firstName, ' ', c.lastName),
-//    b.finalPrice,
-//    COALESCE(sp.finalAmount, 0.0),
-//    COALESCE(da.finalAmount, 0.0),
-//    ar.totalRevenue
-//)
-//FROM AdminRevenue ar
-//JOIN ar.payment pay
-//JOIN pay.bill b
-//JOIN b.order o
-//JOIN o.users c
-//LEFT JOIN Payout sp ON sp.payment = pay AND sp.users.role = com.SmartLaundry.model.UserRole.SERVICE_PROVIDER
-//LEFT JOIN Payout da ON da.payment = pay AND da.users.role = com.SmartLaundry.model.UserRole.DELIVERY_AGENT
-//WHERE ar.createdAt BETWEEN :start AND :end
-//GROUP BY o.orderId, ar.createdAt, c.firstName, c.lastName, b.finalPrice, ar.totalRevenue, sp.finalAmount, da.finalAmount
-//ORDER BY ar.createdAt DESC
-//""")
-//    List<TotalRevenueDTO> getAdminRevenueBreakdownBetween(
-//            @Param("start") LocalDateTime start,
-//            @Param("end") LocalDateTime end
-//    );
 
     @Query("""
     SELECT new com.SmartLaundry.dto.Admin.TotalRevenueDTO(

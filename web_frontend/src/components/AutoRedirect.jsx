@@ -23,7 +23,7 @@ export default function AutoRedirect() {
           navigate("/deliveries/summary");
           break;
         case "ADMIN":
-          navigate("/admin/dashboard");
+          navigate("/revenue/summary");
           break;
         default:
           navigate("/login");

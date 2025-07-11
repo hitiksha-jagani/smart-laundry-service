@@ -1,5 +1,6 @@
 package com.SmartLaundry.dto.Admin;
 
+import com.SmartLaundry.model.CurrentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

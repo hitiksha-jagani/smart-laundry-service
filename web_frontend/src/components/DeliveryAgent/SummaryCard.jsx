@@ -15,7 +15,7 @@ const SummaryCard = ({ title, prefix, user, count, link, data, filterParams }) =
             startDate: filterParams.startDate,
             endDate: filterParams.endDate
         })
-    };
+    }; 
 
     return (
 

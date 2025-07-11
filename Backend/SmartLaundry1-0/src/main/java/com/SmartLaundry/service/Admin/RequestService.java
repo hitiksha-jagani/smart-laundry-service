@@ -54,7 +54,6 @@ public class RequestService {
     @Autowired
     private AddressRepository addressRepository;
 
-
     private final EmailService emailService;
     private final SMSService smsService;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -72,30 +71,22 @@ public class RequestService {
     // @author Hitiksha Jagani
     // Return all service provider data which are pending for approval.
     public List<ServiceProviderRequestDTO> getAllProviderProfiles() {
-        Set<String> keys = redisTemplate.keys("serviceProviderProfile:*");
 
-        if (keys == null || keys.isEmpty()) {
-            return Collections.emptyList();
-        }
+        List<ServiceProvider> serviceProviders = serviceProviderRepository.findByStatus(Status.PENDING);
 
         List<ServiceProviderRequestDTO> pendingProfiles = new ArrayList<>();
 
-        for (String key : keys) {
-            String userId = key.split(":")[1];
+        for (ServiceProvider provider : serviceProviders) {
 
-            // Deserialize Redis value into DTO
-            Object value = redisTemplate.opsForValue().get(key);
-            ServiceProviderRequestDTO profileDTO = objectMapper.convertValue(
-                    value, ServiceProviderRequestDTO.class);
-
-            if (profileDTO == null) continue;
+            if (provider == null) continue;
 
             // Fetch user
-            Users user = userRepository.findById(userId).orElse(null);
+            Users user = userRepository.findById(provider.getUser().getUserId()).orElse(null);
             if (user == null) continue;
 
             // Fetch address
             UserAddress address = addressRepository.findByUsers(user).orElse(null);
+
             ServiceProviderRequestDTO.AddressDTO addressDTO = null;
             if (address != null) {
                 addressDTO = ServiceProviderRequestDTO.AddressDTO.builder()
@@ -106,120 +97,94 @@ public class RequestService {
                         .build();
             }
 
+            ServiceProviderRequestDTO.BankAccountDTO bankAccountDTO = ServiceProviderRequestDTO.BankAccountDTO.builder()
+                    .bankName(provider.getBankAccount().getBankName())
+                    .ifscCode(provider.getBankAccount().getIfscCode())
+                    .bankAccountNumber(provider.getBankAccount().getBankAccountNumber())
+                    .accountHolderName(provider.getBankAccount().getAccountHolderName())
+                    .build();
+
+            List<Price> priceList = priceRepository.findByServiceProvider(provider);
+            List<PriceDTO> priceDTOList = new ArrayList<>();
+
+            if(priceList != null) {
+
+                PriceDTO priceDTO = null;
+                for (Price price : priceList) {
+
+                    PriceDTO.ItemDTO itemDTO = PriceDTO.ItemDTO.builder()
+                            .itemName(price.getItem().getItemName())
+                            .serviceName(
+                                    price.getItem() != null && price.getItem().getService() != null
+                                            ? price.getItem().getService().getServiceName()
+                                            : null
+                            )
+                            .build();
+
+                    priceDTO = PriceDTO.builder()
+                            .item(itemDTO)
+                            .price(price.getPrice())
+                            .build();
+
+                    priceDTOList.add(priceDTO);
+                }
+            }
+
             // Map final DTO
             ServiceProviderRequestDTO requestProfile = ServiceProviderRequestDTO.builder()
+                    .userId(user.getUserId())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .phoneNo(user.getPhoneNo())
                     .email(user.getEmail())
-                    .aadharCardPhoto(profileDTO.getAadharCardPhoto())
-                    .panCardPhoto(profileDTO.getPanCardPhoto())
-                    .profilePhoto(profileDTO.getProfilePhoto())
-                    .businessName(profileDTO.getBusinessName())
-                    .businessLicenseNumber(profileDTO.getBusinessLicenseNumber())
-                    .gstNumber(profileDTO.getGstNumber())
-                    .businessUtilityBillPhoto(profileDTO.getBusinessUtilityBillPhoto())
-                    .schedulePlans(profileDTO.getSchedulePlans())
-                    .needOfDeliveryAgent(profileDTO.getNeedOfDeliveryAgent())
+                    .businessName(provider.getBusinessName())
+                    .businessLicenseNumber(provider.getBusinessLicenseNumber())
+                    .gstNumber(provider.getGstNumber())
+                    .bankAccount(bankAccountDTO)
                     .addresses(addressDTO)
-                    .bankAccount(profileDTO.getBankAccount())
-                    .priceDTO(profileDTO.getPriceDTO())
+                    .aadharCardPhoto("/image/provider/aadhar/" + user.getUserId())
+                    .profilePhoto("/image/provider/profile/" + user.getUserId())
+                    .panCardPhoto("/image/provider/pan/" + user.getUserId())
+                    .businessUtilityBillPhoto("/image/provider/utilitybill/" + user.getUserId())
+                    .needOfDeliveryAgent(provider.getNeedOfDeliveryAgent())
+                    .priceDTO(priceDTOList)
                     .build();
 
             pendingProfiles.add(requestProfile);
         }
 
         return pendingProfiles;
+
     }
 
     // Logic for accpet service provider request
     @Transactional
     public String acceptProvider(String userId){
 
-        String redisKey = "serviceProviderProfile:" + userId;
-
-        // Fetch from Redis
-        Object value = redisTemplate.opsForValue().get(redisKey);
-        if (value == null) {
-            throw new RuntimeException("No pending service provider profile data found.");
-        }
-
-        ServiceProviderRequestDTO profileDTO = objectMapper.convertValue(value, ServiceProviderRequestDTO.class);
-
-        // Fetch user
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found."));
 
-        // Prevent duplicate approval
-        if (serviceProviderRepository.existsByUser(user)) {
-            throw new RuntimeException("Service provider is already approved.");
-        }
-
-        // Save Bank Account
-        BankAccount bankAccount = BankAccount.builder()
-                .bankName(profileDTO.getBankAccount().getBankName())
-                .ifscCode(profileDTO.getBankAccount().getIfscCode())
-                .bankAccountNumber(profileDTO.getBankAccount().getBankAccountNumber())
-                .accountHolderName(profileDTO.getBankAccount().getAccountHolderName())
-                .build();
-        bankAccountRepository.save(bankAccount);
-
-        // Store ServiceProvider data in object
-        ServiceProvider sp = new ServiceProvider();
-        sp.setUser(user);
-        sp.setBusinessName(profileDTO.getBusinessName());
-        sp.setBusinessLicenseNumber(profileDTO.getBusinessLicenseNumber());
-        sp.setGstNumber(profileDTO.getGstNumber());
-        sp.setNeedOfDeliveryAgent(profileDTO.getNeedOfDeliveryAgent());
-//        sp.setPhotoImage(profileDTO.getProfilePhoto());
-//        sp.setAadharCardImage(profileDTO.getAadharCardPhoto());
-//        sp.setPanCardImage(profileDTO.getPanCardPhoto());
-//        sp.setBusinessUtilityBillImage(profileDTO.getBusinessUtilityBillPhoto());
-        sp.setSchedulePlans(profileDTO.getSchedulePlans());
-        sp.setBankAccount(bankAccount);
-        sp.setPrices(null);
-        ServiceProvider savedSP = serviceProviderRepository.save(sp);
-
-        // Save items and prices
-        List<PriceDTO> prices = profileDTO.getPriceDTO();
-        List<Price> providerPrices = new ArrayList<>();
-
-        for (PriceDTO priceDTO : prices) {
-
-            // Fetch the item using itemId
-            Items item = itemRepository.findById(priceDTO.getItem().getItemId())
-                    .orElseThrow(() -> new RuntimeException("Item with ID " + priceDTO.getItem().getItemId() + " is not available."));
-
-            // Create a Price entity
-            Price price = new Price();
-            price.setItem(item);
-            price.setServiceProvider(sp);
-            price.setPrice(priceDTO.getPrice());
-
-            // Save the price
-            priceRepository.save(price);
-            providerPrices.add(price);
-        }
-
-        // Set the list of prices in ServiceProvider
-        savedSP.setPrices(providerPrices);
-
-        // Save ServiceProvider
-        try {
-            serviceProviderRepository.save(savedSP);
-        } catch (Exception e) {
-            throw new RuntimeException("Save failed", e);
-        }
         String phone = user.getPhoneNo();
         String email = user.getEmail();
+
+        ServiceProvider serviceProvider = serviceProviderRepository.findByUser(user);
+        if(serviceProvider == null){
+            return "Service provider is not found.";
+        }
+
+        if(serviceProvider.getStatus() != Status.PENDING){
+            return "Request for Service provider profile already accepted/rejected.";
+        } else if(serviceProvider.getStatus() == Status.ACCEPTED){
+            return "Service provider is already approved.";
+        } else {
+            serviceProvider.setStatus(Status.ACCEPTED);
+        }
 
         String message = "Congratulations! Your request to become a Service Provider has been approved.";
         String subject = "Service Provider Approval";
 
-        smsService.sendOrderStatusNotification(phone, message); // Or general-purpose SMS method
-        emailService.sendOrderStatusNotification(email, subject, message);
-        // Cleanup: Remove from Redis
-        redisTemplate.delete(redisKey);
+//        smsService.sendOrderStatusNotification(phone, message);
+//        emailService.sendOrderStatusNotification(email, subject, message);
 
         return "Service provider profile approved successfully.";
     }
@@ -229,28 +194,31 @@ public class RequestService {
     @Transactional
     public String rejectProvider(String userId){
 
-        String key = "serviceProviderProfile:" + userId;
-
-        Boolean removed = redisTemplate.delete(key);
-
         Users user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found."));
 
         String phone = user.getPhoneNo();
         String email = user.getEmail();
 
-        if (Boolean.TRUE.equals(removed)) {
-            // Send SMS + Email notification
-            String message = "We're sorry! Your request to become a Service Provider has been rejected.";
-            String subject = "Service Provider Rejection";
+        ServiceProvider serviceProvider = serviceProviderRepository.findByUser(user);
 
-            smsService.sendOrderStatusNotification(phone, message);
-            emailService.sendOrderStatusNotification(email, subject, message);
-
-            return "Service provider profile rejected.";
+        if(serviceProvider.getStatus() != Status.PENDING){
+            return "Request for service provider profile already accepted/rejected.";
+        } else if(serviceProvider.getStatus() == Status.REJECTED){
+            return "Service provider is already rejected.";
         } else {
-            throw new RuntimeException("No pending service provider profile data found.");
+            serviceProvider.setStatus(Status.REJECTED);
         }
+
+        // Send SMS + Email notification
+        String message = "We're sorry! Your request to become a Service Provider has been rejected.";
+        String subject = "Service Provider Rejection";
+
+//        smsService.sendOrderStatusNotification(phone, message);
+//        emailService.sendOrderStatusNotification(email, subject, message);
+
+        return "Service provider profile rejected.";
+
     }
 
     // @author Hitiksha Jagani
@@ -284,6 +252,7 @@ public class RequestService {
 
             // Map final DTO
             RequestProfileDTO requestProfile = RequestProfileDTO.builder()
+                    .userId(user.getUserId())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .phoneNo(user.getPhoneNo())
@@ -296,10 +265,10 @@ public class RequestService {
                     .ifscCode(agent.getIfscCode())
                     .gender(agent.getGender())
                     .addresses(addressDTO)
-                    .aadharCardPhoto("/image/aadhar/" + user.getUserId())
-                    .profilePhoto("/image/profile/" + user.getUserId())
-                    .panCardPhoto("/image/pan/" + user.getUserId())
-                    .drivingLicensePhoto("/image/license/" + user.getUserId())
+                    .aadharCardPhoto("/image/agent/aadhar/" + user.getUserId())
+                    .profilePhoto("/image/agent/profile/" + user.getUserId())
+                    .panCardPhoto("/image/agent/pan/" + user.getUserId())
+                    .drivingLicensePhoto("/image/agent/license/" + user.getUserId())
                     .build();
 
             pendingProfiles.add(requestProfile);
@@ -310,7 +279,7 @@ public class RequestService {
 
     //@author Hitiksha Jagani
     // Logic for accpet delivery agent request
-//    @Transactional
+    @Transactional
     public String acceptAgent(String userId) throws IOException {
 
         // Fetch user
@@ -330,7 +299,12 @@ public class RequestService {
             agent.setStatus(Status.ACCEPTED);
         }
 
-        deliveryAgentRepository.save(agent);
+        // Send SMS + Email notification
+        String message = "Congratulations! Your request to become a Delivery agent has been approved.";
+        String subject = "Delivery Agent Approval";
+
+//        smsService.sendOrderStatusNotification(phone, message);
+//        emailService.sendOrderStatusNotification(email, subject, message);
 
         return "Delivery agent profile approved successfully.";
     }
@@ -339,7 +313,6 @@ public class RequestService {
     // Logic for reject delivery agent request
     @Transactional
     public String rejectAgent(String userId){
-        String key = "DeliveryAgentProfile:" + userId;
 
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found."));
@@ -347,9 +320,6 @@ public class RequestService {
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
                 .orElseThrow(() -> new RuntimeException("Delivery agent is not found."));
 
-        Boolean removed = redisTemplate.delete(key);
-
-        if (Boolean.TRUE.equals(removed)) {
             if(deliveryAgent.getStatus() != Status.PENDING){
                 return "Request for delivery agent profile already accepted/rejected.";
             } else if(deliveryAgent.getStatus() == Status.REJECTED){
@@ -357,11 +327,15 @@ public class RequestService {
             } else {
                 deliveryAgent.setStatus(Status.REJECTED);
             }
-            return "Delivery Agent profile rejected.";
-        } else {
-            throw new RuntimeException("No pending delivery agent profile data found.");
 
-        }
+        // Send SMS + Email notification
+        String message = "We're sorry! Your request to become a Delivery agent has been rejected.";
+        String subject = "Delivery Agent Rejection";
+
+//        smsService.sendOrderStatusNotification(phone, message);
+//        emailService.sendOrderStatusNotification(email, subject, message);
+
+            return "Delivery Agent profile rejected.";
     }
 
 

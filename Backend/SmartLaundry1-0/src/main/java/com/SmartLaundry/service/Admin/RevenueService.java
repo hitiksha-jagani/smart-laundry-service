@@ -3,6 +3,8 @@ package com.SmartLaundry.service.Admin;
 import com.SmartLaundry.dto.Admin.*;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,8 @@ public class RevenueService {
 
     @Autowired
     private PayoutRepository payoutRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(RevenueService.class);
 
     public RevenueResponseDTO getSummary(Users user, String filter, LocalDate startDate, LocalDate endDate) {
 
@@ -133,7 +137,7 @@ public class RevenueService {
         return bd.doubleValue();
     }
 
-    public RevenueBreakdownResponseTableDTO getBreakdownTable(Users user, String filter, LocalDate startDate, LocalDate endDate) {
+    public RevenueBreakdownResponseTableDTO getBreakdownTable( String filter, LocalDate startDate, LocalDate endDate) {
 
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime start, end;
@@ -192,10 +196,12 @@ public class RevenueService {
         return revenueBreakdownResponseTableDTO;
     }
 
-    public RevenueBreakDownResponseGraphDTO getBreakdownGraph(Users user, String filter, LocalDate startDate, LocalDate endDate) {
+    public RevenueBreakDownResponseGraphDTO getBreakdownGraph( String filter, LocalDate startDate, LocalDate endDate) {
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start, end;
+
+        logger.info("Calculating revenue breakdown for filter: {}", filter);
 
         switch (filter.toLowerCase()) {
             case "today":
@@ -223,7 +229,22 @@ public class RevenueService {
                 break;
         }
 
-        return revenueRepository.getRevenueBreakdownGroupedByDate(start, end);
+        logger.info("Fetching revenue breakdown from {} to {}", start, end);
+
+        List<RevenueBreakDownResponseGraphDTO> breakdownList = revenueRepository.getRevenueBreakdownGroupedByDate(start, end);
+
+        double totalServiceProvider = 0;
+        double totalDeliveryAgent = 0;
+
+        for (RevenueBreakDownResponseGraphDTO dto : breakdownList) {
+            totalServiceProvider += dto.getServiceProviderRevenue() != null ? dto.getServiceProviderRevenue() : 0;
+            totalDeliveryAgent += dto.getDeliveryAgentRevenue() != null ? dto.getDeliveryAgentRevenue() : 0;
+        }
+
+        logger.info("Result - Service Provider: {}, Delivery Agent: {}", totalServiceProvider, totalDeliveryAgent);
+
+        return new RevenueBreakDownResponseGraphDTO(totalServiceProvider, totalDeliveryAgent);
+
     }
 
     public List<TotalRevenueDTO> getTotalRevenue(Users user, String filter, LocalDate startDate, LocalDate endDate) {
@@ -387,6 +408,9 @@ public class RevenueService {
         LocalDateTime start;
         LocalDateTime end = LocalDateTime.now();
 
+        logger.info("Type received in getRevenueTrend: {}", type);
+        logger.info("Filter received in getRevenueTrend: {}", filter);
+
         switch (filter.toLowerCase()) {
                 case "yearly" :
                     title = "Yearly " + formatTypeTitle(type);
@@ -521,26 +545,40 @@ public class RevenueService {
 
     public List<ServiceProviderRevenueTableDTO> getProviderRevenueTable(String filter) {
 
+        logger.info("Filter received in getProviderRevenueTable: {}", filter);
+
         LocalDateTime start;
-        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime end;
 
         switch(filter.toLowerCase()){
             case "yearly" :
                 start = LocalDate.now().withDayOfYear(1).atStartOfDay();
+                end = LocalDateTime.now();
                 break;
             case "quarterly":
-                int month = LocalDate.now().getMonthValue();
-                int quarter = (month - 1) / 3 + 1;
-                int startMonth = (quarter - 1) * 3 + 1;
-                start = LocalDate.of(LocalDate.now().getYear(), startMonth, 1).atStartOfDay();
+                LocalDate today = LocalDate.now();
+                LocalDate startDate = today.minusMonths(2).withDayOfMonth(1);
+                start = startDate.atStartOfDay();
+                end = LocalDateTime.now();
                 break;
             case "monthly" :
             default :
                 start = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+                end = LocalDateTime.now();
         }
+
+        logger.info("Date range for revenue query: {} to {}", start, end);
 
         List<ServiceProviderRevenueTableDTO> serviceProviderRevenueTableDTOS = payoutRepository
                 .findAllProviderRevenuesInRange(start, end);
+
+        logger.info("Fetched {} service provider revenue records", serviceProviderRevenueTableDTOS.size());
+
+        // Optional: log a sample of the results
+        serviceProviderRevenueTableDTOS.stream().limit(3).forEach(dto ->
+                logger.info("Sample record → Provider ID: {}, Revenue: {}, Charge: {}",
+                        dto.getProviderId(), dto.getTotalRevenue(), dto.getPlatformCharges())
+        );
 
         // start and end date added to each result
         serviceProviderRevenueTableDTOS.forEach(dto -> {
@@ -613,7 +651,7 @@ public class RevenueService {
                 .build();
     }
 
-    public List<DeliveryAgentRevenueTableDTO> getAgentRevenueTable(String filter, LocalDate startDate, LocalDate endDate) {
+    public List<DeliveryAgentRevenueTableDTO> getAgentRevenueTable(String filter) {
 
         LocalDateTime start;
         LocalDateTime end = LocalDateTime.now();
@@ -623,10 +661,13 @@ public class RevenueService {
                 start = LocalDate.now().withDayOfYear(1).atStartOfDay();
                 break;
             case "quarterly":
-                int month = LocalDate.now().getMonthValue();
-                int quarter = (month - 1) / 3 + 1;
-                int startMonth = (quarter - 1) * 3 + 1;
-                start = LocalDate.of(LocalDate.now().getYear(), startMonth, 1).atStartOfDay();
+                LocalDate today = LocalDate.now();
+                LocalDate startDate = today.minusMonths(2).withDayOfMonth(1);
+                start = startDate.atStartOfDay();
+//                int month = LocalDate.now().getMonthValue();
+//                int quarter = (month - 1) / 3 + 1;
+//                int startMonth = (quarter - 1) * 3 + 1;
+//                start = LocalDate.of(LocalDate.now().getYear(), startMonth, 1).atStartOfDay();
                 break;
             case "monthly" :
             default :

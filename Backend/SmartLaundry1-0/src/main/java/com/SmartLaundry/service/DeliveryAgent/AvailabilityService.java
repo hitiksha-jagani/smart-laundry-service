@@ -95,12 +95,12 @@ public class AvailabilityService {
     }
 
     // Delete availability
-    public void deleteAvailability(Long id) {
+    public void deleteAvailability(String id) {
         availabilityRepository.deleteById(id);
     }
 
     // Modify availability
-    public DeliveryAgentAvailability updateAvailability(Long id, AvailabilityDTO dto) {
+    public DeliveryAgentAvailability updateAvailability(String id, AvailabilityDTO dto) {
         DeliveryAgentAvailability availability = availabilityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found"));
 

@@ -1,6 +1,7 @@
 package com.SmartLaundry.repository;
 
 import com.SmartLaundry.model.ServiceProvider;
+import com.SmartLaundry.model.Status;
 import com.SmartLaundry.model.Users;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,6 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     Optional<ServiceProvider> findByUserUserId(String userId);
 
     List<ServiceProvider> findByBusinessNameContainingIgnoreCase(String keyword);
+
+    List<ServiceProvider> findByStatus(Status status);
 }

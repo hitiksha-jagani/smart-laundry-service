@@ -4,7 +4,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-// import GeoCodingMenu from './GeoCodingMenu';
 import GeoCodingMenu, { geocodingRoutes } from './GeoCodingMenu';
 import '../../styles/Admin/ConfigurationMenu.css';
 import '../../styles/Admin/AdminSidebar.css';
@@ -58,7 +57,7 @@ const ConfigurationsMenu = () => {
                     className={`admin-sidebar-link submenu-parent ${isConfigActive ? 'active' : ''}`}
                     onClick={handleConfigClick}
                 >
-                    <span>Geocoding</span>
+                    <span>Geocoding</span> 
                 </div>
 
                 {isGeoMenuOpen && <GeoCodingMenu />}

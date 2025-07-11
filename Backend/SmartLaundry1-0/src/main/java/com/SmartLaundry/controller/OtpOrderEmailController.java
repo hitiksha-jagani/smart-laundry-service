@@ -134,7 +134,7 @@ public class OtpOrderEmailController {
             DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElse(null);
             id = deliveryAgent.getDeliveryAgentId();
         }
-        
+
         otpOrderEmailTransitionService.verifyConfirmForClothsOtp(orderId, otp, id);
         return ResponseEntity.ok("OTP for cloth confirmation verified via email. Delivery OTP sent to customer.");
     }

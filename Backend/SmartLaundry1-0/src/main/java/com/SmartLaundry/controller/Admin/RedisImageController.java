@@ -34,6 +34,7 @@ public class RedisImageController {
     @Autowired
     private ServiceProviderRepository serviceProviderRepository;
 
+    // http://localhost:8080/image/agent/{type}/{userId}
     @GetMapping("/agent/{type}/{userId}")
     public ResponseEntity<byte[]> fetchAgentImageFromRedis(
             @PathVariable String type,
@@ -69,6 +70,7 @@ public class RedisImageController {
                 .body(imagePath);
     }
 
+    // http://localhost:8080/image/provider/{type}/{userId}
     @GetMapping("/provider/{type}/{userId}")
     public ResponseEntity<byte[]> fetchProviderImageFromRedis(
             @PathVariable String type,

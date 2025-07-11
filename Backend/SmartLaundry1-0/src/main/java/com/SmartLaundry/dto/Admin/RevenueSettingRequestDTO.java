@@ -1,5 +1,9 @@
 package com.SmartLaundry.dto.Admin;
 
+import com.SmartLaundry.model.CurrentStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -14,4 +18,8 @@ public class RevenueSettingRequestDTO {
 
     @NotNull(message = "Delivery agent revenue part is required.")
     private Double deliveryAgentRevenue;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private CurrentStatus currentStatus;
 }

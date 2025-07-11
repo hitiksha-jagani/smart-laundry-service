@@ -1,0 +1,60 @@
+.provider-box {
+    display: grid;
+    gap: 1rem;
+    padding: 1.7rem;
+    background: #f9f9f9;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    max-width: 900px;
+    margin: auto; 
+    background-color: #F1F5F9;
+    border-color: #0EA5E9;
+}
+
+.grid-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.grid-row.full {
+    grid-template-columns: 1fr;
+    height: 80px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    background-color: #E5ECF2;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.field button{
+    font-size: 18px;
+    color: #555;
+    word-break: break-word;
+    margin-left: 10px;
+    text-align: left;
+}
+
+.field label {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.field span {
+    font-size: 18px;
+    color: #555;
+    word-break: break-word;
+    margin-left: 10px;
+}
+
+.button-row{
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+}
