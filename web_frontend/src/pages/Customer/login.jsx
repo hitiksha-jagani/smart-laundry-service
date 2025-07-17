@@ -13,7 +13,7 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // ✅ Added
+  const [successMessage, setSuccessMessage] = useState(""); 
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
@@ -84,43 +84,62 @@ const Login = () => {
       localStorage.setItem("token", data.jwtToken);
       localStorage.setItem("userId", userId);
 
-      if (data.role === "SERVICE_PROVIDER") {
-        try {
-          const providerRes = await fetch(
-            `http://localhost:8080/provider/orders/from-user/${userId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${data.jwtToken}`,
-              },
-            }
-          );
+     if (data.role === "SERVICE_PROVIDER") {
+  try {
+    const providerRes = await fetch(
+      `http://localhost:8080/provider/orders/from-user/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${data.jwtToken}`,
+        },
+      }
+    );
 
-          if (!providerRes.ok) throw new Error("Provider ID fetch failed");
+    if (providerRes.ok) {
+      const providerId = await providerRes.text();
+      localStorage.setItem("providerId", providerId);
+      login(data.jwtToken, data.role, userId, providerId);
+      navigate("/provider/dashboard");
+    } else if (providerRes.status === 404) {
+      // First-time login, provider not created yet
+      login(data.jwtToken, data.role, userId);
+      navigate("/provider/complete-profile");
+    } else {
+      throw new Error("Failed to check service provider status.");
+    }
+  } catch (err) {
+    console.error("Error checking service provider status:", err);
+    setError("Unable to retrieve service provider info.");
+  }
+}
+ else if (data.role === "DELIVERY_AGENT") {
+  login(data.jwtToken, data.role, userId); // store token, userId in localStorage
 
-          const providerId = await providerRes.text();
+  try {
+    const agentRes = await fetch(`http://localhost:8080/profile/exist/${userId}`);
 
-          localStorage.setItem("providerId", providerId);
-          login(data.jwtToken, data.role, userId, providerId);
 
-          const firstLoginDone = localStorage.getItem("providerFirstLoginDone");
-          if (!firstLoginDone) {
-            localStorage.setItem("providerFirstLoginDone", "true");
-            navigate("/provider/complete-profile");
-          } else {
-            navigate("/provider/dashboard");
-          }
-        } catch (err) {
-          console.error("Error fetching provider ID:", err);
-          setError("Unable to retrieve service provider info.");
-        }
-      } else {
+    if (!agentRes.ok) {
+      throw new Error("Failed to check agent existence.");
+    }
+
+    const exists = await agentRes.json(); // parse boolean response
+
+    if (exists) {
+      navigate("/deliveries/summary");
+    } else {
+      navigate("/profile/complete"); // token is already saved by login()
+    }
+  } catch (err) {
+    console.error("Error checking delivery agent existence:", err);
+    setError("Unable to verify agent profile. Try again.");
+  }
+}
+ else {
         login(data.jwtToken, data.role, userId);
         switch (data.role) {
           case "CUSTOMER":
             navigate("/customer/dashboard");
-            break;
-          case "DELIVERY_AGENT":
-            navigate("/deliveries/summary");
             break;
           case "ADMIN":
             navigate("/revenue/summary");

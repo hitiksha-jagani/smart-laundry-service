@@ -1,70 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { jwtDecode } from 'jwt-decode';
-import { Feather } from '@expo/vector-icons';
-import { BASE_URL } from '../../config'; // ✅ Your backend URL config
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { Eye, EyeOff } from "lucide-react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import { BASE_URL } from "../../config";
 
-export default function LoginScreen({ login }) {
+
+export default function LoginScreen() {
   const navigation = useNavigation();
+  const { login } = useAuth();
 
-  const [formData, setFormData] = useState({ username: '', password: '' });
-  const [otp, setOtp] = useState('');
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setError('');
+  const handleChange = (key, value) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    setError("");
   };
 
   const handleLogin = async () => {
+    setError("");
+    setSuccessMessage("");
+
     try {
       const res = await fetch(`${BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          username: formData.username.toLowerCase(),
-        }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const data = await res.text();
 
       if (res.ok) {
         setSuccessMessage(data);
-        setTimeout(() => setSuccessMessage(''), 5000);
+        setTimeout(() => setSuccessMessage(""), 5000);
         setStep(2);
       } else {
         setError(data);
       }
     } catch (err) {
-      setError('Something went wrong. Try again.');
+      console.error(err);
+      setError("Something went wrong. Try again.");
     }
   };
 
   const handleOtpVerify = async () => {
+    setError("");
+    setSuccessMessage("");
+
     try {
-      const normalizedUsername = formData.username.includes('@')
-        ? formData.username.toLowerCase()
-        : "+91" + formData.username.replace(/\D/g, '').slice(-10);
+      const url = `${BASE_URL}/verify-otp?username=${formData.username}&otp=${otp}`;
+      const res = await fetch(url, { method: "POST" });
 
-      const url = `${BASE_URL}/verify-otp?username=${encodeURIComponent(normalizedUsername)}&otp=${otp}`;
-
-      const res = await fetch(url, { method: 'POST' });
       const rawText = await res.text();
 
       if (!res.ok) {
-        console.error("OTP verification failed:", rawText);
-        setError(rawText || 'OTP verification failed.');
+        setError(rawText || "OTP verification failed.");
         return;
       }
 
@@ -72,119 +76,119 @@ export default function LoginScreen({ login }) {
       try {
         data = JSON.parse(rawText);
       } catch (e) {
-        console.error("JSON parse error:", rawText);
-        setError('Unexpected server response.');
+        console.error("Invalid JSON:", rawText);
+        setError("Unexpected response from server.");
         return;
       }
 
-      if (!data.jwtToken) {
-        console.error("No token in response:", data);
-        setError("Invalid response from server. No token.");
-        return;
-      }
-
-      let decoded;
-      try {
-        decoded = jwtDecode(data.jwtToken);
-      } catch (e) {
-        console.error("JWT Decode failed:", e);
-        setError("Failed to decode token.");
-        return;
-      }
-
+      const decoded = jwtDecode(data.jwtToken); 
       const userId = decoded.id;
+
       if (!userId) {
-        setError('User ID missing from token.');
+        setError("User ID missing from token.");
         return;
       }
 
-      if (data.role === 'SERVICE_PROVIDER') {
-        try {
-          const providerRes = await fetch(
-            `${BASE_URL}/provider/orders/from-user/${userId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${data.jwtToken}`,
-              },
+      login(data.jwtToken, data.role, userId);
+
+      switch (data.role) {
+        case "CUSTOMER":
+          navigation.navigate("CustomerDashboard");
+          break;
+
+        case "ADMIN":
+          navigation.navigate("RevenueSummary");
+          break;
+
+        case "SERVICE_PROVIDER":
+          try {
+            const providerRes = await fetch(
+              `${BASE_URL}/provider/orders/from-user/${userId}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${data.jwtToken}`,
+                },
+              }
+            );
+
+            if (providerRes.ok) {
+              const providerId = await providerRes.text();
+              login(data.jwtToken, data.role, userId, providerId);
+              navigation.navigate("ProviderDrawer", {
+              screen: "ProviderDashboard",
+            });
+
+            } else if (providerRes.status === 404) {
+              navigation.navigate("ProviderCompleteProfile");
+            } else {
+              throw new Error("Provider check failed");
             }
-          );
-          const providerId = await providerRes.text();
-          login(data.jwtToken, data.role, userId, providerId);
-          navigation.navigate('ProviderDashboard');
-        } catch (err) {
-          setError('Unable to retrieve service provider info.');
-        }
-      } else {
-        login(data.jwtToken, data.role, userId);
-        switch (data.role) {
-          case 'CUSTOMER':
-            navigation.navigate('CustomerDashboard');
-            break;
-          case 'DELIVERY_AGENT':
-            navigation.navigate('DeliverySummary');
-            break;
-          case 'ADMIN':
-            navigation.navigate('RevenueSummary');
-            break;
-          default:
-            setError('Unknown user role');
-        }
+          } catch (err) {
+            console.error("Service provider error:", err);
+            setError("Unable to retrieve service provider info.");
+          }
+          break;
+
+        case "DELIVERY_AGENT":
+          try {
+            const agentRes = await fetch(`${BASE_URL}/profile/exist/${userId}`);
+            if (!agentRes.ok) throw new Error("Agent check failed");
+
+            const exists = await agentRes.json();
+            if (exists) {
+              navigation.navigate("DeliverySummary");
+            } else {
+              navigation.navigate("AgentCompleteProfile");
+            }
+          } catch (err) {
+            console.error("Delivery agent error:", err);
+            setError("Unable to verify agent profile.");
+          }
+          break;
+
+        default:
+          setError("Unknown role.");
       }
     } catch (err) {
-      setError('Error verifying OTP.');
+      console.error(err);
+      setError("OTP verification error.");
     }
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={styles.container}
+    >
       <Text style={styles.title}>Login to Your Account</Text>
 
       {step === 1 ? (
         <>
           <TextInput
             style={styles.input}
-            placeholder="Enter phone or email"
+            placeholder="Phone or Email"
             value={formData.username}
-            onChangeText={(text) => handleChange('username', text)}
-            autoCapitalize="none"
+            onChangeText={(text) => handleChange("username", text)}
           />
-
           <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.inputPassword}
-              placeholder="Enter password"
+              style={styles.passwordInput}
+              placeholder="Password"
               secureTextEntry={!showPassword}
               value={formData.password}
-              onChangeText={(text) => handleChange('password', text)}
+              onChangeText={(text) => handleChange("password", text)}
             />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.eyeIcon}
-            >
-              <Feather
-                name={showPassword ? 'eye-off' : 'eye'}
-                size={20}
-                color="#666"
-              />
+            <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)}>
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </TouchableOpacity>
           </View>
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
           {successMessage ? <Text style={styles.success}>{successMessage}</Text> : null}
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TouchableOpacity onPress={handleLogin} style={styles.button}>
             <Text style={styles.buttonText}>Send OTP</Text>
           </TouchableOpacity>
-
-          <Text style={styles.linkText}>
-            Don’t have an account?{' '}
-            <Text
-              style={styles.link}
-              onPress={() => navigation.navigate('Register')}
-            >
-              Register here
-            </Text>
-          </Text>
         </>
       ) : (
         <>
@@ -192,84 +196,83 @@ export default function LoginScreen({ login }) {
             style={styles.input}
             placeholder="Enter 6-digit OTP"
             value={otp}
-            onChangeText={(text) => setOtp(text)}
-            keyboardType="number-pad"
+            onChangeText={setOtp}
+            keyboardType="numeric"
           />
-
           {error ? <Text style={styles.error}>{error}</Text> : null}
           {successMessage ? <Text style={styles.success}>{successMessage}</Text> : null}
 
-          <TouchableOpacity style={styles.button} onPress={handleOtpVerify}>
+          <TouchableOpacity onPress={handleOtpVerify} style={styles.button}>
             <Text style={styles.buttonText}>Verify OTP & Login</Text>
           </TouchableOpacity>
         </>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#fff',
+    padding: 24,
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
+    fontSize: 24,
+    marginBottom: 24,
+    textAlign: "center",
+    fontWeight: "bold",
+    color: "#333",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    borderColor: "#ccc",
     borderRadius: 8,
-    marginBottom: 15,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 12,
   },
   passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
-    marginBottom: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 12,
+    justifyContent: "space-between",
   },
-  inputPassword: {
+  passwordInput: {
     flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  eyeIcon: {
-    paddingHorizontal: 10,
+    paddingRight: 10,
   },
   button: {
-    backgroundColor: '#A566FF',
+    backgroundColor: "#A566FF",
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 5,
+    marginTop: 12,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  linkText: {
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  link: {
-    color: '#A566FF',
-    fontWeight: 'bold',
+    color: "white",
+    textAlign: "center",
+    fontWeight: "600",
+    fontSize: 16,
   },
   error: {
-    color: 'red',
-    textAlign: 'center',
+    color: "red",
+    marginBottom: 8,
+    textAlign: "center",
   },
   success: {
-    color: 'green',
-    textAlign: 'center',
+    color: "green",
+    marginBottom: 8,
+    textAlign: "center",
   },
 });
+
+
+
+
+

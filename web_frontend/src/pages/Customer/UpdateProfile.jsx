@@ -51,7 +51,7 @@ const UpdateProfile = () => {
       setMessage("Profile updated successfully.");
 
       setTimeout(() => {
-        navigate("/customer/dashboard"); // redirect to profile or home
+        navigate("/customer/dashboard"); 
       }, 3000);
     } catch (err) {
       setMessage(err.response?.data || "Something went wrong.");

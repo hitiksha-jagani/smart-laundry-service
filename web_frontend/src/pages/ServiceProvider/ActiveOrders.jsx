@@ -25,7 +25,7 @@ const ActiveOrders = () => {
     if (token) fetchOrders();
   }, [token, fetchOrders]);
 
-  // ✅ Mark order as ready for delivery
+  
   const markAsReady = async (orderId) => {
     try {
       await axios.put(`/provider/orders/${orderId}/ready-for-delivery`, null, {
