@@ -89,7 +89,7 @@ public class DeliveryAgent implements Serializable {
     @NotBlank(message = "IFSC Code is required.")
     @Column(name = "ifsc_code", nullable = false)
     @Pattern(regexp = "^[A-Z]{4}0[A-Z0-9]{6}$", message = "Invalid IFSC Code format")
-    @Schema(description = "IFSC Code of the delivery agent bank.", example = "KB01234")
+    @Schema(description = "IFSC Code of the delivery agent bank.", example = "HDFC0ABCD12")
     private String ifscCode;
 
     @NotNull(message = "Gender is required.")

@@ -101,7 +101,7 @@ const AdminProfile = () => {
                             boxSizing: 'border-box',
                             marginTop: '-70px'
                         }}
-                    >
+                    > 
 
                         <div style={{ margin: '200px auto 0' }} className="provider-box" >
 

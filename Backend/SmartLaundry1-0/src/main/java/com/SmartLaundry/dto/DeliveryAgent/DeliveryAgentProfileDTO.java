@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeliveryAgentProfileDTO {
+    private String userId;
     private String firstName;
     private String lastName;
     private String phone;
@@ -45,15 +46,6 @@ public class DeliveryAgentProfileDTO {
         private String cityName;
         private Double latitude;
         private Double longitude;
-
-//        public AddressDTO(String name, String areaName, String pincode, String cityName, Double latitude, Double longitude) {
-//            this.name = name;
-//            this.areaName = areaName;
-//            this.pincode = pincode;
-//            this.cityName = cityName;
-//            this.latitude = latitude;
-//            this.longitude = longitude;
-//        }
 
         public AddressDTO() {
         }

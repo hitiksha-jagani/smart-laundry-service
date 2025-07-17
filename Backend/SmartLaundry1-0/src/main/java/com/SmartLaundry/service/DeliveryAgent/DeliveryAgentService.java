@@ -4,6 +4,8 @@ import com.SmartLaundry.model.DeliveryAgent;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class DeliveryAgentService {
 
     @Autowired
     private DeliveryAgentRepository deliveryAgentRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private static final Logger logger = LoggerFactory.getLogger(DeliveryAgentService.class);
 
@@ -77,11 +82,8 @@ public class DeliveryAgentService {
                 redisTemplate.opsForSet().add("activeDeliveryAgents", agentId);
             }
 
-
-//            redisTemplate.opsForSet().add("activeDeliveryAgents", agentId);
-
             redisTemplate.expire(key, 30, TimeUnit.MINUTES);
-            logger.info("Location saved for agent {} with TTL 30 mins", agentId);
+//            logger.info("Location saved for agent {} with TTL 30 mins", agentId);
         } catch (Exception e) {
             logger.error("Failed to save location for agent {}: {}", agentId, e.getMessage());
         }
@@ -93,28 +95,45 @@ public class DeliveryAgentService {
     @Scheduled(fixedRate = 300000) // every 5 minutes
     @Transactional
     public void persistLocationsFromCache() {
+        try {
+            System.out.println("Scheduler triggered at " + LocalDateTime.now());
 
-        System.out.println("Scheduler triggered at " + LocalDateTime.now());
+            Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+            if (keys == null || keys.isEmpty()) return;
 
-        // Get all keys matching prefix
-        Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
-        if (keys == null || keys.isEmpty()) return;
+            for (String key : keys) {
+                String userId = key.replace(REDIS_KEY_PREFIX, "");
+                System.out.println("User ID : " + userId);
 
-        for (String key : keys) {
-            String userId = key.replace(REDIS_KEY_PREFIX, "");
-            Map<String, Double> location = (Map<String, Double>) redisTemplate.opsForValue().get(key);
-            if (location == null) continue;
+                Map<String, Double> location = (Map<String, Double>) redisTemplate.opsForValue().get(key);
+                if (location == null) continue;
 
-            Users user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+                System.out.println("Latitude : " + location.get("latitude"));
+                System.out.println("Longitude : " + location.get("longitude"));
 
-            DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
-                    .orElseThrow(() -> new RuntimeException("Delivery agent not found for user: " + userId));
+                // ✅ Only used for validation / checking if agent exists — this is fine
+                Users user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-            agent.setCurrentLatitude(location.get("latitude"));
-            agent.setCurrentLongitude(location.get("longitude"));
-            deliveryAgentRepository.save(agent);
+                DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
+                        .orElseThrow(() -> new RuntimeException("Delivery agent not found for user: " + userId));
+
+                // ✅ Actual DB update: does not trigger bean validation
+                deliveryAgentRepository.updateLocation(
+                        userId,
+                        location.get("latitude"),
+                        location.get("longitude")
+                );
+
+                System.out.println("Location persisted to DB for user: " + userId);
+            }
+
+        } catch (Exception ex) {
+            System.err.println("Error in persistLocationsFromCache: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
+
+
 }
 

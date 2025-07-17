@@ -59,12 +59,12 @@ const ServiceProviderTablePage = () => {
                     }),
 
                     // Fetch customer data
-                    axiosInstance.get("/users/customers/table", {
+                    axiosInstance.get("/users/service-providers/table", {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
                     }).catch(err => {
-                        console.error("Customer table data fetch failed", err);
+                        console.error("Service provider table data fetch failed", err);
                         return { data: null };
                     }),
             
@@ -74,7 +74,7 @@ const ServiceProviderTablePage = () => {
                 console.log("User data : " ,userRes.data);
 
                 setData(dataRes.data);
-                console.log("Customer table data : ", dataRes.data);
+                console.log("Service provider table data : ", dataRes.data);
                     
             } catch (error) {
                 console.error("Failed to fetch one or more data:", error);
@@ -143,6 +143,7 @@ const ServiceProviderTablePage = () => {
 
                                         <th>No.</th>
                                         <th>User Id</th>
+                                        <th>Service Provider Id</th>
                                         <th>First Name</th>
                                         <th>Last Name</th>
                                         <th>Phone</th>
@@ -155,23 +156,24 @@ const ServiceProviderTablePage = () => {
 
                                 <tbody>
 
-                                    {data.map((user, index) => (
+                                    {data
+                                        .filter(provider => provider !== null && provider.serviceProviderId)
+                                        .map((provider, index) => (
                                     
-                                    <tr key={user.userId}>
+                                    <tr key={provider.userId}>
 
                                         <td>{index + 1}</td>
-                                        <td>{user.userId}</td>
-                                        <td>{user.firstName}</td>
-                                        <td>{user.lastName}</td>
-                                        <td>{user.phone}</td>
-                                        <td>{user.email}</td>
+                                        <td>{provider.userId}</td>
+                                        <td>{provider.serviceProviderId}</td>
+                                        <td>{provider.firstName}</td>
+                                        <td>{provider.lastName}</td>
+                                        <td>{provider.phone}</td>
+                                        <td>{provider.email}</td>
                                         <td>
                                             <button
-                                                onClick={() =>
-                                                    navigate(`/reports/order/user-report-list/graph/${user.userId}`, {
-                                                    state: {
-                                                        // filter,
-                                                    },
+                                                onClick={ () => 
+                                                    navigate('/users/service-providers/table/more', {
+                                                        state: { data: provider }
                                                     })
                                                 }
                                                 className="admin-btn"

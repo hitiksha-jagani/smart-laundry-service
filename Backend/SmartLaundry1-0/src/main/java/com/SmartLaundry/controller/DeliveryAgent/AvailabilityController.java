@@ -41,6 +41,19 @@ public class AvailabilityController {
         return ResponseEntity.ok(availabilityService.saveAvailability(userId, dto));
     }
 
+    //Author : Hitiksha Jagani
+    // http:8080//localhost:/availability/check-availability
+    @GetMapping("/check-availability")
+    public ResponseEntity<Boolean> checkCurrentAvailability(HttpServletRequest request) throws AccessDeniedException {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+
+        boolean isAvailable = availabilityService.isCurrentlyAvailable(userId);
+        return ResponseEntity.ok(isAvailable);
+//        return ResponseEntity.ok(true);
+    }
+
     //@author Hitiksha Jagani
     // http://localhost:8080/availability/saved
     // Return all the availability list of the week with edit option.

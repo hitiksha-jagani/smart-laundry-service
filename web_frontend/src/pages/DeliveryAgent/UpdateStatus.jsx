@@ -78,66 +78,6 @@ const UpdateStatus = () => {
             fetchAllData();
         }, []);
 
-    // const handleUpdateStatus = async () => {
-    //     setLoading(true);
-    //     setResponseMsg('');
-
-    //     const orderId = delivery.orderId;
-    //     const status = delivery.status;
-
-    //     let endpoint = '';
-    //     // const formData = new URLSearchParams();
-    //     // formData.append('orderId', orderId);
-    //     // formData.append('otp', otp);
-    //     const payload = {
-    //         orderId: orderId,
-    //         otp: otp
-    //         // agentId will be set in backend using token
-    //     };
-
-    //     try {
-
-    //         switch (status) {
-
-    //             case 'ACCEPTED_BY_AGENT':
-    //                 endpoint = '/emailotp/verify-pickup';
-    //                 break;
-
-    //             case 'PICKED_UP':
-    //                 endpoint = '/emailotp/verify-handover';
-    //                 break;
-
-    //             case 'READY_FOR_DELIVERY':
-    //                 endpoint = '/emailotp/verify-confirm-for-cloths';
-    //                 break;
-
-    //             case 'OUT_FOR_DELIVERY':
-    //                 endpoint = '/emailotp/verify-delivery';
-    //                 break;
-
-    //             default:
-    //                 setResponseMsg('Unsupported order status: ' + status);
-    //                 setLoading(false);
-    //                 return;
-    //         }
-
-    //         const res = await axios.post(http://localhost:8080${endpoint}, formData, {
-    //             headers: {
-    //                 'Content-Type': 'application/x-www-form-urlencoded',
-    //             },
-    //         });
-
-    //         showToast("Status updated successfully.", "success");
-
-    //     } catch (error) {
-    //         showToast("Failed to update status", "error")
-    //         console.error("Failed to update status");
-    //         console.error(error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
     const handleUpdateStatus = async () => {
     setLoading(true);
     setResponseMsg('');
@@ -149,7 +89,6 @@ const UpdateStatus = () => {
     const payload = {
         orderId: orderId,
         otp: otp
-        // agentId will be set in backend using token
     };
 
     switch (status) {
@@ -172,7 +111,7 @@ const UpdateStatus = () => {
     }
 
     try {
-        const res = await axiosInstance.post(endpoint, payload); // axiosInstance already has Authorization header
+        const res = await axiosInstance.post(endpoint, payload);
 
         showToast("Status updated successfully.", "success");
     } catch (error) {

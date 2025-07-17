@@ -201,14 +201,8 @@ public class DeliveriesService {
             Double totalKm;
 
             if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
-//                Double distAgentToCustomer = haversine(agentLat, agentLon, customerLat, customerLon);
-//                Double distCustomerToProvider = haversine(customerLat, customerLon, providerLat, providerLon);
-//                totalKm = distAgentToCustomer + distCustomerToProvider;
                 totalKm = haversine(customerLat, customerLon, providerLat, providerLon);
             } else {
-//                Double distAgentToProvider = haversine(agentLat, agentLon, providerLat, providerLon);
-//                Double distProviderToCustomer = haversine(providerLat, providerLon, customerLat, customerLon);
-//                totalKm = distAgentToProvider + distProviderToCustomer;
                 totalKm = haversine(providerLat, providerLon, customerLat, customerLon);
             }
 
@@ -429,11 +423,11 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
-//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
-//            if (!isAvailable) {
-//                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
-//                continue;
-//            }
+            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+            if (!isAvailable) {
+                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
+                continue;
+            }
 
             String locationKey = "deliveryAgentLocation:" + key;
 
@@ -501,11 +495,11 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
-//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
-//            if (!isAvailable) {
-//                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
-//                continue;
-//            }
+            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+            if (!isAvailable) {
+                logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
+                continue;
+            }
 
             String locationKey = "deliveryAgentLocation:" + key;
 
@@ -694,7 +688,6 @@ public class DeliveriesService {
                         bill.setDeliveryCharge(totalDeliveryCharge);
                         billRepository.save(bill);
                     }
-                    // ⚠️ Do NOT update delivery charge if already set!
                 }
 
                 redisTemplate.delete(deliveryRedisKey);

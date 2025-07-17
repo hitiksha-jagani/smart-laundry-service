@@ -59,13 +59,13 @@ const DeliveryAgentTablePage = () => {
                         return { data: null };
                     }),
 
-                    // Fetch customer data
-                    axiosInstance.get("/users/customers/table", {
+                    // Fetch delivery agent data
+                    axiosInstance.get("/users/delivery-agents/table", {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
                     }).catch(err => {
-                        console.error("Customer table data fetch failed", err);
+                        console.error("Delivery agent table data fetch failed", err);
                         return { data: null };
                     }),
             
@@ -75,7 +75,7 @@ const DeliveryAgentTablePage = () => {
                 console.log("User data : " ,userRes.data);
 
                 setData(dataRes.data);
-                console.log("Customer table data : ", dataRes.data);
+                console.log("Delivery agent table data : ", dataRes.data);
                     
             } catch (error) {
                 console.error("Failed to fetch one or more data:", error);
@@ -144,6 +144,7 @@ const DeliveryAgentTablePage = () => {
 
                                         <th>No.</th>
                                         <th>User Id</th>
+                                        <th>Delivery Agent Id</th>
                                         <th>First Name</th>
                                         <th>Last Name</th>
                                         <th>Phone</th>
@@ -156,21 +157,24 @@ const DeliveryAgentTablePage = () => {
 
                                 <tbody>
 
-                                    {data.map((user, index) => (
+                                    {data
+                                        .filter(agent => agent !== null && agent.deliveryAgentId)
+                                        .map((agent, index) => (
                                     
-                                    <tr key={user.userId}>
+                                    <tr key={agent.userId}>
 
                                         <td>{index + 1}</td>
-                                        <td>{user.userId}</td>
-                                        <td>{user.firstName}</td>
-                                        <td>{user.lastName}</td>
-                                        <td>{user.phone}</td>
-                                        <td>{user.email}</td>
+                                        <td>{agent.userId}</td>
+                                        <td>{agent.deliveryAgentId}</td>
+                                        <td>{agent.firstName}</td>
+                                        <td>{agent.lastName}</td>
+                                        <td>{agent.phone}</td>
+                                        <td>{agent.email}</td>
                                         <td>
                                             <button
                                                 onClick={ () => 
-                                                    navigate('/delivery-agent/more-detail', {
-                                                        data: { data }, 
+                                                    navigate('/users/delivery-agents/table/more', {
+                                                        state: { data: agent }
                                                     })
                                                 }
                                                 className="admin-btn"

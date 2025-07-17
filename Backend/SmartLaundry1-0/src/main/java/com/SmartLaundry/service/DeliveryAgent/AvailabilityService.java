@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +71,33 @@ public class AvailabilityService {
         }
 
         return "Availability saved successfully.";
+    }
+
+    // DeliveryAgentService.java
+
+    public boolean isCurrentlyAvailable(String userId) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        com.SmartLaundry.model.DayOfWeek todayDay =
+                com.SmartLaundry.model.DayOfWeek.valueOf(java.time.LocalDate.now().getDayOfWeek().name());
+        System.out.println("Day of today : " + todayDay);
+
+        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsersUserId(userId);
+
+        List<DeliveryAgentAvailability> availabilities = availabilityRepository
+                .findByDeliveryAgentAndDayOfWeek(deliveryAgent, todayDay);
+
+        for (DeliveryAgentAvailability availability : availabilities) {
+            System.out.println("Start time : " + availability.getStartTime());
+            System.out.println("End time : " + availability.getEndTime());
+
+            if (!availability.isHoliday() &&
+                    !now.isBefore(availability.getStartTime()) &&
+                    !now.isAfter(availability.getEndTime())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Get saved availabilities for current week

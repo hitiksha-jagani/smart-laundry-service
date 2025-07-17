@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // List of public endpoints to exclude from filtering
     private static final String[] PUBLIC_URLS = {
-            "/register", "/login", "/complete-profile", "/otp/", "/publish/"
+            "/register", "/login", "/complete-profile", "/otp/", "/publish/", "/profile/exist"
     };
 
     @Override

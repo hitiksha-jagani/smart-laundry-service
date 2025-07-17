@@ -58,6 +58,11 @@ import PaidPayouts from "./components/DeliveryAgent/PaidPayouts";
 // Feedback Page
 import DeliveryAgentFeedback from "./pages/DeliveryAgent/DeliveryAgentFeedback";
 import DeliveryAgentFeedbackList from "./components/DeliveryAgent/DeliveryAgentFeedbackList";
+// Profile Page
+import CompleteDeliveryAgentProfilePage from "./pages/DeliveryAgent/CompleteDeliveryAgentProfilePage";
+import DeliveryAgentProfile from "./pages/DeliveryAgent/DeliveryAgentProfile";
+import EditAgentProfilePage from "./pages/DeliveryAgent/EditAgentProfile";
+import ChangeAgentPasswordPage from "./pages/DeliveryAgent/ChnageAgentPasswordPage";
 
 // Admin
 // Revenue Page
@@ -81,6 +86,7 @@ import DeliveryAgentGraphPage from "./pages/Admin/DeliveryAgentGraphPage";
 import CustomerTablePage from "./pages/Admin/CustomerTablePage";
 import ServiceProviderTablePage from "./pages/Admin/ServiceProviderTablePage";
 import DeliveryAgentTablePage from "./pages/Admin/DeliveryAgentTablePage";
+import DeliveryAgentTableMoreDetailPage from "./pages/Admin/DeliveryAgentTableMoreDetailPage";
 // Service Page
 import ServiceSummaryPage from "./pages/Admin/ServiceSummaryPage";
 import ItemPage from "./pages/Admin/ItemPage";
@@ -98,6 +104,8 @@ import GeoCodingSetting from "./pages/Admin/GeoCodingSetting";
 // Protected Routes
 import PrivateRoute from "./components/PrivateRoute";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import ServiceProviderTableMoreDetailPage from "./pages/Admin/ServiceProviderTableMoreDetailPage";
+import CustomerTableMoreDetailPage from "./pages/Admin/CustomerTableMoreDetailPage";
 
 function App() {
   return (
@@ -247,7 +255,29 @@ function App() {
             <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
               <DeliveryAgentFeedbackList />
             </RoleProtectedRoute>
-          }/>           
+          }/>   
+
+          {/* Profile Page */}
+          <Route path="/profile/complete" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <CompleteDeliveryAgentProfilePage />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/profile/detail" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <DeliveryAgentProfile />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/profile/detail/edit" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <EditAgentProfilePage />
+            </RoleProtectedRoute>
+          }/> 
+          <Route path="/profile/detail/change-password" element={
+            <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
+              <ChangeAgentPasswordPage />
+            </RoleProtectedRoute>
+          }/> 
           
           {/* Feature Not Available Page */}
           <Route path="/not-available" element={<NotAvailablePage />} />
@@ -359,7 +389,10 @@ function App() {
             <RoleProtectedRoute allowedRoles={["ADMIN"]}>
               <DeliveryAgentTablePage />
             </RoleProtectedRoute>
-          }/>        
+          }/> 
+          <Route path="/users/delivery-agents/table/more" element={<DeliveryAgentTableMoreDetailPage />} />
+          <Route path="/users/service-providers/table/more" element={<ServiceProviderTableMoreDetailPage />} />
+          <Route path="/users/customer/table/more" element={<CustomerTableMoreDetailPage />} />
 
           {/* Service Page */}
           <Route path="/service/summary" element={

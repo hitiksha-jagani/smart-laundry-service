@@ -51,6 +51,22 @@
     background-color: #E8F5E9;
 }
 
+.agent-input-field {
+  width: 100%;
+  padding: 8px; 
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border 0.3s ease;
+  outline: none;
+  background-color: #F0FDF4;
+}
+
+.agent-input-field:focus {
+  border: 2px solid #4ADE80;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
 .agent-btn{
     padding: 0.5rem 1rem;
     border: none;
@@ -63,7 +79,7 @@
     border-radius: 0.5rem;
     transition: background-color 0.2s ease;
 }
-
+ 
 .agent-btn:hover {
     background-color: #16a34a;
 }
