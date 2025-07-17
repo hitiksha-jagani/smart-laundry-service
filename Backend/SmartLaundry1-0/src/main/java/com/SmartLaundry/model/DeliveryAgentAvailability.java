@@ -54,15 +54,15 @@ public class DeliveryAgentAvailability implements Serializable {
     @Schema(description = "Date of the selected day.", example = "2025-06-02")
     private LocalDate date;
 
-    @Column(name = "start_time", nullable = false)
+    @Column(name = "start_time", nullable = true)
     @Schema(description = "Start time of the day.", example = "09:00:00")
     private LocalTime startTime;
 
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time", nullable = true)
     @Schema(description = "End time of the day.", example = "09:00:00")
     private LocalTime endTime;
 
-    @Column(name = "holiday", nullable = false)
+    @Column(name = "holiday", nullable = true)
     @Schema(description = "Selected day is holiday or not.", example = "True")
     private boolean holiday = false;
 

@@ -12,16 +12,28 @@ public class SMSService {
     private String authToken;
     private String twilioPhoneNumber;
 
+//    @PostConstruct
+//    public void init() {
+//        this.accountSid = System.getProperty("TWILIO_ACCOUNT_SID");
+//        this.authToken = System.getProperty("NEW_TWILIO_TOKEN");
+//        this.twilioPhoneNumber = System.getProperty("TWILIO_PHONE_NUMBER");
+//
+//        System.out.println("Twilio Account SID: " + accountSid);
+//        System.out.println("Twilio Auth Token: " + authToken);
+//        System.out.println("Twilio Phone Number: " + twilioPhoneNumber);
+//    }
+
     @PostConstruct
     public void init() {
-        this.accountSid = System.getProperty("TWILIO_ACCOUNT_SID");
-        this.authToken = System.getProperty("TWILIO_AUTH_TOKEN");
-        this.twilioPhoneNumber = System.getProperty("TWILIO_PHONE_NUMBER");
+        this.accountSid = System.getenv("TWILIO_ACCOUNT_SID");
+        this.authToken = System.getenv("NEW_TWILIO_TOKEN");
+        this.twilioPhoneNumber = System.getenv("TWILIO_PHONE_NUMBER");
 
         System.out.println("Twilio Account SID: " + accountSid);
         System.out.println("Twilio Auth Token: " + authToken);
         System.out.println("Twilio Phone Number: " + twilioPhoneNumber);
     }
+
 
     private String normalizePhoneNumber(String phoneNumber) {
         if (phoneNumber == null) {

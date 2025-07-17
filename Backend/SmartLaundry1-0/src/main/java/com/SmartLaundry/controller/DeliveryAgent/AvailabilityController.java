@@ -41,8 +41,25 @@ public class AvailabilityController {
         return ResponseEntity.ok(availabilityService.saveAvailability(userId, dto));
     }
 
-    //Author : Hitiksha Jagani
-    // http:8080//localhost:/availability/check-availability
+    // @author : Hitiksha Jagani
+    // http://localhost:8080/availability/repeat-next-week
+    // Store current week availability for next week also.
+    @PostMapping("/repeat-next-week")
+    public ResponseEntity<String> repeatAvailabilityForNextWeek(HttpServletRequest request) throws AccessDeniedException {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+        Users user = roleCheckingService.checkUser(userId);
+        roleCheckingService.isDeliveryAgent(user);
+
+        if (user.isBlocked()) {
+            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+        }
+
+        return ResponseEntity.ok(availabilityService.saveAvailabilityForNextWeek(userId));
+    }
+
+    //@author : Hitiksha Jagani
+    // http://localhost:8080/availability/check-availability
+    // Check whether the delivery agent is available or not for current day
     @GetMapping("/check-availability")
     public ResponseEntity<Boolean> checkCurrentAvailability(HttpServletRequest request) throws AccessDeniedException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));

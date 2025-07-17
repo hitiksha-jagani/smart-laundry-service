@@ -3,9 +3,10 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import DeliveryPage from './screens/DeliveryPage';
 import LoginScreen from './screens/Customer/LoginScreen';
-import CustomerHomePage from './screens/Customer/CustomerHomePage'; // ✅ Import your actual dashboard
+import CustomerHomePage from './screens/Customer/CustomerHomePage'; 
+import DeliveryAgentStack from './navigation/DeliveryAgentStack';
+import { AuthProvider } from './context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,13 +19,10 @@ const login = (token, role, userId, providerId = null, navigation) => {
       navigation.navigate('CustomerDashboard');
       break;
     case 'DELIVERY_AGENT':
-      navigation.navigate('DeliverySummary');
+      navigation.navigate('DeliveryAgentRoutes  ');
       break;
     case 'SERVICE_PROVIDER':
-      navigation.navigate('ProviderDashboard'); // add later if needed
-      break;
-    case 'ADMIN':
-      navigation.navigate('RevenueSummary'); // add later if needed
+      navigation.navigate('ProviderDashboard'); 
       break;
     default:
       console.warn('Unknown role:', role);
@@ -33,6 +31,7 @@ const login = (token, role, userId, providerId = null, navigation) => {
 
 export default function App() {
   return (
+    <AuthProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" options={{ headerShown: false }}>
@@ -47,19 +46,21 @@ export default function App() {
         </Stack.Screen>
 
         <Stack.Screen
-          name="DeliverySummary"
-          component={DeliveryPage}
-          options={{ title: 'Delivery Summary' }}
-        />
-
-        <Stack.Screen
           name="CustomerDashboard"
           component={CustomerHomePage}
           options={{ headerShown: false }}
         />
+
+        <Stack.Screen
+          name="DeliveryAgentRoutes"
+          component={DeliveryAgentStack}
+          options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
+    </AuthProvider>
   );
 }
 

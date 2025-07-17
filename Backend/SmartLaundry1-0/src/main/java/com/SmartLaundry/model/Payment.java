@@ -1,5 +1,7 @@
 package com.SmartLaundry.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ public class Payment {
     @Column(name = "payment_id")
     private Long paymentId;
 
+    @JsonManagedReference
     @OneToOne
     @JoinColumn(name = "invoiceNumber", nullable = false)
     private Bill bill;

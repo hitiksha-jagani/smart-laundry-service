@@ -20,16 +20,9 @@ const TodayDeliveries = () => {
     const state = location.state || {};
     const user = state.user;
     const data = state.data || [];
+    console.log("Today delivery data : ", data);
 
     const [toast, setToast] = useState({ message: '', type: '', visible: false });
-
-    // const showToast = (message, type = 'success') => {
-    //   setToast({ message, type, visible: true });
-
-    //   setTimeout(() => {
-    //     setToast({ message: '', type: '', visible: false });
-    //   }, 5000);
-    // };
     
     const [currentIndex, setCurrentIndex] = useState(0);
 

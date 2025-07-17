@@ -1,5 +1,6 @@
 package com.SmartLaundry.dto.DeliveryAgent;
 
+import com.SmartLaundry.model.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class PendingDeliveriesResponseDTO {
     private String deliveryPhone;
     private String deliveryAddress;
     private Long totalQuantity;
+    private OrderStatus orderStatus;
     private Double km;
     private String deliveryType; // Customer -> Service provider, Service provider -> Customer
 

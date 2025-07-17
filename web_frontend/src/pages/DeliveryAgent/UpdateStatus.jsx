@@ -25,13 +25,13 @@ const UpdateStatus = () => {
     const [user, setUser] = useState(null);
     const { state } = useLocation();
     const delivery = state?.delivery;
+    console.log("Delivery data : ", delivery);
 
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const [responseMsg, setResponseMsg] = useState('');
 
     const token = localStorage.getItem("token");
-    console.log(token);
 
     const axiosInstance = axios.create({
         baseURL: "http://localhost:8080",
@@ -79,48 +79,62 @@ const UpdateStatus = () => {
         }, []);
 
     const handleUpdateStatus = async () => {
-    setLoading(true);
-    setResponseMsg('');
+        setLoading(true);
+        setResponseMsg('');
 
-    const orderId = delivery.orderId;
-    const status = delivery.status;
+        const orderId = delivery.orderId;
+        const status = delivery.orderStatus;
+        console.log("Status : ", delivery.orderStatus);
 
-    let endpoint = '';
-    const payload = {
-        orderId: orderId,
-        otp: otp
-    };
+        let endpoint = '';
+        const payload = {
+            orderId: orderId,
+            otp: otp
+        };
 
-    switch (status) {
-        case 'ACCEPTED_BY_AGENT':
-            endpoint = '/emailotp/verify-pickup';
-            break;
-        case 'PICKED_UP':
-            endpoint = '/emailotp/verify-handover';
-            break;
-        case 'READY_FOR_DELIVERY':
-            endpoint = '/emailotp/verify-confirm-for-cloths';
-            break;
-        case 'OUT_FOR_DELIVERY':
-            endpoint = '/emailotp/verify-delivery';
-            break;
-        default:
-            setResponseMsg('Unsupported order status: ' + status);
+        switch (status) {
+            case 'ACCEPTED_BY_AGENT':
+                endpoint = '/emailotp/verify-pickup';
+                break;
+            case 'PICKED_UP':
+                endpoint = '/emailotp/verify-handover';
+                break;
+            case 'READY_FOR_DELIVERY':
+                endpoint = '/emailotp/verify-confirm-for-cloths';
+                break;
+            case 'OUT_FOR_DELIVERY':
+                endpoint = '/emailotp/verify-delivery';
+                break;
+            default:
+                setResponseMsg('Unsupported order status: ' + status);
+                setLoading(false);
+                return;
+        }
+
+        try {
+            console.log("Update status api called");
+            const res = await axiosInstance.post(endpoint, payload);
+
+            showToast("Status updated successfully.", "success");
+        } catch (error) {
+            const errorMsg =
+    error?.response?.data?.message ||
+    error?.response?.data || 
+    error.message || 
+    'Failed to update status';
+
+  if (errorMsg.toLowerCase().includes('expired')) {
+    showToast("OTP has expired. Please request a new one.", "error");
+  } else if (errorMsg.toLowerCase().includes('invalid')) {
+    showToast("Invalid OTP. Please try again.", "error");
+  } else {
+    showToast(errorMsg, "error");
+  }
+            console.error("Failed to update status:", error);
+        } finally {
             setLoading(false);
-            return;
-    }
-
-    try {
-        const res = await axiosInstance.post(endpoint, payload);
-
-        showToast("Status updated successfully.", "success");
-    } catch (error) {
-        showToast("Failed to update status", "error");
-        console.error("Failed to update status:", error);
-    } finally {
-        setLoading(false);
-    }
-};
+        }
+    };
 
 
     if (!delivery) {
@@ -162,6 +176,9 @@ const UpdateStatus = () => {
                 </div>
 
             </div>
+
+                {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
+
 
             </DeliveryAgentDashboardLayout>
 

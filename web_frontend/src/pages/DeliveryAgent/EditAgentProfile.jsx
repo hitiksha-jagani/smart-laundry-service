@@ -1,13 +1,15 @@
 // Author : Hitiksha Jagani
 // Description : Edit profile page for delivery agent dashboard.
 
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';    
+import { useNavigate, useLocation } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
 
 const EditAgentProfilePage = () => {
+    const location = useLocation();
+    const agentData = location.state?.data;
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,6 +19,7 @@ const EditAgentProfilePage = () => {
     const [toast, setToast] = useState({ message: '', type: '', visible: false });
     const navigate = useNavigate();
 
+    console.log("Agent data:", agentData);
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
@@ -51,11 +54,20 @@ const EditAgentProfilePage = () => {
                 setFormData({
                     firstName: userData.firstName || '',
                     lastName: userData.lastName || '',
-                    addresses: {
-                        name: userData.addresses?.name || '',
-                        areaName: userData.addresses?.areaName || '',
-                        cityName: userData.addresses?.cityName || '',
-                        pincode: userData.addresses?.pincode || ''
+                    vehicleNumber: agentData.vehicleNumber || '',
+                    bankName: agentData.bankName || '',
+                    accountHolderName: agentData.accountHolderName || '',
+                    bankAccountNumber: agentData.bankAccountNumber || '',
+                    ifscCode: agentData.ifscCode || '',
+                    profilePhoto: agentData.profilePhoto || '',
+                    aadharCardPhoto: agentData.aadharCardPhoto || '',
+                    panCardPhoto: agentData.panCardPhoto || '',
+                    drivingLicensePhoto : agentData.drivingLicensePhoto || '',
+                    address: {
+                        name: userData.address?.name || '',
+                        areaName: userData.address?.areaName || '',
+                        cityName: userData.address?.cityName || '',
+                        pincode: userData.address?.pincode || ''
                     }
                 });
             })
@@ -154,7 +166,7 @@ const EditAgentProfilePage = () => {
                     alignItems: 'center',
                     padding: '40px 20px', 
                     boxSizing: 'border-box',
-                    marginTop: '50px'
+                    marginTop: '-30px'
                 }}>
 
                 <div className="agent-box" style={{ width: '100%', maxWidth: '700px' }}>
@@ -196,14 +208,14 @@ const EditAgentProfilePage = () => {
                             <input
                                 name="name"
                                 placeholder="Address Line"
-                                value={formData.addresses.name}
+                                value={formData.address.name}
                                 onChange={handleChange}
                                 className="agent-input-field"
                             />
                             <input
                                 name="areaName"
                                 placeholder="Area"
-                                value={formData.addresses.areaName}
+                                value={formData.address.areaName}
                                 onChange={handleChange}
                                 className="agent-input-field"
                             />
@@ -228,7 +240,7 @@ const EditAgentProfilePage = () => {
 
                             <select
                                 name="cityName"
-                                value={formData.addresses.cityName}
+                                value={formData.address.cityName}
                                 onChange={handleChange}
                                 className="agent-input-field"
                                 disabled={!selectedStateId}
@@ -252,7 +264,7 @@ const EditAgentProfilePage = () => {
                             <input
                                 name="pincode"
                                 placeholder="Pincode"
-                                value={formData.addresses.pincode}
+                                value={formData.address.pincode}
                                 onChange={handleChange} 
                                 className="agent-input-field"
                             />
@@ -261,9 +273,78 @@ const EditAgentProfilePage = () => {
 
                     </div>
 
+                    <div className="agent-grid-row">
+
+                        <div className="agent-field">
+                            <label>Vehicle Number</label>
+                            <input name="vehicleNumber" value={formData.vehicleNumber} onChange={handleChange} className='agent-input-field' />
+                        </div>
+
+                        <div className="agent-field">
+                            <label>Bank Name</label>
+                            <input name="bankName" value={formData.bankName} onChange={handleChange} className='agent-input-field'/>
+                        </div>
+
+                    </div>
+
+                    <div className="agent-grid-row">
+
+                        <div className="agent-field">
+                            <label>Account Holder Name</label>
+                            <input name="accountHolderName" value={formData.accountHolderName} onChange={handleChange} className='agent-input-field' />
+                        </div>
+
+                        <div className="agent-field">
+                            <label>Bank Account Number</label>
+                            <input name="bankAccountNumber" value={formData.bankAccountNumber} onChange={handleChange} className='agent-input-field'/>
+                        </div>
+
+                    </div>
+
+                    <div className="agent-grid-row">
+
+                        <div className="agent-field">
+                            <label>IFSC Code</label>
+                            <input name="ifscCode" value={formData.ifscCode} onChange={handleChange} className='agent-input-field' />
+                        </div>
+
+                        <div className="agent-field">
+                            <label>Aadhar Photo</label>
+                            <input name="aadharCardPhoto" type="file" onChange={handleChange} className='agent-input-field'/>
+                            {user.aadharCardPhoto && <span className="file-status">Already uploaded</span>}
+                        </div>
+ 
+                    </div>
+
+                    <div className="agent-grid-row">
+
+                        <div className="agent-field">
+                            <label>Pan Card Photo</label>
+                            <input name="panCardPhoto" type="file" onChange={handleChange} className='agent-input-field'/>
+                            {user.panCardPhoto && <span className="file-status">Already uploaded</span>}
+                        </div>
+
+                        <div className="agent-field">
+                            <label>Driving License Photo</label>
+                            <input name="drivingLicensePhoto" type="file" onChange={handleChange} className='agent-input-field'/>
+                            {user.drivingLicensePhoto && <span className="file-status">Already uploaded</span>}
+                        </div>
+ 
+                    </div>
+
+                    <div className="agent-grid-row">
+
+                        <div className="agent-field">
+                            <label>Profil Photo</label>
+                            <input name="profilePhoto" type="file" onChange={handleChange} className='agent-input-field'/>
+                            {user.profilePhoto && <span className="file-status">Already uploaded</span>}
+                        </div>
+ 
+                    </div>
+
                     <div className="button-row">
 
-                        <button className="admin-btn" onClick={handleSave} style={{ marginRight: '10px', width: '150px' }}>
+                        <button className="agent-btn" onClick={handleSave} style={{ marginRight: '10px', width: '150px' }}>
                             SAVE
                         </button>
 
@@ -274,10 +355,10 @@ const EditAgentProfilePage = () => {
                     </div>
 
                 </div>
-
-                {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
             
             </div>
+
+            {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
 
         </DeliveryAgentDashboardLayout>
 

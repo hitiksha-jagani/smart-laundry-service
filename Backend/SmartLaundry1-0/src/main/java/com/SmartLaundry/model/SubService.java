@@ -18,7 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Builder
 @Entity
 @Table(name = "sub_service", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "sub_service_name", name = "uk_sub_service_name")
+        @UniqueConstraint(columnNames = { "service_id", "sub_service_name" }, name = "uk_sub_service_name")
 })
 @Schema(description = "Represents a sub service with a unique ID and name.")
 public class SubService implements Serializable{
@@ -40,13 +40,13 @@ public class SubService implements Serializable{
 
     @NotBlank(message = "Sub service name is required.")
     @Size(min = 3, max = 100, message = "Sub service name must be between 3 and 100 characters.")
-    @Pattern(regexp = "^[A-Za-z+()\\s]+$", message = "Service name contains invalid characters.")
-    @Column(name = "sub_service_name", nullable = false, unique = true, length = 100)
+    @Pattern(regexp = "^[A-Za-z+()\\s-]+$", message = "Service name contains invalid characters.")
+    @Column(name = "sub_service_name", nullable = false,  length = 100)
     @Schema(description = "The name of the sub service. Must be unique.", example = "Winter Cloths")
     private String subServiceName;
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "service_id", nullable = false)
     private Services services;
 

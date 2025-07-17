@@ -10,150 +10,6 @@ import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/SummaryCard.css';
 
-const mockDeliveries = [
-  {
-    orderId: "ODR00001",
-    deliveryType: "Customer -> Service Provider",
-    deliveryEarning: 75,
-    km: 4.2,
-    pickupDate: "2025-06-23",
-    pickupTime: "18:00:00",
-    pickupName: "Customer A",
-    pickupPhone: "9876543210",
-    pickupAddress: "12, A-Block, CG Road, Ahmedabad, Gujarat, 380009",
-    deliveryName: "Provider A",
-    deliveryPhone: "9123456780",
-    deliveryAddress: "18, B-Block, Maninagar, Ahmedabad, Gujarat, 380008",
-    totalQuantity: 3,
-    bookingItemDTOList: [
-      {
-        itemName: "Shirt",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Trousers",
-        serviceName: "Dry Clean",
-        quantity: 1
-      },
-      {
-        itemName: "Trousers",
-        serviceName: "Dry Clean",
-        quantity: 1
-      },
-      {
-        itemName: "Trousers",
-        serviceName: "Dry Clean",
-        quantity: 1
-      },
-      {
-        itemName: "Trousers",
-        serviceName: "Dry Clean",
-        quantity: 1
-      },
-      {
-        itemName: "Trousers",
-        serviceName: "Dry Clean",
-        quantity: 1
-      }
-    ]
-  },
-  {
-    orderId: "ODR00002",
-    deliveryType: "Customer -> Service Provider",
-    deliveryEarning: 75,
-    km: 4.2,
-    pickupDate: "2025-06-23",
-    pickupTime: "18:00:00",
-    pickupName: "Customer A",
-    pickupPhone: "9876543210",
-    pickupAddress: "12, A-Block, CG Road, Ahmedabad, Gujarat, 380009",
-    deliveryName: "Provider A",
-    deliveryPhone: "9123456780",
-    deliveryAddress: "18, B-Block, Maninagar, Ahmedabad, Gujarat, 380008",
-    totalQuantity: 3,
-    bookingItemDTOList: [
-      {
-        itemName: "Shirt",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Trousers",
-        serviceName: "Dry Clean",
-        quantity: 1
-      }
-    ]
-  },
-  {
-    orderId: "ODR00003",
-    deliveryType: "Customer -> Service Provider",
-    deliveryEarning: 75,
-    km: 4.2,
-    pickupDate: "2025-06-23",
-    pickupTime: "18:00:00",
-    pickupName: "Customer A",
-    pickupPhone: "9876543210",
-    pickupAddress: "12, A-Block, CG Road, Ahmedabad, Gujarat, 380009",
-    deliveryName: "Provider A",
-    deliveryPhone: "9123456780",
-    deliveryAddress: "18, B-Block, Maninagar, Ahmedabad, Gujarat, 380008",
-    totalQuantity: 3,
-    bookingItemDTOList: [
-      {
-        itemName: "Shirt",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Jeans",
-        serviceName: "Wash & Iron",
-        quantity: 2
-      },
-      {
-        itemName: "Trousers",
-        serviceName: "Dry Clean",
-        quantity: 1
-      }
-    ]
-  }
-];
-
 const DeliveryPage = () => {
     const [user, setUser] = useState(null);
     const [summary, setSummary] = useState([]);
@@ -260,11 +116,6 @@ const DeliveryPage = () => {
 
                 {/* Summary Data  */}
                 <div className="summary-container" style={{ marginTop: '200px' }}>
-
-                    {/* <SummaryCard 
-                        title="TOTAL ORDERS" 
-                        user={user}
-                        count={pending.length + today.length} /> */}
                         
                     {/* Pendin Orders  */}
                     <SummaryCard 
@@ -273,8 +124,8 @@ const DeliveryPage = () => {
                         // count={summary?.pendingDeliveries}
                         count={pending?.length || 0}
                         link="/deliveries/pending" 
-                        // data={pending ?? []}
-                        data={mockDeliveries}
+                        data={pending ?? []}
+                        // data={mockDeliveries}
                     />
 
                     {/* Today's Orders  */}

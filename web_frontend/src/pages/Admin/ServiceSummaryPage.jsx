@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react'; 
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import { MdInbox } from 'react-icons/md';
+import AdminSummaryCard from '../../components/Admin/AdminSummaryCard.jsx';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ServiceMenu from '../../components/Admin/ServiceMenu.jsx';
 
@@ -70,7 +70,7 @@ const ServiceSummaryPage = () => {
                 setUser(userRes.data);
                 console.log("User data : " ,userRes.data);
 
-                setData(dataRes.data);
+                setData(Array.isArray(dataRes.data) ? dataRes.data : dataRes.data.data || []);
                 console.log("Service summary data : ", dataRes.data);
                     
             } catch (error) {
@@ -101,16 +101,23 @@ const ServiceSummaryPage = () => {
 
                     <h2 className="h2-admin">SERVICES SUMMARY</h2>
 
-                    <div className="summary-container" style={{ marginTop: '150px', marginLeft: '30px' }}>
+                    <div className="summary-container" style={{ marginTop: '50px', marginLeft: '30px' }}>
 
-                        {/* <AdminSummaryCard 
-                                title="TOTAL REVENUE" 
-                                // prefix='₹' 
-                                user={user}
-                                count={summary?.totalRevenue  || 0}
-                                // link="/revenue/total-revenue"  
-                                data={total}
-                            /> */}
+                        {Array.isArray(data) && data.map((item, index) => (
+
+                            <div key={item.serviceId}>
+
+                                <AdminSummaryCard 
+                                    title={item.serviceName} 
+                                    user={user}
+                                    count={item?.count || 0}
+                                    // data={total}
+                                />
+
+                            </div>
+
+                        ))}
+                        
 
                     </div>
 

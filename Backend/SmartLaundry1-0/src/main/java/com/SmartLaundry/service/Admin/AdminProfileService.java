@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class AdminProfileService {
     //@author Hitiksha Jagani
     // Logic to fetch profile details
 //    @Cacheable(value = "adminProfileCache", key = "#userId")
+    @Transactional
     public AdminProfileResponseDTO getProfileDetail(String userId) throws AccessDeniedException {
 
         Users user = roleCheckingService.checkUser(userId);
@@ -81,6 +83,7 @@ public class AdminProfileService {
 
     //@author Hitiksha Jagani
     // Logic to store edited profile details
+    @Transactional
     public String editProfile(AdminEditProfileRequestDTO request, String userId) throws AccessDeniedException {
 
         Users user = roleCheckingService.checkUser(userId);
@@ -112,6 +115,8 @@ public class AdminProfileService {
                     City city = cityRepository.findByCityName(addr.getCityName())
                             .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
                     existingAddress.setCity(city);
+                } else {
+                    existingAddress.setCity(existingAddress.getCity());
                 }
 
                 // Update only non-null and non-empty fields

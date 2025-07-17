@@ -70,6 +70,7 @@ public class RequestService {
 
     // @author Hitiksha Jagani
     // Return all service provider data which are pending for approval.
+    @Transactional
     public List<ServiceProviderRequestDTO> getAllProviderProfiles() {
 
         List<ServiceProvider> serviceProviders = serviceProviderRepository.findByStatus(Status.PENDING);
@@ -223,9 +224,11 @@ public class RequestService {
 
     // @author Hitiksha Jagani
     // Return all delivery agent data which are pending for approval.
+    @Transactional
     public List<RequestProfileDTO> getAllAgentProfiles() {
 
         List<DeliveryAgent> deliveryAgents = deliveryAgentRepository.findByStatus(Status.PENDING);
+        System.out.println("Agents fetched: " + deliveryAgents.size());
 
         List<RequestProfileDTO> pendingProfiles = new ArrayList<>();
 
@@ -235,6 +238,7 @@ public class RequestService {
 
             // Fetch user
             Users user = userRepository.findById(agent.getUsers().getUserId()).orElse(null);
+            System.out.println("Agent ID: " + agent.getDeliveryAgentId() + " User: " + agent.getUsers());
             if (user == null) continue;
 
             // Fetch address

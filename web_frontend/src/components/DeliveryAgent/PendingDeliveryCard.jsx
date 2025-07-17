@@ -1,12 +1,14 @@
 // Author : Hitiksha Jagani
 // Description : Pending delivery cards in delivery agent dashboard.
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../../styles/DeliveryAgent/PendingDeliveryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import { FaUser, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
 const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
+    const [agentLocation, setAgentLocation] = useState(null);
 
     console.log("order id : " + data?.userId);
 
@@ -16,6 +18,34 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
       deliveryName, deliveryPhone, deliveryAddress,
       bookingItemDTOList, totalQuantity
     } = data;
+
+    useEffect(() => {
+        const fetchAgentLocation = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/delivery-agent/get-location', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`, 
+            },
+            });
+
+            setAgentLocation(response.data); 
+        } catch (error) {
+            console.error('Failed to fetch agent location:', error);
+        }
+        };
+
+        fetchAgentLocation();
+    }, []);
+
+    const handleRouteClick = () => {
+        if (!agentLocation) return;
+
+        const origin = `${agentLocation.latitude},${agentLocation.longitude}`;
+        const destination = encodeURIComponent(pickupAddress);
+
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
+        window.open(url, '_blank');
+    };
 
     const mapRouteLink = `https://www.google.com/maps/dir/?api=1&origin=START_LOCATION&destination=END_LOCATION`;
 
@@ -60,12 +90,7 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
                     <button
                         className="route-btn agent-btn"
                         style={{width: '65%'}}
-                        onClick={() =>
-                          window.open(
-                            `https://www.google.com/maps/dir/?api=1&origin=My+Location&destination=${encodeURIComponent(pickupAddress)}`,
-                            '_blank'
-                          )
-                        }
+                        onClick={handleRouteClick}
                     >
                         View Route (You ➝ Pickup)
                     </button>

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class AdminRevenue implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "admin_revenue_id", nullable = false)
     private Long adminRevenueId;
 

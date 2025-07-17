@@ -10,10 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ServiceSummaryDTO {
-    private Long totalServices;
-    private Long dryCleaningServices;
-    private Long washServices;
-    private Long washIronServices;
-    private Long ironServices;
-    private Long specializedServices;
+    private String serviceId;
+    private String serviceName;
+    private Long count;
 }

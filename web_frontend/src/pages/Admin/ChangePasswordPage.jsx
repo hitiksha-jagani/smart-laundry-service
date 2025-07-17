@@ -66,7 +66,7 @@ const ChangePasswordPage = () => {
             try {
             
                 // Fetch all data in parallel
-                const [userRes, dataRes] = await Promise.all([
+                const [userRes] = await Promise.all([
                                     
                     // Fetch user data
                     axiosInstance.get(`/user-detail/${userId}`).catch(err => {

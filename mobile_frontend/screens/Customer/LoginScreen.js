@@ -7,6 +7,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 import { jwtDecode } from 'jwt-decode';
 import { Feather } from '@expo/vector-icons';
 import { BASE_URL } from '../../config'; // ✅ Your backend URL config
@@ -114,7 +116,39 @@ export default function LoginScreen({ login }) {
         } catch (err) {
           setError('Unable to retrieve service provider info.');
         }
-      } else {
+      } else if (data.role === 'DELIVERY_AGENT') {
+          try {
+            // 1. Save token and userId in AsyncStorage
+            await AsyncStorage.setItem('token', data.jwtToken);
+            await AsyncStorage.setItem('role', data.role);
+            await AsyncStorage.setItem('userId', userId);
+
+            // 2. Check profile existence
+            const response = await fetch(`http://localhost:8080/profile/exist/${userId}`);
+
+            if (!response.ok) {
+              throw new Error('Failed to check agent existence');
+            }
+
+            const exists = await response.json(); // Boolean
+
+            // 3. Navigate based on existence
+            if (exists) {
+              navigation.navigate('DeliveryAgentRoutes', {
+                screen: 'DeliveryPage', 
+              });
+            } else {
+              navigation.navigate('DeliveryAgentRoutes', {
+                screen: 'DeliveryPage', 
+              });
+            }
+
+          } catch (err) {
+            console.error('Error checking delivery agent existence:', err);
+            Alert.alert('Error', 'Unable to verify agent profile. Try again.');
+          }
+        } 
+      else {
         login(data.jwtToken, data.role, userId);
         switch (data.role) {
           case 'CUSTOMER':

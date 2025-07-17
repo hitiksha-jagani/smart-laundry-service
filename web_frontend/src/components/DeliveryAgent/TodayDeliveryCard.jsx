@@ -1,26 +1,56 @@
 // Author : Hitiksha Jagani
 // Description : Today delivery cards in delivery agent dashboard.
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/DeliveryAgent/PendingDeliveryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import { FaUser, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 
 const TodayDeliveryCard = ({ delivery }) => {
+    const [agentLocation, setAgentLocation] = useState(null);
     const navigate = useNavigate();
 
-    const handleUpdateStatus = () => {
+    const handleUpdateStatus = () => {  
         navigate('/update-status', { state: { delivery } }); 
     };
 
     const {
-      orderId,
+      orderId, orderStatus,
        deliveryType, deliveryEarning, km,
       pickupDate, pickupTime, pickupName, pickupPhone, pickupAddress,
       deliveryName, deliveryPhone, deliveryAddress,
       bookingItemDTOList, totalQuantity
     } = delivery;
+
+    useEffect(() => {
+        const fetchAgentLocation = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/delivery-agent/get-location', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`, 
+            },
+            });
+
+            setAgentLocation(response.data); 
+        } catch (error) {
+            console.error('Failed to fetch agent location:', error);
+        }
+        };
+
+        fetchAgentLocation();
+    }, []);
+
+    const handleRouteClick = () => {
+        if (!agentLocation) return;
+
+        const origin = `${agentLocation.latitude},${agentLocation.longitude}`;
+        const destination = encodeURIComponent(pickupAddress);
+
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
+        window.open(url, '_blank');
+    };
 
     const mapRouteLink = `https://www.google.com/maps/dir/?api=1&origin=START_LOCATION&destination=END_LOCATION`;
 
@@ -32,6 +62,7 @@ const TodayDeliveryCard = ({ delivery }) => {
 
             <div className="delivery-summary service-box">
 
+                <div><strong>Order ID </strong> <span style={{fontSize: '17px'}}>{orderId}</span></div>
                 <div><strong>Delivery Type </strong> <span style={{fontSize: '17px'}}>{deliveryType}</span></div>
                 <div><strong>Pikcup Date Time</strong> <span style={{fontSize: '17px'}}>{pickupDate} {pickupTime}</span></div>
 
@@ -65,12 +96,7 @@ const TodayDeliveryCard = ({ delivery }) => {
                      <button
                         className="route-btn agent-btn"
                         style={{width: '65%'}}
-                        onClick={() =>
-                          window.open(
-                            `https://www.google.com/maps/dir/?api=1&origin=My+Location&destination=${encodeURIComponent(pickupAddress)}`,
-                            '_blank'
-                          )
-                        }
+                        onClick={handleRouteClick}
                     >
                         View Route (You ➝ Pickup)
                     </button>

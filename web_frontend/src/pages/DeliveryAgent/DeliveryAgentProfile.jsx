@@ -188,10 +188,10 @@ const DeliveryAgentProfile = () => {
                             <div className="agent-button-row"> 
                                     <button
                                         className="agent-btn"
-                                        onClick={() => navigate('/profile/detail/edit')}
+                                        onClick={() => navigate('/profile/detail/edit', { state: { data } })}
                                         style={{ marginRight: '10px', width: '210px' }}
                                     >
-                                        EDIT
+                                        EDIT 
                                     </button>
 
                                     <button

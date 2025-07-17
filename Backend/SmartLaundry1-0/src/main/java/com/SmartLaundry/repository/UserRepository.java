@@ -32,4 +32,6 @@ public interface UserRepository extends JpaRepository<Users, String> , JpaSpecif
         GROUP BY ua.city.cityName
     """)
     List<Object[]> countCustomersGroupedByCity(UserRole role);
+
+    boolean existsByRole(UserRole admin);
 }

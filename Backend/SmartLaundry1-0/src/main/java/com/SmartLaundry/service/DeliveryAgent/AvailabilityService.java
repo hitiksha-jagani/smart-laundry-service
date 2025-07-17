@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class AvailabilityService {
     private static final Logger log = LoggerFactory.getLogger(AvailabilityService.class);
 
     // Save an availability
-//    @Transactional
+    @Transactional
     public String saveAvailability(String userId, List<AvailabilityDTO> dtoList) {
 
         Users user = userRepository.findById(userId)
@@ -73,7 +74,58 @@ public class AvailabilityService {
         return "Availability saved successfully.";
     }
 
-    // DeliveryAgentService.java
+    public String saveAvailabilityForNextWeek(String userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found."));
+
+        DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
+                .orElseThrow(() -> new RuntimeException("Agent not found"));
+
+        // 🟡 Fetch current week availability from DB
+        LocalDate monday = LocalDate.now().with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+        LocalDate sunday = monday.plusDays(6);
+
+        List<DeliveryAgentAvailability> currentWeekAvailabilities =
+                availabilityRepository.findByDeliveryAgentAndDateBetween(agent, monday, sunday);
+
+        for (DeliveryAgentAvailability availability : currentWeekAvailabilities) {
+            LocalDate nextWeekDate = availability.getDate().plusWeeks(1);
+
+            DeliveryAgentAvailability newAvailability = DeliveryAgentAvailability.builder()
+                    .deliveryAgent(agent)
+                    .date(nextWeekDate)
+                    .startTime(availability.getStartTime())
+                    .endTime(availability.getEndTime())
+                    .holiday(availability.isHoliday())
+                    .dayOfWeek(availability.getDayOfWeek())
+                    .build();
+
+            try {
+                availabilityRepository.save(newAvailability);
+            } catch (TransactionSystemException ex) {
+                Throwable rootCause = ExceptionUtils.getRootCause(ex);
+                log.error("Transaction failed due to: ", rootCause);
+            }
+        }
+
+        return "Next week's availability saved successfully.";
+    }
+
+    private LocalDate getDateForNextWeek(String dayOfWeekStr) {
+        java.time.DayOfWeek targetDay = java.time.DayOfWeek.valueOf(dayOfWeekStr.toUpperCase()); // MONDAY to SUNDAY
+        LocalDate today = LocalDate.now();
+
+        // Find the start of the current week (Monday)
+
+        // Start of current week (Monday)
+        LocalDate currentWeekStart = today.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+
+        // Calculate the target day in the current week
+        LocalDate currentWeekTargetDate = currentWeekStart.with(TemporalAdjusters.nextOrSame(targetDay));
+
+        // Shift that day to next week
+        return currentWeekTargetDate.plusWeeks(1);
+    }
 
     public boolean isCurrentlyAvailable(String userId) {
         LocalDate today = LocalDate.now();

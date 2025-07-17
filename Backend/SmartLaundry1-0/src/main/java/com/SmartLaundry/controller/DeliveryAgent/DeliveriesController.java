@@ -97,6 +97,7 @@ public class DeliveriesController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
+        System.out.println("Get today's deliveries");
         return ResponseEntity.ok(deliveriesService.getTodayDeliveries(user));
     }
 
@@ -113,6 +114,9 @@ public class DeliveriesController {
             throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
         }
         deliveriesService.acceptOrder(orderId, agentId);
+
+        // Remove all rejected agents
+        redisTemplate.delete("rejectedAgents:" + orderId);
         return ResponseEntity.ok("Order accepted successfully.");
     }
 

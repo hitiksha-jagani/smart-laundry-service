@@ -74,7 +74,7 @@ const CompleteDeliveryAgentProfilePage = () => {
             profilePhoto: null,
         });
 
-        navigate("/deliveries/summary");
+        navigate("/customer/dashboard");
 
         } catch (error) {
             console.error("Submit error:", error);

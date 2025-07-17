@@ -64,17 +64,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.registerUser(request));
     }
 
-    // @author hitiksha-jagani
-    // http://localhost:8080/login
-    // Login
-//    @PostMapping("/login")
-//    public ResponseEntity<JwtResponse> login(@Valid @RequestBody JwtRequest request){
-//        JwtResponse response = authService.loginUser(request);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-
-
-
     @PostMapping("/login")
     public String loginWithPassword(@RequestBody JwtRequest request) {
         return authService.loginUser(request); // sends OTP after verifying credentials

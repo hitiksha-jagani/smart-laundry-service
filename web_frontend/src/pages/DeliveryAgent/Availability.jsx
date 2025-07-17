@@ -7,9 +7,8 @@ import axios from 'axios';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
 import ManageAvailability from '../../components/DeliveryAgent/ManageAvailability';
 import SavedAvailability from './SavedAvailability';
-import { Save } from 'lucide-react';
 
-const Availability = () => {
+const Availability = () => { 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [availabilities, setAvailabilities] = useState([]);

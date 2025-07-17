@@ -44,7 +44,7 @@ const PendingDeliveries = () => {
 
       setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
     } catch (error) {
-      const msg = error.response?.data || 'Error accepting order.';
+      const msg = error.response?.data?.message || 'Error accepting order.';
       showToast(msg, 'error');
       console.error('Error accepting order:', error.response?.data || error.message);
       alert(msg);

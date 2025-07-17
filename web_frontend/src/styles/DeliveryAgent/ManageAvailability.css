@@ -1,9 +1,10 @@
 .availability-container {
-  max-width: 700px;
+  /* max-width: 700px; */
+  width: 800px; 
   margin: auto;
   padding: 30px;
-  font-family: Arial, sans-serif;
-  background: #f0fdf4;
+  font-family: Arial, sans-serif; 
+  background: #F0FDF4;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
@@ -34,31 +35,83 @@ h3 {
 
 .radio-group {
   display: flex;
-  gap: 20px;
   justify-content: center;
+  gap: 40px;
+  margin-top: 10px;
   margin-bottom: 20px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.radio-label:hover {
+  background-color: #f0f0f0;
+}
+
+.radio-label input[type="radio"] {
+  accent-color: #10b981; /* green accent */
+  cursor: pointer;
 }
 
 .time-group {
   display: flex;
-  gap: 20px;
   justify-content: center;
-  margin-bottom: 20px;
+  gap: 30px;
+  margin-top: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.time-group div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.time-group label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.time-group input[type="time"] {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+  background-color: #fff;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+
+.time-group input[type="time"]:focus {
+  outline: none;
+  border-color: #10b981; /* green accent */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
 .add-btn {
   display: block;
   margin: auto;
   padding: 10px 20px;
-  background-color: #005bbb;
+  background-color: #4ADE80;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  width: 100px;
 }
 
 .add-btn:hover {
-  background-color: #004799;
+  background-color: #16a34a;
 }
 
 .availability-table {
@@ -116,3 +169,43 @@ h3 {
 .reset-btn:hover {
     background-color: #c82333;
 }
+
+.availability-inline-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.time-group-inline {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.time-group-inline label {
+  font-weight: 500;
+  margin-right: 6px;
+}
+
+.time-group-inline input[type="time"] {
+  padding: 6px 10px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+

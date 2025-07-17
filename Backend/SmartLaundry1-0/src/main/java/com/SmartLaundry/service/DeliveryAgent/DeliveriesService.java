@@ -308,6 +308,7 @@ public class DeliveriesService {
         orders.addAll(order1);
         orders.addAll(order2);
 
+        System.out.println("Fetch today's deliveries");
         for(Order order : orders){
 
             Bill bill = billRepository.findByOrder(order);
@@ -331,9 +332,11 @@ public class DeliveriesService {
             String deliveryType;
             PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO;
 
-            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
+            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_AGENT)){
                 deliveryType = "Customer -> Service Provider";
 
+                System.out.println("**Pickup date : " + order.getPickupDate());
+                System.out.println("**Pickup date : " + order.getPickupTime());
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
                         .deliveryType(deliveryType)
@@ -344,6 +347,7 @@ public class DeliveriesService {
                         .pickupName(order.getContactName())
                         .pickupPhone(order.getContactPhone())
                         .pickupAddress(order.getContactAddress())
+                        .orderStatus(order.getStatus())
                         .deliveryName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
                         .deliveryPhone(order.getServiceProvider().getUser().getPhoneNo())
                         .deliveryAddress(address)
@@ -360,6 +364,7 @@ public class DeliveriesService {
                         .km(order.getTotalKm())
                         .pickupDate(order.getDeliveryDate())
                         .pickupTime(order.getDeliveryTime())
+                        .orderStatus(order.getStatus())
                         .pickupName(order.getServiceProvider().getUser().getFirstName() + order.getServiceProvider().getUser().getLastName())
                         .pickupPhone(order.getServiceProvider().getUser().getPhoneNo())
                         .pickupAddress(address)
@@ -552,7 +557,7 @@ public class DeliveriesService {
         // Build assignment data
         OrderAssignmentDTO assignment = new OrderAssignmentDTO(userId, OrderStatus.PENDING, System.currentTimeMillis());
 
-        //            String value = objectMapper.writeValueAsString(assignment);
+//        String value = objectMapper.writeValueAsString(assignment);
 
         Boolean success = redisTemplate.opsForValue().setIfAbsent(redisKey, assignment);
         if (Boolean.TRUE.equals(success)) {
@@ -586,13 +591,15 @@ public class DeliveriesService {
         taskScheduler.schedule(() -> {
             String redisKey = "assignment:" + orderId;
 
-            String assignmentJson = redisTemplate.opsForValue().get(redisKey).toString();
-            if (assignmentJson != null) {
+            Object rawValue = redisTemplate.opsForValue().get(redisKey);
+            System.out.println("Redis raw value: " + rawValue);
+            if (rawValue != null) {
+                String assignmentJson = rawValue.toString();
                 try {
                     OrderAssignmentDTO assignment = objectMapper.readValue(assignmentJson, OrderAssignmentDTO.class);
 
                     // Check if still pending
-                    if (assignment.getStatus() == OrderStatus.PENDING) {
+                    if (assignment.getStatus() == OrderStatus.ACCEPTED_BY_PROVIDER || assignment.getStatus() == OrderStatus.READY_FOR_DELIVERY) {
 
                         // Add to rejected agents
                         redisTemplate.opsForSet().add("rejectedAgents:" + orderId, userId);
@@ -607,6 +614,7 @@ public class DeliveriesService {
                     e.printStackTrace();
                 }
             }
+//        }, Instant.now().plus(5, ChronoUnit.SECONDS));
         }, Instant.now().plus(5, ChronoUnit.MINUTES)); // trigger after 5 min
     }
 
