@@ -96,4 +96,8 @@ public class ServiceProvider implements Serializable {
     @Column(name = "status", nullable = false)
     @Schema(description = "Delivery agent is accepted or rejected.", example = "ACCEPTED")
     private Status status = Status.PENDING;
+
+    public String getProviderId() {
+        return serviceProviderId;
+    }
 }

@@ -16,8 +16,8 @@ export default function LogoutButton() {
       {
         text: 'Logout',
         style: 'destructive',
-        onPress: () => {
-          logout();
+        onPress: async () => {
+          await logout(); // Ensure async logout finishes
           navigation.reset({
             index: 0,
             routes: [{ name: 'Login' }],
@@ -36,7 +36,7 @@ export default function LogoutButton() {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#EF4444', // red-500
+    backgroundColor: '#EF4444', // Tailwind red-500
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 6,

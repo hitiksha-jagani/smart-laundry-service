@@ -1,21 +1,11 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
-import { Eye, EyeOff } from "lucide-react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-import { BASE_URL } from "../../config";
+import { useAuth } from "../../context/AuthContext";
 
-
-export default function LoginScreen() {
+const LoginScreen = () => {
   const navigation = useNavigation();
   const { login } = useAuth();
 
@@ -24,10 +14,9 @@ export default function LoginScreen() {
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (key, value) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+  const handleChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setError("");
   };
 
@@ -36,7 +25,7 @@ export default function LoginScreen() {
     setSuccessMessage("");
 
     try {
-      const res = await fetch(`${BASE_URL}/login`, {
+      const res = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -62,11 +51,10 @@ export default function LoginScreen() {
     setSuccessMessage("");
 
     try {
-      const url = `${BASE_URL}/verify-otp?username=${formData.username}&otp=${otp}`;
+      const url = `http://localhost:8080/verify-otp?username=${formData.username}&otp=${otp}`;
       const res = await fetch(url, { method: "POST" });
 
       const rawText = await res.text();
-
       if (!res.ok) {
         setError(rawText || "OTP verification failed.");
         return;
@@ -81,7 +69,7 @@ export default function LoginScreen() {
         return;
       }
 
-      const decoded = jwtDecode(data.jwtToken); 
+      const decoded = jwtDecode(data.jwtToken);
       const userId = decoded.id;
 
       if (!userId) {
@@ -89,190 +77,120 @@ export default function LoginScreen() {
         return;
       }
 
-      login(data.jwtToken, data.role, userId);
+      await AsyncStorage.setItem("token", data.jwtToken);
+      await AsyncStorage.setItem("userId", userId);
 
-      switch (data.role) {
-        case "CUSTOMER":
-          navigation.navigate("CustomerDashboard");
-          break;
-
-        case "ADMIN":
-          navigation.navigate("RevenueSummary");
-          break;
-
-        case "SERVICE_PROVIDER":
-          try {
-            const providerRes = await fetch(
-              `${BASE_URL}/provider/orders/from-user/${userId}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${data.jwtToken}`,
-                },
-              }
-            );
-
-            if (providerRes.ok) {
-              const providerId = await providerRes.text();
-              login(data.jwtToken, data.role, userId, providerId);
-              navigation.navigate("ProviderDrawer", {
-              screen: "ProviderDashboard",
-            });
-
-            } else if (providerRes.status === 404) {
-              navigation.navigate("ProviderCompleteProfile");
-            } else {
-              throw new Error("Provider check failed");
+      if (data.role === "SERVICE_PROVIDER") {
+        try {
+          const providerRes = await fetch(
+            `http://localhost:8080/provider/orders/from-user/${userId}`,
+            {
+              headers: { Authorization: `Bearer ${data.jwtToken}` },
             }
-          } catch (err) {
-            console.error("Service provider error:", err);
-            setError("Unable to retrieve service provider info.");
+          );
+
+          if (providerRes.ok) {
+            const providerId = await providerRes.text();
+            await AsyncStorage.setItem("providerId", providerId);
+            login(data.jwtToken, data.role, userId, providerId);
+            navigation.navigate("ProviderDashboard");
+          } else if (providerRes.status === 404) {
+            login(data.jwtToken, data.role, userId);
+            navigation.navigate("CompleteProfile");
+          } else {
+            throw new Error("Failed to check service provider status.");
           }
-          break;
+        } catch (err) {
+          console.error("Error checking service provider status:", err);
+          setError("Unable to retrieve service provider info.");
+        }
+      } else if (data.role === "DELIVERY_AGENT") {
+        login(data.jwtToken, data.role, userId);
 
-        case "DELIVERY_AGENT":
-          try {
-            const agentRes = await fetch(`${BASE_URL}/profile/exist/${userId}`);
-            if (!agentRes.ok) throw new Error("Agent check failed");
+        try {
+          const agentRes = await fetch(`http://localhost:8080/profile/exist/${userId}`);
 
-            const exists = await agentRes.json();
-            if (exists) {
-              navigation.navigate("DeliverySummary");
-            } else {
-              navigation.navigate("AgentCompleteProfile");
-            }
-          } catch (err) {
-            console.error("Delivery agent error:", err);
-            setError("Unable to verify agent profile.");
+          if (!agentRes.ok) throw new Error("Failed to check agent existence.");
+
+          const exists = await agentRes.json();
+
+          if (exists) {
+            navigation.navigate("DeliveriesSummary");
+          } else {
+            navigation.navigate("CompleteProfile");
           }
-          break;
-
-        default:
-          setError("Unknown role.");
+        } catch (err) {
+          console.error("Error checking delivery agent existence:", err);
+          setError("Unable to verify agent profile. Try again.");
+        }
+      } else {
+        login(data.jwtToken, data.role, userId);
+        switch (data.role) {
+          case "CUSTOMER":
+            navigation.navigate("CustomerDashboard");
+            break;
+          case "ADMIN":
+            navigation.navigate("AdminRevenue");
+            break;
+          default:
+            setError("Unknown user role");
+        }
       }
     } catch (err) {
       console.error(err);
-      setError("OTP verification error.");
+      setError("Error verifying OTP.");
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={styles.container}
-    >
-      <Text style={styles.title}>Login to Your Account</Text>
-
+    <View style={{ padding: 20 }}>
       {step === 1 ? (
         <>
+          <Text>Phone or Email</Text>
           <TextInput
-            style={styles.input}
-            placeholder="Phone or Email"
+            placeholder="Enter phone or email"
             value={formData.username}
-            onChangeText={(text) => handleChange("username", text)}
+            onChangeText={(value) => handleChange("username", value)}
+            style={{ borderWidth: 1, borderRadius: 5, padding: 10, marginBottom: 10 }}
           />
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Password"
-              secureTextEntry={!showPassword}
-              value={formData.password}
-              onChangeText={(text) => handleChange("password", text)}
-            />
-            <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)}>
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </TouchableOpacity>
-          </View>
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
-          {successMessage ? <Text style={styles.success}>{successMessage}</Text> : null}
+          <Text>Password</Text>
+          <TextInput
+            placeholder="Enter password"
+            value={formData.password}
+            secureTextEntry
+            onChangeText={(value) => handleChange("password", value)}
+            style={{ borderWidth: 1, borderRadius: 5, padding: 10, marginBottom: 10 }}
+          />
 
-          <TouchableOpacity onPress={handleLogin} style={styles.button}>
-            <Text style={styles.buttonText}>Send OTP</Text>
+          {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
+          {successMessage ? <Text style={{ color: "green" }}>{successMessage}</Text> : null}
+
+          <TouchableOpacity onPress={handleLogin} style={{ backgroundColor: "#A566FF", padding: 15, borderRadius: 10 }}>
+            <Text style={{ color: "white", textAlign: "center" }}>Send OTP</Text>
           </TouchableOpacity>
         </>
       ) : (
         <>
+          <Text>Enter OTP</Text>
           <TextInput
-            style={styles.input}
             placeholder="Enter 6-digit OTP"
             value={otp}
+            keyboardType="number-pad"
             onChangeText={setOtp}
-            keyboardType="numeric"
+            style={{ borderWidth: 1, borderRadius: 5, padding: 10, marginBottom: 10 }}
           />
-          {error ? <Text style={styles.error}>{error}</Text> : null}
-          {successMessage ? <Text style={styles.success}>{successMessage}</Text> : null}
 
-          <TouchableOpacity onPress={handleOtpVerify} style={styles.button}>
-            <Text style={styles.buttonText}>Verify OTP & Login</Text>
+          {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
+          {successMessage ? <Text style={{ color: "green" }}>{successMessage}</Text> : null}
+
+          <TouchableOpacity onPress={handleOtpVerify} style={{ backgroundColor: "#A566FF", padding: 15, borderRadius: 10 }}>
+            <Text style={{ color: "white", textAlign: "center" }}>Verify OTP & Login</Text>
           </TouchableOpacity>
         </>
       )}
-    </KeyboardAvoidingView>
+    </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 24,
-    textAlign: "center",
-    fontWeight: "bold",
-    color: "#333",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 12,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 12,
-    justifyContent: "space-between",
-  },
-  passwordInput: {
-    flex: 1,
-    paddingRight: 10,
-  },
-  button: {
-    backgroundColor: "#A566FF",
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginTop: 12,
-  },
-  buttonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  error: {
-    color: "red",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  success: {
-    color: "green",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-});
-
-
-
-
-
+export default LoginScreen;

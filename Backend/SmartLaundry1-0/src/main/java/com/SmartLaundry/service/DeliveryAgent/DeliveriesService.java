@@ -247,6 +247,7 @@ public class DeliveriesService {
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(round(earning, 2))
                         .km(round(totalKm, 2))
@@ -266,6 +267,7 @@ public class DeliveriesService {
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(round(earning, 2))
                         .km(round(totalKm, 2))
@@ -336,6 +338,7 @@ public class DeliveriesService {
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(bill.getDeliveryCharge())
                         .km(order.getTotalKm())
@@ -355,6 +358,7 @@ public class DeliveriesService {
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(bill.getDeliveryCharge())
                         .km(order.getTotalKm())

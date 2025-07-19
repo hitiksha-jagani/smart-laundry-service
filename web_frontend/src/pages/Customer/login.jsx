@@ -101,9 +101,8 @@ const Login = () => {
       login(data.jwtToken, data.role, userId, providerId);
       navigate("/provider/dashboard");
     } else if (providerRes.status === 404) {
-      // First-time login, provider not created yet
       login(data.jwtToken, data.role, userId);
-      navigate("/provider/complete-profile");
+      navigate("/provider/completeprofile");
     } else {
       throw new Error("Failed to check service provider status.");
     }
@@ -128,7 +127,7 @@ const Login = () => {
     if (exists) {
       navigate("/deliveries/summary");
     } else {
-      navigate("/profile/complete"); // token is already saved by login()
+      navigate("/profile/complete");
     }
   } catch (err) {
     console.error("Error checking delivery agent existence:", err);
