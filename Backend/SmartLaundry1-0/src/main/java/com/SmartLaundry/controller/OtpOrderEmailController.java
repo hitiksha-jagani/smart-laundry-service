@@ -97,26 +97,49 @@ public class OtpOrderEmailController {
         return ResponseEntity.ok("Handover OTP verified via email. Order marked as IN_CLEANING.");
     }
 
+//    @PostMapping("/verify-delivery")
+//    public ResponseEntity<?> verifyDeliveryOtp(
+//            @RequestParam String orderId,
+//            @RequestParam String otp,
+//            HttpServletRequest token
+//    ) {
+//
+//        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
+//        Users user = roleCheckingService.checkUser(userId);
+//
+//        String id = null;
+//
+//        if(user.getRole().equals(UserRole.DELIVERY_AGENT)) {
+//            DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElse(null);
+//            id = deliveryAgent.getDeliveryAgentId();
+//        }
+//
+//        otpOrderEmailTransitionService.verifyDeliveryOtp(orderId, otp, id);
+//        return ResponseEntity.ok("Delivery OTP verified via email. Order marked as DELIVERED.");
+//    }
+
     @PostMapping("/verify-delivery")
     public ResponseEntity<?> verifyDeliveryOtp(
             @RequestParam String orderId,
             @RequestParam String otp,
             HttpServletRequest token
     ) {
-
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
         Users user = roleCheckingService.checkUser(userId);
 
         String id = null;
 
-        if(user.getRole().equals(UserRole.DELIVERY_AGENT)) {
+        if (user.getRole().equals(UserRole.DELIVERY_AGENT)) {
             DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElse(null);
-            id = deliveryAgent.getDeliveryAgentId();
+            id = deliveryAgent != null ? deliveryAgent.getDeliveryAgentId() : null;
+        } else if (user.getRole().equals(UserRole.SERVICE_PROVIDER)) {
+            id = user.getUserId(); // assuming ServiceProvider uses Users.userId
         }
 
         otpOrderEmailTransitionService.verifyDeliveryOtp(orderId, otp, id);
         return ResponseEntity.ok("Delivery OTP verified via email. Order marked as DELIVERED.");
     }
+
 
     @PostMapping("/verify-confirm-for-cloths")
     public ResponseEntity<?> verifyConfirmForClothsOtp(

@@ -24,8 +24,10 @@ const UpdateStatus = () => {
 
     const [user, setUser] = useState(null);
     const { state } = useLocation();
-    const delivery = state?.delivery;
-    console.log("Delivery data : ", delivery);
+    const [delivery, setDelivery] = useState(state?.delivery || null);
+    // const { state } = useLocation();
+    // const delivery = state?.delivery;
+    // console.log("Delivery data : ", delivery);
 
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
@@ -39,6 +41,13 @@ const UpdateStatus = () => {
     });
 
     useEffect(() => {
+
+        if (!state?.delivery) {
+            const storedDelivery = localStorage.getItem("selectedDelivery");
+            if (storedDelivery) {
+                setDelivery(JSON.parse(storedDelivery));
+            }
+        }
 
         const fetchAllData = async () => {
         if (!token) return;

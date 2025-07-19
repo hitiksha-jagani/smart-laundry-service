@@ -1,11 +1,23 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 
+// Import assets
 import convenience from '../../assets/convenience.png';
 import quality from '../../assets/quality.png';
-support = require('../../assets/support.png'); // in case of default image import issues
+import support from '../../assets/support.png';
+
+// Optional custom components (if you created them as reusable layout elements)
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 export default function CustomerHomePage() {
   const navigation = useNavigation();
@@ -30,7 +42,10 @@ export default function CustomerHomePage() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* HERO SECTION */}
+      {/* Navbar component, optional if you created it for layout */}
+      <Navbar />
+
+      {/* Hero Section */}
       <View style={styles.heroSection}>
         <Text style={styles.heroTitle}>Smart Laundry at Your Fingertips</Text>
         <Text style={styles.heroSubtitle}>
@@ -38,17 +53,24 @@ export default function CustomerHomePage() {
         </Text>
         <TouchableOpacity
           style={styles.bookNowButton}
-          onPress={() => navigation.navigate('ServiceProviders')}
+          onPress={() => navigation.navigate('NearbyServiceProviders')}
         >
           <Text style={styles.bookNowText}>Book Now</Text>
-          <Feather name="arrow-right" size={16} color="#A566FF" style={{ marginLeft: 6 }} />
+          <Feather
+            name="arrow-right"
+            size={16}
+            color="#A566FF"
+            style={{ marginLeft: 6 }}
+          />
         </TouchableOpacity>
       </View>
 
-      {/* FEATURES */}
+      {/* Features Section */}
       <View style={styles.featuresSection}>
         <Text style={styles.featuresTitle}>Why Choose Us?</Text>
-        <Text style={styles.featuresSubtitle}>Experience next-gen laundry with these awesome features</Text>
+        <Text style={styles.featuresSubtitle}>
+          Experience next-gen laundry with these awesome features
+        </Text>
 
         {features.map((item) => (
           <View key={item.title} style={styles.card}>
@@ -58,21 +80,23 @@ export default function CustomerHomePage() {
           </View>
         ))}
       </View>
+
+      {/* Footer component, optional if you created it */}
+      <Footer />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 30,
-    paddingHorizontal: 16,
+    paddingBottom: 30,
     backgroundColor: '#FFF5FD',
   },
   heroSection: {
     backgroundColor: '#A566FF',
     borderRadius: 12,
     padding: 24,
-    marginBottom: 30,
+    margin: 16,
     alignItems: 'center',
   },
   heroTitle: {
@@ -106,6 +130,7 @@ const styles = StyleSheet.create({
   },
   featuresSection: {
     marginTop: 10,
+    paddingHorizontal: 16,
   },
   featuresTitle: {
     fontSize: 22,

@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import '../../styles/Toast.css';
 import "../../styles/DeliveryAgent/ManageAvailability.css";
-import { div } from "framer-motion/client";
 
 const fullDaysOfWeek = [
     "Monday",

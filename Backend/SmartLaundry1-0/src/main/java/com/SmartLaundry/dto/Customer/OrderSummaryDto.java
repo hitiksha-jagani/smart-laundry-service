@@ -1,6 +1,7 @@
 package com.SmartLaundry.dto.Customer;
 import com.SmartLaundry.model.BillStatus;
 import com.SmartLaundry.model.OrderStatus;
+import com.SmartLaundry.model.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +35,6 @@ public class OrderSummaryDto {
     private BillStatus status;
     private String appliedPromoCode;
     private String invoiceNumber;
-
 
     @Data
     @AllArgsConstructor

@@ -27,6 +27,7 @@ public class BillService {
         return billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found with ID: " + billId));
     }
+
     public OrderSummaryDto getBillSummary(String orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -74,6 +75,10 @@ public class BillService {
                         .orElse("N/A");
             }
         }
+
+        PaymentStatus paymentStatus = (bill.getPayment() != null && bill.getPayment().getStatus() != null)
+                ? bill.getPayment().getStatus()
+                : PaymentStatus.PENDING;
 
         return OrderSummaryDto.builder()
                 .orderId(orderId)

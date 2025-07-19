@@ -8,6 +8,13 @@ import { useNavigation } from '@react-navigation/native';
 const SummaryCard = ({ title, prefix, user, count, link, data, filterParams }) => {
     const navigation = useNavigation();
 
+    const navigateTo = (targetRoute) => {
+        closeDrawer();
+        if (targetRoute !== route.name) {
+        navigation.navigate(targetRoute);
+        }
+    };
+
     const handlePress = () => {
         if (link) {
         const linkState = {
@@ -15,8 +22,8 @@ const SummaryCard = ({ title, prefix, user, count, link, data, filterParams }) =
             user,
             filter: filterParams?.filter,
             ...(filterParams?.filter === 'custom' && {
-            startDate: filterParams.startDate,
-            endDate: filterParams.endDate,
+                startDate: filterParams.startDate,
+                endDate: filterParams.endDate,
             }),
         };
 
@@ -53,6 +60,18 @@ const SummaryCard = ({ title, prefix, user, count, link, data, filterParams }) =
 
     );
 };
+
+const DrawerLink = ({ onPress }) => (
+
+  <TouchableOpacity onPress={onPress}>
+    
+    <Text style={[styles.drawerLinkText, isActive && styles.activeDrawerLinkText]}>
+      {text}
+    </Text>
+
+  </TouchableOpacity>
+
+);
 
 const styles = StyleSheet.create({
 

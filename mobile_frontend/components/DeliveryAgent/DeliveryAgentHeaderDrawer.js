@@ -1,156 +1,232 @@
 // Author: Hitiksha Patel
-// Description: Mobile Header with slide-in drawer menu (React Native)
 
 import React, { useState } from 'react';
 import {
+  Image,
   View,
   Text,
   TouchableOpacity,
-  Image,
   StyleSheet,
   Animated,
   Dimensions,
-  Linking,
 } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { useDrawer } from '../../context/DrawerContext';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import profileIcon from '../../assets/avatar-icon.png';
+import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-const DeliveryAgentHeaderDrawer = ({ agent }) => {
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const slideAnim = useState(new Animated.Value(SCREEN_WIDTH))[0];
-    const navigation = useNavigation();
-    const { logout } = useAuth();
+const DeliveryAgentHeaderDrawer = ({ agent, showBackButton = false, onBackPress }) => {
+  const { isDrawerOpen, setIsDrawerOpen } = useDrawer();
+  const slideAnim = useState(new Animated.Value(SCREEN_WIDTH))[0];
+  const navigation = useNavigation();
+  const route = useRoute(); 
+  const { logout } = useAuth();
 
-    const toggleDrawer = () => {
+ const openDrawer = () => {
+    setIsDrawerOpen(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
 
-        if (isDrawerOpen) {
+  const closeDrawer = () => {
+    Animated.timing(slideAnim, {
+      toValue: SCREEN_WIDTH,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setIsDrawerOpen(false);
+    });
+  };
 
-            Animated.timing(slideAnim, {
 
-                toValue: SCREEN_WIDTH,
-                duration: 300,
-                useNativeDriver: true,
+  const toggleDrawer = () => {
+    if (isDrawerOpen) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  };
 
-            }).start(() => setIsDrawerOpen(false));
 
-        } else {
+  const handleLogout = () => {
+    logout();
+    navigation.navigate('Login');
+  };
 
-            setIsDrawerOpen(true);
-            Animated.timing(slideAnim, {
+  const navigateTo = (targetRoute) => {
+    closeDrawer();
+    if (targetRoute !== route.name) {
+      navigation.navigate(targetRoute);
+    }
+  };
 
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true,
+  return (
 
-            }).start();
+    <>
 
-        }
+      {/* Header */}
+      <View style={styles.header}>
 
-    };
+        <Text style={[styles.headerTitle, deliveryAgentStyles.h1Agent]}>Smart Laundry</Text>
 
-    const handleLogout = () => {
-        logout();
-        navigation.navigate('Login');
-    };
+        <TouchableOpacity onPress={toggleDrawer} style={styles.iconContainer}>
 
-    const navigateTo = (route) => {
-        toggleDrawer();
-        navigation.navigate(route);
-    };
+          <Ionicons
+            name={isDrawerOpen ? 'close' : 'menu'}
+            size={28}
+            color="#64748B"
+          />
 
-    return (
+        </TouchableOpacity>
 
-        <>
+      </View>
 
-            {/* Header */}
-            <View style={styles.header}>
+      {/* <View style={styles.header}> */}
+      {showBackButton && (
+        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
+      )}
+      {/* <Text style={styles.name}>{agent?.firstName || 'Agent'}</Text> */}
+    {/* </View> */}
 
-                <TouchableOpacity onPress={toggleDrawer}>
-                <Ionicons name="menu" size={28} color="#fff" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Smart Laundry</Text>
-                <View style={{ width: 28 }} /> {/* Spacer for symmetry */}
+      {/* Overlay */}
+      {isDrawerOpen && (
+        <TouchableOpacity style={styles.overlay} onPress={closeDrawer} activeOpacity={1} />
+      )}
 
-            </View>
+      {/* Drawer */}
+      <Animated.View
+        style={[
+          styles.drawer,
+          { transform: [{ translateX: slideAnim }] },
+        ]}
+      >
 
-            {/* Overlay */}
-            {isDrawerOpen && (
-                <TouchableOpacity style={styles.overlay} onPress={toggleDrawer} />
-            )}
+        {/* Close Icon inside drawer */}
+        <TouchableOpacity style={styles.drawerCloseIcon} onPress={closeDrawer}>
+          <Ionicons name="close" size={26} color="#000" />
+        </TouchableOpacity>
 
-            {/* Drawer */}
-            <Animated.View style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}>
+        <View style={styles.linkContainer}>
 
-                <View style={styles.header}>
+          <DrawerLink
+            text="Deliveries"
+            onPress={() => navigateTo('DeliveriesSummary')}
+            isActive={route.name === 'DeliveriesSummary'}
+          />
+          <DrawerLink
+            text="Manage Availability"
+            onPress={() => navigateTo('AvailabilityScreen')}
+            isActive={route.name === 'AvailabilityScreen'}
+          />
+          <DrawerLink
+            text="Payouts"
+            onPress={() => navigateTo('PayoutsSummary')}
+            isActive={route.name === 'PayoutsSummary'}
+          />
+          <DrawerLink
+            text="Feedback"
+            onPress={() => navigateTo('NotAvailableInThisVersion')}
+            isActive={route.name === 'NotAvailable'}
+          />
+          <DrawerLink
+            text="Raise a Ticket"
+            onPress={() => navigateTo('NotAvailableInThisVersion')}
+            isActive={route.name === 'NotAvailable'}
+          />
+          <DrawerLink
+            text="My Profile"
+            onPress={() => navigateTo('DeliveryAgentProfile')}
+            isActive={route.name === 'DeliveryAgentProfile'}
+          />
 
-                    <Text style={styles.headerTitle}>Smart Laundry</Text>
+          <TouchableOpacity  onPress={handleLogout}>
+            <Text style={[ deliveryAgentStyles.agentBtn]}>Logout</Text>
+          </TouchableOpacity>
 
-                    <TouchableOpacity onPress={toggleDrawer}>
-                        <Ionicons name="menu" size={28} color="#64748B" />
-                    </TouchableOpacity>
+        </View>
 
-                </View>
+        <View style={styles.sidebarBottom}>
+          <View style={deliveryAgentStyles.hrAgent} />
 
-                <View style={styles.linkContainer}>
+          <View style={styles.userName}>
+            <Image source={profileIcon} style={styles.sidebarIcon} />
+            <Text style={[styles.agentName, deliveryAgentStyles.h2Agent]}>
+              {agent?.firstName} {agent?.lastName}
+            </Text>
+          </View>
 
-                <DrawerLink text="Deliveries" onPress={() => navigateTo('DeliveriesSummary')} />
-                <DrawerLink text="Manage Availability" onPress={() => navigateTo('ManageAvailability')} />
-                <DrawerLink text="Payouts" onPress={() => navigateTo('PayoutsSummary')} />
-                <DrawerLink text="Feedback" onPress={() => navigateTo('NotAvailable')} />
-                <DrawerLink text="Raise a Ticket" onPress={() => navigateTo('NotAvailable')} />
-                <DrawerLink text="My Profile" onPress={() => navigateTo('ProfileDetail')} />
+          <View style={deliveryAgentStyles.hrAgent} />
 
-                </View>
+          <View style={styles.contactInfo}>
+            <Text style={styles.agentDetail}>{agent?.phoneNo || 'Loading...'}</Text>
+            <Text style={styles.agentDetail}>{agent?.email || 'Loading...'}</Text>
+          </View>
+        </View>
 
-                <View style={styles.agentInfo}>
+      </Animated.View>
 
-                <Text style={styles.agentName}>{agent?.firstName} {agent?.lastName}</Text>
-                <Text style={styles.agentDetail}>{agent?.phoneNo}</Text>
-                <Text style={styles.agentDetail}>{agent?.email}</Text>
+    </>
 
-                </View>
+  );
 
-                <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-                <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
-
-            </Animated.View>
-
-        </>
-
-    );
 };
 
-const DrawerLink = ({ text, onPress }) => (
-  <TouchableOpacity onPress={onPress} style={styles.drawerLink}>
-    <Text style={styles.drawerLinkText}>{text}</Text>
+const DrawerLink = ({ text, onPress, isActive }) => (
+
+  <TouchableOpacity onPress={onPress} style={[styles.drawerLink, isActive && styles.activeDrawerLink]}>
+    
+    <Text style={[styles.drawerLinkText, isActive && styles.activeDrawerLinkText]}>
+      {text}
+    </Text>
+
   </TouchableOpacity>
+
 );
 
 const styles = StyleSheet.create({
-  header: {
-  paddingHorizontal: 20,
-  paddingTop: 50,
-  height: 60 + 50, // header height + top padding
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  backgroundColor: '#F0FDF4',
-  borderBottomWidth: 1,
-  borderBottomColor: '#ddd',
-  elevation: 0, // Android shadow removal
-  shadowOpacity: 0, // iOS shadow removal
-},
+  
+  sidebar: {
+    width: 250,
+    backgroundColor: '#F0FDF4',
+    height: '100%',
+    padding: 16,
+    position: 'fixed', 
+    left: 0,
+    top: 0,
+    zIndex: 1000,
+  },
 
-headerTitle: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  color: '#64748B',
-},
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    width: '100%',
+    backgroundColor: '#F0FDF4',
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    zIndex: 998,
+    elevation: 4,
+  },
+
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#64748B',
+  },
 
   overlay: {
     position: 'absolute',
@@ -161,47 +237,119 @@ headerTitle: {
     backgroundColor: 'rgba(0,0,0,0.4)',
     zIndex: 1,
   },
+
   drawer: {
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  width: SCREEN_WIDTH * 0.6,
+  height: '100%',
+  backgroundColor: '#F0FDF4',
+  zIndex: 999,
+  paddingHorizontal: 16,
+  paddingTop: 60,
+  overflow: 'hidden', 
+},
+linkContainer: {
+  flexGrow: 0,
+  flexShrink: 1,
+},
+
+
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
+  iconContainer: {
+    padding: 4,
+  },
+
+  drawerCloseIcon: {
     position: 'absolute',
-    right: 0,
-    top: 0,
-    width: SCREEN_WIDTH * 0.8,
-    height: '100%',
-    backgroundColor: '#fff',
-    zIndex: 2,
-    paddingHorizontal: 16,
-    paddingTop: 60,
+    top: 16,
+    right: 16,
+    zIndex: 3,
   },
-  drawerHeader: {
-    alignItems: 'flex-end',
-  },
-  linkContainer: {
-    marginTop: 30,
-  },
+
   drawerLink: {
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    paddingHorizontal: 12,
+    alignItems: 'center',
   },
+
   drawerLinkText: {
     fontSize: 16,
     color: '#333',
   },
-  agentInfo: {
-    marginTop: 30,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    paddingTop: 16,
+
+  activeDrawerLink: {
+    backgroundColor: '#ACFFB2',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
   },
+
+  activeDrawerLinkText: {
+    fontWeight: 'bold',
+    color: '#047857',
+  },
+
+  sidebarIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+
+  sidebarBottom: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+
+  hr: {
+    color: '#4ADE80'
+  },
+
+  userName: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+
+  contactInfo: {
+    alignItems: 'center',
+  },
+
+  agentName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+
+  agentDetail: {
+    fontSize: 15.5,
+    fontWeight: '500',
+    color: '#333',
+    marginVertical: 1,
+  },
+  
   agentName: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
   },
+
   agentDetail: {
     fontSize: 14,
     color: '#666',
   },
+
   logoutBtn: {
     marginTop: 30,
     backgroundColor: '#ff4d4f',
@@ -209,10 +357,12 @@ headerTitle: {
     borderRadius: 6,
     alignItems: 'center',
   },
+
   logoutText: {
     color: '#fff',
     fontWeight: 'bold',
   },
+
 });
 
 export default DeliveryAgentHeaderDrawer;

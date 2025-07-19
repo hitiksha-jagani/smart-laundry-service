@@ -2,17 +2,166 @@
 // Description: Delivery page for delivery agent dashboard (React Native)
 
 import React, { useEffect, useState } from 'react';
+import { useFonts } from 'expo-font';
 import { View, Text, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; 
 
+import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
+
+import { useDrawer } from '../../context/DrawerContext';
+import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 import SummaryCard from '../../components/DeliveryAgent/SummaryCard';
-import DeliveryAgentHeaderDrawer from '../../components/DeliveryAgent/DeliveryAgentHeaderDrawer';
+
+const mockDeliveries = [
+  {
+    orderId: "ODR00001",
+    deliveryType: "Customer -> Service Provider",
+    deliveryEarning: 75,
+    km: 4.2,
+    pickupDate: "2025-06-23",
+    pickupTime: "18:00:00",
+    pickupName: "Customer A",
+    pickupPhone: "9876543210",
+    pickupAddress: "12, A-Block, CG Road, Ahmedabad, Gujarat, 380009",
+    deliveryName: "Provider A",
+    deliveryPhone: "9123456780",
+    deliveryAddress: "18, B-Block, Maninagar, Ahmedabad, Gujarat, 380008",
+    totalQuantity: 3,
+    bookingItemDTOList: [
+      {
+        itemName: "Shirt",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Trousers",
+        serviceName: "Dry Clean",
+        quantity: 1
+      },
+      {
+        itemName: "Trousers",
+        serviceName: "Dry Clean",
+        quantity: 1
+      },
+      {
+        itemName: "Trousers",
+        serviceName: "Dry Clean",
+        quantity: 1
+      },
+      {
+        itemName: "Trousers",
+        serviceName: "Dry Clean",
+        quantity: 1
+      },
+      {
+        itemName: "Trousers",
+        serviceName: "Dry Clean",
+        quantity: 1
+      }
+    ]
+  },
+  {
+    orderId: "ODR00002",
+    deliveryType: "Customer -> Service Provider",
+    deliveryEarning: 75,
+    km: 4.2,
+    pickupDate: "2025-06-23",
+    pickupTime: "18:00:00",
+    pickupName: "Customer A",
+    pickupPhone: "9876543210",
+    pickupAddress: "12, A-Block, CG Road, Ahmedabad, Gujarat, 380009",
+    deliveryName: "Provider A",
+    deliveryPhone: "9123456780",
+    deliveryAddress: "18, B-Block, Maninagar, Ahmedabad, Gujarat, 380008",
+    totalQuantity: 3,
+    bookingItemDTOList: [
+      {
+        itemName: "Shirt",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Trousers",
+        serviceName: "Dry Clean",
+        quantity: 1
+      }
+    ]
+  },
+  {
+    orderId: "ODR00003",
+    deliveryType: "Customer -> Service Provider",
+    deliveryEarning: 75,
+    km: 4.2,
+    pickupDate: "2025-06-23",
+    pickupTime: "18:00:00",
+    pickupName: "Customer A",
+    pickupPhone: "9876543210",
+    pickupAddress: "12, A-Block, CG Road, Ahmedabad, Gujarat, 380009",
+    deliveryName: "Provider A",
+    deliveryPhone: "9123456780",
+    deliveryAddress: "18, B-Block, Maninagar, Ahmedabad, Gujarat, 380008",
+    totalQuantity: 3,
+    bookingItemDTOList: [
+      {
+        itemName: "Shirt",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Jeans",
+        serviceName: "Wash & Iron",
+        quantity: 2
+      },
+      {
+        itemName: "Trousers",
+        serviceName: "Dry Clean",
+        quantity: 1
+      }
+    ]
+  }
+];
 
 const DeliveryPage = () => {
   const navigation = useNavigation();
+  const { isDrawerOpen } = useDrawer();
 
   const [user, setUser] = useState(null);
   const [summary, setSummary] = useState([]);
@@ -66,7 +215,7 @@ const DeliveryPage = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <View style={deliveryAgentStyles.centered}>
         <ActivityIndicator size="large" color="#388E3C" />
         <Text>Loading Dashboard...</Text>
       </View>
@@ -74,61 +223,42 @@ const DeliveryPage = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* Custom Drawer Header */}
-      <DeliveryAgentHeaderDrawer agent={user} />
+    <DeliveryAgentLayout>
+      <View style={deliveryAgentStyles.container}>
+        <Text style={[deliveryAgentStyles.h1Agent, styles.heading]}>DELIVERY DASHBOARD</Text>
 
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.heading}>DELIVERY DASHBOARD</Text>
-
-        <View style={styles.summaryContainer}>
-          {/* Pending Orders */}
-          <SummaryCard
-            title="PENDING ORDERS"
-            user={user}
-            count={pending?.length || 0}
-            link="PendingDeliveries"
-            data={pending}
-          />
-
-          {/* Today's Orders */}
-          <SummaryCard
-            title="TODAY'S ORDERS"
-            user={user}
-            count={today?.length || 0}
-            link="TodayDeliveries"
-            data={today}
-          />
+        <View style={deliveryAgentStyles.summaryWrapper}>
+          <View style={deliveryAgentStyles.summaryContainer}>
+            <SummaryCard
+              title="PENDING ORDERS"
+              user={user}
+              count={pending?.length || 0}
+              link="PendingDeliveries"
+              // data={pending}
+              data={mockDeliveries}
+            />
+            <SummaryCard
+              title="TODAY'S ORDERS"
+              user={user}
+              count={today?.length || 0}
+              link="TodayDeliveries"
+              // data={today}
+              data={mockDeliveries}
+            />
+          </View>
         </View>
-      </ScrollView>
-    </View>
-  );
+      </View>
+    </DeliveryAgentLayout>
+
+
+);
 };
+
+export default DeliveryPage;
 
 const styles = StyleSheet.create({
   heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 30,
-    textAlign: 'center',
-    color: '#333',
+    marginTop: '30px'
   },
-  container: {
-    paddingBottom: 50,
-    paddingTop: 20,
-    paddingHorizontal: 16,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  summaryContainer: {
-    marginTop: 30,
-    gap: 24,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  
 });
-
-export default DeliveryPage;

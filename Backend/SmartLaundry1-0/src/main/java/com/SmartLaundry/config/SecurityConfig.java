@@ -63,7 +63,7 @@ public class SecurityConfig {
                                         "/customer/location/resolve-pin","/service-provider/**" , "/cache/**" ,
                                         "/schedule-plans/**", "/orders/**","/provider/orders/**","/users/**",
                                         "/sp/**","/paypal/**","/ticket/**","/faqs/**","/testing/**","/cities/**",
-                                        "/roles/**","/items/**","/subservices/**","/services/**","/payments/**","/provider/**")
+                                        "/roles/**","/items/**","/subservices/**","/services/**","/payments/**","/provider/**","/payment/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )

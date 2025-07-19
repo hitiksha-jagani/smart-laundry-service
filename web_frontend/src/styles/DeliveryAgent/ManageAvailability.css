@@ -58,7 +58,7 @@ h3 {
 }
 
 .radio-label input[type="radio"] {
-  accent-color: #10b981; /* green accent */
+  accent-color: #10b981;
   cursor: pointer;
 }
 
@@ -94,7 +94,7 @@ h3 {
 
 .time-group input[type="time"]:focus {
   outline: none;
-  border-color: #10b981; /* green accent */
+  border-color: #10b981; 
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
