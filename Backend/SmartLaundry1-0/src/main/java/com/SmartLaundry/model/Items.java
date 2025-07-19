@@ -43,7 +43,7 @@ public class Items implements Serializable {
 
     @NotBlank(message = "Item name is required.")
     @Size(min = 3, max = 100, message = "Item name must be between 3 and 100 characters.")
-    @Pattern(regexp = "^[A-Za-z+()\\s]+$", message = "Service name contains invalid characters.")
+    @Pattern(regexp = "^[A-Za-z+()\\s-]+$", message = "Service name contains invalid characters.")
     @Column(name = "item_name", nullable = false, unique = false, length = 100)
     @Schema(description = "The name of the item.", example = "T-shirt")
     private String itemName;

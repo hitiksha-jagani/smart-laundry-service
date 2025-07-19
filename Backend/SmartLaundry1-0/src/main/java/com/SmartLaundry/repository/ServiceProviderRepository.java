@@ -1,5 +1,6 @@
 package com.SmartLaundry.repository;
 
+import com.SmartLaundry.model.Order;
 import com.SmartLaundry.model.ServiceProvider;
 import com.SmartLaundry.model.Status;
 import com.SmartLaundry.model.Users;
@@ -30,4 +31,5 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     List<ServiceProvider> findByBusinessNameContainingIgnoreCase(String keyword);
 
     List<ServiceProvider> findByStatus(Status status);
+
 }

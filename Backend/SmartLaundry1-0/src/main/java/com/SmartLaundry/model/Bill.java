@@ -80,6 +80,7 @@ public class Bill implements Serializable {
     @Schema(description = "Final payable price after all calculations.", example = "338.00", accessMode = Schema.AccessMode.READ_ONLY)
     private Double finalPrice;
 
+    @JsonBackReference
     @OneToOne(mappedBy = "bill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Schema(description = "Payment associated with this bill.")
     private Payment payment;

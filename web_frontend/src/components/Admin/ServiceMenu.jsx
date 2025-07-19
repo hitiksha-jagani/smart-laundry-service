@@ -12,9 +12,9 @@ export const serviceRoutes = [
 
 const serviceMenuOptions = [
     { label: "Summary", path: "/service/summary" },
-    { label: "Items", path: "/service/add-items" },
     { label: "Services", path: "/service/add-services" },
     { label: "Sub-Services", path: "/service/add-subservices" },
+    { label: "Items", path: "/service/add-items" },
 ];
 
 const ServiceMenu = () => {

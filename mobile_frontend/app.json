@@ -39,6 +39,9 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-localization"]
+    "platforms": ["ios", "android", "web"],
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

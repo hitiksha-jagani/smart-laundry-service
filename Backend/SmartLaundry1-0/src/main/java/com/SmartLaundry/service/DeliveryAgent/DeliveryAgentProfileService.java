@@ -70,6 +70,8 @@ public class DeliveryAgentProfileService {
         this.emailService = emailService;
         this.smsService = smsService;
     }
+
+    @Transactional
     public DeliveryAgentProfileDTO getProfileDetail(String userId) {
 
         Users user = userRepository.findById(userId)
@@ -206,21 +208,28 @@ public class DeliveryAgentProfileService {
     public String editDetail(String userId, DeliveryAgentProfileDTO deliveryAgentProfileDTO) {
 
         // Validation
-        if(deliveryAgentProfileDTO.getEmail() != null || !deliveryAgentProfileDTO.getEmail().isBlank()){
+        if(deliveryAgentProfileDTO.getEmail() != null && !deliveryAgentProfileDTO.getEmail().isBlank()){
             return "Changes in email is not allowed.";
         }
 
-        if(deliveryAgentProfileDTO.getPhone() != null || !deliveryAgentProfileDTO.getPhone().isBlank()){
+        if(deliveryAgentProfileDTO.getPhone() != null && !deliveryAgentProfileDTO.getPhone().isBlank()){
             return "Changes in phone number is not allowed.";
         }
 
-        if((deliveryAgentProfileDTO.getCurrentLatitude() != null || !deliveryAgentProfileDTO.getCurrentLatitude().isNaN()) || (deliveryAgentProfileDTO.getAddress().getLatitude() != null || !deliveryAgentProfileDTO.getAddress().getLatitude().isNaN())){
+        if (
+                (deliveryAgentProfileDTO.getCurrentLatitude() != null && !deliveryAgentProfileDTO.getCurrentLatitude().isNaN()) ||
+                        (deliveryAgentProfileDTO.getAddress().getLatitude() != null && !deliveryAgentProfileDTO.getAddress().getLatitude().isNaN())
+        ) {
             return "Changes in latitude is not allowed.";
         }
 
-        if((deliveryAgentProfileDTO.getCurrentLongitude() != null || !deliveryAgentProfileDTO.getCurrentLongitude().isNaN()) || (deliveryAgentProfileDTO.getAddress().getLongitude() != null || !deliveryAgentProfileDTO.getAddress().getLongitude().isNaN())){
+        if (
+                (deliveryAgentProfileDTO.getCurrentLongitude() != null && !deliveryAgentProfileDTO.getCurrentLongitude().isNaN()) ||
+                        (deliveryAgentProfileDTO.getAddress().getLongitude() != null && !deliveryAgentProfileDTO.getAddress().getLongitude().isNaN())
+        ) {
             return "Changes in longitude is not allowed.";
         }
+
 
         // Role and user check
         Users user = userRepository.findById(userId)

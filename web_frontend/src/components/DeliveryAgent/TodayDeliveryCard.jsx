@@ -13,17 +13,16 @@ const TodayDeliveryCard = ({ delivery }) => {
   const navigate = useNavigate();
 
   const handleUpdateStatus = () => {
-    localStorage.setItem("selectedDelivery", JSON.stringify(delivery));
-    navigate('/update-status');
+    navigate('/update-status', { state: { delivery } });
   };
 
   const {
-    orderId, deliveryType, deliveryEarning, km,
+    orderId, orderStatus,
+    deliveryType, deliveryEarning, km,
     pickupDate, pickupTime, pickupName, pickupPhone, pickupAddress,
     deliveryName, deliveryPhone, deliveryAddress,
     bookingItemDTOList, totalQuantity
   } = delivery;
-console.log("Delivery passed to TodayDeliveryCard:", delivery);
 
   useEffect(() => {
     const fetchAgentLocation = async () => {
@@ -47,6 +46,7 @@ console.log("Delivery passed to TodayDeliveryCard:", delivery);
 
     const origin = `${agentLocation.latitude},${agentLocation.longitude}`;
     const destination = encodeURIComponent(pickupAddress);
+
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
     window.open(url, '_blank');
   };

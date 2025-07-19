@@ -1,10 +1,7 @@
 package com.SmartLaundry.service.Admin;
 
 import com.SmartLaundry.model.*;
-import com.SmartLaundry.repository.AdminRevenueRepository;
-import com.SmartLaundry.repository.PayoutRepository;
-import com.SmartLaundry.repository.RevenueBreakDownRepository;
-import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.repository.*;
 import com.twilio.twiml.voice.Pay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,68 +23,86 @@ public class PayoutAssignmentService {
     @Autowired
     private UserRepository userRepository;
 
-    public void addPayouts(Payment payment) {
+    @Autowired
+    private ServiceProviderRepository serviceProviderRepository;
 
-        Double agentCharge = payment.getBill().getDeliveryCharge();
-        Double providerCharge = payment.getBill().getFinalPrice() - payment.getBill().getDeliveryCharge();
+    public void addPayouts(Payment payment) {
+        Double deliveryCharge = payment.getBill().getDeliveryCharge();
+        Double finalPrice = payment.getBill().getFinalPrice();
+        Double servicePrice = finalPrice - deliveryCharge;
 
         RevenueBreakDown revenueBreakDown = revenueBreakDownRepository.findByCurrentStatus(CurrentStatus.ACTIVE);
 
-        Double adminAgentRevenue, adminProviderRevenue;
+        Double adminAgentPercent = revenueBreakDown.getDeliveryAgent();
+        Double adminProviderPercent = revenueBreakDown.getServiceProvider();
 
-        adminAgentRevenue = agentCharge * (revenueBreakDown.getDeliveryAgent() / 100);
-        agentCharge = agentCharge - adminAgentRevenue;
+        // Admin cut
+        Double adminAgentRevenue = deliveryCharge * (adminAgentPercent / 100);
+        Double adminProviderRevenue = servicePrice * (adminProviderPercent / 100);
 
-        adminProviderRevenue = providerCharge * (revenueBreakDown.getServiceProvider() / 100);
-        providerCharge = providerCharge - adminProviderRevenue;
+        // Earnings
+        Double agentEarning = deliveryCharge - adminAgentRevenue;
+        Double providerEarning = servicePrice - adminProviderRevenue;
 
-        Double deliveryAgentRevenue = (adminAgentRevenue * 2), serviceProviderRevenue = adminProviderRevenue, totalRevenue = 0.0;
+        // Fetch provider
+        ServiceProvider serviceProvider = serviceProviderRepository.findById(payment.getBill().getOrder().getServiceProvider().getServiceProviderId())
+                .orElseThrow(() -> new RuntimeException("Service provider not exist."));
 
-        if(payment.getBill().getDeliveryCharge() != null){
+        if (serviceProvider.getNeedOfDeliveryAgent() != null && serviceProvider.getNeedOfDeliveryAgent()) {
+            // Provider bears the delivery agent cost → deduct deliveryCharge from provider's payout
+            providerEarning = providerEarning - deliveryCharge;
+        }
+
+        // ---- Payouts ----
+        if (deliveryCharge != null && deliveryCharge > 0) {
             Payout pickupAgent = Payout.builder()
                     .payment(payment)
-                    .deliveryEarning(payment.getBill().getDeliveryCharge())
+                    .deliveryEarning(deliveryCharge)
                     .charge(adminAgentRevenue)
-                    .finalAmount(agentCharge)
+                    .finalAmount(agentEarning)
+                    .status(PayoutStatus.PENDING)
                     .users(payment.getBill().getOrder().getPickupDeliveryAgent().getUsers())
                     .build();
 
+            System.out.println("Pickup agent payout : " + pickupAgent.getFinalAmount());
             payoutRepository.save(pickupAgent);
 
             Payout deliveryAgent = Payout.builder()
                     .payment(payment)
-                    .deliveryEarning(payment.getBill().getDeliveryCharge())
+                    .deliveryEarning(deliveryCharge)
                     .charge(adminAgentRevenue)
-                    .finalAmount(agentCharge)
+                    .finalAmount(agentEarning)
+                    .status(PayoutStatus.PENDING)
                     .users(payment.getBill().getOrder().getDeliveryDeliveryAgent().getUsers())
                     .build();
 
+            System.out.println("Delivery agent payout : " + deliveryAgent.getFinalAmount());
             payoutRepository.save(deliveryAgent);
-
-
         }
 
-        Payout payoutForServiceProvider = Payout.builder()
+        Payout providerPayout = Payout.builder()
                 .payment(payment)
-                .deliveryEarning(payment.getBill().getFinalPrice() - payment.getBill().getDeliveryCharge())
+                .deliveryEarning(servicePrice)
                 .charge(adminProviderRevenue)
-                .finalAmount(providerCharge)
+                .finalAmount(providerEarning)
+                .status(PayoutStatus.PENDING)
                 .users(payment.getBill().getOrder().getServiceProvider().getUser())
                 .build();
 
-        payoutRepository.save(payoutForServiceProvider);
+        System.out.println("Service provider payout : " + providerPayout.getFinalAmount());
+        payoutRepository.save(providerPayout);
 
-        totalRevenue = deliveryAgentRevenue + serviceProviderRevenue;
+        Double adminTotalRevenue = adminAgentRevenue + adminProviderRevenue;
 
         AdminRevenue adminRevenue = AdminRevenue.builder()
                 .payment(payment)
-                .profitFromDeliveryAgent(deliveryAgentRevenue)
-                .profitFromServiceProvider(serviceProviderRevenue)
-                .totalRevenue(totalRevenue)
+                .profitFromDeliveryAgent(adminAgentRevenue)
+                .profitFromServiceProvider(adminProviderRevenue)
+                .totalRevenue(adminTotalRevenue)
                 .build();
 
+        System.out.println("Admin revenue : " + adminRevenue.getTotalRevenue());
         adminRevenueRepository.save(adminRevenue);
-
     }
 
 }

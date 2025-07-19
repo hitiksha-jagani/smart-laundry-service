@@ -96,7 +96,7 @@ public class DeliveryAgentService {
     @Transactional
     public void persistLocationsFromCache() {
         try {
-            System.out.println("Scheduler triggered at " + LocalDateTime.now());
+            logger.info("Scheduler triggered at {}", LocalDateTime.now());
 
             Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
             if (keys == null || keys.isEmpty()) return;
@@ -111,14 +111,12 @@ public class DeliveryAgentService {
                 System.out.println("Latitude : " + location.get("latitude"));
                 System.out.println("Longitude : " + location.get("longitude"));
 
-                // ✅ Only used for validation / checking if agent exists — this is fine
                 Users user = userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
                 DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
                         .orElseThrow(() -> new RuntimeException("Delivery agent not found for user: " + userId));
 
-                // ✅ Actual DB update: does not trigger bean validation
                 deliveryAgentRepository.updateLocation(
                         userId,
                         location.get("latitude"),

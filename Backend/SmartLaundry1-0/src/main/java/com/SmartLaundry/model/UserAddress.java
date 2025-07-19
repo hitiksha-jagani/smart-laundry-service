@@ -19,7 +19,7 @@ import lombok.*;
 public class UserAddress {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "add_id")
     @Schema(description = "Unique udentifier of the address.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long addressId;

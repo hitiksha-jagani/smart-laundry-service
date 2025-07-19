@@ -13,7 +13,6 @@ import '../../styles/Toast.css';
 const SavedAvailability = ({ availabilities }) => {
     const [repeatNextWeek, setRepeatNextWeek] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editData, setEditData] = useState(null);
     const [id, setId] = useState(null);
@@ -51,6 +50,7 @@ const SavedAvailability = ({ availabilities }) => {
             await axiosInstance.put(`/availability/manage/edit/${editData.id}`, dto);
             showToast('Availability saved successfully!', "success");
             setEditModalOpen(false);
+            window.location.reload();
         } catch (err) {
             console.error("Update failed", err);
             showToast('Failed to update availability.', "error");
@@ -59,34 +59,33 @@ const SavedAvailability = ({ availabilities }) => {
 
     // Delete Saved Availability
     const handleDeleteClick = (id) => {
-        setId(id);
+        if (window.confirm("Are you sure you want to delete this availability?")) {
+            handleDelete(id);
+        }
     };
 
-    const handleDelete = async () => {
+    const handleDelete = async (id) => {
         try {
             await axiosInstance.delete(`/availability/manage/delete/${id}`);
+            showToast('Availability delete successfully!', "success");
+            window.location.reload();
         } catch (err) {
             console.error("Delete failed", err);
+            showToast('Failed to delete availability.', "error");
         }
     };
 
     const handleRepeatSubmit = async () => {
-        if (!repeatNextWeek || availabilities.length === 0) return;
-
-        const payload = availabilities.map((a) => ({
-            dayOfWeek: a.dayOfWeek.toUpperCase(),
-            holiday: a.holiday,
-            startTime: a.startTime ? `${a.startTime}:00` : null,
-            endTime: a.endTime ? `${a.endTime}:00` : null
-        }));
+        if (!repeatNextWeek) return;
 
         try {
             setSubmitting(true);
-            await axiosInstance.post('/availability/manage', payload);
-            alert('Schedule repeated for next week successfully!');
+            await axiosInstance.post('/availability/repeat-next-week');
+            showToast('Schedule repeated for next week successfully!', 'success');
+            setTimeout(() => window.location.reload(), 1000);
         } catch (err) {
             console.error("Error repeating schedule:", err);
-            alert('Failed to apply schedule for next week.');
+            showToast('Failed to apply schedule for next week.', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -142,7 +141,7 @@ const SavedAvailability = ({ availabilities }) => {
                                     <td>{a.endTime || '-'}</td>
                                     <td>
                                         <button className='agent-btn' onClick={() => handleEditClick(a)} style={{ marginRight: '10px', paddingLeft: '20px', paddingRight: '20px' }}>EDIT</button>
-                                        <button className='reset-btn' onClick={() => handleEditClick(a)}>DELETE</button>
+                                        <button className='reset-btn' onClick={() => handleDeleteClick(a.availabilityId)}>DELETE</button>
                                     </td>
 
                                 </tr>
@@ -347,11 +346,13 @@ const SavedAvailability = ({ availabilities }) => {
                         </div>
 
                     </div>
+                
 
-                </div>
+                </div> 
             
             )}
 
+            {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
 
         </>
 

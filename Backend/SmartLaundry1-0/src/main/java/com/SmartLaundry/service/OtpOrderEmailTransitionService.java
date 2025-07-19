@@ -51,6 +51,7 @@ public class OtpOrderEmailTransitionService {
 
         } else {
             order.setStatus(OrderStatus.IN_CLEANING);
+
             orderRepository.save(order);
             orderStatusHistoryService.save(order, OrderStatus.IN_CLEANING);
         }

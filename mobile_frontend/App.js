@@ -2,10 +2,10 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { StatusBar } from 'expo-status-bar';
 
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
 import PrivateRoute from './components/PrivateRoute';
 import './i18n';
 
@@ -50,10 +50,18 @@ import VerifyDeliveryOtpScreen from './screens/ServiceProvider/VerifyDeliveryOtp
 import EditServiceProviderProfileScreen from './screens/ServiceProvider/EditServiceProviderProfileScreen';
 import ServiceProviderProfileForm from './screens/ServiceProvider/ServiceProviderProfileForm';
 
-// Delivery Agent
-import DeliveryPage from './screens/DeliveryPage';
+// Delivery
+import { DrawerProvider } from './context/DrawerContext';
+import DeliveryPage from './screens/DeliveryAgent/DeliveryPage';
+import NotAvailablePage from './screens/DeliveryAgent/NotAvailablePage';
+import PendingDeliveries from './screens/DeliveryAgent/PendingDeliveries';
+import TodayDeliveries from './screens/DeliveryAgent/TodayDeliveries';
+import UpdateStatus from './screens/DeliveryAgent/UpdateStatus';
+import AvailabilityScreen from './screens/DeliveryAgent/Availability';
+import DeliveryAgentProfile from './screens/DeliveryAgent/DeliveryAgentProfile';
+import EditAgentProfile from './screens/DeliveryAgent/EditAgentProfilePage';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator(); 
 const Drawer = createDrawerNavigator();
 
 // ✅ Drawer for Service Providers
@@ -67,7 +75,6 @@ const ProviderDrawer = () => (
   </Drawer.Navigator>
 );
 
-// ✅ Feedback route wrapper
 const FeedbackScreen = () => (
   <PrivateRoute roles={['CUSTOMER']}>
     <FeedbackForm />
@@ -113,7 +120,15 @@ const linking = {
       VerifyPickupOtp: 'provider/otp/verify/pickup/:orderId',
       VerifyDeliveryOtp: 'provider/otp/verify/delivery/:orderId',
       OtpVerificationOrders: '/provider/orders/verify-otps',
-      DeliverySummary: '/delivery/summary',
+
+      DeliveryPage: '/delivery/summary',
+      PendingDeliveries: '/deliveries/pending',
+      TodayDeliveries: '/deliveries/today',
+      UpdateStatus: '/update-status',
+      AvailabilityScreen: '/availability/manage',
+      DeliveryAgentProfile: '/profile/detail',
+      EditAgentProfile: '/profile/detail/edit',
+
       NotAvailable: '/not-available',
       NotFound: '*',
     },
@@ -184,7 +199,134 @@ function MainApp() {
 export default function App() {
   return (
     <AuthProvider>
-      <MainApp />
+      <NavigationContainer linking={linking} fallback={<NotFoundScreen />}>
+        <Stack.Navigator initialRouteName="AutoRedirect" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="AutoRedirect" component={AutoRedirectScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+
+          {/* Customer Flow */}
+          <Stack.Screen name="CustomerDashboard" component={CustomerHomePage} />
+          <Stack.Screen name="OrderBooking" component={OrderBookingWizardScreen} />
+          <Stack.Screen name="NearbyServiceProviders" component={NearbyServiceProvidersScreen} />
+          <Stack.Screen name="ProviderDetail" component={ProviderDetailScreen} />
+          <Stack.Screen name="OrderBill" component={OrderBill} />
+          <Stack.Screen name="AvailablePromotions" component={OrderBookingWizardScreen} />
+          <Stack.Screen name="CustomerOrderHistory">
+                  {() => (
+                    <PrivateRoute roles={['CUSTOMER']}>
+                      <CustomerOrderHistory />
+                    </PrivateRoute>
+                  )}
+                </Stack.Screen>
+
+          <Stack.Screen name="OrderSummary">
+              {() => <OrderSummary />}
+            </Stack.Screen>
+
+          <Stack.Screen name="TrackOrder" component={TrackOrderScreen} />
+          <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+          <Stack.Screen name="RaiseTicket" component={RaiseTicketForm} />
+          <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} />
+          <Stack.Screen name="CancelOrder" component={CancelOrderScreen} />
+          <Stack.Screen name="RescheduleOrder" component={RescheduleOrderScreen} />
+          <Stack.Screen name="RescheduleSuccess" component={RescheduleSuccessScreen} />
+          <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
+          <Stack.Screen name="MyProfile" component={MyProfileScreen} />
+          <Stack.Screen name="Feedback" component={FeedbackScreen} />
+          <Stack.Screen name="PayPalPayment" component={PayPalPaymentScreen} />
+          <Stack.Screen name="PayPalSuccess" component={PayPalPaymentScreen} />
+          <Stack.Screen name="PayPalCancel" component={NotAvailableScreen} />
+
+          {/* Order Wizard */}
+          <Stack.Screen name="InitialOrder" component={InitialOrderScreen} />
+          <Stack.Screen name="SchedulePlan" component={SchedulePlanScreen} />
+          <Stack.Screen name="ContactInfo" component={ContactInfoScreen} />
+          <Stack.Screen name="ReviewAndConfirm" component={ReviewAndConfirmScreen} />
+
+          {/* Service Provider Flow */}
+          <Stack.Screen name="ProviderDrawer" component={ProviderDrawer} />
+          <Stack.Screen name="DeliveredOrders" component={DeliveredOrdersScreen} />
+          <Stack.Screen name="EditServiceProviderProfile" component={EditServiceProviderProfileScreen} />
+          <Stack.Screen name="ServiceProviderProfileForm" component={ServiceProviderProfileForm} />
+          <Stack.Screen name="VerifyPickupOtp" component={VerifyPickupOtpScreen} />
+          <Stack.Screen name="VerifyDeliveryOtp" component={VerifyDeliveryOtpScreen} />
+          <Stack.Screen name="OtpVerificationOrders" component={OtpVerificationOrdersScreen} />
+
+          {/* Delivery */}
+          {/* Delivery Page */}
+          <Stack.Screen name="DeliveryPage">
+            {() => (
+              <DrawerProvider>
+                <DeliveryPage />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="PendingDeliveries">
+            {(props) => (
+              <DrawerProvider>
+                <PendingDeliveries {...props} />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="TodayDeliveries">
+            {(props) => (
+              <DrawerProvider>
+                <TodayDeliveries {...props} />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="UpdateStatus">
+            {() => (
+              <DrawerProvider>
+                <UpdateStatus />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+
+          
+
+            {/* Availability Page */}
+          <Stack.Screen name="AvailabilityScreen">
+            {() => (
+              <DrawerProvider>
+                <AvailabilityScreen />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+
+          {/* Profile Page */}
+          <Stack.Screen name="DeliveryAgentProfile">
+            {() => (
+              <DrawerProvider>
+                <DeliveryAgentProfile />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="EditAgentProfile">
+            {() => (
+              <DrawerProvider>
+                <EditAgentProfile />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          
+          <Stack.Screen name="NotAvailableInThisVersion">
+            {() => (
+              // <DrawerProvider>
+                <NotAvailablePage />
+              // </DrawerProvider>
+            )}
+          </Stack.Screen>
+
+          
+
+          {/* Utility */}
+          <Stack.Screen name="NotAvailable" component={NotAvailableScreen} />
+          <Stack.Screen name="NotFound" component={NotFoundScreen} />
+        </Stack.Navigator>
+        <StatusBar style="auto" />
+      </NavigationContainer>
     </AuthProvider>
   );
 }

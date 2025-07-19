@@ -58,6 +58,7 @@ public class AuthService {
 
     @Autowired
     private EmailService emailService;
+
     //@author Hitiksha Jagani
     // Logic for registration
     // Store registration details in database.
@@ -65,10 +66,10 @@ public class AuthService {
     public RegistrationResponseDTO registerUser(RegistrationRequestDTO request){
 
         // Validation
-        if(!request.getFirstName().matches("^[A-Za-z\\\\s]+$")){
+        if(!request.getFirstName().matches("^[A-Za-z\\s]+$")){
             throw new FormatException("First name");
         }
-        if(!request.getLastName().matches("^[A-Za-z\\\\s]+$")){
+        if(!request.getLastName().matches("^[A-Za-z\\s]+$")){
             throw new FormatException("Last name");
         }
         if (!request.getPhone().matches("^[0-9]{10}$")) {

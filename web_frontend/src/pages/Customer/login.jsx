@@ -102,7 +102,7 @@ const Login = () => {
       navigate("/provider/dashboard");
     } else if (providerRes.status === 404) {
       login(data.jwtToken, data.role, userId);
-      navigate("/provider/completeprofile");
+      navigate("/provider/completeProfile");
     } else {
       throw new Error("Failed to check service provider status.");
     }
@@ -112,7 +112,7 @@ const Login = () => {
   }
 }
  else if (data.role === "DELIVERY_AGENT") {
-  login(data.jwtToken, data.role, userId); // store token, userId in localStorage
+  login(data.jwtToken, data.role, userId); 
 
   try {
     const agentRes = await fetch(`http://localhost:8080/profile/exist/${userId}`);
@@ -122,7 +122,7 @@ const Login = () => {
       throw new Error("Failed to check agent existence.");
     }
 
-    const exists = await agentRes.json(); // parse boolean response
+    const exists = await agentRes.json();
 
     if (exists) {
       navigate("/deliveries/summary");

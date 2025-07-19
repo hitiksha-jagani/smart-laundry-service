@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
+import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
 
 import eyeOpen from '../../assets/eye-icon.png';
 import eyeClosed from '../../assets/eye-icon.png'; 
@@ -105,11 +105,11 @@ const ChangeAgentPasswordPage = () => {
             return;
         }
 
-        axiosInstance.put('/admin-profile/change-password', formData)
+        axiosInstance.put('/profile/detail/change-password', formData)
             .then((res) => {
                 showToast(res.data, "success");
                 setTimeout(() => {
-                    navigate("/admin-profile"); 
+                    navigate("/profile/detail"); 
                 }, 1500);
             })
             .catch((err) => {
@@ -123,9 +123,9 @@ const ChangeAgentPasswordPage = () => {
 
     return (
 
-        <AdminDashboardLayout user={user}>
+        <DeliveryAgentDashboardLayout user={user}>
 
-            <h1 className="heading-admin h1-admin">CHANGE PASSWORD</h1>
+            <h1 className="heading-agent h1-agent">CHANGE PASSWORD</h1>
 
             <div 
                 style={{
@@ -138,11 +138,11 @@ const ChangeAgentPasswordPage = () => {
                     marginTop: '60px'
             }}>
 
-                <div className="provider-box" style={{ width: '500px', maxWidth: '700px' }}>
+                <div className="agent-box" style={{ width: '500px', maxWidth: '700px' }}>
 
                     {['oldPassword', 'newPassword', 'confirmPassword'].map((field) => (
 
-                        <div className="field" key={field} style={{ marginBottom: '20px', position: 'relative' }}>
+                        <div className="agent-field" key={field} style={{ marginBottom: '20px', position: 'relative' }}>
                             
                             <label style={{ display: 'block', marginBottom: '6px' }}>
                                 {field === 'oldPassword' && 'Old Password'}
@@ -155,7 +155,7 @@ const ChangeAgentPasswordPage = () => {
                                 type={visible[field] ? "text" : "password"}
                                 value={formData[field]}
                                 onChange={handleChange}
-                                className="input-field"
+                                className="agent-input-field"
                             />
 
                             <img
@@ -178,11 +178,11 @@ const ChangeAgentPasswordPage = () => {
 
                     <div className="button-row">
 
-                        <button className="admin-btn" onClick={handleSave} style={{ marginRight: '10px', width: '150px' }}>
+                        <button className="agent-btn" onClick={handleSave} style={{ marginRight: '10px', width: '150px' }}>
                             SAVE
                         </button>
 
-                        <button className="reset-btn" onClick={() => navigate('/admin-profile')} style={{ width: '150px' }}>
+                        <button className="reset-btn" onClick={() => navigate('/profile/detail')} style={{ width: '150px' }}>
                             CANCEL
                         </button>
 
@@ -195,7 +195,7 @@ const ChangeAgentPasswordPage = () => {
             {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
 
 
-        </AdminDashboardLayout>
+        </DeliveryAgentDashboardLayout>
 
     );
 

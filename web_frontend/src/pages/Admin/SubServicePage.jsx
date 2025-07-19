@@ -4,15 +4,20 @@
 import React, { useEffect, useState } from 'react'; 
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ServiceMenu from '../../components/Admin/ServiceMenu.jsx';
 
 const SubServicePage = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);   
-    const [data, setData] = useState([]);
+    const [services, setServices] = useState([]);
+    const [subServices, setSubServices] = useState([]);
     const [toast, setToast] = useState({ message: '', type: '', visible: false });
+
+    const [formData, setFormData] = useState({
+        serviceName: '',
+        subServiceName: ''
+    });
 
     const token = localStorage.getItem("token");
 
@@ -48,21 +53,16 @@ const SubServicePage = () => {
             
             try {
                 // Fetch all data in parallel
-                const [userRes, dataRes] = await Promise.all([
+                const [userRes, serviceRes] = await Promise.all([
                                 
                     axiosInstance.get(`/user-detail/${userId}`).catch(err => {
                         console.error("User detail fetch failed", err);
                         return { data: null };
                     }),
 
-                    // Fetch revenue breakdown
-                    axiosInstance.get("/configurations/revenue-breakdown/history", {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }).catch(err => {
-                        console.error("Revenue breakdown data fetch failed", err);
-                        return { data: null };
+                    axiosInstance.get('/service/get-services').catch(err => {
+                        console.error("Service list fetch failed", err);
+                        return { data: [] };
                     }),
             
                 ]);
@@ -70,8 +70,8 @@ const SubServicePage = () => {
                 setUser(userRes.data);
                 console.log("User data : " ,userRes.data);
 
-                setData(dataRes.data);
-                console.log("Delivery agent earning data : ", dataRes.data);
+                setServices(serviceRes.data); 
+                console.log("Services:", serviceRes.data);
                     
             } catch (error) {
                 console.error("Failed to fetch one or more data:", error);
@@ -84,6 +84,42 @@ const SubServicePage = () => {
         fetchAllData();
         
     }, []);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSave = () => {
+        if (!formData.serviceName) {
+            showToast("Please fill service name fields", "error");
+            return;
+        }
+
+         if (!formData.subServiceName) {
+            showToast("Please fill sub service name fields", "error");
+            return;
+        }
+
+        axiosInstance.post('/service/add-subservices', formData)
+            .then((res) => {
+                showToast(res.data, "success");
+                handleResetAll();
+            }) 
+            .catch((err) => {
+                const message = err.response?.data?.message || "Failed to add sub service.";
+                showToast(message, "error");
+                console.error("Add sub service error:", err);
+            });
+    };
+
+    const handleResetAll = () => {
+        setFormData({
+            serviceName: '',
+            subServiceName: '',
+        });
+        setSubServices([]);
+    };
 
     if (loading) return <p className="text-center">Loading...</p>;
 
@@ -99,7 +135,73 @@ const SubServicePage = () => {
 
                     <p className='p-admin' style={{ padding: '0 30px' }}>Organize and assign clothing items under the appropriate services offered.</p>
 
-                    <h2 className="h2-admin">SUB-SERVICE SETTING</h2>
+                    <h2 className="h2-admin">ADD NEW SUB-SERVICE</h2>
+
+                    <div 
+                        style={{
+                            flex: 1,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: '40px 20px', 
+                            boxSizing: 'border-box',
+                            marginTop: '60px'
+                    }}>
+
+                        <div className="provider-box" style={{ width: '500px', maxWidth: '700px' }}>
+
+                            {['serviceName', 'subServiceName'].map((field) => (
+
+                                <div className="field" key={field} style={{ marginBottom: '20px', position: 'relative' }}>
+                                    
+                                    <label style={{ display: 'block', marginBottom: '6px' }}>
+                                        {field === 'serviceName' && 'Service Name'}
+                                        {field === 'subServiceName' && 'Sub Service Name'}
+                                    </label>
+
+                                    {field === 'serviceName' ? (
+                                        <select
+                                            name="serviceName"
+                                            value={formData.serviceName}
+                                            onChange={handleChange}
+                                            className="input-field"
+                                        >
+                                            <option value="">-- Select Service --</option>
+                                            {services.map((service, index) => (
+                                                <option key={index} value={service}>
+                                                    {service}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            name={field}
+                                            type="text"
+                                            value={formData[field]}
+                                            onChange={handleChange}
+                                            className="input-field"
+                                        />
+                                    )}
+
+                                </div>
+
+                            ))}
+
+                            <div className="button-row">
+
+                                <button className="admin-btn" onClick={handleSave} style={{ marginRight: '10px', width: '150px' }}>
+                                    SAVE
+                                </button>
+
+                                <button className="reset-btn" onClick={handleResetAll} style={{ width: '150px' }}>
+                                    RESET
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                     {/* Right Sidebar */}
                     <ServiceMenu />

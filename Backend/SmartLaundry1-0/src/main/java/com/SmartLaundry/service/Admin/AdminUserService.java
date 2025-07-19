@@ -93,6 +93,7 @@ public class AdminUserService {
                 .build();
     }
 
+    @Transactional
     public List<CustomerResponseDTO> getFilteredCustomers(String keyword, LocalDate startDate, LocalDate endDate, String sortBy) {
         Specification<Users> spec = null;
 
@@ -132,12 +133,18 @@ public class AdminUserService {
         UserAddress address = user.getAddress();
 
         if (address != null) {
-            CustomerResponseDTO.AddressDTO addressDTO = CustomerResponseDTO.AddressDTO.builder()
-                    .name(address.getName())
-                    .areaName(address.getAreaName())
-                    .pincode(address.getPincode())
-                    .cityName(address.getCity().getCityName())
-                    .build();
+
+            CustomerResponseDTO.AddressDTO addressDTO = new CustomerResponseDTO.AddressDTO();
+            addressDTO.setName(address.getName());
+            addressDTO.setAreaName(address.getAreaName());
+            addressDTO.setPincode(address.getPincode());
+
+            if (address.getCity() != null) {
+                addressDTO.setCityName(address.getCity().getCityName());
+            } else {
+                logger.warn("City is null for user ID {}", user.getUserId());
+                addressDTO.setCityName(null);
+            }
 
             dto.setAddresses(addressDTO);
         }
@@ -150,17 +157,10 @@ public class AdminUserService {
     }
 
 
-//    @Cacheable(
-//            value = "serviceProviderTableCache",
-//            key = "T(java.util.Objects).toString(#keyword, '') + '-' + T(java.util.Objects).toString(#startDate, '') + '-' + T(java.util.Objects).toString(#endDate, '') + '-' + #sortBy"
-//    )
     @Transactional
     public List<ServiceProviderResponseDTO> getFilteredServiceProviders(String keyword, LocalDate startDate, LocalDate endDate, String sortBy) {
 
         Specification<Users> spec = (root, query, cb) -> cb.equal(root.get("role"), UserRole.SERVICE_PROVIDER);
-
-        // Always filter by customer role
-//        spec = addSpec(spec, (root, query, cb) -> cb.equal(root.get("role"), UserRole.SERVICE_PROVIDER));
 
         if (keyword != null && !keyword.isBlank()) {
             spec = addSpec(spec, UserSpecification.searchByEmailOrPhone(keyword));

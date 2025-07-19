@@ -34,7 +34,7 @@ const UpdateStatus = () => {
   useEffect(() => {
     // Restore delivery object from state or localStorage
     if (state?.delivery) {
-        console.log("Delivery passed to UpdateStatus:", state.delivery); 
+      console.log("Delivery passed to UpdateStatus:", state.delivery);
       setDelivery(state.delivery);
       localStorage.setItem("selectedDelivery", JSON.stringify(state.delivery));
     } else {
@@ -42,7 +42,7 @@ const UpdateStatus = () => {
       if (stored) setDelivery(JSON.parse(stored));
     }
 
-    // Decode JWT and fetch user info
+    // Fetch user
     const fetchUser = async () => {
       if (!token) return;
       try {
@@ -64,16 +64,13 @@ const UpdateStatus = () => {
 
     setLoading(true);
 
-    const { orderId, orderStatus } = delivery;
-    const agentId = user?.userId || user?.id; // include agentId
-    const payload = { orderId, otp, agentId };
-
-    console.log("🔍 Sending OTP verification payload:", payload);
+    const orderId = delivery.orderId;
+    const status = delivery.orderStatus;
 
     let endpoint = '';
+    const payload = { orderId, otp };
 
-    // Map status to endpoint
-    switch (orderStatus) {
+    switch (status) {
       case 'ACCEPTED_BY_AGENT':
         endpoint = '/emailotp/verify-pickup';
         break;
@@ -87,38 +84,38 @@ const UpdateStatus = () => {
         endpoint = '/emailotp/verify-delivery';
         break;
       default:
-        showToast(`Unsupported order status: ${orderStatus}`, "error");
+        showToast('Unsupported order status: ' + status, 'error');
         setLoading(false);
         return;
     }
 
     try {
+      console.log("Update status API called");
       await axiosInstance.post(endpoint, payload);
-      showToast("Status updated successfully!", "success");
-      setOtp('');
-    } catch (err) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.response?.data ||
-        err.message ||
-        "Update failed";
+      showToast("Status updated successfully.", "success");
+    } catch (error) {
+      const errorMsg =
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        error.message ||
+        'Failed to update status';
 
-      if (msg.toLowerCase().includes("expired")) {
-        showToast("OTP has expired. Request a new one.", "error");
-      } else if (msg.toLowerCase().includes("invalid")) {
+      if (errorMsg.toLowerCase().includes('expired')) {
+        showToast("OTP has expired. Please request a new one.", "error");
+      } else if (errorMsg.toLowerCase().includes('invalid')) {
         showToast("Invalid OTP. Please try again.", "error");
       } else {
-        showToast(msg, "error");
+        showToast(errorMsg, "error");
       }
 
-      console.error("Error updating status:", err);
+      console.error("Failed to update status:", error);
     } finally {
       setLoading(false);
     }
   };
 
   if (!delivery) {
-    return <div>No delivery information found.</div>;
+    return <div>No delivery data found.</div>;
   }
 
   return (
@@ -126,7 +123,7 @@ const UpdateStatus = () => {
       <div className="status-wrapper">
         <div className="status-box">
           <input
-            className="input-agent"
+            className='input-agent'
             type="text"
             placeholder="OTP"
             value={otp}
@@ -139,16 +136,12 @@ const UpdateStatus = () => {
             disabled={loading || !otp}
             style={{ width: '100%' }}
           >
-            {loading ? "Verifying..." : "Verify OTP & Update"}
+            {loading ? 'Verifying...' : 'Verify OTP & Update'}
           </button>
         </div>
       </div>
 
-      {toast.visible && (
-        <div className={`custom-toast ${toast.type}`}>
-          {toast.message}
-        </div>
-      )}
+      {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
     </DeliveryAgentDashboardLayout>
   );
 };

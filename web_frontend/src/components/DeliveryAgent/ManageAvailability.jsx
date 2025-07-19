@@ -132,6 +132,8 @@ const ManageAvailability = () => {
         try {
             const response = await axiosInstance.post("/availability/manage", payload);
             showToast('Availability saved successfully!', "success");
+            handleResetAll();
+            window.location.reload();
         } catch (error) {
             console.error("Error saving availability:", error);
             showToast('Error saving availability.', "error");
@@ -148,134 +150,201 @@ const ManageAvailability = () => {
         setEditIndex(null);
     }; 
 
-  return (
-  <div className="availability-container">
+    return (
 
-    {/* Box for all checkboxes */}
-    <div className="box checkbox-box">
-      <h4>Select Days</h4>
-      <div className="day-grid">
-        {availableDays.map((day) => (
-          <label key={day} className="day-checkbox">
-            <input
-              type="checkbox"
-              checked={selectedDays.includes(day)}
-              onChange={() => handleCheckboxChange(day)}
-              disabled={editIndex !== null}
-            />
-            {day}
-          </label>
-        ))}
-      </div>
-    </div>
+        <>
 
-    {/* Box for radio buttons */}
-    <div className="box radio-box">
-      <h4>Status</h4>
-      <div className="radio-group">
-        <label>
-          <input
-            type="radio"
-            name="status"
-            value="working"
-            checked={isHoliday === false}
-            onChange={() => setIsHoliday(false)}
-          />
-          Working Day
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="status"
-            value="holiday"
-            checked={isHoliday === true}
-            onChange={() => setIsHoliday(true)}
-          />
-          Holiday
-        </label>
-      </div>
+            <div className="delivery-card">
 
-      {/* Time input only if not holiday */}
-      {!isHoliday && isHoliday !== null && (
-        <div className="time-group">
-          <div>
-            <label>Start Time:</label>
-            <input
-              type="time"
-              min="09:00"
-              max="19:00"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>End Time:</label>
-            <input
-              type="time"
-              min="09:00"
-              max="19:00"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-            />
-          </div>
-        </div>
-      )}
-    </div>
+                {/* Box for all checkboxes */}
+                <div className="box checkbox-box">
 
-    <button className="agent-btn" onClick={handleAddOrUpdate}>
-      {editIndex !== null ? "Update" : "Add"}
-    </button>
+                    <h4 className="item-list-title h4-agent">Select Days</h4>
 
-    <hr />
+                    <div className="day-grid">
 
-    {/* Box for availability list */}
-    <div className="box list-box">
-      <h3>Saved Availabilities</h3>
-      {availabilities.length === 0 ? (
-        <p>No availabilities added.</p>
-      ) : (
-        <table className="availability-table">
-          <thead>
-            <tr>
-              <th>Day</th>
-              <th>Date</th>
-              <th>Holiday</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {availabilities.map((entry, idx) => (
-              <tr key={entry.day}>
-                <td>{entry.day}</td>
-                <td>{entry.date}</td>
-                <td>{entry.isHoliday ? "Yes" : "No"}</td>
-                <td>{entry.startTime || "-"}</td>
-                <td>{entry.endTime || "-"}</td>
-                <td>
-                  <button className="agent-btn" onClick={() => handleEdit(idx)}>EDIT</button>
-                  <button className="agent-btn" onClick={() => handleDelete(idx)}>DELETE</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                        {availableDays.map((day) => (
+                              
+                            <label key={day} className="day-checkbox">
 
-      {availabilities.length > 0 && (
-        <div className="action-buttons">
-          <button className="agent-btn save-btn" onClick={handleSaveToBackend}>
-            SAVE
-          </button>
-          <button className="reset-btn" onClick={handleResetAll}>
-            RESET ALL
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-);
+                                <input
+                                    type="checkbox"
+                                    checked={selectedDays.includes(day)}
+                                    onChange={() => handleCheckboxChange(day)}
+                                    disabled={editIndex !== null}
+                                />
+                                {day}
+                                  
+                            </label>
+
+                        ))}
+
+                    </div>
+
+                </div>
+
+                {/* Box for radio buttons */}
+                {/* <div className="radio-box"> */}
+                <h4 className="item-list-title h4-agent" style={{ textAlign: 'center' }}>Status</h4>
+
+                <div className="availability-inline-group">
+                  
+                    <div className="radio-group">
+
+                        <label className="radio-label">
+
+                            <input
+                                type="radio"
+                                name="status"
+                                value="working"
+                                checked={isHoliday === false}
+                                onChange={() => setIsHoliday(false)}
+                            />
+                            <span>Working Day</span>
+                          
+                        </label>
+
+                        <label className="radio-label">
+
+                            <input
+                                type="radio"
+                                name="status"
+                                value="holiday"
+                                checked={isHoliday === true}
+                                onChange={() => setIsHoliday(true)}
+                            />
+                            <span>Holiday</span>
+
+                        </label>
+
+                    </div>
+
+                    {/* Time input only if not holiday */}
+                    {!isHoliday && isHoliday !== null && (
+
+                        <div className="time-group-inline">
+
+                            <div>
+
+                                <label>Start Time:</label>
+
+                                <input
+                                    type="time"
+                                    min="09:00"
+                                    max="19:00"
+                                    value={startTime}
+                                    onChange={(e) => setStartTime(e.target.value)}
+                                />
+
+                            </div>
+
+                            <div>
+                              
+                                <label>End Time:</label>
+
+                                <input
+                                      type="time"
+                                      min="09:00"
+                                      max="19:00"
+                                      value={endTime}
+                                      onChange={(e) => setEndTime(e.target.value)}
+                                  />
+
+                            </div>
+                            
+                        </div>
+
+                    )}
+
+                    <button className="add-btn" onClick={handleAddOrUpdate}>
+                        {editIndex !== null ? "Update" : "Add"}
+                    </button>
+
+                </div>
+
+                <hr />
+
+                {/* Box for availability list */}
+                <div className="box list-box">
+
+                    <h3 className="item-list-title h4-agent">Saved Availabilities</h3>
+
+                    {availabilities.length === 0 ? (
+                      
+                        <p>No availabilities added.</p>
+
+                    ) : (
+
+                      <div className="pending-payouts-container">
+                        <table className="payouts-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Day</th>
+                                    <th>Date</th>
+                                    <th>Holiday</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Actions</th>
+                                  
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {availabilities.map((entry, idx) => (
+
+                                    <tr key={entry.day} style={{ backgroundColor:'#E8F5E9' }}>
+
+                                        <td>{entry.day}</td>
+                                        <td>{entry.date}</td>
+                                        <td>{entry.isHoliday ? "Yes" : "No"}</td>
+                                        <td>{entry.startTime || "-"}</td>
+                                        <td>{entry.endTime || "-"}</td>
+                                        <td>
+                                          <button className="agent-btn" onClick={() => handleEdit(idx)}  style={{ marginRight: '10px', paddingLeft: '20px', paddingRight: '20px' }}>EDIT</button>
+                                          <button className="reset-btn" onClick={() => handleDelete(idx)}>DELETE</button>
+                                        </td>
+                                      
+                                    </tr>
+
+                                ))}
+
+                            </tbody>
+
+                        </table>
+
+                        </div>
+
+                    )}
+
+                    {availabilities.length > 0 && (
+
+                        <div className="action-buttons">
+
+                            <button className="agent-btn save-btn" onClick={handleSaveToBackend}>
+                                SAVE
+                            </button>
+
+                            <button className="reset-btn" onClick={handleResetAll}>
+                                RESET ALL
+                            </button>
+                          
+                        </div>
+
+                    )}
+
+                </div>
+
+            </div>
+
+            {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
+      
+        </>
+    );
 
 };
 
