@@ -9,15 +9,27 @@ export default function VerifyPickupOtp() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleVerify = async () => {
-    try {
-      await axios.post("/emailotp/verify-pickup", { orderId, otp });
-      setMessage("Pickup OTP verified! Redirecting...");
-      setTimeout(() => navigate("/provider/orders/verify-otps"), 1500); 
-    } catch (err) {
-      setMessage("Verification failed: " + (err.response?.data || "Try again."));
-    }
-  };
+const handleVerify = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      "/emailotp/verify-pickup",
+      { orderId, otp },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setMessage("Pickup OTP verified! Redirecting...");
+    setTimeout(() => navigate("/provider/orders/verify-otps"), 1500);
+  } catch (err) {
+    setMessage("Verification failed: " + (err.response?.data || "Try again."));
+  }
+};
+
 
   return (
     <div className="p-4">

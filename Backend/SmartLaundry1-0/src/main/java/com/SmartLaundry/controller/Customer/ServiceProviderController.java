@@ -75,15 +75,31 @@ public class ServiceProviderController {
 
         return ResponseEntity.ok(coords);
     }
-    @GetMapping("/serviceProviders/{id}")
-    public ResponseEntity<CustomerServiceProviderDTO> getServiceProviderById(@PathVariable String id) {
-        Optional<ServiceProvider> providerOpt = serviceProviderRepository.findById(id);
-        if (providerOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
 
-        CustomerServiceProviderDTO dto = serviceProviderService.convertToCustomerDTO(providerOpt.get());
-        return ResponseEntity.ok(dto);
+
+//    @GetMapping(value = "/serviceProviders/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<CustomerServiceProviderDTO> getServiceProviderById(@PathVariable String id) {
+//        Optional<ServiceProvider> providerOpt = serviceProviderRepository.findById(id);
+//        if (providerOpt.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//
+//        CustomerServiceProviderDTO dto = serviceProviderService.convertToCustomerDTO(providerOpt.get());
+//        return ResponseEntity.ok(dto);
+//    }
+@GetMapping("/serviceProviders/{id}")
+public ResponseEntity<CustomerServiceProviderDTO> getServiceProviderById(@PathVariable String id) {
+//    Optional<ServiceProvider> providerOpt = serviceProviderRepository.findByIdWithPrices(id);
+
+    Optional<ServiceProvider> providerOpt = serviceProviderRepository.findByIdWithPricesAndUserAddress(id);
+
+    if (providerOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+    CustomerServiceProviderDTO dto = serviceProviderService.convertToCustomerDTO(providerOpt.get());
+    return ResponseEntity.ok(dto);
+}
+
 
 }

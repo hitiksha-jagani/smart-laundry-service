@@ -101,7 +101,6 @@ const Login = () => {
       login(data.jwtToken, data.role, userId, providerId);
       navigate("/provider/dashboard");
     } else if (providerRes.status === 404) {
-      // First-time login, provider not created yet
       login(data.jwtToken, data.role, userId);
       navigate("/provider/completeProfile");
     } else {

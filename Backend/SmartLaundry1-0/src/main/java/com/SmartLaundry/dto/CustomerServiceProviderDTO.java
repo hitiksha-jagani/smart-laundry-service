@@ -21,7 +21,6 @@ public class CustomerServiceProviderDTO {
  private Double averageRating;
  private List<ReviewDTO> reviews;
  private List<PriceDTO> prices;
- //private List<ItemDTO> items;
  @JsonIgnore // ignore during JSON serialization/deserialization
  private String userName;
 }

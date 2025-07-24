@@ -69,12 +69,25 @@ export default function ProviderDetail() {
           {provider.businessName}
         </h1>
 
-        <img
+        {/* <img
           src={provider.photoImage || "/default-provider.jpg"}
           alt="Provider"
           onError={(e) => (e.target.src = "/default-provider.jpg")}
           className="w-full h-60 object-contain bg-gray-100 rounded-lg mb-4"
-        />
+        /> */}
+
+        <img
+            src={provider.photoImage || "/default-provider.jpg"}
+            alt={provider.businessName || "Provider"}
+            onError={(e) => {
+              const target = e.target;
+              if (target.src !== window.location.origin + "/default-provider.jpg") {
+                target.src = "/default-provider.jpg";
+              }
+            }}
+            className="w-full h-60 object-contain bg-gray-100 rounded-lg mb-4"
+          />
+
 
         <p className="mb-2 text-lg">
           {provider.address?.areaName || "N/A"},{" "}

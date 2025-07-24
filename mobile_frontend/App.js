@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
+import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -9,11 +9,9 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import PrivateRoute from './components/PrivateRoute';
 import './i18n';
 
-// Common Screens
-import AutoRedirectScreen from './screens/AutoRedirectScreen';
+// Screens
+import AutoRedirect from './components/AutoRedirect';
 import NotFoundScreen from './screens/NotFoundScreen';
-
-// Customer Screens
 import LoginScreen from './screens/Customer/LoginScreen';
 import RegisterScreen from './screens/Customer/RegisterScreen';
 import CustomerHomePage from './screens/Customer/CustomerHomePage';
@@ -38,7 +36,9 @@ import ContactInfoScreen from './screens/Customer/ContactInfoScreen';
 import ReviewAndConfirmScreen from './screens/Customer/ReviewAndConfirmScreen';
 import FeedbackForm from './screens/Customer/FeedbackForm';
 import PayPalPaymentScreen from './screens/Customer/PayPalPaymentScreen';
-// Service Provider Screens
+import PaymentSuccessHandler from './screens/Customer/PaymentSuccessHandler';
+import AvailablePromotionsScreen from './screens/Customer/AvailablePromotionsScreen';
+// Service Provider
 import PendingOrdersScreen from './screens/ServiceProvider/PendingOrdersScreen';
 import ActiveOrdersScreen from './screens/ServiceProvider/ActiveOrdersScreen';
 import DeliveredOrdersScreen from './screens/ServiceProvider/DeliveredOrdersScreen';
@@ -66,6 +66,7 @@ import ChangeAgentPasswordPage from './screens/DeliveryAgent/ChangeAgentPassword
 const Stack = createNativeStackNavigator(); 
 const Drawer = createDrawerNavigator();
 
+// ✅ Drawer for Service Providers
 const ProviderDrawer = () => (
   <Drawer.Navigator screenOptions={{ headerShown: false }}>
     <Drawer.Screen name="ProviderDashboard" component={ProviderDashboardScreen} />
@@ -82,9 +83,9 @@ const FeedbackScreen = () => (
   </PrivateRoute>
 );
 
+// ✅ Deep linking config
 const linking = {
-  prefixes: ['https://yourapp.com', 'yourapp://','smartlaundry://'],
-  
+  prefixes: ['smartlaundry://', 'https://yourapp.com', 'yourapp://'],
   config: {
     screens: {
       AutoRedirect: '/',
@@ -108,7 +109,9 @@ const linking = {
       UpdateProfile: '/update-profile',
       MyProfile: '/my-profile',
       Feedback: 'orders/:orderId/feedback',
-
+      PayPalPayment: 'payment/start',
+      PaymentSuccessHandler: 'payment/success',
+      PayPalCancel: 'payment/cancel',
       ProviderDrawer: '/provider/drawer',
       ProviderDashboard: '/provider/dashboard',
       PendingOrders: '/provider/pending-orders',
@@ -136,7 +139,68 @@ const linking = {
   },
 };
 
-const App = () => {
+// ✅ Main Navigation App
+function MainApp() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    // Show splash screen or loading indicator
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer linking={linking} fallback={<NotFoundScreen />}>
+      <Stack.Navigator initialRouteName="AutoRedirect" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="AutoRedirect" component={AutoRedirect} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="CustomerDashboard" component={CustomerHomePage} />
+        <Stack.Screen name="OrderBooking" component={OrderBookingWizardScreen} />
+        <Stack.Screen name="NearbyServiceProviders" component={NearbyServiceProvidersScreen} />
+        <Stack.Screen name="ProviderDetail" component={ProviderDetailScreen} />
+        <Stack.Screen name="OrderBill" component={OrderBill} />
+        <Stack.Screen name="AvailablePromotions" component={AvailablePromotionsScreen} />
+        <Stack.Screen name="CustomerOrderHistory" component={CustomerOrderHistory} />
+        <Stack.Screen name="OrderSummary" component={OrderSummary} />
+        <Stack.Screen name="TrackOrder" component={TrackOrderScreen} />
+        <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+        <Stack.Screen name="RaiseTicket" component={RaiseTicketForm} />
+        <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} />
+        <Stack.Screen name="CancelOrder" component={CancelOrderScreen} />
+        <Stack.Screen name="RescheduleOrder" component={RescheduleOrderScreen} />
+        <Stack.Screen name="RescheduleSuccess" component={RescheduleSuccessScreen} />
+        <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
+        <Stack.Screen name="MyProfile" component={MyProfileScreen} />
+        <Stack.Screen name="Feedback" component={FeedbackScreen} />
+        <Stack.Screen name="PayPalPayment" component={PayPalPaymentScreen} />
+        <Stack.Screen name="PayPalCancel" component={NotAvailableScreen} />
+        <Stack.Screen name="PaymentSuccessHandler" component={PaymentSuccessHandler} />
+        <Stack.Screen name="InitialOrder" component={InitialOrderScreen} />
+        <Stack.Screen name="SchedulePlan" component={SchedulePlanScreen} />
+        <Stack.Screen name="ContactInfo" component={ContactInfoScreen} />
+        <Stack.Screen name="ReviewAndConfirm" component={ReviewAndConfirmScreen} />
+        <Stack.Screen name="ProviderDrawer" component={ProviderDrawer} />
+        <Stack.Screen name="DeliveredOrders" component={DeliveredOrdersScreen} />
+        <Stack.Screen name="EditServiceProviderProfile" component={EditServiceProviderProfileScreen} />
+        <Stack.Screen name="ServiceProviderProfileForm" component={ServiceProviderProfileForm} />
+        <Stack.Screen name="VerifyPickupOtp" component={VerifyPickupOtpScreen} />
+        <Stack.Screen name="VerifyDeliveryOtp" component={VerifyDeliveryOtpScreen} />
+        <Stack.Screen name="OtpVerificationOrders" component={OtpVerificationOrdersScreen} />
+        <Stack.Screen name="DeliverySummary" component={DeliveryPage} />
+        <Stack.Screen name="NotAvailable" component={NotAvailableScreen} />
+        <Stack.Screen name="NotFound" component={NotFoundScreen} />
+      </Stack.Navigator>
+      <StatusBar style="auto" />
+    </NavigationContainer>
+  );
+}
+
+// ✅ Root Component
+export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer linking={linking} fallback={<NotFoundScreen />}>
@@ -283,6 +347,4 @@ const App = () => {
       </NavigationContainer>
     </AuthProvider>
   );
-};
-
-export default App;
+}

@@ -19,7 +19,7 @@ export default function OrderDetails() {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const res = await axios.get(`/orders/${orderId}/bill`);
+        const res = await axios.get(`/orders/${orderId}/bill`)
         setSummary(res.data);
       } catch (err) {
         console.error(err);

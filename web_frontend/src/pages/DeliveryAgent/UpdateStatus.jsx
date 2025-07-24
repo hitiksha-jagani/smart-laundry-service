@@ -1,5 +1,5 @@
-// Author : Hitiksha Jagani
-// Description : Update status page in delivery agent dashboard.
+// Author: Hitiksha Jagani
+// Description: Update status page in delivery agent dashboard.
 
 import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
@@ -11,188 +11,139 @@ import '../../styles/DeliveryAgent/UpdateStatus.css';
 import axios from 'axios';
 
 const UpdateStatus = () => {
+  const [toast, setToast] = useState({ message: '', type: '', visible: false });
+  const [user, setUser] = useState(null);
+  const [delivery, setDelivery] = useState(null);
+  const [otp, setOtp] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { state } = useLocation();
+  const token = localStorage.getItem("token");
 
-    const [toast, setToast] = useState({ message: '', type: '', visible: false });
-    
-    const showToast = (message, type = 'success') => {
-        setToast({ message, type, visible: true });
-    
-        setTimeout(() => {
-            setToast({ message: '', type: '', visible: false });
-        }, 5000);
-    };
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type, visible: true });
+    setTimeout(() => {
+      setToast({ message: '', type: '', visible: false });
+    }, 5000);
+  };
 
-    const [user, setUser] = useState(null);
-    const { state } = useLocation();
-    const [delivery, setDelivery] = useState(state?.delivery || null);
-    // const { state } = useLocation();
-    // const delivery = state?.delivery;
-    // console.log("Delivery data : ", delivery);
+  const axiosInstance = axios.create({
+    baseURL: "http://localhost:8080",
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-    const [otp, setOtp] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [responseMsg, setResponseMsg] = useState('');
-
-    const token = localStorage.getItem("token");
-
-    const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
-        headers: { Authorization: `Bearer ${token}` },
-    });
-
-    useEffect(() => {
-
-        if (!state?.delivery) {
-            const storedDelivery = localStorage.getItem("selectedDelivery");
-            if (storedDelivery) {
-                setDelivery(JSON.parse(storedDelivery));
-            }
-        }
-
-        const fetchAllData = async () => {
-        if (!token) return;
-    
-        let decoded;
-        try {
-            decoded = jwtDecode(token);
-                    console.log("user Id : ", decoded.id)
-                } catch (err) {
-                    console.error('Invalid token:', err);
-                    showToast('Invalid or expired token', "error");
-                    return;
-                }
-    
-                const userId = decoded.userId || decoded.id;
-    
-                try {
-                    // Fetch all data in parallel
-                    const [userRes] = await Promise.all([
-                        
-                        axiosInstance.get(`/user-detail/${userId}`).catch(err => {
-                            console.error("User detail fetch failed", err);
-                            return { data: null };
-                        })    
-                    ]);
-    
-                    setUser(userRes.data);
-                    console.log("User data : " ,userRes.data);
-    
-                } catch (error) {
-                    console.error("Failed to fetch one or more data:", error);
-                } finally {
-                    setLoading(false);
-                }
-            };
-    
-            fetchAllData();
-        }, []);
-
-    const handleUpdateStatus = async () => {
-        setLoading(true);
-        setResponseMsg('');
-
-        const orderId = delivery.orderId;
-        const status = delivery.orderStatus;
-        console.log("Status : ", delivery.orderStatus);
-
-        let endpoint = '';
-        const payload = {
-            orderId: orderId,
-            otp: otp
-        };
-
-        switch (status) {
-            case 'ACCEPTED_BY_AGENT':
-                endpoint = '/emailotp/verify-pickup';
-                break;
-            case 'PICKED_UP':
-                endpoint = '/emailotp/verify-handover';
-                break;
-            case 'READY_FOR_DELIVERY':
-                endpoint = '/emailotp/verify-confirm-for-cloths';
-                break;
-            case 'OUT_FOR_DELIVERY':
-                endpoint = '/emailotp/verify-delivery';
-                break;
-            default:
-                setResponseMsg('Unsupported order status: ' + status);
-                setLoading(false);
-                return;
-        }
-
-        try {
-            console.log("Update status api called");
-            const res = await axiosInstance.post(endpoint, payload);
-
-            showToast("Status updated successfully.", "success");
-        } catch (error) {
-            const errorMsg =
-    error?.response?.data?.message ||
-    error?.response?.data || 
-    error.message || 
-    'Failed to update status';
-
-  if (errorMsg.toLowerCase().includes('expired')) {
-    showToast("OTP has expired. Please request a new one.", "error");
-  } else if (errorMsg.toLowerCase().includes('invalid')) {
-    showToast("Invalid OTP. Please try again.", "error");
-  } else {
-    showToast(errorMsg, "error");
-  }
-            console.error("Failed to update status:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-
-    if (!delivery) {
-        return <div>No delivery data found.</div>;
+  useEffect(() => {
+    // Restore delivery object from state or localStorage
+    if (state?.delivery) {
+      console.log("Delivery passed to UpdateStatus:", state.delivery);
+      setDelivery(state.delivery);
+      localStorage.setItem("selectedDelivery", JSON.stringify(state.delivery));
+    } else {
+      const stored = localStorage.getItem("selectedDelivery");
+      if (stored) setDelivery(JSON.parse(stored));
     }
 
-    return (
+    // Fetch user
+    const fetchUser = async () => {
+      if (!token) return;
+      try {
+        const decoded = jwtDecode(token);
+        const userId = decoded.userId || decoded.id;
+        const res = await axiosInstance.get(`/user-detail/${userId}`);
+        setUser(res.data);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        showToast("User info fetch failed", "error");
+      }
+    };
 
-        <>           
+    fetchUser();
+  }, [state, token]);
 
-            <DeliveryAgentDashboardLayout user={user}>
+  const handleUpdateStatus = async () => {
+    if (!delivery) return;
 
-            <div className="status-wrapper">
-      
-                <div className="status-box">
-        
-                    {/* <h1 className="heading inter-font">UPDATE STATUS</h1> */}
+    setLoading(true);
 
-                    <input
-                        className='input-agent'
-                        type="text"
-                        placeholder="OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        // style={{padding: '50px'}}
-                    />
+    const orderId = delivery.orderId;
+    const status = delivery.orderStatus;
 
-                    <br /><br />
+    let endpoint = '';
+    const payload = { orderId, otp };
 
-                    <button
-                        className="route-btn agent-btn"
-                        onClick={handleUpdateStatus}
-                        disabled={loading || !otp}
-                        style={{width: '100%'}}
-                    >
-                        {loading ? 'Verifying...' : 'Verify OTP & Update'}
-                    </button>
+    switch (status) {
+      case 'ACCEPTED_BY_AGENT':
+        endpoint = '/emailotp/verify-pickup';
+        break;
+      case 'PICKED_UP':
+        endpoint = '/emailotp/verify-handover';
+        break;
+      case 'READY_FOR_DELIVERY':
+        endpoint = '/emailotp/verify-confirm-for-cloths';
+        break;
+      case 'OUT_FOR_DELIVERY':
+        endpoint = '/emailotp/verify-delivery';
+        break;
+      default:
+        showToast('Unsupported order status: ' + status, 'error');
+        setLoading(false);
+        return;
+    }
 
-                </div>
+    try {
+      console.log("Update status API called");
+      await axiosInstance.post(endpoint, payload);
+      showToast("Status updated successfully.", "success");
+    } catch (error) {
+      const errorMsg =
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        error.message ||
+        'Failed to update status';
 
-            </div>
+      if (errorMsg.toLowerCase().includes('expired')) {
+        showToast("OTP has expired. Please request a new one.", "error");
+      } else if (errorMsg.toLowerCase().includes('invalid')) {
+        showToast("Invalid OTP. Please try again.", "error");
+      } else {
+        showToast(errorMsg, "error");
+      }
 
-                {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
+      console.error("Failed to update status:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  if (!delivery) {
+    return <div>No delivery data found.</div>;
+  }
 
-            </DeliveryAgentDashboardLayout>
+  return (
+    <DeliveryAgentDashboardLayout user={user}>
+      <div className="status-wrapper">
+        <div className="status-box">
+          <input
+            className='input-agent'
+            type="text"
+            placeholder="OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+          <br /><br />
+          <button
+            className="route-btn agent-btn"
+            onClick={handleUpdateStatus}
+            disabled={loading || !otp}
+            style={{ width: '100%' }}
+          >
+            {loading ? 'Verifying...' : 'Verify OTP & Update'}
+          </button>
+        </div>
+      </div>
 
-        </>
-    );
+      {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
+    </DeliveryAgentDashboardLayout>
+  );
 };
 
 export default UpdateStatus;

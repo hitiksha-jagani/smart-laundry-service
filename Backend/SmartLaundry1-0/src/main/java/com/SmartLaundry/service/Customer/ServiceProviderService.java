@@ -8,7 +8,7 @@ import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.ServiceProviderRepository;
 import com.SmartLaundry.repository.FeedbackProvidersRepository;
 
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +26,8 @@ public class ServiceProviderService {
     private final FeedbackProvidersRepository feedbackRepo;
     private final CacheService cacheService;
     private final StringRedisTemplate redisTemplate;
-
-   // @Cacheable(value = "serviceProvidersCache", unless = "#result == null or #result.isEmpty()")
+    @Transactional
+    // @Cacheable(value = "serviceProvidersCache", unless = "#result == null or #result.isEmpty()")
     public List<CustomerServiceProviderDTO> getAllServiceProvidersForCustomer() {
         List<ServiceProvider> providers = serviceProviderRepository.findAllWithUserAddresses();
 
@@ -113,7 +114,7 @@ public class ServiceProviderService {
 //                .prices(priceDTOs)
 //                .build();
 //    }
-
+@Transactional(readOnly = true)
     public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
         // Build PriceDTO list with full item info
         List<PriceDTO> priceDTOs = sp.getPrices().stream()
@@ -156,18 +157,33 @@ public class ServiceProviderService {
     }
 
 
+//    private String convertFilePathToPublicUrl(String absolutePath) {
+//        if (absolutePath == null || absolutePath.isEmpty()) return null;
+//
+//        String baseDir = "D:\\MSCIT\\summerinternship\\images\\";
+//
+//        if (absolutePath.startsWith(baseDir)) {
+//            String relativePath = absolutePath.substring(baseDir.length()).replace("\\", "/");
+//            return "http://localhost:8080/images/" + relativePath;
+//        }
+//
+//        return "http://localhost:8080/images/default-provider.jpg";
+//    }
+
     private String convertFilePathToPublicUrl(String absolutePath) {
-    if (absolutePath == null || absolutePath.isEmpty()) return null;
+        if (absolutePath == null || absolutePath.isEmpty()) return null;
 
-    String baseDir = "D:\\MSCIT\\summerinternship\\images\\";
+        String baseDir = "/app/images/";
 
-    if (absolutePath.startsWith(baseDir)) {
-        String relativePath = absolutePath.substring(baseDir.length()).replace("\\", "/");
-        return "http://localhost:8080/images/" + relativePath;
+        if (absolutePath.startsWith(baseDir)) {
+            String relativePath = absolutePath.substring(baseDir.length()).replace("\\", "/");
+            return "http://localhost:8080/images/" + relativePath;
+        }
+
+        return "http://localhost:8080/images/default-provider.jpg";
     }
 
-    return "http://localhost:8080/images/default-provider.jpg";
-}
+
 
     private String buildFullName(Users user) {
         if (user == null) return "Anonymous";

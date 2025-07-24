@@ -138,7 +138,7 @@ export default function LoginScreen() {
         //     await AsyncStorage.setItem('userId', userId);
 
         //     // 2. Check profile existence
-        //     const response = await fetch(`http://localhost:8080/profile/exist/${userId}`);
+        //     const response = await fetch(http://localhost:8080/profile/exist/${userId});
 
         //     if (!response.ok) {
         //       throw new Error('Failed to check agent existence');
@@ -305,8 +305,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-
-
-
-

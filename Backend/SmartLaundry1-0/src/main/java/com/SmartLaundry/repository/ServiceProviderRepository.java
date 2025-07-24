@@ -29,7 +29,42 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     Optional<ServiceProvider> findByUserUserId(String userId);
 
     List<ServiceProvider> findByBusinessNameContainingIgnoreCase(String keyword);
+    @Query("SELECT DISTINCT sp FROM ServiceProvider sp " +
+            "LEFT JOIN FETCH sp.prices pr " +
+            "JOIN FETCH sp.user u " +
+            "LEFT JOIN FETCH u.address a")
+    List<ServiceProvider> findAllWithPricesAndUserAddresses();
+//    @Query("""
+//    SELECT sp FROM ServiceProvider sp
+//    LEFT JOIN FETCH sp.prices p
+//    LEFT JOIN FETCH p.item i
+//    JOIN FETCH sp.user u
+//    LEFT JOIN FETCH u.address a
+//    WHERE sp.serviceProviderId = :id
+//""")
+//    Optional<ServiceProvider> findByIdWithPricesAndUserAddress(@Param("id") String id);
+@Query("""
+    SELECT sp FROM ServiceProvider sp
+    LEFT JOIN FETCH sp.prices p
+    LEFT JOIN FETCH p.item i
+    LEFT JOIN FETCH i.service
+    LEFT JOIN FETCH i.subService
+    JOIN FETCH sp.user u
+    LEFT JOIN FETCH u.address a
+    WHERE sp.serviceProviderId = :id
+""")
+Optional<ServiceProvider> findByIdWithPricesAndUserAddress(@Param("id") String id);
+
+    @Query("SELECT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.prices WHERE sp.serviceProviderId = :id")
+    Optional<ServiceProvider> findByIdWithPrices(@Param("id") String id);
 
     List<ServiceProvider> findByStatus(Status status);
+    @Query("""
+    SELECT sp FROM ServiceProvider sp
+    LEFT JOIN FETCH sp.schedulePlans
+    WHERE sp.serviceProviderId = :id
+""")
+    Optional<ServiceProvider> findByIdWithSchedulePlans(@Param("id") String id);
+
 
 }

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lettuce.core.RedisCommandInterruptedException;
 import jakarta.mail.Address;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +127,7 @@ public class DeliveriesService {
     }
 
     // Return list of pending deliveries
-
+@Transactional
     public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) {
 
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
@@ -166,9 +167,18 @@ public class DeliveriesService {
             System.out.println("user id : " + deliveryAgent.getUsers().getUserId());
             if (assignment != null && !assignment.getAgentId().equals(deliveryAgent.getUsers().getUserId())) continue;
 
+//            Optional<Order> optionalOrder = orderRepository.findById(orderId);
+//            System.out.println("Order ID : " + optionalOrder.get().getOrderId());
+//            optionalOrder.ifPresent(orders::add);
             Optional<Order> optionalOrder = orderRepository.findById(orderId);
-            System.out.println("Order ID : " + optionalOrder.get().getOrderId());
-            optionalOrder.ifPresent(orders::add);
+            if (optionalOrder.isPresent()) {
+                Order o = optionalOrder.get();
+                System.out.println("Order ID : " + o.getOrderId());
+                orders.add(o);
+            } else {
+                System.out.println("Order ID not found in DB: " + orderId);
+            }
+
         }
 
         List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
@@ -247,6 +257,7 @@ public class DeliveriesService {
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(round(earning, 2))
                         .km(round(totalKm, 2))
@@ -266,6 +277,7 @@ public class DeliveriesService {
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(round(earning, 2))
                         .km(round(totalKm, 2))
@@ -295,7 +307,7 @@ public class DeliveriesService {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
+@Transactional
     public List<PendingDeliveriesResponseDTO> getTodayDeliveries(Users user) {
         List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
 
@@ -339,6 +351,7 @@ public class DeliveriesService {
                 System.out.println("**Pickup date : " + order.getPickupTime());
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(bill.getDeliveryCharge())
                         .km(order.getTotalKm())
@@ -359,6 +372,7 @@ public class DeliveriesService {
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
                         .orderId(order.getOrderId())
+                        .orderStatus(order.getStatus())
                         .deliveryType(deliveryType)
                         .deliveryEarning(bill.getDeliveryCharge())
                         .km(order.getTotalKm())

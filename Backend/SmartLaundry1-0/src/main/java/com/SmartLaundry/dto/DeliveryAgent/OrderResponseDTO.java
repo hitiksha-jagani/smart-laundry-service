@@ -1,4 +1,5 @@
 package com.SmartLaundry.dto.DeliveryAgent;
+import com.SmartLaundry.model.OrderStatus;
 import com.SmartLaundry.model.ServiceProvider;
 import com.SmartLaundry.model.Users;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class OrderResponseDTO {
     private String providerPhone;
     private String providerAddress;
     private Long totalQuantity;
-
+    private OrderStatus status;
     private List<OrderResponseDTO.BookingItemDTO> bookingItemDTOList;
 
     @Data

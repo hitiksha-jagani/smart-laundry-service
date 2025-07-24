@@ -8,10 +8,11 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [userId, setUserId] = useState(null);
   const [providerId, setProviderId] = useState(null);
-  const [loading, setLoading] = useState(true); // controls initial render
+  const [agentId, setAgentId] = useState(null);
+  const [loading, setLoading] = useState(true); // for splash or initial check
 
   useEffect(() => {
-    const loadAuth = async () => {
+    const loadStoredData = async () => {
       try {
         const storedToken = await AsyncStorage.getItem('token');
         const storedRole = await AsyncStorage.getItem('role');
@@ -22,45 +23,48 @@ export const AuthProvider = ({ children }) => {
         if (storedRole) setRole(storedRole);
         if (storedUserId) setUserId(storedUserId);
         if (storedProviderId) setProviderId(storedProviderId);
-      } catch (error) {
-        console.error("Error loading auth data:", error);
+      } catch (e) {
+        console.error('Failed to load auth data from storage', e);
       } finally {
         setLoading(false);
       }
     };
 
-    loadAuth();
+    loadStoredData();
   }, []);
 
-  const login = async (jwtToken, userRole, userIdFromToken, providerIdFromDb = null) => {
+  const login = async (jwtToken, userRole, userIdFromToken, providerIdFromDb) => {
     try {
       await AsyncStorage.setItem('token', jwtToken);
       await AsyncStorage.setItem('role', userRole);
       await AsyncStorage.setItem('userId', userIdFromToken);
 
-      setToken(jwtToken);
-      setRole(userRole);
-      setUserId(userIdFromToken);
-
       if (providerIdFromDb) {
         await AsyncStorage.setItem('providerId', providerIdFromDb);
         setProviderId(providerIdFromDb);
       }
-    } catch (error) {
-      console.error("Error during login:", error);
+
+      setToken(jwtToken);
+      setRole(userRole);
+      setUserId(userIdFromToken);
+    } catch (e) {
+      console.error('Error storing login data', e);
     }
   };
 
   const logout = async () => {
     try {
-      await AsyncStorage.multiRemove(['token', 'role', 'userId', 'providerId']);
-    } catch (error) {
-      console.error("Error clearing auth data:", error);
-    } finally {
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('role');
+      await AsyncStorage.removeItem('userId');
+      await AsyncStorage.removeItem('providerId');
+
       setToken(null);
       setRole(null);
       setUserId(null);
       setProviderId(null);
+    } catch (e) {
+      console.error('Error clearing auth data', e);
     }
   };
 
