@@ -12,7 +12,7 @@ import {
     Dimensions,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
 import TodayDeliveryCard from './TodayDeliveryCard';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
@@ -41,10 +41,14 @@ const TodayDeliveries = () => {
 
                         <View style={styles.emptyBox}>
 
-                            <Ionicons name="mail-open-outline" size={64} color="#ccc" />
-                            <Text style={styles.noDeliveryText}>No Today's Deliveries Available</Text>
-                            <Text style={styles.subText}>Once new deliveries are assigned to you, they’ll appear here.</Text>
-                        
+                            <MaterialIcons name="inbox" size={64} color="#ccc" />
+
+                            <Text style={styles.emptyTitle}>No Today's Deliveries Available</Text>
+
+                            <Text style={styles.emptySubtitle}>
+                                Once deliveries are arrived, they’ll appear here.
+                            </Text>
+
                         </View>
 
                     ) : (
@@ -130,6 +134,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 10,
     color: '#555',
+    textAlign: 'center'
   },
   emptySubtitle: {
     marginTop: 8,

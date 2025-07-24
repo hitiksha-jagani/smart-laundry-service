@@ -2,11 +2,12 @@
 // Description: Today delivery card component in delivery agent mobile dashboard.
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
-import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+
+const screenWidth = Dimensions.get('window').width;
 
 const TodayDeliveryCard = ({ delivery }) => {
     const [agentLocation, setAgentLocation] = useState(null);
@@ -197,7 +198,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0fdf4',
         padding: 20,
         borderRadius: 12,
-        width: '98%',
+        width: screenWidth * 0.9, 
+        alignSelf: 'center', 
         marginTop: '15',
     },
 

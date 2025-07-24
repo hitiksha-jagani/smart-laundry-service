@@ -85,8 +85,14 @@ public class AdminProfileService {
     // Logic to store edited profile details
     @Transactional
     public String editProfile(AdminEditProfileRequestDTO request, String userId) throws AccessDeniedException {
+        System.out.println("Incoming userId: " + userId);
+        System.out.println("Incoming request: " + request);
 
         Users user = roleCheckingService.checkUser(userId);
+
+        if (user == null) {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
 
         if (request.getFirstName() != null) {
             user.setFirstName(request.getFirstName());
@@ -96,30 +102,37 @@ public class AdminProfileService {
             user.setLastName(request.getLastName());
         }
 
-            AdminEditProfileRequestDTO.AddressDTO addr = request.getAddresses();
-            if (addr != null) {
-                // Validate pincode
-                if (addr.getPincode() != null && !addr.getPincode().trim().isEmpty()
-                        && !addr.getPincode().matches("^[0-9]{6}$")) {
-                    throw new ExceptionMsg("Pincode must be 6 digits.");
-                }
+        AdminEditProfileRequestDTO.AddressDTO addr = request.getAddresses();
+        if (addr != null) {
+            // Validate pincode
+            if (addr.getPincode() != null && !addr.getPincode().trim().isEmpty()
+                    && !addr.getPincode().matches("^[0-9]{6}$")) {
+                throw new ExceptionMsg("Pincode must be 6 digits.");
+            }
 
-                // Find existing address — required
-                UserAddress existingAddress = userAddressRepository.findByUsers(user);
-                if (existingAddress == null) {
-                    throw new RuntimeException("Address does not exist for this user.");
-                }
+            // Get city if provided
+            City city = null;
+            System.out.println("City : " + addr.getCityName());
+            if (addr.getCityName() != null && !addr.getCityName().trim().isEmpty()) {
+                city = cityRepository.findByCityName(addr.getCityName())
+                        .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
+            }
 
-                // Optional: validate city if changing
-                if (addr.getCityName() != null && !addr.getCityName().trim().isEmpty()) {
-                    City city = cityRepository.findByCityName(addr.getCityName())
-                            .orElseThrow(() -> new RuntimeException("Invalid city: " + addr.getCityName()));
-                    existingAddress.setCity(city);
-                } else {
-                    existingAddress.setCity(existingAddress.getCity());
-                }
+            // Find existing address
+            UserAddress existingAddress = userAddressRepository.findByUsers(user);
 
-                // Update only non-null and non-empty fields
+            if (existingAddress == null) {
+                // Create new address
+                UserAddress newAddress = new UserAddress();
+                newAddress.setUsers(user);
+                newAddress.setCity(city);
+                newAddress.setName(addr.getName());
+                newAddress.setAreaName(addr.getAreaName());
+                newAddress.setPincode(addr.getPincode());
+                userAddressRepository.save(newAddress);
+            } else {
+                // Update existing address
+                if (city != null) existingAddress.setCity(city);
                 if (addr.getName() != null && !addr.getName().trim().isEmpty()) {
                     existingAddress.setName(addr.getName());
                 }
@@ -130,12 +143,11 @@ public class AdminProfileService {
                     existingAddress.setPincode(addr.getPincode());
                 }
 
-                // Save updated address
                 userAddressRepository.save(existingAddress);
             }
+        }
 
         userRepository.save(user);
-
         return "Profile updated successfully.";
     }
 

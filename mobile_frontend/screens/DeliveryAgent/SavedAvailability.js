@@ -88,10 +88,14 @@ const SavedAvailability = ({ availabilities }) => {
   return (
     <View style={styles.container}>
       {availabilities?.length ? (
+      
         <FlatList
           data={availabilities}
           renderItem={renderAvailabilityCard}
           keyExtractor={(item, i) => item.availabilityId.toString() || i.toString()}
+          initialNumToRender={5}
+  maxToRenderPerBatch={10}
+  windowSize={5}
         />
       ) : (
         <View style={styles.emptyBox}>

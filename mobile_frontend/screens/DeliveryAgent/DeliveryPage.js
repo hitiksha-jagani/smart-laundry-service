@@ -227,7 +227,7 @@ const DeliveryPage = () => {
       <View style={deliveryAgentStyles.container}>
         <Text style={[deliveryAgentStyles.h1Agent, styles.heading]}>DELIVERY DASHBOARD</Text>
 
-        <View style={deliveryAgentStyles.summaryWrapper}>
+        <View style={[deliveryAgentStyles.summaryWrapper, styles.summaryData]}>
           <View style={deliveryAgentStyles.summaryContainer}>
             <SummaryCard
               title="PENDING ORDERS"
@@ -260,5 +260,9 @@ const styles = StyleSheet.create({
   heading: {
     marginTop: '30px'
   },
+
+  summaryData: {
+    paddingTop: '50px'
+  }
   
 });

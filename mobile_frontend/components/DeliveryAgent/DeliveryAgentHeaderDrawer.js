@@ -9,6 +9,8 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
+  StatusBar, 
+  Platform
 } from 'react-native';
 
 import { useDrawer } from '../../context/DrawerContext';
@@ -89,18 +91,15 @@ const DeliveryAgentHeaderDrawer = ({ agent, showBackButton = false, onBackPress 
 
       </View>
 
-      {/* <View style={styles.header}> */}
+      {/* Overlay */}
+      {isDrawerOpen && (
+        <TouchableOpacity style={styles.overlay} onPress={closeDrawer} activeOpacity={1} />
+      )}
+
       {showBackButton && (
         <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-      )}
-      {/* <Text style={styles.name}>{agent?.firstName || 'Agent'}</Text> */}
-    {/* </View> */}
-
-      {/* Overlay */}
-      {isDrawerOpen && (
-        <TouchableOpacity style={styles.overlay} onPress={closeDrawer} activeOpacity={1} />
       )}
 
       {/* Drawer */}
@@ -120,8 +119,8 @@ const DeliveryAgentHeaderDrawer = ({ agent, showBackButton = false, onBackPress 
 
           <DrawerLink
             text="Deliveries"
-            onPress={() => navigateTo('DeliveriesSummary')}
-            isActive={route.name === 'DeliveriesSummary'}
+            onPress={() => navigateTo('DeliveryPage')}
+            isActive={route.name === 'DeliveryPage'} 
           />
           <DrawerLink
             text="Manage Availability"
@@ -130,8 +129,8 @@ const DeliveryAgentHeaderDrawer = ({ agent, showBackButton = false, onBackPress 
           />
           <DrawerLink
             text="Payouts"
-            onPress={() => navigateTo('PayoutsSummary')}
-            isActive={route.name === 'PayoutsSummary'}
+            onPress={() => navigateTo('DeliveryAgentPayout')}
+            isActive={route.name === 'DeliveryAgentPayout'}
           />
           <DrawerLink
             text="Feedback"
@@ -150,7 +149,7 @@ const DeliveryAgentHeaderDrawer = ({ agent, showBackButton = false, onBackPress 
           />
 
           <TouchableOpacity  onPress={handleLogout}>
-            <Text style={[ deliveryAgentStyles.agentBtn]}>Logout</Text>
+            <Text style={[ styles.agentBtn]}>Logout</Text>
           </TouchableOpacity>
 
         </View>
@@ -194,6 +193,21 @@ const DrawerLink = ({ text, onPress, isActive }) => (
 );
 
 const styles = StyleSheet.create({
+
+  agentBtn: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        fontSize: 18,
+        fontWeight: '900',
+        color: '#4ADE80',
+        textAlign: 'center',
+    },
+
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 44,
+  },
   
   sidebar: {
     width: 250,
@@ -208,7 +222,7 @@ const styles = StyleSheet.create({
 
   header: {
     position: 'absolute',
-    top: 0,
+    top: Platform.OS === 'android' ? StatusBar.currentHeight : 44,
     left: 0,
     right: 0,
     height: 60,
@@ -241,7 +255,7 @@ const styles = StyleSheet.create({
   drawer: {
   position: 'absolute',
   right: 0,
-  top: 0,
+  top: Platform.OS === 'android' ? StatusBar.currentHeight : 44,
   width: SCREEN_WIDTH * 0.6,
   height: '100%',
   backgroundColor: '#F0FDF4',
@@ -253,6 +267,7 @@ const styles = StyleSheet.create({
 linkContainer: {
   flexGrow: 0,
   flexShrink: 1,
+  gap: 5
 },
 
 

@@ -61,11 +61,12 @@ const AvailabilityScreen = () => {
 
   return (
     <DeliveryAgentLayout>
-        <View style={deliveryAgentStyles.container}>
 
-            {/* <View style={deliveryAgentStyles.dashboardHeading}>
-                <Text style={[deliveryAgentStyles.h1Agent, styles.heading]}>AVAILABILITY DASHBOARD</Text>
-            </View> */}
+      <View style={[styles.container, deliveryAgentStyles.deliveryAgentBody]}>
+
+          <View style={deliveryAgentStyles.container}>
+
+            <Text style={[deliveryAgentStyles.h1Agent, styles.heading]}>AVAILABILITY DASHBOARD</Text>
 
                 <Text style={styles.subheading}>SAVE</Text>
                 <ManageAvailability />
@@ -73,7 +74,10 @@ const AvailabilityScreen = () => {
                 <Text style={styles.subheading}>LIST OF SAVED AVAILABILITY FOR THIS WEEK</Text>
                 <SavedAvailability availabilities={availabilities} />
                 
-        </View>
+          </View>
+
+      </View>
+
     </DeliveryAgentLayout>
   );
 };

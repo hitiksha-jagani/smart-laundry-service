@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  ScrollView,
+  Dimensions,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
@@ -17,6 +17,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+
+const screenWidth = Dimensions.get('window').width;
 
 const Field = ({ label, value, onPress }) => (
 
@@ -51,7 +53,7 @@ const DeliveryAgentProfile = () => {
         const fetchAllData = async () => {
 
             const axiosInstance = axios.create({
-                baseURL: 'http://localhost:8080',
+                baseURL: 'http://192.168.1.7:8080',
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -78,7 +80,7 @@ const DeliveryAgentProfile = () => {
         const userId = data.userId;
 
         if (type && userId) {
-            const url = `http://localhost:8080/image/agent/${type}/${userId}`;
+            const url = `http://192.168.1.7:8080/image/agent/${type}/${userId}`;
             Linking.openURL(url);
         } else {
             Alert.alert('Invalid image type or user ID');
@@ -105,9 +107,9 @@ const DeliveryAgentProfile = () => {
 
                     <View style={deliveryAgentStyles.container}>
 
-                        <Text style={deliveryAgentStyles.h1Agent}>MY DETAILS</Text>
+                        <Text style={[deliveryAgentStyles.h1Agent, styles.heading]}>MY DETAILS</Text>
 
-                        <View style={{ marginHorizontal: 20 }}>
+                        <View style={styles.card}>
 
                             <View style={styles.box}>
 
@@ -205,12 +207,12 @@ const DeliveryAgentProfile = () => {
                                         style={styles.editBtn}
                                         onPress={() => navigation.navigate('EditAgentProfile', { data })}
                                     >
-                                        <Text style={styles.btnText}>EDIT</Text>
+                                        <Text style={styles.btnText}>EDIT</Text> 
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
                                         style={styles.resetBtn}
-                                        onPress={() => navigation.navigate('ChangePassword')}
+                                        onPress={() => navigation.navigate('ChangeAgentPasswordPage')}
                                     >
                                         <Text style={styles.btnText}>CHANGE PASSWORD</Text>
                                     </TouchableOpacity>
@@ -230,6 +232,16 @@ const DeliveryAgentProfile = () => {
 };
 
 const styles = StyleSheet.create({
+    card: {
+        backgroundColor: '#f0fdf4',
+        padding: 20,
+        borderColor: '#4ADE80',
+        borderWidth: 1,
+        borderRadius: 12,
+        width: screenWidth * 0.9, 
+        alignSelf: 'center', 
+        marginVertical: '25',
+    },
   container: {
     padding: 20,
     backgroundColor: '#fff',
@@ -248,45 +260,39 @@ const styles = StyleSheet.create({
   },
   box: {
     backgroundColor: '#F0FDF4',
-    padding: 20,
-    borderRadius: 12,
-    borderColor: '#4ADE80',
-    borderWidth: 1,
-    gap: 15,
-    marginTop: 50,           
-    marginHorizontal: 20        
+    gap: 15,     
     },
 
   row: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   fullRow: {
     flexDirection: 'column',
   },
   field: {
     flex: 1,
+    fontSize: '1px',
     backgroundColor: '#E8F5E9',
     padding: 10,
     borderRadius: 10,
     borderColor: '#ccc',
-    borderWidth: 1,
+    borderWidth: 1, 
     marginBottom: 10,
   },
   label: {
     color: '#388E3C',
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 10,
     marginBottom: 4,
   },
   value: {
     color: '#555',
-    fontSize: 16,
+    fontSize: 13,
   },
   link: {
-    fontSize: 16,
+    fontSize: 13,
     color: '#2563EB',
-    textDecorationLine: 'underline',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -295,21 +301,24 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     backgroundColor: '#34D399',
-    padding: 12,
+    padding: 5,
     borderRadius: 8,
     width: '48%',
     alignItems: 'center',
+    justifyContent: 'center'
   },
   resetBtn: {
     backgroundColor: '#F87171',
-    padding: 12,
+    padding: 5,
     borderRadius: 8,
     width: '48%',
-    alignItems: 'center',
+    alignItems: 'center', 
+  justifyContent: 'center', 
   },
   btnText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center'
   },
 });
 

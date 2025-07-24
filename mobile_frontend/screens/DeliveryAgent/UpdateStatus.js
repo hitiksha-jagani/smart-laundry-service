@@ -1,13 +1,15 @@
 // UpdateStatus.js
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+
+const screenWidth = Dimensions.get('window').width;
 
 const UpdateStatus = () => {
     const [otp, setOtp] = useState('');
@@ -122,7 +124,7 @@ const UpdateStatus = () => {
 
                 <View style={deliveryAgentStyles.container}>
 
-                    <Text style={deliveryAgentStyles.h1Agent}>Update Delivery Status</Text>
+                    <Text style={styles.heading}>Update Delivery Status</Text>
 
                     <View style={styles.card}>
 
@@ -171,7 +173,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0fdf4',
         padding: 20,
         borderRadius: 12,
-        width: '98%',
+        width: screenWidth * 0.9, 
+        alignSelf: 'center', 
+        verticalAlign: 'auto',
         marginTop: '50px',
         borderColor: '#a7f3d0',
     },
