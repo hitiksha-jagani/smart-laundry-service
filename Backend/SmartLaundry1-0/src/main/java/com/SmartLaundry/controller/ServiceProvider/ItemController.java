@@ -1,5 +1,6 @@
 package com.SmartLaundry.controller.ServiceProvider;
 
+import com.SmartLaundry.dto.ItemDTO;
 import com.SmartLaundry.model.Items;
 import com.SmartLaundry.repository.ItemRepository;
 import com.SmartLaundry.service.ServiceProvider.ItemService;
@@ -21,16 +22,8 @@ public class ItemController {
 
     // GET /item/all
     @GetMapping("/all")
-    public List<Items> getAllItems() {
-        return itemRepository.findAll();
+    public List<ItemDTO> getAllItems() {
+        List<Items> items = itemRepository.findAllWithServiceAndSubService();
+        return items.stream().map(ItemDTO::new).toList();
     }
-
-//    // GET /item?serviceId=...&subServiceId=...
-//    @GetMapping
-//    public List<Items> getByServiceAndSubService(
-//            @RequestParam String serviceId,
-//            @RequestParam String subServiceId
-//    ) {
-//        return itemService.getByServiceAndSubService(serviceId, subServiceId);
-//    }
 }

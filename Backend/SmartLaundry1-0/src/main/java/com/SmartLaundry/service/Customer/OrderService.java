@@ -187,7 +187,7 @@ public class OrderService implements OrderBookingService {
         }
     }
 
-    // Build order response DTO from Redis stored data
+    @Transactional
     public  OrderResponseDto buildOrderResponseDtoFromRedisData(String userId, Map<Object, Object> data) {
         if (data == null || data.isEmpty()) {
             throw new IllegalArgumentException("No Redis data found for user: " + userId);

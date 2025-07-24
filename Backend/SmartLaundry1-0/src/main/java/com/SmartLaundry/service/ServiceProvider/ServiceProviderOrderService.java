@@ -84,7 +84,7 @@ public class ServiceProviderOrderService {
         redisTemplate.delete(lockKey);
     }
 
-
+    @Transactional
     public List<ActiveOrderGroupedDto> getPendingOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
@@ -124,7 +124,7 @@ public class ServiceProviderOrderService {
                     .build();
         }).toList();
     }
-
+    @Transactional
     public List<ActiveOrderGroupedDto> getActiveOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
@@ -164,7 +164,7 @@ public class ServiceProviderOrderService {
                     .build();
         }).toList();
     }
-
+    @Transactional
     public List<ActiveOrderGroupedDto> getDeliveredOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new IllegalStateException("Service Provider not found"));
@@ -204,7 +204,7 @@ public class ServiceProviderOrderService {
                     .build();
         }).toList();
     }
-
+    @Transactional
     public List<ActiveOrderGroupedDto> getCompletedOrdersForServiceProvider(String spUserId) {
         ServiceProvider provider = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new RuntimeException("Service provider not found"));
@@ -246,7 +246,7 @@ public class ServiceProviderOrderService {
         }).toList();
     }
 
-
+    @Transactional
     public OrderResponseDto acceptOrder(String spUserId, String orderId) {
         String lockKey = LOCK_PREFIX + orderId;
 
@@ -327,7 +327,7 @@ public class ServiceProviderOrderService {
         }
     }
 
-
+    @Transactional
     public void rejectOrder(String spUserId, String orderId) {
         String lockKey = LOCK_PREFIX + orderId;
 
@@ -373,7 +373,7 @@ public class ServiceProviderOrderService {
         }
     }
 
-
+    @Transactional
     public void markOrderInCleaning(String spUserId, String orderId) throws AccessDeniedException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
@@ -459,7 +459,7 @@ public class ServiceProviderOrderService {
 //            );
 //        }
 //    }
-
+@Transactional
         public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
             Order order = orderRepository.findByorderId(orderId)
                     .orElseThrow(() -> new IllegalArgumentException("Order not found"));
@@ -504,7 +504,7 @@ public class ServiceProviderOrderService {
                 );
             }
         }
-
+    @Transactional
     private void saveOrderStatusHistory(Order order, OrderStatus status) {
         orderStatusHistoryRepository.save(OrderStatusHistory.builder()
                 .order(order)
@@ -512,6 +512,7 @@ public class ServiceProviderOrderService {
                 .changedAt(LocalDateTime.now())
                 .build());
     }
+    @Transactional
     public void respondToFeedbackByUserId(String spUserId, Long feedbackId, String responseMessage) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
                 .orElseThrow(() -> new RuntimeException("Service Provider not found for user: " + spUserId));

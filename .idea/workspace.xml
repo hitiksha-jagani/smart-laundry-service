@@ -6,33 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="bfec3e60-f7db-4ec7-90a0-755973f2e8a9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/OtpOrderEmailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/OtpOrderEmailController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/controller/PaymentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/DeliveryAgent/OrderResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/DeliveryAgent/OrderResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/OrderItemRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/Customer/OrderItemRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/DeliveryAgent/PendingDeliveriesResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/dto/DeliveryAgent/PendingDeliveriesResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/ServiceProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/ServiceProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/DeliveryAgent/DeliveriesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/DeliveryAgent/DeliveriesService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/OrderEmailOtpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/OrderEmailOtpService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/OtpOrderEmailTransitionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/OtpOrderEmailTransitionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/PayPalClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/PayPalClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/PayPalService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/service/PayPalService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/components/AutoRedirect.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/components/AutoRedirect.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/context/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/context/AuthContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/i18n.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/i18n.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/screens/Customer/LoginScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/screens/Customer/LoginScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/screens/Customer/LogoutButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/screens/Customer/LogoutButton.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/screens/Customer/OrderDetails.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/screens/Customer/OrderDetails.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_frontend/screens/Customer/PayPalPaymentScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_frontend/screens/Customer/PayPalPaymentScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/PendingDeliveryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/PendingDeliveryCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveryCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/components/DeliveryAgent/TodayDeliveryCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/DeliveryPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/DeliveryPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/UpdateStatus.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/DeliveryAgent/UpdateStatus.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/PickupOtpVerify.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/PickupOtpVerify.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Items.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/java/com/SmartLaundry/model/Items.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/resources/application-docker.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/SmartLaundry1-0/src/main/resources/application-docker.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/.env.production" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/.env.production" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/Register.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/ReviewAndConfirm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/ReviewAndConfirm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/Customer/logout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/Customer/logout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/CompleteServiceProviderForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/pages/ServiceProvider/CompleteServiceProviderForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_frontend/src/utils/axiosInstance.js" beforeDir="false" afterPath="$PROJECT_DIR$/web_frontend/src/utils/axiosInstance.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,33 +53,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Application.executor&quot;: &quot;Run&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JUnit.SendOtpApplicationTests.executor&quot;: &quot;Run&quot;,
-    &quot;JavaClassFindUsagesOptions.isDerivedClasses&quot;: &quot;true&quot;,
-    &quot;JavaClassFindUsagesOptions.isFieldsUsages&quot;: &quot;true&quot;,
-    &quot;JavaClassFindUsagesOptions.isMethodsUsages&quot;: &quot;true&quot;,
-    &quot;Maven.SmartLaundry1-0 [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [site].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [test].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [validate].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.SmartLaundry1-0 [verify].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/MSCIT/smart-laundry-service&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Application.executor": "Run",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "JUnit.SendOtpApplicationTests.executor": "Run",
+    "JavaClassFindUsagesOptions.isDerivedClasses": "true",
+    "JavaClassFindUsagesOptions.isFieldsUsages": "true",
+    "JavaClassFindUsagesOptions.isMethodsUsages": "true",
+    "Maven.SmartLaundry1-0 [clean].executor": "Run",
+    "Maven.SmartLaundry1-0 [compile].executor": "Run",
+    "Maven.SmartLaundry1-0 [install].executor": "Run",
+    "Maven.SmartLaundry1-0 [site].executor": "Run",
+    "Maven.SmartLaundry1-0 [test].executor": "Run",
+    "Maven.SmartLaundry1-0 [validate].executor": "Run",
+    "Maven.SmartLaundry1-0 [verify].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.preview.features.used": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/MSCIT/summerinternship/smart-laundry-service/Backend",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.SmartLaundry.SendOTP" />

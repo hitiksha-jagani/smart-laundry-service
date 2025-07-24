@@ -76,7 +76,7 @@ public class PendingDeliveriesResponseDTO {
     private String deliveryAddress;
 
     private Long totalQuantity;
-    private OrderStatus orderStatus;
+
     private Double km;
     private String deliveryType;
 

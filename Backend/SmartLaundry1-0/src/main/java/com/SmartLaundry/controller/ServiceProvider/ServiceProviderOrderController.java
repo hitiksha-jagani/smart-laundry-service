@@ -18,7 +18,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.springframework.http.HttpStatus;
 @RestController
 @RequestMapping("/provider/orders")
 @RequiredArgsConstructor
@@ -125,12 +125,23 @@ public class ServiceProviderOrderController {
         return ResponseEntity.ok(response);
     }
 
+//    @GetMapping("/from-user/{userId}")
+//    public ResponseEntity<String> getProviderIdByUserId(@PathVariable String userId) {
+//        return serviceProviderRepository.findByUserUserId(userId)
+//                .map(sp -> ResponseEntity.ok(sp.getServiceProviderId()))
+//                .orElseGet(() -> ResponseEntity.notFound().build());
+//    }
+
+
     @GetMapping("/from-user/{userId}")
-    public ResponseEntity<String> getProviderIdByUserId(@PathVariable String userId) {
+    public ResponseEntity<?> getProviderIdByUserId(@PathVariable String userId) {
         return serviceProviderRepository.findByUserUserId(userId)
                 .map(sp -> ResponseEntity.ok(sp.getServiceProviderId()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Please complete your profile to access this feature."));
     }
+
 
     @GetMapping("/active")
     public ResponseEntity<List<ActiveOrderGroupedDto>> getActiveOrders(HttpServletRequest request) {

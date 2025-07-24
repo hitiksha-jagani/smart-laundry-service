@@ -1,28 +1,18 @@
 import React, { useEffect, useState } from "react";
-import axios from "../../utils/axiosInstance";
+// import axios from "../../utils/axiosInstance"; // uses your interceptor config
 import PrimaryButton from "../../components/PrimaryButton";
-
+import axiosInstance from '../../utils/axiosInstance';
 export default function ReviewAndConfirm({ dummyOrderId, onOrderCreated }) {
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-const token = localStorage.getItem("token");
 
-    const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
-        headers: { Authorization: `Bearer ${token}` },
-    });
-
-
- console.log(token);
-  useEffect(() => {
+useEffect(() => {
   const fetchSummary = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("/orders/summary-from-redis", {
-        params: { dummyOrderId },
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await axiosInstance.get(`/orders/summary-from-redis`, {
+        params: {
+          dummyOrderId: dummyOrderId,
         },
       });
       setSummary(res.data);
@@ -35,26 +25,19 @@ const token = localStorage.getItem("token");
   fetchSummary();
 }, [dummyOrderId]);
 
+
   const handleConfirm = async () => {
     setError("");
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-
-const res = await axios.post(
-  `/orders/place/${dummyOrderId}`,
-  {},
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-);
+      const res = await axiosInstance.post(`/orders/place/${dummyOrderId}`);
 
       onOrderCreated(res.data);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || "Failed to create order. Please try again.");
+      setError(
+        err.response?.data?.message || "Failed to create order. Please try again."
+      );
     } finally {
       setLoading(false);
     }

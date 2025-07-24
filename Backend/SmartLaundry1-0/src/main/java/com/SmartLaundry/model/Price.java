@@ -27,7 +27,7 @@ public class Price {
     private Long price;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "provider_id")
     @JsonBackReference
     private ServiceProvider serviceProvider;

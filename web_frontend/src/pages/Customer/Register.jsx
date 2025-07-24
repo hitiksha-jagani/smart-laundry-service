@@ -3,7 +3,7 @@ import InputField from "../../components/InputField";
 import SelectField from "../../components/SelectField";
 import AuthLayout from "../../components/AuthLayout";
 import { Eye, EyeOff } from "lucide-react";
-
+import axios from "../../utils/axiosInstance";
 const Register = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -27,17 +27,17 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  useEffect(() => {
-    fetch("http://localhost:8080/roles")
-      .then((res) => res.json())
-      .then((data) => setRoles(data))
-      .catch((err) => console.error("Error fetching roles:", err));
+useEffect(() => {
+  axios.get("/roles")
+    .then((res) => setRoles(res.data))
+    .catch((err) => console.error("Error fetching roles:", err));
 
-    fetch("http://localhost:8080/cities")
-      .then((res) => res.json())
-      .then((data) => setCities(data))
-      .catch((err) => console.error("Error fetching cities:", err));
-  }, []);
+  axios.get("/cities")
+    .then((res) => setCities(res.data))
+    .catch((err) => console.error("Error fetching cities:", err));
+}, []);
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -75,30 +75,20 @@ const Register = () => {
       return;
     }
 
-    try {
-      const res = await fetch("http://localhost:8080/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          addresses: {
-            ...formData.addresses,
-            cityId: parseInt(formData.addresses.cityId),
-          },
-        }),
-      });
+try {
+  await axios.post("/register", {
+    ...formData,
+    addresses: {
+      ...formData.addresses,
+      cityId: parseInt(formData.addresses.cityId),
+    },
+  });
+  alert("✅ Registration successful!");
+} catch (error) {
+  console.error("Error:", error);
+  setErrors({ general: error.response?.data?.message || "Something went wrong" });
+}
 
-      if (res.ok) {
-        await res.json();
-        alert("✅ Registration successful!");
-      } else {
-        const errorData = await res.json();
-        setErrors({ general: errorData.message || "Registration failed" });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setErrors({ general: "Something went wrong" });
-    }
   };
 
   return (

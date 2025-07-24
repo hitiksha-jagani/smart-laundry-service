@@ -142,12 +142,24 @@ export default function NearbyServiceProviders() {
               key={provider.serviceProviderId}
               className="bg-white border border-gray-200 text-gray-900 rounded-xl shadow hover:shadow-lg transition duration-300 w-full max-w-sm mx-auto"
             >
-              <img
+              {/* <img
                 src={provider.photoImage || "/default-provider.jpg"}
                 alt={provider.businessName}
                 onError={(e) => (e.target.src = "/default-provider.jpg")}
                 className="w-full h-48 object-contain bg-gray-100 rounded-t"
+              /> */}
+              <img
+                src={provider.photoImage || "/default-provider.jpg"}
+                alt={provider.businessName}
+                onError={(e) => {
+                  const target = e.target;
+                  if (target.src !== window.location.origin + "/default-provider.jpg") {
+                    target.src = "/default-provider.jpg";
+                  }
+                }}
+                className="w-full h-48 object-contain bg-gray-100 rounded-t"
               />
+
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-1">{provider.businessName}</h2>
                 <p className="text-sm text-gray-600 mb-2">

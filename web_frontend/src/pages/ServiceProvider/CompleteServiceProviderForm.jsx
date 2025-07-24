@@ -11,7 +11,7 @@ export default function ServiceProviderProfileForm({ userId: propUserId }) {
     businessLicenseNumber: "",
     gstNumber: "",
     needOfDeliveryAgent: false,
-    schedulePlans: [], 
+    schedulePlans: [],
     bankAccount: {
       bankName: "",
       ifscCode: "",

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class OrderItemRequest {
     private String itemId;
     private int quantity;
-   // private double finalPrice;
+    // private double finalPrice;
 }
 

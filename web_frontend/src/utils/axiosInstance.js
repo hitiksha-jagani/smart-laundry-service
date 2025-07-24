@@ -12,7 +12,7 @@ const publicEndpoints = [
   "/customer/serviceProviders/",   // for /customer/serviceProviders/{id}
   "/orders/user/",                 // for /orders/user/{userId}
   "/orders/user/",                 // for /orders/user/{userId}/stats
-  "/orders/summary-from-redis"     // summary from redis
+  //"/orders/summary-from-redis"     // summary from redis
 ];
 
 instance.interceptors.request.use((config) => {

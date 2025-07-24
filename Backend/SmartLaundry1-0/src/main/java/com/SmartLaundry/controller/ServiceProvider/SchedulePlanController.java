@@ -30,7 +30,7 @@ public class SchedulePlanController {
 
     @GetMapping("/{providerId}")
     public ResponseEntity<Set<SchedulePlan>> getSchedulePlansForProvider(@PathVariable String providerId) {
-        return serviceProviderRepository.findByServiceProviderId(providerId)
+        return serviceProviderRepository.findByIdWithSchedulePlans(providerId)
                 .map(provider -> ResponseEntity.ok(provider.getSchedulePlans()))
                 .orElse(ResponseEntity.notFound().build());
     }
