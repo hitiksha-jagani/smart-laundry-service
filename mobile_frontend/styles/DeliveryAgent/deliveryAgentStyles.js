@@ -8,6 +8,7 @@ export const deliveryAgentStyles = StyleSheet.create({
     deliveryAgentBody: {
         backgroundColor: '#E8F5E9',
         color: '#64748B',
+        marginTop: '100px'
     },
 
     dashboardHeading: {
@@ -84,8 +85,8 @@ export const deliveryAgentStyles = StyleSheet.create({
     },
 
     inputFieldFocus: {
-        borderColor: '#4ADE80',
         borderWidth: 2,
+        borderColor: '#4ADE80',
         shadowColor: '#007bff',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.3,
@@ -122,7 +123,6 @@ export const deliveryAgentStyles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '50px'
     },
 
     centeredContainer: {

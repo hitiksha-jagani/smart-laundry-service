@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  FlatList
-} from 'react-native';
+    View,
+    Text,
+    StyleSheet,
+    Dimensions,
+    TouchableOpacity,
+    Alert,
+    FlatList
+} from 'react-native'; 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axiosInstance from '../../utils/axiosInstance';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+
+const screenWidth = Dimensions.get('window').width;
 
 const fullDaysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -32,11 +35,13 @@ const getDateForWeekday = (weekday) => {
 };
 
 const ManageAvailability = () => {
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
   const [availableDays, setAvailableDays] = useState([]);
   const [selectedDays, setSelectedDays] = useState([]);
   const [isHoliday, setIsHoliday] = useState(null);
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('17:00');
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
   const [availabilities, setAvailabilities] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
 
@@ -82,6 +87,16 @@ const ManageAvailability = () => {
     setEndTime('17:00');
   };
 
+  const handleStartTimeChange = (event, selectedDate) => {
+    setShowStartPicker(false);
+    if (selectedDate) setStartTime(selectedDate);
+  };
+
+  const handleEndTimeChange = (event, selectedDate) => {
+    setShowEndPicker(false);
+    if (selectedDate) setEndTime(selectedDate);
+  };
+
   const handleEdit = (index) => {
     const entry = availabilities[index];
     setSelectedDays([entry.day]);
@@ -123,9 +138,12 @@ const ManageAvailability = () => {
     setEditIndex(null);
   };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Select Days</Text>
+  return ( 
+    
+    <View style={styles.card}>
+
+      <Text style={styles.title}>Select Days</Text>
+
       <View style={styles.dayGrid}>
         {availableDays.map((day) => (
           <TouchableOpacity
@@ -139,7 +157,7 @@ const ManageAvailability = () => {
         ))}
       </View>
 
-      <Text style={styles.header}>Status</Text>
+      <Text style={styles.title}>Status</Text>
       <View style={styles.radioGroup}>
         <TouchableOpacity style={styles.radioOption} onPress={() => setIsHoliday(false)}>
           <Text>{isHoliday === false ? '🔘' : '⚪'} Working Day</Text>
@@ -149,50 +167,182 @@ const ManageAvailability = () => {
         </TouchableOpacity>
       </View>
 
-      {!isHoliday && isHoliday !== null && (
-        <View style={styles.timeGroup}>
-          <View>
-            <Text>Start Time:</Text>
-            <Text>{startTime}</Text>
-          </View>
-          <View>
-            <Text>End Time:</Text>
-            <Text>{endTime}</Text>
-          </View>
+    {selectedDays.length > 0 && isHoliday === false && (
+      <View style={styles.row}>
+        <View style={styles.field}>
+          <Text style={styles.label}>Start Time</Text>
+          <TouchableOpacity onPress={() => setShowStartPicker(true)}>
+            <Text>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+          </TouchableOpacity>
         </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>End Time</Text>
+          <TouchableOpacity onPress={() => setShowEndPicker(true)}>
+            <Text>{endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )}
+
+      {showStartPicker && (
+        <DateTimePicker
+          value={startTime}
+          mode="time"
+          is24Hour={true}
+          display="default"
+          onChange={handleStartTimeChange}
+        />
+      )}
+
+      {showEndPicker && (
+        <DateTimePicker
+          value={endTime}
+          mode="time"
+          is24Hour={true}
+          display="default"
+          onChange={handleEndTimeChange}
+        />
       )}
 
       <TouchableOpacity style={styles.addBtn} onPress={handleAddOrUpdate}>
         <Text style={{ color: 'white', textAlign: 'center' }}>{editIndex !== null ? 'Update' : 'Add'}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.header}>Saved Availabilities</Text>
+      <Text style={styles.title}>Saved Availabilities</Text>
       {availabilities.length === 0 ? (
         <Text>No availabilities added.</Text>
       ) : (
         availabilities.map((entry, idx) => (
-          <View key={idx} style={styles.entryRow}>
-            <Text>{entry.day} - {entry.date}</Text>
-            <Text>{entry.isHoliday ? 'Holiday' : `${entry.startTime} to ${entry.endTime}`}</Text>
-            <View style={styles.entryActions}>
-              <TouchableOpacity onPress={() => handleEdit(idx)}><Text>Edit</Text></TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(idx)}><Text style={{ color: 'red' }}>Delete</Text></TouchableOpacity>
-            </View>
-          </View>
+          <View key={idx} style={styles.contactBox}>
+  <Text style={styles.contactTitle}>{entry.day}</Text>
+
+  <View style={styles.itemCardRow}>
+    <Text style={styles.itemLabel}>Date:</Text>
+    <Text style={styles.itemValue}>{entry.date}</Text>
+  </View>
+
+  {entry.isHoliday ? (
+    <View style={styles.itemCardRow}>
+      <Text style={styles.itemLabel}>Status:</Text>
+      <Text style={styles.itemValue}>Holiday</Text>
+    </View>
+  ) : (
+    <>
+      <View style={styles.itemCardRow}>
+        <Text style={styles.itemLabel}>Start Time:</Text>
+        <Text style={styles.itemValue}>
+          {new Date(entry.startTime).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </Text>
+      </View>
+      <View style={styles.itemCardRow}>
+        <Text style={styles.itemLabel}>End Time:</Text>
+        <Text style={styles.itemValue}>
+          {new Date(entry.endTime).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </Text>
+      </View>
+    </>
+  )}
+
+  <View style={styles.actions}>
+    <TouchableOpacity style={styles.acceptBtn} onPress={() => handleEdit(idx)}>
+      <Text style={styles.actionText}>Edit</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity style={styles.rejectBtn} onPress={() => handleDelete(idx)}>
+      <Text style={styles.actionText}>Delete</Text>
+    </TouchableOpacity>
+  </View>
+</View>
+
         ))
       )}
 
       {availabilities.length > 0 && (
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveToBackend}><Text style={{ color: 'white' }}>Save</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.resetBtn} onPress={handleResetAll}><Text style={{ color: 'white' }}>Reset</Text></TouchableOpacity>
+
+        <View style={styles.actions}>
+        
+          <TouchableOpacity style={styles.acceptBtn} onPress={handleSaveToBackend}>
+            <Text style={styles.actionText}>Save</Text>
+          </TouchableOpacity>
+        
+          <TouchableOpacity style={styles.rejectBtn} onPress={handleResetAll}>
+            <Text style={styles.actionText}>Reset</Text>
+          </TouchableOpacity>
+        
         </View>
+
       )}
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+
+  itemCard: {
+        backgroundColor: '#ecfdf5',
+        borderColor: '#bbf7d0',
+        borderWidth: 1,
+        padding: 10,
+        borderRadius: 8,
+        marginBottom: 10,
+        width: '90%', 
+    },
+
+  card: {
+        backgroundColor: '#f0fdf4',
+        padding: 20,
+        borderColor: '#4ADE80',
+        borderWidth: 1,
+        borderRadius: 12,
+        width: screenWidth * 0.9, 
+        alignSelf: 'center', 
+        marginVertical: '25',
+    },
+
+    title: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#388E3C',
+        backgroundColor: '#ecfdf5',
+        padding: 10,
+        borderLeftWidth: 5,
+        borderLeftColor: '#10b981',
+        borderRadius: 8,
+        marginVertical: 10,
+    },
+
+    row: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  field: {
+    flex: 1,
+    fontSize: '1px',
+    backgroundColor: '#E8F5E9',
+    padding: 10,
+    borderRadius: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+  },
+  label: {
+    color: '#388E3C',
+    fontWeight: '600',
+    fontSize: 10,
+    marginBottom: 4,
+  },
+  value: {
+    color: '#555',
+    fontSize: 13,
+  },
+
   container: {
     padding: 20,
     backgroundColor: '#F0FDF4',
@@ -208,6 +358,33 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
+  contactBox: {
+        backgroundColor: '#fff',
+        borderColor: '#d1fae5',
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 15,
+        marginVertical: 10,
+    },
+
+    contactTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#10b981',
+        borderBottomColor: '#d1fae5',
+        borderBottomWidth: 2,
+        marginBottom: 10,
+    },
+
+    contactDetails: {
+        gap: 10,
+    },
+    summaryValue: {
+        fontWeight: '600',
+        color: '#065f46',
+        fontSize: 15,
+    },
+
   checkbox: {
     backgroundColor: '#fff',
     padding: 10,
@@ -266,6 +443,57 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
+  actions: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 20,
+    },
+
+    acceptBtn: {
+        backgroundColor: '#4ADE80',
+        padding: 12,
+        borderRadius: 10,
+        width: '40%',
+        alignItems: 'center',
+    },
+
+    rejectBtn: {
+        backgroundColor: '#ef4444',
+        padding: 12,
+        borderRadius: 10,
+        width: '40%',
+        alignItems: 'center',
+    },
+
+    actionText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 16,
+    },
+    itemCardRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  backgroundColor: '#ecfdf5',
+  borderColor: '#bbf7d0',
+  borderWidth: 1,
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderRadius: 8,
+  marginBottom: 8,
+},
+
+itemLabel: {
+  fontWeight: '600',
+  color: '#065f46',
+  fontSize: 14,
+},
+
+itemValue: {
+  fontSize: 14,
+  color: '#333',
+},
+
 });
 
 export default ManageAvailability;

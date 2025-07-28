@@ -64,13 +64,13 @@ const PendingDeliveries = ({ route }) => {
 
     return (
 
-        <DeliveryAgentLayout>
+        <DeliveryAgentLayout> 
 
             <View style={[styles.container, deliveryAgentStyles.deliveryAgentBody]}>
 
                 <View style={deliveryAgentStyles.container}>
 
-                    <Text style={deliveryAgentStyles.h1Agent}>📦 Pending Deliveries</Text>
+                    <Text style={[deliveryAgentStyles.h1Agent, styles.heading]}>📦 Pending Deliveries</Text>
 
                     {orders.length === 0 ? (
 
@@ -88,7 +88,7 @@ const PendingDeliveries = ({ route }) => {
 
                     ) : (
 
-                        <View style={{marginTop: '50px'}}>
+                        <View style={{marginTop: '20'}}>
 
                             <PendingDeliveryCard
                                 data={orders[currentIndex]}
@@ -150,12 +150,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   heading: {
-    marginTop: '1',
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#047857',
-    marginBottom: 15,
-    textAlign: 'center',
+    marginTop: '30px'
   },
   emptyBox: {
     alignItems: 'center',

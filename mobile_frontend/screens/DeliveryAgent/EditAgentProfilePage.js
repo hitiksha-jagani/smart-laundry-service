@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Alert,
-    ScrollView,
+    Dimensions,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -19,6 +19,38 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useAuth } from '../../context/AuthContext';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+
+const screenWidth = Dimensions.get('window').width;
+
+const Field = ({ label, value, onChangeText, editable = true, onPress }) => (
+
+    <View style={styles.field}>
+
+        <Text style={styles.label}>{label}</Text>
+
+        {onPress ? (
+
+            <TouchableOpacity onPress={onPress}>
+                <Text style={styles.link}>Click Here...</Text>
+            </TouchableOpacity>
+
+        ) : editable ? (
+
+            <TextInput
+                style={styles.input}
+                value={value}
+                onChangeText={onChangeText}
+                placeholder="Enter value"
+            />
+        ) : (
+
+            <Text style={styles.value}>{value || 'N/A'}</Text>
+
+        )}
+
+  </View>
+
+);
 
 const EditAgentProfile = () => {
     const navigation = useNavigation();
@@ -34,8 +66,8 @@ const EditAgentProfile = () => {
     const [selectedStateId, setSelectedStateId] = useState(null);
 
     const axiosInstance = axios.create({
-        baseURL: 'http://localhost:8080',
-        headers: { Authorization: `Bearer ${token}` },
+        baseURL: 'http://192.168.1.7:8080',
+        headers: { Authorization: `Bearer ${token}` }, 
     });
 
     useEffect(() => {
@@ -47,6 +79,8 @@ const EditAgentProfile = () => {
                 setFormData({
                 firstName: userData.firstName || '',
                 lastName: userData.lastName || '',
+                phoneNo: userData.phoneNo || '',
+                email: userData.email || '',
                 vehicleNumber: agentData.vehicleNumber || '',
                 bankName: agentData.bankName || '',
                 accountHolderName: agentData.accountHolderName || '',
@@ -73,7 +107,7 @@ const EditAgentProfile = () => {
 
     useEffect(() => {
         axios
-        .get('http://localhost:8080/states')
+        .get('http://192.168.1.7:8080/states')
         .then((res) => setStates(res.data))
         .catch((err) => console.error('Error fetching states', err));
     }, []);
@@ -82,7 +116,7 @@ const EditAgentProfile = () => {
 
         if (selectedStateId) {
             axios
-                .get(`http://localhost:8080/cities/get/${selectedStateId}`)
+                .get(`http://192.168.1.7:8080/cities/get/${selectedStateId}`)
                 .then((res) => setCities(res.data))
                 .catch((err) => console.error('Error fetching cities', err));
         } else {
@@ -118,16 +152,16 @@ const EditAgentProfile = () => {
 
     const handleSave = () => {
 
-        axiosInstance
-        .put('/profile/detail/edit', formData)
-        .then(() => {
-            Alert.alert('Success', 'Profile updated successfully');
-            navigation.navigate('DeliveryAgentProfile');
-        })
-        .catch((err) => {
-            console.error('Error saving profile:', err);
-            Alert.alert('Error', 'Failed to update profile');
-        });
+        // axiosInstance
+        // .put('/profile/detail/edit', formData)
+        // .then(() => {
+        //     Alert.alert('Success', 'Profile updated successfully');
+        //     navigation.navigate('DeliveryAgentProfile');
+        // })
+        // .catch((err) => {
+        //     console.error('Error saving profile:', err);
+        //     Alert.alert('Error', 'Failed to update profile');
+        // });
 
     };
 
@@ -147,184 +181,240 @@ const EditAgentProfile = () => {
             
                 <View style={deliveryAgentStyles.container}>
 
-                    <Text style={deliveryAgentStyles.h1Agent}>EDIT PROFILE</Text>
+                    <Text style={[deliveryAgentStyles.h1Agent, styles.heading]}>EDIT PROFILE</Text>
 
-                    <View style={{ marginHorizontal: 20 }}>
+                    <View style={styles.card}>
 
                         <View style={styles.box}>
 
+                            {/* Basic Info */}
                             <View style={styles.row}>
 
-                                <Text>First Name</Text>
-                                <TextInput
-                                    // style={styles.input}
+                                <Field
+                                    label="First Name"
                                     value={formData.firstName}
-                                    onChangeText={(text) => handleChange('firstName', text)}
+                                    onChangeText={(text) => setFormData({ ...formData, firstName: text })}
                                 />
 
-                            {/* </View>
-                            <View style={styles.row}> */}
-                            
-                                <Text>Last Name</Text>
-                                <TextInput
-                                    // style={styles.input}
+                                <Field
+                                    label="Last Name"
                                     value={formData.lastName}
-                                    onChangeText={(text) => handleChange('lastName', text)}
+                                    onChangeText={(text) => setFormData({ ...formData, lastName: text })}
                                 />
 
-                            {/* <Field label="First Name" value={data.firstName} />
-                            <Field label="Last Name" value={data.lastName} /> */}
                             </View>
 
-                            <View className="agent-box">
-            {/* Basic Info */}
-            <View className="agent-grid-row">
-                <View className="agent-field">
-                <Text>First Name</Text>
-                <TextInput
-                    style={styles.input}
-                    value={formData.firstName}
-                    onChangeText={(text) => handleChange('firstName', text)}
-                />
-                </View>
+                            {/* Contact Info */}
+                            <View style={styles.row}>
 
-                <View className="agent-field">
-                <Text>Last Name</Text>
-                <TextInput
-                    style={styles.input}
-                    value={formData.lastName}
-                    onChangeText={(text) => handleChange('lastName', text)}
-                />
-                </View>
-            </View>
+                                <View style={styles.field}>
+
+                                    <Text style={styles.label}>Phone</Text>
+
+                                    <Text style={styles.value} readOnly>
+                                        {formData.phoneNo} 
+                                    </Text>
+
+                                </View>
+
+                                <View style={styles.field}>
+
+                                    <Text style={styles.label}>Email</Text>
+
+                                    <Text style={styles.value} readOnly>
+                                        {formData.email} 
+                                    </Text>
+
+                                </View>
+
+                            </View>
+            
+                            {/* Address */}
+                            <View style={styles.row}>
+
+                                <View style={styles.field}>
+
+                                    <Text style={styles.label}>Address</Text>
+
+                                    <TextInput
+                                        placeholder="Address Line"
+                                        style={styles.uploadBtn}
+                                        value={formData.address.name}
+                                        onChangeText={(text) => handleChange('name', text)}
+                                    />
+
+                                    <TextInput
+                                        placeholder="Area Name"
+                                        style={styles.uploadBtn}
+                                        value={formData.address.areaName}
+                                        onChangeText={(text) => handleChange('areaName', text)}
+                                    />
+
+                                    <View style={styles.pickerWrapper}>
+
+                                        <Picker
+                                            selectedValue={selectedStateId}
+                                            onValueChange={(itemValue) => setSelectedStateId(itemValue)}
+                                            style={styles.picker}
+                                        >
+                                            {states.map((s) => (
+                                            <Picker.Item key={s.stateId} label={s.name} value={s.stateId} />
+                                            ))}
+                                        </Picker>
+
+                                    </View>
+
+                                    <View style={styles.pickerWrapper}>
+
+                                        <Picker
+                                            selectedValue={formData.address.cityName}
+                                            onValueChange={(value) => handleChange('cityName', value)}
+                                            style={styles.picker}
+                                            enabled={!!selectedStateId}
+                                        >
+                                            {cities.map((c) => (
+                                            <Picker.Item key={c.cityId} label={c.name} value={c.name} />
+                                            ))}
+                                        </Picker>
+
+                                    </View>
+
+                                </View>
+
+                            </View>
+                            
+                            {/* Bank Info */}
+                            <View style={styles.row}>
+
+                                <Field
+                                    label="Vehicle Number"
+                                    value={formData.vehicleNumber}
+                                    onChangeText={(text) => setFormData({ ...formData, vehicleNumber: text })}
+                                />
+
+                                <Field
+                                    label="Bank Name"
+                                    value={formData.bankName}
+                                    onChangeText={(text) => setFormData({ ...formData, bankName: text })}
+                                />
+
+                            </View>
+
+                            <View style={styles.row}>
+
+                                <Field
+                                    label="Account Holder Name"
+                                    value={formData.accountHolderName}
+                                    onChangeText={(text) => setFormData({ ...formData, accountHolderName: text })}
+                                />
+
+                                <Field
+                                    label="Bank Account Number"
+                                    value={formData.bankAccountNumber}
+                                    onChangeText={(text) => setFormData({ ...formData, bankAccountNumber: text })}
+                                />
+
+                            </View>
+
+                            <View style={styles.row}>
+
+                                <Field
+                                    label="IFSC Code"
+                                    value={formData.ifscCode}
+                                    onChangeText={(text) => setFormData({ ...formData, ifscCode: text })}
+                                />
+
+                                <View style={styles.field}>
+
+                                    <Text style={styles.label}>Aadhar Card</Text>
+
+                                    <TouchableOpacity
+                                        style={styles.uploadBtn}
+                                        onPress={() => pickFile('aadharCardPhoto')}
+                                    >
+                                        <Text style={styles.uploadText}>
+                                            Update Aadhar Card
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                </View>
+
+                            </View>
+
+                            <View style={styles.row}>
+
+                                <View style={styles.field}>
+
+                                    <Text style={styles.label}>Pan Card</Text>
+
+                                    <TouchableOpacity
+                                        style={styles.uploadBtn}
+                                        onPress={() => pickFile('panCardPhoto')}
+                                    >
+                                        <Text style={styles.uploadText}>
+                                            Update Pan Card
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                </View>
+
+                                <View style={styles.field}>
+
+                                    <Text style={styles.label}>Driving License</Text>
+
+                                    <TouchableOpacity
+                                        style={styles.uploadBtn}
+                                        onPress={() => pickFile('drivingLicensePhoto')}
+                                    >
+                                        <Text style={styles.uploadText}>
+                                            Update Driving License
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                </View>
+
+                            </View>
+
+                            <View style={styles.row}>
+
+                                 <View style={styles.field}>
+
+                                    <Text style={styles.label}>Profile Photo</Text>
+
+                                    <TouchableOpacity
+                                        style={styles.profilePhoto}
+                                        onPress={() => pickFile('profilePhoto')}
+                                    >
+                                        <Text style={styles.uploadText}>
+                                            Update Profile
+                                        </Text>
+                                    </TouchableOpacity>
+
+                                </View>
+
+                            </View>
+
+                            {/* Buttons */}
+                            <View style={styles.buttonRow}>
+
+                                <TouchableOpacity
+                                    style={styles.editBtn}
+                                    onPress={handleSave()}
+                                >
+                                    <Text style={styles.btnText}>SAVE</Text> 
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.resetBtn}
+                                    onPress={() => navigation.navigate('DeliveryAgentProfile')}
+                                >
+                                    <Text style={styles.btnText}>CANCEL</Text>
+                                </TouchableOpacity>
+                                
+                            </View>
 
                         </View>
 
-            
-
-            {/* Contact Info */}
-            <View className="agent-grid-row">
-                <View className="agent-field">
-                <Text>Phone</Text>
-                <TextInput style={styles.input} value={user.phoneNo} editable={false} />
-                </View>
-                <View className="agent-field">
-                <Text>Email</Text>
-                <TextInput style={styles.input} value={user.email} editable={false} />
-                </View>
-            </View>
-
-            {/* Address */}
-            <Text style={styles.subHeading}>Address</Text>
-            <View className="agent-field">
-                <TextInput
-                placeholder="Address Line"
-                style={styles.input}
-                value={formData.address.name}
-                onChangeText={(text) => handleChange('name', text)}
-                />
-                <TextInput
-                placeholder="Area"
-                style={styles.input}
-                value={formData.address.areaName}
-                onChangeText={(text) => handleChange('areaName', text)}
-                />
-                <Picker
-                selectedValue={selectedStateId}
-                onValueChange={(itemValue) => setSelectedStateId(itemValue)}
-                style={styles.input}
-                >
-                <Picker.Item label="Select State" value="" />
-                {states.map((s) => (
-                    <Picker.Item key={s.stateId} label={s.name} value={s.stateId} />
-                ))}
-                </Picker>
-                <Picker
-                selectedValue={formData.address.cityName}
-                onValueChange={(value) => handleChange('cityName', value)}
-                style={styles.input}
-                enabled={!!selectedStateId}
-                >
-                {cities.map((c) => (
-                    <Picker.Item key={c.cityId} label={c.name} value={c.name} />
-                ))}
-                </Picker>
-                <TextInput
-                placeholder="Pincode"
-                style={styles.input}
-                value={formData.address.pincode}
-                onChangeText={(text) => handleChange('pincode', text)}
-                keyboardType="numeric"
-                />
-            </View>
-
-            {/* Bank Info */}
-            <View className="agent-grid-row">
-                <View className="agent-field">
-                <Text>Vehicle Number</Text>
-                <TextInput
-                    style={styles.input}
-                    value={formData.vehicleNumber}
-                    onChangeText={(text) => handleChange('vehicleNumber', text)}
-                />
-                </View>
-                <View className="agent-field">
-                <Text>Bank Name</Text>
-                <TextInput
-                    style={styles.input}
-                    value={formData.bankName}
-                    onChangeText={(text) => handleChange('bankName', text)}
-                />
-                </View>
-            </View>
-
-            <View className="agent-grid-row">
-                <View className="agent-field">
-                <Text>Account Holder Name</Text>
-                <TextInput
-                    style={styles.input}
-                    value={formData.accountHolderName}
-                    onChangeText={(text) => handleChange('accountHolderName', text)}
-                />
-                </View>
-                <View className="agent-field">
-                <Text>Bank Account Number</Text>
-                <TextInput
-                    style={styles.input}
-                    value={formData.bankAccountNumber}
-                    onChangeText={(text) => handleChange('bankAccountNumber', text)}
-                />
-                </View>
-            </View>
-
-            <View className="agent-grid-row">
-                <View className="agent-field">
-                <Text>IFSC Code</Text>
-                <TextInput
-                    style={styles.input}
-                    value={formData.ifscCode}
-                    onChangeText={(text) => handleChange('ifscCode', text)}
-                />
-                </View>
-            </View>
-
-            {/* File Uploads */}
-            {['aadharCardPhoto', 'panCardPhoto', 'drivingLicensePhoto', 'profilePhoto'].map((field) => (
-                <TouchableOpacity key={field} style={styles.uploadBtn} onPress={() => pickFile(field)}>
-                <Text>Upload {field.replace(/([A-Z])/g, ' $1')}</Text>
-                </TouchableOpacity>
-            ))}
-
-            {/* Buttons */}
-            <View style={styles.buttonRow}>
-                <TouchableOpacity onPress={handleSave} style={styles.saveBtn}>
-                <Text style={styles.btnText}>SAVE</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.cancelBtn}>
-                <Text style={styles.btnText}>CANCEL</Text>
-                </TouchableOpacity>
-            </View>
-            </View>
                     </View>
 
                 </View>
@@ -337,62 +427,17 @@ const EditAgentProfile = () => {
 };
 
 const styles = StyleSheet.create({
-//   container: {
-//     padding: 20,
-//   },
-//   centered: {
-//     flex: 1,
-//     justifyContent: 'center',
-//   },
-//   heading: {
-//     fontSize: 22,
-//     fontWeight: 'bold',
-//     color: '#34D399',
-//     marginBottom: 20,
-//   },
-//   subHeading: {
-//     fontSize: 18,
-//     marginVertical: 10,
-//     fontWeight: '600',
-//   },
-//   input: {
-//     borderColor: '#ccc',
-//     borderWidth: 1,
-//     padding: 10,
-//     borderRadius: 8,
-//     marginBottom: 12,
-//   },
-//   uploadBtn: {
-//     padding: 10,
-//     backgroundColor: '#E0F2FE',
-//     marginVertical: 5,
-//     borderRadius: 6,
-//     alignItems: 'center',
-//   },
-//   buttonRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     marginTop: 20,
-//   },
-//   saveBtn: {
-//     backgroundColor: '#34D399',
-//     padding: 12,
-//     borderRadius: 8,
-//     width: '48%',
-//     alignItems: 'center',
-//   },
-//   cancelBtn: {
-//     backgroundColor: '#F87171',
-//     padding: 12,
-//     borderRadius: 8,
-//     width: '48%',
-//     alignItems: 'center',
-//   },
-//   btnText: {
-//     color: '#fff',
-//     fontWeight: 'bold',
-//   },
-container: {
+    card: {
+        backgroundColor: '#f0fdf4',
+        padding: 20,
+        borderColor: '#4ADE80',
+        borderWidth: 1,
+        borderRadius: 12,
+        width: screenWidth * 0.9, 
+        alignSelf: 'center', 
+        marginVertical: '25',
+    },
+  container: {
     padding: 20,
     backgroundColor: '#fff',
     paddingHorizontal: 16,
@@ -410,24 +455,21 @@ container: {
   },
   box: {
     backgroundColor: '#F0FDF4',
-    padding: 20,
-    borderRadius: 12,
-    borderColor: '#4ADE80',
-    borderWidth: 1,
-    gap: 15,
-    marginTop: 50,           
-    marginHorizontal: 20        
+    gap: 15,     
     },
 
   row: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   fullRow: {
     flexDirection: 'column',
   },
+  
+
   field: {
     flex: 1,
+    fontSize: '1px',
     backgroundColor: '#E8F5E9',
     padding: 10,
     borderRadius: 10,
@@ -438,17 +480,16 @@ container: {
   label: {
     color: '#388E3C',
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 10,
     marginBottom: 4,
   },
   value: {
     color: '#555',
-    fontSize: 16,
+    fontSize: 13,
   },
   link: {
-    fontSize: 16,
+    fontSize: 13,
     color: '#2563EB',
-    textDecorationLine: 'underline',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -457,22 +498,52 @@ container: {
   },
   editBtn: {
     backgroundColor: '#34D399',
-    padding: 12,
+    padding: 10,
     borderRadius: 8,
     width: '48%',
     alignItems: 'center',
+    justifyContent: 'center'
   },
   resetBtn: {
     backgroundColor: '#F87171',
-    padding: 12,
+    padding: 5,
     borderRadius: 8,
     width: '48%',
-    alignItems: 'center',
+    alignItems: 'center', 
+  justifyContent: 'center', 
   },
   btnText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center'
   },
+  uploadBtn: {
+  flex: 1,
+  backgroundColor: '#E8F5E9',
+  padding: 10,
+  borderRadius: 10,
+  borderColor: '#ccc',
+  borderWidth: 1,
+  justifyContent: 'center',
+  marginBottom: 10,
+},
+pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 10,
+   
+},
+
+picker: {
+  height: 50,
+  color: '#000',
+},
+uploadText: {
+  color: '#2563EB',
+  fontSize: 13,
+},
+
 });
 
 export default EditAgentProfile;

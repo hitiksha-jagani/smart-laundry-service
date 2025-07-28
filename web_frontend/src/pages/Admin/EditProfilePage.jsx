@@ -234,6 +234,8 @@ const EditProfilePage = () => {
                                 disabled={!selectedStateId}
                             >
 
+                                <option value="">Select City</option>
+
                                 {cities.map((city, index) => {
 
                                     if (!city.cityId) {

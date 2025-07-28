@@ -58,8 +58,10 @@ import PendingDeliveries from './screens/DeliveryAgent/PendingDeliveries';
 import TodayDeliveries from './screens/DeliveryAgent/TodayDeliveries';
 import UpdateStatus from './screens/DeliveryAgent/UpdateStatus';
 import AvailabilityScreen from './screens/DeliveryAgent/Availability';
+import DeliveryAgentPayout from './screens/DeliveryAgent/DeliveryAgentPayout';
 import DeliveryAgentProfile from './screens/DeliveryAgent/DeliveryAgentProfile';
 import EditAgentProfile from './screens/DeliveryAgent/EditAgentProfilePage';
+import ChangeAgentPasswordPage from './screens/DeliveryAgent/ChangeAgentPasswordPage';
 
 const Stack = createNativeStackNavigator(); 
 const Drawer = createDrawerNavigator();
@@ -126,8 +128,10 @@ const linking = {
       TodayDeliveries: '/deliveries/today',
       UpdateStatus: '/update-status',
       AvailabilityScreen: '/availability/manage',
+      DeliveryAgentPayout: '/payouts/summary',
       DeliveryAgentProfile: '/profile/detail',
       EditAgentProfile: '/profile/detail/edit',
+      ChangeAgentPasswordPage: '/profile/detail/change-password',
 
       NotAvailable: '/not-available',
       NotFound: '*',
@@ -284,13 +288,20 @@ export default function App() {
             )}
           </Stack.Screen>
 
-          
-
-            {/* Availability Page */}
+          {/* Availability Page */}
           <Stack.Screen name="AvailabilityScreen">
             {() => (
               <DrawerProvider>
                 <AvailabilityScreen />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+
+          {/* Payout Page */}
+          <Stack.Screen name="DeliveryAgentPayout">
+            {() => (
+              <DrawerProvider>
+                <DeliveryAgentPayout />
               </DrawerProvider>
             )}
           </Stack.Screen>
@@ -307,6 +318,13 @@ export default function App() {
             {() => (
               <DrawerProvider>
                 <EditAgentProfile />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="ChangeAgentPasswordPage">
+            {() => (
+              <DrawerProvider>
+                <ChangeAgentPasswordPage />
               </DrawerProvider>
             )}
           </Stack.Screen>

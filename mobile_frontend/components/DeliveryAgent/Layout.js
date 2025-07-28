@@ -58,9 +58,8 @@ const Layout = ({ children }) => {
         onBackPress={() => navigation.goBack()}/>
 
       <ScrollView
-        // style={{ flex: 1  }}
         style={deliveryAgentStyles.deliveryAgentBody}
-        contentContainerStyle={{ paddingTop: 60 }}
+        contentContainerStyle={styles.scrollContent}
         showsHorizontalScrollIndicator={false}
       >
         {children}
@@ -83,7 +82,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-    paddingTop: 60,
-    flexGrow: 1,
-  },
+  paddingTop: 80, // 👈 adjust this value for spacing from header
+  paddingHorizontal: 16, // optional horizontal padding
+  paddingBottom: 16, // optional bottom padding
+},
+
 });

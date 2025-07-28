@@ -1,6 +1,5 @@
 // PendingDeliveryCard.js
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native';
 import {
     View,
     Text,
@@ -8,9 +7,12 @@ import {
     TouchableOpacity,
     ScrollView,
     Linking,
+    Dimensions
 } from 'react-native';
 import axios from 'axios';
 import { FontAwesome5 } from '@expo/vector-icons';
+
+const screenWidth = Dimensions.get('window').width;
 
 const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
     const [agentLocation, setAgentLocation] = useState(null);
@@ -184,8 +186,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0fdf4',
         padding: 20,
         borderRadius: 12,
-        width: '98%',
-        marginTop: '15',
+        width: screenWidth * 0.9, 
+        alignSelf: 'center', 
+        marginTop: 15,
     },
 
     title: {
