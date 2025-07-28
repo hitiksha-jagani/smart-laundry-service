@@ -40,7 +40,7 @@ public class Bill implements Serializable {
     private String invoiceNumber;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id", nullable = false)
     @Schema(description = "The order associated with this bill.")
     private Order order;

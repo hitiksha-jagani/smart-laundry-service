@@ -41,7 +41,7 @@ public class UserAddress {
     private String areaName;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "city_id", nullable = false)
     @Schema(description = "City id of the address", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private City city;

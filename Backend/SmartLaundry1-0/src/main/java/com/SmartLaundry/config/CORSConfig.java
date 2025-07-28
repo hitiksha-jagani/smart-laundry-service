@@ -11,12 +11,13 @@ public class CORSConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // allow all endpoints
-                        .allowedOrigins("http://localhost:3000","http://localhost:8081") // frontend origin
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
+                registry.addMapping("/**") // apply to all routes
+                        .allowedOrigins("http://localhost:3000", "http://localhost:8081") // allow React dev and maybe another client
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // explicitly allow all REST methods
+                        .allowedHeaders("*") // allow all headers
+                        .allowCredentials(true); // allow cookies/auth headers
             }
         };
     }
 }
+

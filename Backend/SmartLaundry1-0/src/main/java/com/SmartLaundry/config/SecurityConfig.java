@@ -57,13 +57,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers("/setup-admin","/actuator/health","/register", "/states", "/login","/images/**","/emailotp",
-                                        "/verify-otp", "/profile/exist/**", "/image/agent/**", "/image/provider/**", "/sp/complete-sp-profile/**",
+                                        "/verify-otp","/resend-otp", "/profile/exist/**", "/image/agent/**", "/image/provider/**", "/sp/complete-sp-profile/**",
                                         "/otp/**", "/publish/**" , "/customer/serviceProviders/**",
                                         "/customer/serviceProviders/nearby/**" , "/customer/loadGeoData/**",
                                         "/customer/location/resolve-pin","/service-provider/**" , "/cache/**" ,
                                         "/schedule-plans/**", "/orders/**","/provider/orders/**","/users/**",
                                         "/sp/**","/paypal/**","/ticket/**","/faqs/**","/testing/**","/cities/**",
-                                        "/roles/**","/items/**","/subservices/**","/services/**","/payments/**","/provider/**","/payment/**")
+                                        "/roles/**","/items/**","/subservices/**","/services/**","/api/payments/**","/provider/**","/payment/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )

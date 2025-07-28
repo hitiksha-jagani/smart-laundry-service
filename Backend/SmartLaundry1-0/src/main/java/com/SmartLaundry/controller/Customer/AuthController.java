@@ -110,6 +110,50 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/resend-otp")
+    public ResponseEntity<String> resendOtp(@RequestParam String username) {
+        String normalizedKey;
+        Optional<Users> userOpt;
+
+        // Normalize username
+        if (username.contains("@")) {
+            normalizedKey = username.toLowerCase();
+            userOpt = userRepository.findByEmail(normalizedKey);
+        } else {
+            String digitsOnly = username.replaceAll("\\D", "");
+            if (digitsOnly.length() > 10) {
+                digitsOnly = digitsOnly.substring(digitsOnly.length() - 10);
+            }
+            normalizedKey = "+91" + digitsOnly;
+            userOpt = userRepository.findByPhoneNo(digitsOnly);
+        }
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        // Check cooldown before resending
+        if (otpService.isInCooldown(normalizedKey)) {
+            long remaining = otpService.remainingCooldownMillis(normalizedKey) / 1000;
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body("Please wait " + remaining + " seconds before requesting another OTP.");
+        }
+
+        Users user = userOpt.get();
+
+        // Generate new OTP
+        String otp = otpService.generateOtp(normalizedKey);
+
+        // Send OTP
+        if (normalizedKey.contains("@")) {
+            emailService.sendOtp(user.getEmail(), otp);
+            return ResponseEntity.ok("OTP resent to your email.");
+        } else {
+            smsService.sendOtp(user.getPhoneNo(), otp);
+            return ResponseEntity.ok("OTP resent to your phone number.");
+        }
+    }
+
 
 }
 

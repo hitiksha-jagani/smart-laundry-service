@@ -66,7 +66,7 @@ public class ServiceProviderProfileService {
         this.emailService = emailService;
         this.smsService = smsService;
     }
-
+    @Transactional
     public ServiceProviderProfileDTO getServiceProviderProfileDetail(String userId) {
 
         Users user = userRepository.findById(userId)
