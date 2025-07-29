@@ -105,13 +105,11 @@ public class SettingService {
     public String getCurrentProvider() {
         GeocodingConfig geocodingConfig = configRepository. findByActiveStatus(true);
         return geocodingConfig.getApiProvider();
-//        return getLatestConfig().map(GeocodingConfig::getApiProvider).orElse("Open Cage");
     }
 
     public String getCurrentApiKey() {
         GeocodingConfig geocodingConfig = configRepository. findByActiveStatus(true);
         return geocodingConfig.getApiKey();
-//        return getLatestConfig().map(GeocodingConfig::getApiKey).orElse("");
     }
 
     // Set complaint category

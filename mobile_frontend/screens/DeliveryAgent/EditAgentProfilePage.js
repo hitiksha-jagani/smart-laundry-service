@@ -427,6 +427,7 @@ const EditAgentProfile = () => {
 };
 
 const styles = StyleSheet.create({
+    
     card: {
         backgroundColor: '#f0fdf4',
         padding: 20,
@@ -437,112 +438,127 @@ const styles = StyleSheet.create({
         alignSelf: 'center', 
         marginVertical: '25',
     },
-  container: {
-    padding: 20,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#388E3C',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  box: {
-    backgroundColor: '#F0FDF4',
-    gap: 15,     
+
+    container: {
+        padding: 20,
+        backgroundColor: '#fff',
+        paddingHorizontal: 16,
     },
 
-  row: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  fullRow: {
-    flexDirection: 'column',
-  },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+
+    heading: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#388E3C',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+
+    box: {
+        backgroundColor: '#F0FDF4',
+        gap: 15,     
+    },
+
+    row: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    
+    fullRow: {
+        flexDirection: 'column',
+    },
   
 
-  field: {
-    flex: 1,
-    fontSize: '1px',
-    backgroundColor: '#E8F5E9',
-    padding: 10,
-    borderRadius: 10,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-  },
-  label: {
-    color: '#388E3C',
-    fontWeight: '600',
-    fontSize: 10,
-    marginBottom: 4,
-  },
-  value: {
-    color: '#555',
-    fontSize: 13,
-  },
-  link: {
-    fontSize: 13,
-    color: '#2563EB',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 15,
-  },
-  editBtn: {
-    backgroundColor: '#34D399',
-    padding: 10,
-    borderRadius: 8,
-    width: '48%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  resetBtn: {
-    backgroundColor: '#F87171',
-    padding: 5,
-    borderRadius: 8,
-    width: '48%',
-    alignItems: 'center', 
-  justifyContent: 'center', 
-  },
-  btnText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  uploadBtn: {
-  flex: 1,
-  backgroundColor: '#E8F5E9',
-  padding: 10,
-  borderRadius: 10,
-  borderColor: '#ccc',
-  borderWidth: 1,
-  justifyContent: 'center',
-  marginBottom: 10,
-},
-pickerWrapper: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 10,
-   
-},
+    field: {
+        flex: 1,
+        fontSize: '1px',
+        backgroundColor: '#E8F5E9',
+        padding: 10,
+        borderRadius: 10,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        marginBottom: 10,
+    },
+    
+    label: {
+        color: '#388E3C',
+        fontWeight: '600',
+        fontSize: 10,
+        marginBottom: 4,
+    },
 
-picker: {
-  height: 50,
-  color: '#000',
-},
-uploadText: {
-  color: '#2563EB',
-  fontSize: 13,
-},
+    value: {
+        color: '#555',
+        fontSize: 13,
+    },
+
+    link: {
+        fontSize: 13,
+        color: '#2563EB',
+    },
+
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 15,
+    },
+
+    editBtn: {
+        backgroundColor: '#34D399',
+        padding: 10,
+        borderRadius: 8,
+        width: '48%',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
+    resetBtn: {
+        backgroundColor: '#F87171',
+        padding: 5,
+        borderRadius: 8,
+        width: '48%',
+        alignItems: 'center', 
+        justifyContent: 'center', 
+    },
+
+    btnText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+
+    uploadBtn: {
+        flex: 1,
+        backgroundColor: '#E8F5E9',
+        padding: 10,
+        borderRadius: 10,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+
+    pickerWrapper: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        marginBottom: 10,
+    
+    },
+
+    picker: {
+        height: 50,
+        color: '#000',
+    },
+
+    uploadText: {
+        color: '#2563EB',
+        fontSize: 13,
+    },
 
 });
 

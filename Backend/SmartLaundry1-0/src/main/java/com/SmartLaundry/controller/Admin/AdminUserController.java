@@ -157,7 +157,7 @@ public class AdminUserController {
         String adminId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(adminId);
         roleCheckingService.isAdmin(user);
-        adminUserService.deleteServiceProvider(user, providerId);
+        adminUserService.deleteServiceProvider(providerId);
         return ResponseEntity.ok("Service provider deleted successfully");
     }
 
@@ -222,7 +222,7 @@ public class AdminUserController {
         String adminId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(adminId);
         roleCheckingService.isAdmin(user);
-        adminUserService.deleteDeliveryAgent(user, agentId);
+        adminUserService.deleteDeliveryAgent(agentId);
         return ResponseEntity.ok("Delivery agent deleted successfully");
     }
 

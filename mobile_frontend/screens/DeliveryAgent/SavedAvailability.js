@@ -13,7 +13,6 @@ import {
   TextInput,
   Switch,
 } from 'react-native';
-// import Toast from 'react-native-toast-message';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const SavedAvailability = ({ availabilities }) => {

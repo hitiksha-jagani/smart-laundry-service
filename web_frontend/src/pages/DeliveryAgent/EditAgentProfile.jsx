@@ -100,8 +100,8 @@ const EditAgentProfilePage = () => {
         setSelectedStateId(stateId);
         setFormData(prev => ({
             ...prev,
-            addresses: {
-            ...prev.addresses,
+            address: {
+            ...prev.address,
             cityName: ''
             }
         }));
@@ -113,8 +113,8 @@ const EditAgentProfilePage = () => {
         if (['name', 'areaName', 'cityName', 'pincode'].includes(name)) {
             setFormData(prev => ({
                 ...prev,
-                addresses: {
-                    ...prev.addresses,
+                address: {
+                    ...prev.address,
                     [name]: value
                 }
             }));
@@ -245,6 +245,8 @@ const EditAgentProfilePage = () => {
                                 className="agent-input-field"
                                 disabled={!selectedStateId}
                             >
+
+                                <option value="">Select City</option>
 
                                 {cities.map((city, index) => {
 

@@ -73,7 +73,6 @@ export default Layout;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#f5f5f5',
     overflow: 'hidden', 
   },
   loading: {
@@ -82,9 +81,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-  paddingTop: 80, // 👈 adjust this value for spacing from header
-  paddingHorizontal: 16, // optional horizontal padding
-  paddingBottom: 16, // optional bottom padding
-},
+    paddingTop: 80, 
+    paddingHorizontal: 16, 
+    paddingBottom: 16, 
+  },
 
 });

@@ -103,8 +103,13 @@ public class GeoUtils {
         JsonNode root = mapper.readTree(response.getBody());
         JsonNode locationNode = root.at(jsonPath);
 
+        if (locationNode == null || locationNode.isMissingNode()) {
+            logger.error("Missing location node in response at path: {}", jsonPath);
+            return new double[]{0.0, 0.0};
+        }
+
         if (!locationNode.has("lat") || !locationNode.has("lng")) {
-            logger.error("Missing lat/lng in response for: {}", url);
+            logger.error("Missing lat/lng in node: {}", locationNode.toString());
             return new double[]{0.0, 0.0};
         }
 

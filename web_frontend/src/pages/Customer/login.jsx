@@ -115,8 +115,13 @@ const Login = () => {
   login(data.jwtToken, data.role, userId); 
 
   try {
-    const agentRes = await fetch(`http://localhost:8080/profile/exist/${userId}`);
+    const headers = {
+      Authorization: `Bearer ${data.jwtToken}`,
+    };
 
+    const agentRes = await fetch(`http://localhost:8080/profile/exist/${userId}`, {
+      headers,
+    });
 
     if (!agentRes.ok) {
       throw new Error("Failed to check agent existence.");
@@ -124,16 +129,36 @@ const Login = () => {
 
     const exists = await agentRes.json();
 
-    if (exists) {
-      navigate("/deliveries/summary");
-    } else {
+    if (!exists) {
       navigate("/profile/complete");
+      return;
+    }
+
+    const res = await fetch(`http://localhost:8080/profile/status/${userId}`, {
+      headers,
+    });
+
+    if (!res.ok) {
+      throw new Error("Unable to fetch status.");
+    }
+
+    const status = (await res.text()).trim();
+    console.log("Received status:", status);
+
+    if (status === "ACCEPTED") {
+      navigate("/deliveries/summary");
+    } else if (status === "PENDING") {
+      navigate("/delivery-agent/pending");
+    } else {
+      console.warn("Unknown status:", status);
+      setError("Invalid delivery agent status.");
     }
   } catch (err) {
-    console.error("Error checking delivery agent existence:", err);
+    console.error("Error checking delivery agent existence or status:", err);
     setError("Unable to verify agent profile. Try again.");
   }
 }
+
  else {
         login(data.jwtToken, data.role, userId);
         switch (data.role) {
