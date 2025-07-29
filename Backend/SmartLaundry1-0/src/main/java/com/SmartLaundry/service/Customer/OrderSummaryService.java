@@ -5,6 +5,7 @@ import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.BillRepository;
 import com.SmartLaundry.repository.OrderRepository;
 import com.SmartLaundry.repository.PriceRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class OrderSummaryService {
     private final PromotionEvaluatorService promotionEvaluatorService;
     private final PriceRepository priceRepository;
 
+    @Transactional
     public OrderSummaryDto generateOrderSummary(String orderId, Promotion promo) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -47,7 +49,7 @@ public class OrderSummaryService {
         boolean updated = false;
         String promoMessage = "";
 
-        // ✅ Validate and apply promotion (if provided or already applied)
+        // ✅ Validate and apply promotion
         if (promo != null) {
             BigDecimal totalBeforeDiscount = BigDecimal.valueOf(itemsTotal + gstAmount + deliveryCharge);
 
@@ -66,7 +68,7 @@ public class OrderSummaryService {
                     orderRepository.save(order);
                 }
 
-                // ✅ Always recalculate discount to ensure it's saved
+                // ✅ Always recalculate discount
                 discount = promotionEvaluatorService.calculateDiscount(promo, totalBeforeDiscount).doubleValue();
                 bill.setDiscountAmount(discount);
                 bill.setFinalPrice(itemsTotal + gstAmount + deliveryCharge - discount);
@@ -77,7 +79,7 @@ public class OrderSummaryService {
             }
         }
 
-        // ✅ Ensure totals are saved even without promo
+        // ✅ Ensure totals are saved
         if (bill.getItemsTotalPrice() == null || bill.getItemsTotalPrice() == 0.0) {
             bill.setItemsTotalPrice(itemsTotal);
             updated = true;
@@ -127,6 +129,7 @@ public class OrderSummaryService {
             }
         }
 
+        // ✅ Return DTO with orderStatus included
         return OrderSummaryDto.builder()
                 .orderId(orderId)
                 .serviceName(serviceName)
@@ -140,11 +143,11 @@ public class OrderSummaryService {
                 .isPromotionApplied(order.getPromotion() != null)
                 .promotionMessage(promoMessage)
                 .appliedPromoCode(order.getPromotion() != null ? order.getPromotion().getPromoCode() : null)
-                .status(bill.getStatus())
+                .status(bill.getStatus()) // BillStatus (e.g., PAID, UNPAID)
+                .orderStatus(order.getStatus()) // ✅ New field (OrderStatus)
                 .invoiceNumber(bill.getInvoiceNumber())
                 .build();
     }
-
 
     private List<BookingItem> copyBookingItems(List<BookingItem> originalItems, Bill bill, Order order) {
         return originalItems.stream().map(original -> {
@@ -157,6 +160,8 @@ public class OrderSummaryService {
             return copy;
         }).toList();
     }
+
+    @Transactional
     public void markBillAsPaid(String orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -165,7 +170,7 @@ public class OrderSummaryService {
         if (bill == null) {
             throw new RuntimeException("No bill found for order: " + orderId);
         }
-
+       
         Payment payment = bill.getPayment();
         if (payment == null || payment.getStatus() != PaymentStatus.PAID) {
             throw new IllegalStateException("Payment is not completed yet for order: " + orderId);

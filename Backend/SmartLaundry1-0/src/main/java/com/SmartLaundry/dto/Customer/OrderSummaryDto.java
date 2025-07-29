@@ -35,6 +35,7 @@ public class OrderSummaryDto {
     private BillStatus status;
     private String appliedPromoCode;
     private String invoiceNumber;
+    private OrderStatus orderStatus;
 
     @Data
     @AllArgsConstructor

@@ -25,8 +25,14 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     Optional<ServiceProvider> getByUser(Users user);
 
     ServiceProvider findByUser(Users user);
-    @Query("SELECT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.user u LEFT JOIN FETCH u.address WHERE sp.serviceProviderId = :id")
-    Optional<ServiceProvider> findByIdWithUserAddress(@Param("id") String serviceProviderId);
+//    @Query("SELECT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.user u LEFT JOIN FETCH u.address WHERE sp.serviceProviderId = :id")
+//    Optional<ServiceProvider> findByIdWithUserAddress(@Param("id") String serviceProviderId);
+@Query("SELECT sp FROM ServiceProvider sp " +
+        "JOIN FETCH sp.user u " +
+        "JOIN FETCH u.address a " +
+        "JOIN FETCH a.city " +
+        "WHERE sp.serviceProviderId = :id")
+Optional<ServiceProvider> findByIdWithUserAddress(@Param("id") String id);
 
 //    @Query("SELECT DISTINCT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.user u LEFT JOIN FETCH u.address")
 //    List<ServiceProvider> findAllWithUserAddresses();
@@ -58,6 +64,10 @@ public interface ServiceProviderRepository extends JpaRepository<ServiceProvider
     WHERE sp.serviceProviderId = :id
 """)
 Optional<ServiceProvider> findByIdWithPricesAndUserAddress(@Param("id") String id);
+    Optional<ServiceProvider> findByUser_UserId(String userId);
+
+    Optional<ServiceProvider> findById(String id);
+
 
     @Query("SELECT sp FROM ServiceProvider sp LEFT JOIN FETCH sp.prices WHERE sp.serviceProviderId = :id")
     Optional<ServiceProvider> findByIdWithPrices(@Param("id") String id);

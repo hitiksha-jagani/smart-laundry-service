@@ -59,7 +59,7 @@ public class ServiceProviderService {
 //        ServiceProvider sp = spOpt.orElseThrow(() -> new RuntimeException("Service provider not found with id: " + serviceProviderId));
 //        return convertToCustomerDTO(sp);
 //    }
-
+@Transactional(readOnly = true)
     public CustomerServiceProviderDTO getServiceProviderById(String serviceProviderId) {
         try {
             System.out.println("Fetching provider with ID: " + serviceProviderId);
@@ -119,8 +119,15 @@ public class ServiceProviderService {
         // Build PriceDTO list with full item info
         List<PriceDTO> priceDTOs = sp.getPrices().stream()
                 .filter(p -> p.getItem() != null)
+//                .map(price -> {
+//                    Items item = price.getItem();
                 .map(price -> {
                     Items item = price.getItem();
+                    if (item == null) {
+                        System.out.println("❌ Null item found for price ID: " + price.getPriceId());
+                        return null; // skip this item safely
+                    }
+
                     return PriceDTO.builder()
                             .price(price.getPrice())
                             .item(PriceDTO.ItemDTO.builder()

@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { StatusBar } from 'react-native';
 import { AuthProvider } from './context/AuthContext';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
@@ -209,7 +209,7 @@ export default function App() {
     <AuthProvider>
       <NavigationContainer linking={linking} fallback={<NotFoundScreen />}>
         <Stack.Navigator initialRouteName="AutoRedirect" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="AutoRedirect" component={AutoRedirectScreen} />
+          <Stack.Screen name="AutoRedirect" component={AutoRedirect} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
 
