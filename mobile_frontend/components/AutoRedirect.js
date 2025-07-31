@@ -31,13 +31,7 @@ export default function AutoRedirect() {
         case "DELIVERY_AGENT":
           navigation.reset({
             index: 0,
-            routes: [{ name: "DeliveryStack" }],
-          });
-          break;
-        case "ADMIN":
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "AdminStack" }],
+            routes: [{ name: "DeliveryPage" }],
           });
           break;
         default:

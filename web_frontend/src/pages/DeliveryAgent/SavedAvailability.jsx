@@ -15,7 +15,6 @@ const SavedAvailability = ({ availabilities }) => {
     const [submitting, setSubmitting] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editData, setEditData] = useState(null);
-    const [id, setId] = useState(null);
 
     const [toast, setToast] = useState({ message: '', type: '', visible: false });
             

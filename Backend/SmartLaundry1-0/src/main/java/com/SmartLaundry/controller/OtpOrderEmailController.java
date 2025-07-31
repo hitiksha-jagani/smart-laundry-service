@@ -47,7 +47,7 @@ public class OtpOrderEmailController {
 
 
 
-//    @PostMapping("/verify-pickup")
+    //    @PostMapping("/verify-pickup")
 //    public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request, HttpServletRequest token) {
 //        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
 //        Users user = roleCheckingService.checkUser(userId);
@@ -73,35 +73,35 @@ public class OtpOrderEmailController {
 //        private String orderId;
 //        private String otp;
 //    }
-@PostMapping("/verify-pickup")
-public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request, HttpServletRequest token) {
-    String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
-    Users user = roleCheckingService.checkUser(userId);
+    @PostMapping("/verify-pickup")
+    public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request, HttpServletRequest token) {
+        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
+        Users user = roleCheckingService.checkUser(userId);
 
-    String roleId = null;
-    UserRole role = user.getRole();
+        String roleId = null;
+        UserRole role = user.getRole();
 
-    if (role == UserRole.DELIVERY_AGENT) {
-        DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Delivery agent not found"));
-        roleId = agent.getDeliveryAgentId();
-    } else if (role == UserRole.SERVICE_PROVIDER) {
-        ServiceProvider provider = serviceProviderRepository.findByUser_UserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("Service provider not found for user ID: " + userId));
+        if (role == UserRole.DELIVERY_AGENT) {
+            DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("Delivery agent not found"));
+            roleId = agent.getDeliveryAgentId();
+        } else if (role == UserRole.SERVICE_PROVIDER) {
+            ServiceProvider provider = serviceProviderRepository.findByUser_UserId(userId)
+                    .orElseThrow(() -> new UsernameNotFoundException("Service provider not found for user ID: " + userId));
 
-        roleId = provider.getProviderId();
-    } else {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only delivery agents or service providers can verify pickup OTP.");
+            roleId = provider.getProviderId();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only delivery agents or service providers can verify pickup OTP.");
+        }
+
+        try {
+            otpOrderEmailTransitionService.verifyPickupOtp(request.getOrderId(), request.getOtp(), roleId, role);
+            return ResponseEntity.ok("Pickup OTP verified successfully.");
+        } catch (Exception e) {
+            log.error("❗ Error verifying pickup OTP: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body("Error verifying pickup OTP.");
+        }
     }
-
-    try {
-        otpOrderEmailTransitionService.verifyPickupOtp(request.getOrderId(), request.getOtp(), roleId, role);
-        return ResponseEntity.ok("Pickup OTP verified successfully.");
-    } catch (Exception e) {
-        log.error("❗ Error verifying pickup OTP: {}", e.getMessage(), e);
-        return ResponseEntity.internalServerError().body("Error verifying pickup OTP.");
-    }
-}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Data

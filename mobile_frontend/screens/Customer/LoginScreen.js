@@ -172,7 +172,7 @@ export default function LoginScreen() {
             if (exists) {
               navigation.navigate("DeliveryPage");
             } else {
-              navigation.navigate("AgentCompleteProfile");
+              navigation.navigate("DeliveryAgentCompleteProfile");
             }
           } catch (err) {
             console.error("Delivery agent error:", err);

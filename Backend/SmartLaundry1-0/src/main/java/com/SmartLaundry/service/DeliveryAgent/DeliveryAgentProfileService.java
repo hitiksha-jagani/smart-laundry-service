@@ -114,12 +114,14 @@ public class DeliveryAgentProfileService {
     }
 
     // Register delivery agent.
-    @Transactional
+//    @Transactional
     public String completeProfile(String userId, DeliveryAgentCompleteProfileRequestDTO data, MultipartFile aadharCard, MultipartFile panCard, MultipartFile drivingLicense, MultipartFile profilePhoto) throws IOException {
 
         // Role and user check
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        System.out.println("User found : " + user.getUserId());
 
         // Check whether delivery agent already has pending approval
         DeliveryAgent agent = deliveryAgentRepository.findByUsers(user).orElse(null);
@@ -171,9 +173,10 @@ public class DeliveryAgentProfileService {
         String subject = "Delivery Agent Profile Submission";
 
 
-        smsService.sendSms(phone, message);
+//        smsService.sendSms(phone, message);
         emailService.sendMail(email, subject, message);
 
+        System.out.println("Your request is sent successfully. Wait for a response.");
         return "Your request is sent successfully. Wait for a response.";
     }
 
@@ -239,60 +242,70 @@ public class DeliveryAgentProfileService {
             throw new ForbiddenAccessException("You are not applicable for this page.");
         }
 
-        user = Users.builder()
-                .firstName(deliveryAgentProfileDTO.getFirstName())
-                .lastName(deliveryAgentProfileDTO.getLastName())
-                .build();
+        // Update basic user info
+        if (deliveryAgentProfileDTO.getFirstName() != null) {
+            user.setFirstName(deliveryAgentProfileDTO.getFirstName());
+        }
+        if (deliveryAgentProfileDTO.getLastName() != null) {
+            user.setLastName(deliveryAgentProfileDTO.getLastName());
+        }
 
         userRepository.save(user);
 
-        UserAddress userAddress = userAddressRepository.findByUsers(user);
-        City city = cityRepository.findByCityName(deliveryAgentProfileDTO.getAddress().getCityName())
-                .orElseThrow(() -> new RuntimeException("City is not available."));
+        // Update address only if provided
+        if (deliveryAgentProfileDTO.getAddress() != null) {
+            UserAddress userAddress = userAddressRepository.findByUsers(user);
+            DeliveryAgentProfileDTO.AddressDTO address = deliveryAgentProfileDTO.getAddress();
 
-        userAddress = UserAddress.builder()
-                .name(deliveryAgentProfileDTO.getAddress().getName())
-                .areaName(deliveryAgentProfileDTO.getAddress().getAreaName())
-                .pincode(deliveryAgentProfileDTO.getAddress().getPincode())
-                .city(city)
-                .build();
+            if (address.getName() != null) {
+                userAddress.setName(address.getName());
+            }
+            if (address.getAreaName() != null) {
+                userAddress.setAreaName(address.getAreaName());
+            }
+            if (address.getPincode() != null) {
+                userAddress.setPincode(address.getPincode());
+            }
+            if (address.getCityName() != null) {
+                City city = cityRepository.findByCityName(address.getCityName())
+                        .orElseThrow(() -> new RuntimeException("City is not available."));
+                userAddress.setCity(city);
 
-        // Build full address string for geocoding
-        String fullAddress = String.format("%s, %s, %s, %s",
-                deliveryAgentProfileDTO.getAddress().getName(),
-                deliveryAgentProfileDTO.getAddress().getAreaName(),
-                city.getCityName(),
-                deliveryAgentProfileDTO.getAddress().getPincode());
+                // Build full address and geocode only if city is changed
+                String fullAddress = String.format("%s, %s, %s, %s",
+                        address.getName() != null ? address.getName() : userAddress.getName(),
+                        address.getAreaName() != null ? address.getAreaName() : userAddress.getAreaName(),
+                        city.getCityName(),
+                        address.getPincode() != null ? address.getPincode() : userAddress.getPincode());
 
-        // Call utility to get coordinates
-        double[] latLng = geoUtils.getLatLng(fullAddress);
+                double[] latLng = geoUtils.getLatLng(fullAddress);
+                if (latLng[0] != 0.0 || latLng[1] != 0.0) {
+                    userAddress.setLatitude(latLng[0]);
+                    userAddress.setLongitude(latLng[1]);
+                } else {
+                    System.out.println("⚠ Warning: Coordinates could not be determined.");
+                }
+            }
 
-        // Set latitude & longitude if found
-        if (latLng[0] != 0.0 || latLng[1] != 0.0) {
-            userAddress.setLatitude(latLng[0]);
-            userAddress.setLongitude(latLng[1]);
-        } else {
-            System.out.println("⚠ Warning: Coordinates could not be determined.");
+            userAddressRepository.save(userAddress);
         }
 
-        userAddressRepository.save(userAddress);
+        // Update delivery agent only for provided fields
+        DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
+                .orElseThrow(() -> new RuntimeException("Delivery agent not found."));
 
-        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user).orElseThrow();
-        deliveryAgent = DeliveryAgent.builder()
-                .users(user)
-                .dateOfBirth(deliveryAgentProfileDTO.getDateOfBirth())
-                .vehicleNumber(deliveryAgentProfileDTO.getVehicleNumber())
-                .bankName(deliveryAgentProfileDTO.getBankName())
-                .accountHolderName(deliveryAgentProfileDTO.getAccountHolderName())
-                .ifscCode(deliveryAgentProfileDTO.getIfscCode())
-                .gender(deliveryAgentProfileDTO.getGender())
-                .aadharCardPhoto(deliveryAgentProfileDTO.getAadharCardPhoto())
-                .panCardPhoto(deliveryAgentProfileDTO.getPanCardPhoto())
-                .drivingLicensePhoto(deliveryAgentProfileDTO.getDrivingLicensePhoto())
-                .profilePhoto(deliveryAgentProfileDTO.getProfilePhoto())
-                .build();
+        if (deliveryAgentProfileDTO.getDateOfBirth() != null) agent.setDateOfBirth(deliveryAgentProfileDTO.getDateOfBirth());
+        if (deliveryAgentProfileDTO.getVehicleNumber() != null) agent.setVehicleNumber(deliveryAgentProfileDTO.getVehicleNumber());
+        if (deliveryAgentProfileDTO.getBankName() != null) agent.setBankName(deliveryAgentProfileDTO.getBankName());
+        if (deliveryAgentProfileDTO.getAccountHolderName() != null) agent.setAccountHolderName(deliveryAgentProfileDTO.getAccountHolderName());
+        if (deliveryAgentProfileDTO.getIfscCode() != null) agent.setIfscCode(deliveryAgentProfileDTO.getIfscCode());
+        if (deliveryAgentProfileDTO.getGender() != null) agent.setGender(deliveryAgentProfileDTO.getGender());
+        if (deliveryAgentProfileDTO.getAadharCardPhoto() != null) agent.setAadharCardPhoto(deliveryAgentProfileDTO.getAadharCardPhoto());
+        if (deliveryAgentProfileDTO.getPanCardPhoto() != null) agent.setPanCardPhoto(deliveryAgentProfileDTO.getPanCardPhoto());
+        if (deliveryAgentProfileDTO.getDrivingLicensePhoto() != null) agent.setDrivingLicensePhoto(deliveryAgentProfileDTO.getDrivingLicensePhoto());
+        if (deliveryAgentProfileDTO.getProfilePhoto() != null) agent.setProfilePhoto(deliveryAgentProfileDTO.getProfilePhoto());
 
-        deliveryAgentRepository.save(deliveryAgent);
+        deliveryAgentRepository.save(agent);
 
         return "Profile is edited successfully.";
     }

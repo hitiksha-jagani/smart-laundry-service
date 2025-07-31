@@ -75,13 +75,14 @@ export const deliveryAgentStyles = StyleSheet.create({
     },
 
     inputField: {
-        width: '100%',
-        padding: 8,
+        flex: 1,
+        backgroundColor: '#E8F5E9',
+        padding: 10,
         borderRadius: 10,
-        borderWidth: 1,
         borderColor: '#ccc',
-        fontSize: 14,
-        backgroundColor: '#F0FDF4',
+        borderWidth: 1,
+        justifyContent: 'center',
+        marginBottom: 10,
     },
 
     inputFieldFocus: {

@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers("/setup-admin","/actuator/health","/register", "/states", "/login","/images/**","/emailotp",
-                                        "/verify-otp","/resend-otp", "/profile/exist/**", "/image/agent/**", "/image/provider/**", "/sp/complete-sp-profile/**",
+                                        "/verify-otp", "/profile/exist/**", "/profile/status/**", "/image/agent/**", "/image/provider/**", "/sp/complete-sp-profile/**",
                                         "/otp/**", "/publish/**" , "/customer/serviceProviders/**",
                                         "/customer/serviceProviders/nearby/**" , "/customer/loadGeoData/**",
                                         "/customer/location/resolve-pin","/service-provider/**" , "/cache/**" ,

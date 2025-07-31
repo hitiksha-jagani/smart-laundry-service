@@ -4,6 +4,7 @@ import com.SmartLaundry.dto.ChangePasswordRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentProfileDTO;
 import com.SmartLaundry.model.DeliveryAgent;
+import com.SmartLaundry.model.Status;
 import com.SmartLaundry.model.Users;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserRepository;
@@ -67,6 +68,19 @@ public class DeliveryAgentProfileController {
         boolean exists = deliveryAgentRepository.existsByUsers_UserId(userId);
         return ResponseEntity.ok(exists);
     }
+
+    // @author Hitiksha Jagani
+    // http://localhost:8080/profile/status/{userId}
+    // Check status of delivery agent request.
+    @GetMapping("/status/{userId}")
+    public ResponseEntity<String> getAgentStatus(@PathVariable String userId) {
+        Users user = roleCheckingService.checkUser(userId);
+        DeliveryAgent deliveryAgent = roleCheckingService.checkDeliveryAgent(user);
+        System.out.println("Status : " + deliveryAgent.getStatus().name());
+
+        return ResponseEntity.ok(deliveryAgent.getStatus().name());
+    }
+
 
     // @author Hitiksha Jagani
     // http://localhost:8080/profile/complete

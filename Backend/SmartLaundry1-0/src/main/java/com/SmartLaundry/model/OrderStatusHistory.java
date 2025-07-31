@@ -1,5 +1,6 @@
 package com.SmartLaundry.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "order_status_history")
+@ToString(onlyExplicitlyIncluded = true)
 @Schema(description = "Represents an order status of the orders.")
 public class OrderStatusHistory {
 
@@ -24,15 +26,16 @@ public class OrderStatusHistory {
     @Schema(description = "Unique identifier for the order status.", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
-    @JsonManagedReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference
     @Schema(description = "Reference to the the order.")
     private Order order;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Schema(description = "Status of the order", example = "PLACED")
+    @JsonIgnore
     private OrderStatus status;
 
     @CreationTimestamp

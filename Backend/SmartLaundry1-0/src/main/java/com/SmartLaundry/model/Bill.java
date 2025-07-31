@@ -86,4 +86,3 @@ public class Bill implements Serializable {
     private Payment payment;
 
 }
-

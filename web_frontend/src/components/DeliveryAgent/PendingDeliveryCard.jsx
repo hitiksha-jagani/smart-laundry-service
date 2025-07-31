@@ -16,7 +16,7 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
         orderId, deliveryType, deliveryEarning, km,
         pickupDate, pickupTime, pickupName, pickupPhone, pickupAddress,
         deliveryName, deliveryPhone, deliveryAddress,
-        bookingItemDTOList, totalQuantity
+        bookingItemDTOList, totalQuantity 
     } = data;
 
     useEffect(() => {
@@ -44,20 +44,6 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
 
         const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
         window.open(url, '_blank');
-    };
-
-    const handleUpdateStatus = () => {
-        navigate('/delivery/update-status', {
-            state: {
-                orderId,
-                orderStatus: data.orderStatus,
-                deliveryEarning,
-                pickupDate,
-                pickupTime,
-                pickupAddress,
-                deliveryAddress,
-            },
-        });
     };
 
     return (
@@ -133,7 +119,6 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
             <div className="delivery-actions">
                 <button className="accept-btn" onClick={() => onAccept(orderId)}>Accept</button>
                 <button className="reject-btn" onClick={() => onReject(orderId)}>Reject</button>
-                <button className="route-btn agent-btn" style={{ width: '100%' }} onClick={handleUpdateStatus}>Update Status</button>
             </div>
         </div>
     );

@@ -8,11 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+import LocationTracker from './LocationTracker';
 
 const Layout = ({ children }) => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAvailable, setIsAvailable] = useState(false);
   const { token, userId } = useAuth();
 
   const navigation = useNavigation();
@@ -28,14 +30,17 @@ const Layout = ({ children }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const [userRes] = await Promise.all([
+        const [userRes, availabilitiesRes] = await Promise.all([
           axiosInstance.get(`/user-detail/${userId}`),
+          axiosInstance.get(`/availability/check-availability`),
         ]);
 
         setUser(userRes.data);
+        setIsAvailable(availabilitiesRes.data === true);
         
       } catch (err) {
         console.error('Invalid token or fetch failed:', err);
+        setIsAvailable(false); 
       } finally {
           setLoading(false); 
       }
@@ -64,6 +69,9 @@ const Layout = ({ children }) => {
       >
         {children}
       </ScrollView>
+
+      <LocationTracker isAvailable={isAvailable} />
+
     </View>
   );
 };
@@ -73,7 +81,6 @@ export default Layout;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#f5f5f5',
     overflow: 'hidden', 
   },
   loading: {
@@ -82,9 +89,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-  paddingTop: 80, // 👈 adjust this value for spacing from header
-  paddingHorizontal: 16, // optional horizontal padding
-  paddingBottom: 16, // optional bottom padding
-},
+    paddingTop: 80, 
+    paddingHorizontal: 16, 
+    paddingBottom: 16, 
+  },
 
 });

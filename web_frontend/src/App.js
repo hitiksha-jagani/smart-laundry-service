@@ -41,6 +41,7 @@ import OtpVerificationOrders from "./pages/ServiceProvider/OtpVerificationOrders
 import NotAvailablePage from "./pages/NotAvailablePage";
 
 // Delivery Agent
+import RequestPendingPage from './components/DeliveryAgent/RequestPendingPage';
 // Delivery Page
 import DeliveryPage from "./pages/DeliveryAgent/DeliveryPage";
 import PendingDeliveries from "./components/DeliveryAgent/PendingDeliveries";
@@ -185,6 +186,7 @@ function App() {
             <Route path="/provider/orders/verify-otps" element={<PrivateRoute roles={["SERVICE_PROVIDER"]}><OtpVerificationOrders /></PrivateRoute>} />
 
             {/* Delivery Agent */}
+            <Route path="/delivery-agent/pending" element={<RequestPendingPage />} />
             <Route path="/deliveries/summary" element={
               <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
                 <DeliveryPage />

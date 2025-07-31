@@ -182,6 +182,7 @@ public class AdminUserService {
         return users.stream().map(this::mapToServiceProviderDTO).collect(Collectors.toList());
     }
 
+    @Transactional
     private ServiceProviderResponseDTO mapToServiceProviderDTO(Users user) {
         ServiceProviderResponseDTO dto = new ServiceProviderResponseDTO();
         dto.setUserId(user.getUserId());
@@ -348,18 +349,24 @@ public class AdminUserService {
         userRepository.delete(user);
     }
 
-    public void deleteServiceProvider(Users user, String providerId) {
+    public void deleteServiceProvider(String providerId) {
 
         ServiceProvider serviceProvider = serviceProviderRepository.findById(providerId)
                 .orElse(null);
+
+        Users user = userRepository.findById(serviceProvider.getUser().getUsersId()).orElse(null);
+
         serviceProviderRepository.delete(serviceProvider);
         userRepository.delete(user);
     }
 
-    public void deleteDeliveryAgent(Users user, String agentId) {
+    public void deleteDeliveryAgent(String agentId) {
 
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findById(agentId)
                 .orElse(null);
+
+        Users user = userRepository.findById(deliveryAgent.getUsers().getUsersId()).orElse(null);
+
         deliveryAgentRepository.delete(deliveryAgent);
         userRepository.delete(user);
     }

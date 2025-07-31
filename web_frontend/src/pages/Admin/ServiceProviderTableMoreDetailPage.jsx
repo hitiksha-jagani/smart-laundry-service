@@ -45,6 +45,7 @@ const ServiceProviderTableMoreDetailPage = () => {
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this service provider?")) return;
+        console.log("Provider id : " + id);
 
         try {
             const res = await axiosInstance.delete(`/users/service-providers/table/delete/${id}`);

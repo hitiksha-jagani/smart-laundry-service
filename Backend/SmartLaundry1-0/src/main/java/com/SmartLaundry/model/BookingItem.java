@@ -69,4 +69,3 @@ public class BookingItem implements Serializable {
     @Schema(description = "The bill associated with this booking item.")
     private Bill bill;
 }
-

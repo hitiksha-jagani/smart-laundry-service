@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
+import axiosInstance from '../../utils/axiosInstance';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 
@@ -41,11 +42,7 @@ const UpdateStatus = () => {
             setDelivery(deliveryData);
 
             try {
-                const axiosInstance = axios.create({
-                    baseURL: "http://localhost:8080",
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
+               
                 const response = await axiosInstance.get(`/user-detail/${userId}`);
                 setUser(response.data);
             } catch (err) {
@@ -60,13 +57,6 @@ const UpdateStatus = () => {
 
         if (!otp || !delivery) return;
         setLoading(true);
-
-        const token = await AsyncStorage.getItem("token");
-
-        const axiosInstance = axios.create({
-            baseURL: "http://localhost:8080",
-            headers: { Authorization: `Bearer ${token}` },
-        });
 
         const status = delivery.orderStatus;
         const orderId = delivery.orderId;
@@ -137,7 +127,7 @@ const UpdateStatus = () => {
                         />
 
                         <TouchableOpacity
-                            style={[styles.routeBtn, (!otp || loading) && { opacity: 0.6 }]}
+                            style={[styles.routeBtn, (!otp || loading)]}
                             onPress={handleUpdateStatus}
                             disabled={!otp || loading}
                         >
@@ -224,8 +214,7 @@ const styles = StyleSheet.create({
 
     routeText: {
         color: '#fff',
-        fontWeight: '900',
-        height: '20px'
+        fontWeight: '600',
     },
   
 });

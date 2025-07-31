@@ -11,6 +11,7 @@ import './i18n';
 
 // Screens
 import AutoRedirect from './components/AutoRedirect';
+import AutoRedirectScreen from './screens/AutoRedirectScreen';
 import NotFoundScreen from './screens/NotFoundScreen';
 import LoginScreen from './screens/Customer/LoginScreen';
 import RegisterScreen from './screens/Customer/RegisterScreen';
@@ -51,6 +52,8 @@ import EditServiceProviderProfileScreen from './screens/ServiceProvider/EditServ
 import ServiceProviderProfileForm from './screens/ServiceProvider/ServiceProviderProfileForm';
 
 // Delivery
+import RequestPendingScreen from './components/DeliveryAgent/RequestPendingScreen';
+import DeliveryAgentCompleteProfile from './screens/DeliveryAgent/DeliveryAgentCompleteProfile';
 import { DrawerProvider } from './context/DrawerContext';
 import DeliveryPage from './screens/DeliveryAgent/DeliveryPage';
 import NotAvailablePage from './screens/DeliveryAgent/NotAvailablePage';
@@ -66,7 +69,7 @@ import ChangeAgentPasswordPage from './screens/DeliveryAgent/ChangeAgentPassword
 const Stack = createNativeStackNavigator(); 
 const Drawer = createDrawerNavigator();
 
-// ✅ Drawer for Service Providers
+// Drawer for Service Providers
 const ProviderDrawer = () => (
   <Drawer.Navigator screenOptions={{ headerShown: false }}>
     <Drawer.Screen name="ProviderDashboard" component={ProviderDashboardScreen} />
@@ -83,7 +86,7 @@ const FeedbackScreen = () => (
   </PrivateRoute>
 );
 
-// ✅ Deep linking config
+// Deep linking config
 const linking = {
   prefixes: ['smartlaundry://', 'https://yourapp.com', 'yourapp://'],
   config: {
@@ -123,6 +126,7 @@ const linking = {
       VerifyDeliveryOtp: 'provider/otp/verify/delivery/:orderId',
       OtpVerificationOrders: '/provider/orders/verify-otps',
 
+      DeliveryAgentCompleteProfile: '/profile/complete',
       DeliveryPage: '/delivery/summary',
       PendingDeliveries: '/deliveries/pending',
       TodayDeliveries: '/deliveries/today',
@@ -258,6 +262,8 @@ export default function App() {
           <Stack.Screen name="OtpVerificationOrders" component={OtpVerificationOrdersScreen} />
 
           {/* Delivery */}
+          <Stack.Screen name="RequestPending" component={RequestPendingScreen} />
+
           {/* Delivery Page */}
           <Stack.Screen name="DeliveryPage">
             {() => (
@@ -307,6 +313,7 @@ export default function App() {
           </Stack.Screen>
 
           {/* Profile Page */}
+          <Stack.Screen name="DeliveryAgentCompleteProfile" component={DeliveryAgentCompleteProfile} />
           <Stack.Screen name="DeliveryAgentProfile">
             {() => (
               <DrawerProvider>
@@ -343,7 +350,7 @@ export default function App() {
           <Stack.Screen name="NotAvailable" component={NotAvailableScreen} />
           <Stack.Screen name="NotFound" component={NotFoundScreen} />
         </Stack.Navigator>
-        <StatusBar style="auto" />
+        {/* <StatusBar style="auto" /> */}
       </NavigationContainer>
     </AuthProvider>
   );
