@@ -2,6 +2,7 @@ package com.SmartLaundry.controller.Customer;
 
 import com.SmartLaundry.dto.Customer.OrderSummaryDto;
 import com.SmartLaundry.service.Customer.BillService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class BillController {
 
     private final BillService billService;
-
+    @Transactional
     @GetMapping("/{orderId}/bill")
     public OrderSummaryDto getBillSummary(@PathVariable String orderId) {
         return billService.getBillSummary(orderId);
