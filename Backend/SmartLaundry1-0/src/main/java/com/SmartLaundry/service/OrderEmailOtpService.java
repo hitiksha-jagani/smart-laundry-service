@@ -6,6 +6,7 @@ import com.SmartLaundry.repository.OrderRepository;
 import com.SmartLaundry.service.Customer.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class OrderEmailOtpService {
     private final EmailService emailService;
     private final OrderStatusHistoryService orderStatusHistoryService;
 
+    @Transactional
     public void generateAndSendOtp(Order order, Users user, DeliveryAgent agent, OtpPurpose purpose, String recipientEmail) {
         String otp = generateOtpCode();
         LocalDateTime now = LocalDateTime.now();
@@ -52,34 +54,36 @@ public class OrderEmailOtpService {
 //        orderOtpRepository.save(otp);
 //        return true;
 //    }
-public boolean validateOtp(Order order, String inputOtp, OtpPurpose purpose) {
-    Optional<OrderOtp> validOtp = orderOtpRepository.findTopByOrderAndPurposeAndIsUsedFalseOrderByGeneratedAtDesc(order, purpose);
+    @Transactional
+    public boolean validateOtp(Order order, String inputOtp, OtpPurpose purpose) {
+        Optional<OrderOtp> validOtp = orderOtpRepository.findTopByOrderAndPurposeAndIsUsedFalseOrderByGeneratedAtDesc(order, purpose);
 
-    if (validOtp.isEmpty()) {
-        System.out.println("❌ No valid OTP found: maybe already used or none generated yet.");
-        return false;
+        System.out.println("Otp : " + validOtp);
+        if (validOtp.isEmpty()) {
+            System.out.println("❌ No valid OTP found: maybe already used or none generated yet.");
+            return false;
+        }
+
+        OrderOtp otp = validOtp.get();
+
+        System.out.printf("🔍 OTP match attempt for order=%s, purpose=%s, input=%s, dbOtp=%s, expiresAt=%s%n",
+                order.getOrderId(), purpose, inputOtp, otp.getOtpCode(), otp.getExpiresAt());
+
+        if (otp.getExpiresAt().isBefore(LocalDateTime.now())) {
+            System.out.println("❌ OTP expired.");
+            return false;
+        }
+
+        if (!otp.getOtpCode().equals(inputOtp)) {
+            System.out.println("❌ OTP does not match.");
+            return false;
+        }
+
+        otp.setIsUsed(true);
+        orderOtpRepository.save(otp);
+        System.out.println("✅ OTP verified and marked as used.");
+        return true;
     }
-
-    OrderOtp otp = validOtp.get();
-
-    System.out.printf("🔍 OTP match attempt for order=%s, purpose=%s, input=%s, dbOtp=%s, expiresAt=%s%n",
-            order.getOrderId(), purpose, inputOtp, otp.getOtpCode(), otp.getExpiresAt());
-
-    if (otp.getExpiresAt().isBefore(LocalDateTime.now())) {
-        System.out.println("❌ OTP expired.");
-        return false;
-    }
-
-    if (!otp.getOtpCode().equals(inputOtp)) {
-        System.out.println("❌ OTP does not match.");
-        return false;
-    }
-
-    otp.setIsUsed(true);
-    orderOtpRepository.save(otp);
-    System.out.println("✅ OTP verified and marked as used.");
-    return true;
-}
 
 
     private String generateOtpCode() {

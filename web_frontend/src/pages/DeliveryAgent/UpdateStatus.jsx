@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../../styles/Toast.css';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
@@ -17,6 +17,7 @@ const UpdateStatus = () => {
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const { state } = useLocation();
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const showToast = (message, type = 'success') => {
@@ -32,7 +33,6 @@ const UpdateStatus = () => {
   });
 
   useEffect(() => {
-    // Restore delivery object from state or localStorage
     if (state?.delivery) {
       console.log("Delivery passed to UpdateStatus:", state.delivery);
       setDelivery(state.delivery);
@@ -91,8 +91,10 @@ const UpdateStatus = () => {
 
     try {
       console.log("Update status API called");
+      console.log("Order :", payload);
       await axiosInstance.post(endpoint, payload);
       showToast("Status updated successfully.", "success");
+      navigate("/deliveries/summary");
     } catch (error) {
       const errorMsg =
         error?.response?.data?.message ||

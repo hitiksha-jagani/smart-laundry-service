@@ -42,7 +42,7 @@ const LocationTracker = ({ isAvailable }) => {
     };
 
     if (isAvailable) {
-      intervalRef.current = setInterval(updateLocation, 5000); // every 5 seconds
+      intervalRef.current = setInterval(updateLocation, 5000);
     }
 
     return () => {
@@ -50,7 +50,7 @@ const LocationTracker = ({ isAvailable }) => {
     };
   }, [isAvailable]);
 
-  return null; // This component runs in background
+  return null; 
 };
 
 export default LocationTracker;

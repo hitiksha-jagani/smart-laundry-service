@@ -40,7 +40,8 @@ const PendingDeliveries = () => {
         }
       );
       showToast('Order accepted successfully.', 'success');
-      console.log('Order Accepted:', response.data);
+      console.log('Order Accepted:', response.data); 
+      window.location.reload();
 
       setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
     } catch (error) {
@@ -64,6 +65,7 @@ const PendingDeliveries = () => {
       );
       showToast('Order rejected successfully.', 'success');
       console.log('Order Rejected:', response.data);
+      window.location.reload(); 
 
       setOrders((prevOrders) => prevOrders.filter((order) => order.orderId !== orderId));
     } catch (error) {

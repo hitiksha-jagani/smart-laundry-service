@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
     View,
     Text,
@@ -6,12 +7,9 @@ import {
     Dimensions,
     TouchableOpacity,
     Alert,
-    FlatList
 } from 'react-native'; 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axiosInstance from '../../utils/axiosInstance';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
-import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -44,6 +42,7 @@ const ManageAvailability = () => {
   const [endTime, setEndTime] = useState(new Date());
   const [availabilities, setAvailabilities] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     setAvailableDays(getTodayAndFutureDays());
@@ -122,6 +121,7 @@ const ManageAvailability = () => {
     try {
       await axiosInstance.post('/availability/manage', payload);
       Alert.alert('Success', 'Availability saved successfully!');
+      navigation.goBack();
       handleResetAll();
     } catch (error) {
       console.error('Error saving availability:', error);

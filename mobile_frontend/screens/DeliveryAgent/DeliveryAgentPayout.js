@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 import SummaryCard from '../../components/DeliveryAgent/SummaryCard';
@@ -16,6 +16,7 @@ import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout';
 const DeliveryAgentPayout = () => {
   const [filterParams, setFilterParams] = useState({ filter: 'overall' });
   const [user, setUser] = useState(null);
+  const { token, userId } = useAuth();
   const [summary, setSummary] = useState({});
   const [paid, setPaid] = useState([]);
   const [pending, setPending] = useState([]);
@@ -26,7 +27,7 @@ const DeliveryAgentPayout = () => {
     try {
       
       const axiosInstance = axios.create({
-          baseURL: 'http://localhost:8080',
+          baseURL: 'http://localhost:8080', 
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -64,18 +65,27 @@ const DeliveryAgentPayout = () => {
 
       {/* Summary Cards */}
       <SummaryCard
-              title="TOTAL PAYOUTS"
-              user={user}
-              count={summary?.totalEarnings || 0}
-              link="PendingDeliveries"
-              data={pending}
-            //   data={mockDeliveries}
-            />
-      <SummaryCard title="TOTAL PAYOUTS" amount={summary?.totalEarnings} />
-      <SummaryCard title="PAID PAYOUTS" amount={summary?.paidPayouts} />
-      <SummaryCard title="PENDING PAYOUTS" amount={summary?.pendingPayouts} />
+        title="TOTAL PAYOUTS"
+        user={user}
+        count={summary?.totalEarnings || 0}
+        link="PendingDeliveries"
+        data={pending}
+      />
+      <SummaryCard
+        title="PAID PAYOUTS"
+        user={user}
+        count={summary?.paidPayouts || 0}
+        link="PendingDeliveries"
+        data={pending}
+      />
+      <SummaryCard
+        title="PENDING PAYOUTS"
+        user={user}
+        count={summary?.pendingPayouts || 0}
+        link="PendingDeliveries"
+        data={pending}
+      />
 
-      {/* Additional views for paid, pending, and all can go here if needed */}
     </View>
     </DeliveryAgentLayout>
   );
