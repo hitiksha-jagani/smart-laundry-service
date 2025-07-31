@@ -203,7 +203,6 @@ public class PayoutAssignmentService {
         } catch (Exception e) {
             System.err.println("❌ Error during payout assignment for paymentId: " + payment.getPaymentId());
             e.printStackTrace();
-            // Optional: log to file or monitoring tool
         }
     }
 }
