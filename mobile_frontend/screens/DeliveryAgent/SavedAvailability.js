@@ -256,7 +256,7 @@ const SavedAvailability = ({ availabilities }) => {
                     <Text>{editData?.startTime ? editData.startTime : '00:00'}</Text>
                   </TouchableOpacity>
                   {showStartPicker && (
-<DateTimePicker
+          <DateTimePicker
             mode="time"
             value={editData?.startTime ? parseTime(editData.startTime) : parseTime('09:00')}
             is24Hour={true}
@@ -287,7 +287,7 @@ const SavedAvailability = ({ availabilities }) => {
 
                   {showEndPicker && (
 
- <DateTimePicker
+          <DateTimePicker
             mode="time"
             value={editData?.endTime ? parseTime(editData.endTime) : parseTime('17:00')}
             is24Hour={true}

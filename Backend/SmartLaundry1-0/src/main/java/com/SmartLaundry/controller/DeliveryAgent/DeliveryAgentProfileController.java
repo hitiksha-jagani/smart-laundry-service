@@ -116,16 +116,40 @@ public class DeliveryAgentProfileController {
     // @author Hitiksha Jagani
     // http://localhost:8080/profile/detail/edit
     // Modify existing details.
-    @PutMapping("/detail/edit")
-    public ResponseEntity<String> editDeliveryAgentDetail(HttpServletRequest request,@RequestBody DeliveryAgentProfileDTO deliveryAgentProfileDTO) throws AccessDeniedException {
+    @PutMapping(value = "/detail/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> editDeliveryAgentDetail(
+            HttpServletRequest request,
+            @RequestPart("data") String data,
+            @RequestPart(value = "aadharCard", required = false) MultipartFile aadharCard,
+            @RequestPart(value = "panCard", required = false) MultipartFile panCard,
+            @RequestPart(value = "drivingLicense", required = false) MultipartFile drivingLicense,
+            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto
+    ) throws IOException {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
+
         if (user.isBlocked()) {
             throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
         }
-        return ResponseEntity.ok(deliveryAgentProfileService.editDetail(userId, deliveryAgentProfileDTO));
+
+        // Convert JSON string to DTO
+        ObjectMapper mapper = new ObjectMapper();
+        DeliveryAgentProfileDTO deliveryAgentProfileDTO = mapper.readValue(data, DeliveryAgentProfileDTO.class);
+
+        return ResponseEntity.ok(deliveryAgentProfileService.editDetail(
+                userId, deliveryAgentProfileDTO, aadharCard, panCard, drivingLicense, profilePhoto));
     }
+//    @PutMapping("/detail/edit")
+//    public ResponseEntity<String> editDeliveryAgentDetail(HttpServletRequest request,@RequestBody DeliveryAgentProfileDTO deliveryAgentProfileDTO) throws AccessDeniedException {
+//        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
+//        Users user = roleCheckingService.checkUser(userId);
+//        roleCheckingService.isDeliveryAgent(user);
+//        if (user.isBlocked()) {
+//            throw new AccessDeniedException("Your account is blocked by admin. You cannot perform this action.");
+//        }
+//        return ResponseEntity.ok(deliveryAgentProfileService.editDetail(userId, deliveryAgentProfileDTO));
+//    }
 
     // @author Hitiksha Jagani
     // http://localhost:8080/profile/detail/change-password

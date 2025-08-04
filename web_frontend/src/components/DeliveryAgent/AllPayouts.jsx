@@ -1,8 +1,6 @@
 // Author : Hitiksha Jagani
 // Description : List of all payouts for delivery agent dashboard.
 
-import React, { useState } from 'react';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { MdInbox } from 'react-icons/md';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';

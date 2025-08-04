@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { BASE_URL } from '../../config'; // adjust path as needed
+import { BASE_URL } from '../../config'; 
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
@@ -64,15 +64,25 @@ export default function RegisterScreen() {
 
   const validateFields = () => {
     const newErrors = {};
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
     if (!formData.firstName) newErrors.firstName = 'First name is required';
+
     if (!formData.phone || formData.phone.length !== 10)
       newErrors.phone = 'Valid 10-digit phone is required';
-    if (formData.password.length < 6)
-      newErrors.password = 'Password must be at least 6 characters';
+
+    if (!passwordRegex.test(formData.password)) {
+      newErrors.password =
+        "Password must be at least 8 characters, contain 1 uppercase letter and 1 special character";
+    }
+
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = 'Passwords do not match';
+
     if (!formData.addresses.cityId)
       newErrors.cityId = 'City selection is required';
+
     return newErrors;
   };
 

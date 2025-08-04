@@ -149,6 +149,7 @@ public class SettingService {
                 .deliveryAgent(revenueSettingRequestDTO.getDeliveryAgentRevenue())
                 .serviceProvider(revenueSettingRequestDTO.getServiceProviderRevenue())
                 .currentStatus(revenueSettingRequestDTO.getCurrentStatus())
+                .activeAt(active)
                 .build();
 
         revenueBreakDownRepository.save(revenueBreakDown);

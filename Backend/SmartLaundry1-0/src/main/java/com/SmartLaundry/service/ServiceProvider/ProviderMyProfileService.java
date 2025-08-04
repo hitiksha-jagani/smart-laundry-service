@@ -4,8 +4,11 @@ import com.SmartLaundry.dto.ServiceProvider.ServiceProviderProfileDTO;
 import com.SmartLaundry.exception.ForbiddenAccessException;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import com.SmartLaundry.service.Customer.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,7 +36,7 @@ public class ProviderMyProfileService {
     private PriceRepository priceRepository;
     @Autowired
     private ItemRepository itemRepository;
-    @Value("${SERVICE_PROVIDER_PROFILE_IMAGE}")
+    @Value("${FILE_PATH}")
     private String path;
 
 //    @Autowired
@@ -44,6 +47,8 @@ public class ProviderMyProfileService {
 
     @Autowired
     private GeoUtils geoUtils;
+
+    private static final Logger logger = LoggerFactory.getLogger(ProviderMyProfileService.class);
 
     @Autowired
     private BankAccountRepository bankAccountRepository;
@@ -84,15 +89,12 @@ public class ProviderMyProfileService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
-        // your role check ...
-
-        // update user and address code ...
-
         ServiceProvider sp = serviceProviderRepository.getByUser(user)
                 .orElseThrow(() -> new RuntimeException("Service Provider profile not found."));
 
         // Save files if provided, update paths in DTO & SP
-        String uploadDir = path + userId + "/";
+        String uploadDir = path + "/" + "ServiceProvider" + "/" + "Profile" + "/" + userId + "/";
+        logger.info("Upload files : {}", uploadDir);
 
         if (aadharCard != null && !aadharCard.isEmpty()) {
             String aadharPath = saveFile(aadharCard, uploadDir, userId);
@@ -145,7 +147,7 @@ public class ProviderMyProfileService {
     public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
 
         if (file == null || file.isEmpty()) {
-            return null;
+            return "File is not exist";
         }
 
         // Create directory if not exists
@@ -153,16 +155,21 @@ public class ProviderMyProfileService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+        logger.info("Upload dir : {}", dir);
 
         // Use a unique filename (timestamp + original filename) to avoid collision
         String originalFilename = file.getOriginalFilename();
         String fileName = System.currentTimeMillis()+  "_" + originalFilename;
+        logger.info("Original file name : {}", originalFilename);
+        logger.info("File name : {}", fileName);
 
         // Full path
         File destination = new File(dir, fileName);
+        logger.info("Destination : {}", destination);
 
         // Save file locally
         file.transferTo(destination);
+        logger.info("File saved successfully");
 
         // Return the relative or absolute path
         return destination.getAbsolutePath();
