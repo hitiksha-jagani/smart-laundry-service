@@ -30,6 +30,7 @@ public class RazorPaymentController {
     private final PaymentRepository paymentRepository;
     private final RazorpayService razorpayService;
     private final PayoutAssignmentService payoutAssignmentService;
+
     @PostMapping("/create/{invoiceNumber}")
     public ResponseEntity<?> createOrder(@PathVariable String invoiceNumber) {
         Bill bill = billRepository.findById(invoiceNumber)
@@ -38,6 +39,7 @@ public class RazorPaymentController {
         String orderId = razorpayService.createRazorpayOrder(bill);
         return ResponseEntity.ok(Map.of("orderId", orderId, "amount", bill.getFinalPrice() * 100));
     }
+
     @PostMapping("/success")
     @Transactional
     public ResponseEntity<?> paymentSuccess(@RequestBody RazorpaySuccessDTO dto) {

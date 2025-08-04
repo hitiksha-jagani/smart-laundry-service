@@ -6,6 +6,7 @@ services:
     container_name: smart-laundry-backend
     volumes:
       - ../Env_Var.env:/app/Env_Var.env
+      - ./uploads:/app/uploads
     ports:
       - "${SPRING_PORT}:8080"
     dns:

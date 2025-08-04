@@ -9,13 +9,15 @@ import {
     Linking,
     Dimensions
 } from 'react-native';
-import axios from 'axios';
+import axios from 'axios'; 
+import { useAuth } from '../../context/AuthContext';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
 
 const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
     const [agentLocation, setAgentLocation] = useState(null);
+    const { token } = useAuth();
 
     const {
         orderId, deliveryType, deliveryEarning, km,
@@ -25,9 +27,12 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
     } = data;
 
     useEffect(() => {
-        const fetchAgentLocation = async () => {
+        const fetchAgentLocation = async () => { 
         try {
-            const response = await axios.get('http://localhost:8080/delivery-agent/get-location');
+            const response = await axios.get('http://192.168.1.7:8080/delivery-agent/get-location', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },});
             setAgentLocation(response.data);
         } catch (error) {
             console.error('Failed to fetch agent location:', error);
@@ -132,7 +137,7 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
                 <View style={styles.summaryRow}>
 
                     <View style={styles.summaryBox}><Text>Total Items: {totalQuantity}</Text></View>
-                    <View style={styles.summaryBox}><Text>Total KM: {km}</Text></View>
+                    {/* <View style={styles.summaryBox}><Text>Total KM: {km}</Text></View> */}
                     <View style={styles.summaryBox}><Text>Earnings: ₹{deliveryEarning}</Text></View>
                 
                 </View>

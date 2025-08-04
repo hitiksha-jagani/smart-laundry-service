@@ -10,8 +10,7 @@ import {
     ActivityIndicator,
     Dimensions,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import axiosInstance from '../../utils/axiosInstance';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
@@ -36,14 +35,17 @@ const ChangePasswordScreen = () => {
         newPassword: false,
         confirmPassword: false,
     });
+    const [toast, setToast] = useState({ message: '', type: '', visible: false });
+
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type, visible: true });
+        setTimeout(() => {
+        setToast({ message: '', type: '', visible: false });
+        }, 3000);
+    };
 
     useEffect(() => {
         const fetchUser = async () => {
-
-            const axiosInstance = axios.create({
-                baseURL: 'http://192.168.1.7:8080',
-                headers: { Authorization: `Bearer ${token}` }, 
-            });
         
             try {
                 const [userRes] = await Promise.all([
@@ -59,7 +61,7 @@ const ChangePasswordScreen = () => {
         };
 
         fetchUser();
-    }, []);
+    }, []); 
 
     const handleChange = (name, value) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -69,17 +71,37 @@ const ChangePasswordScreen = () => {
         setVisible((prev) => ({ ...prev, [field]: !prev[field] }));
     };
 
-    const handleSave = async () => {
-        if (!formData.oldPassword || !formData.newPassword || !formData.confirmPassword) {
-        Alert.alert('Error', 'Please fill all fields.');
-        return;
+    const validateFields = () => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+        const { oldPassword, newPassword, confirmPassword } = formData;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            showToast("Please fill all fields", "error");
+            return false;
         }
 
+        if (newPassword !== confirmPassword) {
+            showToast("Password and confirm password do not match", "error");
+            return false;
+        }
+
+        if (!passwordRegex.test(newPassword)) {
+            showToast("New password must be at least 8 characters long, include 1 uppercase letter and 1 special character", "error");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSave = async () => {
+
+        if (!validateFields()) return;
+
         try {
-        const res = await axioaxiosInstances.put(
+        const res = await axiosInstance.put(
             'http://192.168.1.7:8080/profile/detail/change-password',
-            formData,
-            { headers: { Authorization: `Bearer ${token}` } }
+            formData
         );
 
             Alert.alert('Success', res.data);
@@ -149,6 +171,12 @@ const ChangePasswordScreen = () => {
                 </View>
 
             </View>
+
+            {toast.visible && (
+                <View style={[styles.toast, toast.type === 'error' && styles.toastError]}>
+                    <Text style={styles.toastText}>{toast.message}</Text>
+                </View>
+            )}
         
         </DeliveryAgentLayout>
 
@@ -233,6 +261,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center'
+  },
+  toast: {
+    position: 'absolute',
+    bottom: 30,
+    left: '10%',
+    right: '10%',
+    backgroundColor: '#4ade80',
+    padding: 15,
+    borderRadius: 10,
+    zIndex: 1000,
+    alignItems: 'center',
+    elevation: 4,
+  },
+  toastError: {
+    backgroundColor: '#ef4444',
+  },
+  toastText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 13,
   },
 });
 

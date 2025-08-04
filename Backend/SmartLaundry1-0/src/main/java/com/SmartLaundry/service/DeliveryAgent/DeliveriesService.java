@@ -127,7 +127,7 @@ public class DeliveriesService {
     }
 
     // Return list of pending deliveries
-@Transactional
+    @Transactional
     public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) {
 
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
@@ -135,7 +135,6 @@ public class DeliveriesService {
 
         Set<String> assignmentKeys = redisTemplate.keys("assignment:*");
         if (assignmentKeys == null || assignmentKeys.isEmpty()) {
-            System.out.println("Assignment key is null");
             return Collections.emptyList(); }
 
         List<Order> orders = new ArrayList<>();
@@ -307,23 +306,31 @@ public class DeliveriesService {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-@Transactional
+
+    @Transactional
     public List<PendingDeliveriesResponseDTO> getTodayDeliveries(Users user) {
         List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
 
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
                 .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not exist."));
 
-        List<Order> order1 = orderRepository.findByStatusAndPickupDeliveryAgentAndPickupDate(OrderStatus.ACCEPTED_BY_AGENT, deliveryAgent, LocalDate.now());
-        List<Order> order2 = orderRepository.findByStatusAndDeliveryDeliveryAgentAndDeliveryDate(OrderStatus.READY_FOR_DELIVERY, deliveryAgent, LocalDate.now());
+        List<Order> order1 = orderRepository.findByPickupDeliveryAgentAndPickupDate(deliveryAgent, LocalDate.now());
+        List<Order> order2 = orderRepository.findByDeliveryDeliveryAgentAndDeliveryDate(deliveryAgent, LocalDate.now());
+
+        System.out.println("Pickup orders size : " + order1.size());
+        System.out.println("Delivery orders size : " + order2.size());
+
         List<Order> orders = new ArrayList<>();
         orders.addAll(order1);
         orders.addAll(order2);
 
-        System.out.println("Fetch today's deliveries");
         for(Order order : orders){
 
             Bill bill = billRepository.findByOrder(order);
+            if (bill == null) {
+                logger.warn("No bill found for order ID: {}", order.getOrderId());
+                continue;
+            }
 
             String address = order.getServiceProvider().getUser().getAddress().getName() + " " + order.getServiceProvider().getUser().getAddress().getAreaName() +
                     " " + order.getServiceProvider().getUser().getAddress().getCity().getCityName() + " " + order.getServiceProvider().getUser().getAddress().getPincode();
@@ -344,7 +351,10 @@ public class DeliveriesService {
             String deliveryType;
             PendingDeliveriesResponseDTO pendingDeliveriesResponseDTO;
 
-            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_AGENT)){
+            if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_AGENT) || order.getStatus().equals(OrderStatus.PICKED_UP)){
+
+                if(!Objects.equals(order.getPickupDate(), LocalDate.now())) continue;
+
                 deliveryType = "Customer -> Service Provider";
 
                 System.out.println("**Pickup date : " + order.getPickupDate());
@@ -367,7 +377,10 @@ public class DeliveriesService {
                         .totalQuantity(quantity)
                         .bookingItemDTOList(bookingItemDTOS)
                         .build();
-            } else {
+            } else if(order.getStatus().equals(OrderStatus.READY_FOR_DELIVERY) || order.getStatus().equals(OrderStatus.OUT_FOR_DELIVERY)){
+
+                if(!Objects.equals(order.getDeliveryDate(), LocalDate.now())) continue;
+
                 deliveryType = "Service Provider -> Customer";
 
                 pendingDeliveriesResponseDTO = PendingDeliveriesResponseDTO.builder()
@@ -388,6 +401,8 @@ public class DeliveriesService {
                         .totalQuantity(quantity)
                         .bookingItemDTOList(bookingItemDTOS)
                         .build();
+            } else {
+                continue;
             }
 
             pendingDeliveriesResponseDTOList.add(pendingDeliveriesResponseDTO);
@@ -395,6 +410,9 @@ public class DeliveriesService {
 
         return pendingDeliveriesResponseDTOList;
     }
+
+    @Autowired
+    AvailabilityService availabilityService;
 
     // Sort delivery agent based on distance of delivery agent from customer
     public void assignToDeliveryAgentCustomerOrders(String orderId) throws JsonProcessingException {
@@ -442,7 +460,8 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
-            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+            boolean isAvailable = availabilityService.isCurrentlyAvailable(agent.getUsers().getUserId());
             if (!isAvailable) {
                 logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
                 continue;
@@ -514,7 +533,8 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
-            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
+            boolean isAvailable = availabilityService.isCurrentlyAvailable(agent.getUsers().getUserId());
             if (!isAvailable) {
                 logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
                 continue;

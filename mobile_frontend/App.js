@@ -51,7 +51,7 @@ import VerifyDeliveryOtpScreen from './screens/ServiceProvider/VerifyDeliveryOtp
 import EditServiceProviderProfileScreen from './screens/ServiceProvider/EditServiceProviderProfileScreen';
 import ServiceProviderProfileForm from './screens/ServiceProvider/ServiceProviderProfileForm';
 
-// Delivery
+// Delivery Agent
 import RequestPendingScreen from './components/DeliveryAgent/RequestPendingScreen';
 import DeliveryAgentCompleteProfile from './screens/DeliveryAgent/DeliveryAgentCompleteProfile';
 import { DrawerProvider } from './context/DrawerContext';
@@ -62,6 +62,9 @@ import TodayDeliveries from './screens/DeliveryAgent/TodayDeliveries';
 import UpdateStatus from './screens/DeliveryAgent/UpdateStatus';
 import AvailabilityScreen from './screens/DeliveryAgent/Availability';
 import DeliveryAgentPayout from './screens/DeliveryAgent/DeliveryAgentPayout';
+import AllPayouts from './screens/DeliveryAgent/AllPayouts';
+import PaidPayouts from './screens/DeliveryAgent/PaidPayouts';
+import PendingPayouts from './screens/DeliveryAgent/PendingPayouts';
 import DeliveryAgentProfile from './screens/DeliveryAgent/DeliveryAgentProfile';
 import EditAgentProfile from './screens/DeliveryAgent/EditAgentProfilePage';
 import ChangeAgentPasswordPage from './screens/DeliveryAgent/ChangeAgentPasswordPage';
@@ -133,6 +136,9 @@ const linking = {
       UpdateStatus: '/update-status',
       AvailabilityScreen: '/availability/manage',
       DeliveryAgentPayout: '/payouts/summary',
+      AllPayouts: '/payouts/all',
+      PaidPayouts: '/payouts/paid',
+      PendingPayouts: '/payouts/pending',
       DeliveryAgentProfile: '/profile/detail',
       EditAgentProfile: '/profile/detail/edit',
       ChangeAgentPasswordPage: '/profile/detail/change-password',
@@ -308,6 +314,27 @@ export default function App() {
             {() => (
               <DrawerProvider>
                 <DeliveryAgentPayout />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="AllPayouts">
+            {() => (
+              <DrawerProvider>
+                <AllPayouts />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="PaidPayouts">
+            {() => (
+              <DrawerProvider>
+                <PaidPayouts />
+              </DrawerProvider>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="PendingPayouts">
+            {() => (
+              <DrawerProvider>
+                <PendingPayouts />
               </DrawerProvider>
             )}
           </Stack.Screen>

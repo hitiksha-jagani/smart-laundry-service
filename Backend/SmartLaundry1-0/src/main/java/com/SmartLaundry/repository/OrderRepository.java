@@ -146,4 +146,17 @@ public interface OrderRepository extends JpaRepository<Order, String> {
                                                     @Param("start") LocalDateTime start,
                                                     @Param("end") LocalDateTime end);
 
+    @Query("SELECT o FROM Order o WHERE o.status IN :statuses AND o.pickupDeliveryAgent = :agent AND o.pickupDate = :date")
+    List<Order> findCustomerToProviderOrders(@Param("statuses") List<OrderStatus> statuses,
+                                             @Param("agent") DeliveryAgent agent,
+                                             @Param("date") LocalDate date);
+
+    @Query("SELECT o FROM Order o WHERE o.status IN :statuses AND o.deliveryDeliveryAgent = :agent AND o.deliveryDate = :date")
+    List<Order> findProviderToCustomerOrders(@Param("statuses") List<OrderStatus> statuses,
+                                             @Param("agent") DeliveryAgent agent,
+                                             @Param("date") LocalDate date);
+
+    List<Order> findByPickupDeliveryAgentAndPickupDate(DeliveryAgent deliveryAgent, LocalDate now);
+
+    List<Order> findByDeliveryDeliveryAgentAndDeliveryDate(DeliveryAgent deliveryAgent, LocalDate now);
 }

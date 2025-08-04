@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   ActivityIndicator,
   StyleSheet,
   Alert,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../../utils/axiosInstance';
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 import SummaryCard from '../../components/DeliveryAgent/SummaryCard';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
@@ -16,7 +15,7 @@ import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout';
 const DeliveryAgentPayout = () => {
   const [filterParams, setFilterParams] = useState({ filter: 'overall' });
   const [user, setUser] = useState(null);
-  const { token, userId } = useAuth();
+  const { userId } = useAuth();
   const [summary, setSummary] = useState({});
   const [paid, setPaid] = useState([]);
   const [pending, setPending] = useState([]);
@@ -26,11 +25,6 @@ const DeliveryAgentPayout = () => {
   const fetchAllData = async () => {
     try {
       
-      const axiosInstance = axios.create({
-          baseURL: 'http://localhost:8080', 
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
       const [userRes, summaryRes, paidRes, pendingRes, allRes] = await Promise.all([
         axiosInstance.get(`/user-detail/${userId}`),
         axiosInstance.get('/payouts/summary', { params: filterParams }),
@@ -42,8 +36,11 @@ const DeliveryAgentPayout = () => {
       setUser(userRes.data);
       setSummary(summaryRes.data);
       setPaid(paidRes.data);
+      console.log("Paid Payouts : ", paidRes.data)
       setPending(pendingRes.data);
+      console.log("Pending payouts : ", pendingRes.data)
       setAll(allRes.data);
+      console.log("Total Payouts : ", allRes.data)
     } catch (err) {
       console.error('Error fetching data:', err);
       Alert.alert('Error', 'Failed to load data');
@@ -68,21 +65,21 @@ const DeliveryAgentPayout = () => {
         title="TOTAL PAYOUTS"
         user={user}
         count={summary?.totalEarnings || 0}
-        link="PendingDeliveries"
-        data={pending}
+        link="AllPayouts"
+        data={all}
       />
       <SummaryCard
         title="PAID PAYOUTS"
         user={user}
         count={summary?.paidPayouts || 0}
-        link="PendingDeliveries"
-        data={pending}
+        link="PaidPayouts"
+        data={paid}
       />
       <SummaryCard
         title="PENDING PAYOUTS"
         user={user}
         count={summary?.pendingPayouts || 0}
-        link="PendingDeliveries"
+        link="PendingPayouts"
         data={pending}
       />
 

@@ -10,6 +10,8 @@ import com.SmartLaundry.service.Customer.GeoUtils;
 import com.SmartLaundry.service.Customer.SMSService;
 import com.SmartLaundry.util.UsernameUtil;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -57,9 +59,10 @@ public class ServiceProviderProfileService {
 
     private final EmailService emailService;
     private final SMSService smsService;
-    // Return profile details of delivery agent
 
-    @Value("${SERVICE_PROVIDER_PROFILE_IMAGE}")
+    private static final Logger logger = LoggerFactory.getLogger(ProviderMyProfileService.class);
+
+    @Value("${FILE_PATH}")
     private String path;
 
     public ServiceProviderProfileService(EmailService emailService, SMSService smsService) {
@@ -162,7 +165,7 @@ public class ServiceProviderProfileService {
             }
 
             // 4. Upload images
-            String uploadDir = path + userId + "/";
+            String uploadDir = path + "/" + "ServiceProvider" + "/" + "Profile" + "/" + userId + "/";
             String aadharPath = saveFile(aadharCard, uploadDir, userId);
             String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
             String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
@@ -244,7 +247,7 @@ public class ServiceProviderProfileService {
     public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
 
         if (file == null || file.isEmpty()) {
-            return null;
+            return "File is not exist";
         }
 
         // Create directory if not exists
@@ -252,16 +255,21 @@ public class ServiceProviderProfileService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+        logger.info("Upload dir : {}", dir);
 
         // Use a unique filename (timestamp + original filename) to avoid collision
         String originalFilename = file.getOriginalFilename();
         String fileName = System.currentTimeMillis()+  "_" + originalFilename;
+        logger.info("Original file name : {}", originalFilename);
+        logger.info("File name : {}", fileName);
 
         // Full path
         File destination = new File(dir, fileName);
+        logger.info("Destination : {}", destination);
 
         // Save file locally
         file.transferTo(destination);
+        logger.info("File saved successfully");
 
         // Return the relative or absolute path
         return destination.getAbsolutePath();

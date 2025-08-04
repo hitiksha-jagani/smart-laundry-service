@@ -13,10 +13,10 @@ public class CORSConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") // allow frontend origin
+                        .allowedOrigins("http://localhost:3000","http://localhost:8081", "http://192.168.1.7:8080" , "http://10.200.23.46:8080")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true); // if using cookies or credentials
+                        .allowCredentials(true);
             }
         };
     }

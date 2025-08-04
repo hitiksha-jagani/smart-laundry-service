@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
+import axiosInstance from '../../utils/axiosInstance';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAuth } from '../../context/AuthContext';
@@ -59,53 +60,85 @@ const EditAgentProfile = () => {
 
     const { token, userId } = useAuth();
     const [user, setUser] = useState(null);
+    const [initialData, setInitialData] = useState(null);
     const [formData, setFormData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
     const [selectedStateId, setSelectedStateId] = useState(null);
+    const [toast, setToast] = useState({ message: '', type: '', visible: false });
 
-    const axiosInstance = axios.create({
-        baseURL: 'http://192.168.1.7:8080',
-        headers: { Authorization: `Bearer ${token}` }, 
-    });
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type, visible: true });
+        setTimeout(() => {
+        setToast({ message: '', type: '', visible: false });
+        }, 3000);
+    };
 
     useEffect(() => {
         axiosInstance
             .get(`/user-detail/${userId}`)
             .then((res) => {
+                // const userData = res.data;
+                // const initial = {
+                //     firstName: userData.firstName || '',
+                //     lastName: userData.lastName || '',
+                //     phoneNo: userData.phoneNo || '',
+                //     email: userData.email || '',
+                //     vehicleNumber: agentData.vehicleNumber || '',
+                //     bankName: agentData.bankName || '',
+                //     accountHolderName: agentData.accountHolderName || '',
+                //     bankAccountNumber: agentData.bankAccountNumber || '',
+                //     ifscCode: agentData.ifscCode || '',
+                //     profilePhoto: agentData.profilePhoto || '',
+                //     aadharCardPhoto: agentData.aadharCardPhoto || '',
+                //     panCardPhoto: agentData.panCardPhoto || '',
+                //     drivingLicensePhoto: agentData.drivingLicensePhoto || '',
+                //     address: {
+                //         name: userData.address?.name || '',
+                //         areaName: userData.address?.areaName || '',
+                //         cityName: userData.address?.cityName || '',
+                //         cityId: data.address?.cityId || '',
+                //         stateId: data.address?.stateId || '',
+                //         pincode: userData.address?.pincode || '',
+                //     },
+                // };
+
+                // setSelectedStateId(data.address?.stateId || '');
+                // setSelectedCityId(data.address?.cityId || '');
+
                 const userData = res.data;
                 setUser(userData);
                 setFormData({
-                firstName: userData.firstName || '',
-                lastName: userData.lastName || '',
-                phoneNo: userData.phoneNo || '',
-                email: userData.email || '',
-                vehicleNumber: agentData.vehicleNumber || '',
-                bankName: agentData.bankName || '',
-                accountHolderName: agentData.accountHolderName || '',
-                bankAccountNumber: agentData.bankAccountNumber || '',
-                ifscCode: agentData.ifscCode || '',
-                profilePhoto: agentData.profilePhoto || '',
-                aadharCardPhoto: agentData.aadharCardPhoto || '',
-                panCardPhoto: agentData.panCardPhoto || '',
-                drivingLicensePhoto: agentData.drivingLicensePhoto || '',
-                address: {
-                    name: userData.address?.name || '',
-                    areaName: userData.address?.areaName || '',
-                    cityName: userData.address?.cityName || '',
-                    pincode: userData.address?.pincode || '',
-                },
-            });
-        })
-        .catch((err) => {
-            console.error('Error fetching user:', err);
-            Alert.alert('Error', 'Failed to load profile');
-        })
-        .finally(() => setLoading(false));
+                    firstName: userData.firstName || '',
+                    lastName: userData.lastName || '',
+                    phoneNo: userData.phoneNo || '',
+                    email: userData.email || '',
+                    vehicleNumber: agentData.vehicleNumber || '',
+                    bankName: agentData.bankName || '',
+                    accountHolderName: agentData.accountHolderName || '',
+                    bankAccountNumber: agentData.bankAccountNumber || '',
+                    ifscCode: agentData.ifscCode || '',
+                    profilePhoto: agentData.profilePhoto || '',
+                    aadharCardPhoto: agentData.aadharCardPhoto || '',
+                    panCardPhoto: agentData.panCardPhoto || '',
+                    drivingLicensePhoto: agentData.drivingLicensePhoto || '',
+                    address: {
+                        name: userData.address?.name || '',
+                        areaName: userData.address?.areaName || '',
+                        cityName: userData.address?.cityName || '',
+                        pincode: userData.address?.pincode || '',
+                    },
+                });
+            })
+            .catch((err) => {
+                console.error('Error fetching user:', err);
+                Alert.alert('Error', 'Failed to load profile');
+            })
+            .finally(() => setLoading(false));
     }, []);
 
-    useEffect(() => {
+    useEffect(() => { 
         axios
         .get('http://192.168.1.7:8080/states')
         .then((res) => setStates(res.data))
@@ -113,6 +146,7 @@ const EditAgentProfile = () => {
     }, []);
 
     useEffect(() => {
+        console.log("Selected state ID:", selectedStateId);
 
         if (selectedStateId) {
             axios
@@ -150,19 +184,84 @@ const EditAgentProfile = () => {
 
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        setLoading(true);
+        const form = new FormData();
 
-        // axiosInstance
-        // .put('/profile/detail/edit', formData)
-        // .then(() => {
-        //     Alert.alert('Success', 'Profile updated successfully');
-        //     navigation.navigate('DeliveryAgentProfile');
-        // })
-        // .catch((err) => {
-        //     console.error('Error saving profile:', err);
-        //     Alert.alert('Error', 'Failed to update profile');
-        // });
+        // Compare and append only changed personal fields
+        // Include all top-level text fields
+        [
+            'firstName',
+            'lastName',
+            'vehicleNumber',
+            'bankName',
+            'accountHolderName',
+            'bankAccountNumber',
+            'ifscCode',
+        ].forEach(key => {
+            if (
+                formData[key] !== undefined &&
+                formData[key] !== null &&
+                formData[key] !== initialData[key]
+            ) {
+                form.append(key, formData[key]);
+            }
+        });
 
+        // Compare and append changed address fields
+        if (formData.address && initialData.address) {
+            Object.keys(formData.address).forEach(key => {
+                if (
+                    formData.address[key] !== undefined &&
+                    formData.address[key] !== null &&
+                    formData.address[key] !== initialData.address[key]
+                ) {
+                    form.append(`address.${key}`, formData.address[key]);
+                }
+            });
+        }
+
+        // Compare and append only updated file fields
+        const fileFields = [
+            { name: 'aadharCardPhoto', uri: formData.aadharCardPhoto },
+            { name: 'panCardPhoto', uri: formData.panCardPhoto },
+            { name: 'drivingLicensePhoto', uri: formData.drivingLicensePhoto },
+            { name: 'profilePhoto', uri: formData.profilePhoto },
+        ];
+
+        fileFields.forEach(({ name, uri }) => {
+            if (uri && uri !== initialData[name]) {
+                form.append(name, {
+                    uri,
+                    name: uri.split('/').pop(),
+                    type: 'image/jpeg', 
+                });
+            }
+        });
+
+        try {
+            const response = await axiosInstance.put(
+                `/delivery-agent-profile/edit`,
+                form,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (response.data === 'Changes in email is not allowed.') {
+                Alert.alert('Error', 'Changes in email are not allowed.');
+            } else {
+                Alert.alert('Success', 'Profile updated successfully!');
+                setInitialData({ ...initialData, ...formData }); 
+            }
+        } catch (err) {
+            console.error('Error updating profile:', error);
+            Alert.alert('Error', 'Something went wrong while saving changes.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (loading || !formData) {
@@ -248,7 +347,14 @@ const EditAgentProfile = () => {
                                         style={styles.uploadBtn}
                                         value={formData.address.areaName}
                                         onChangeText={(text) => handleChange('areaName', text)}
-                                    />
+                                    /> 
+
+                                    <TextInput
+                                        placeholder="Pincode"
+                                        style={styles.uploadBtn}
+                                        value={formData.address.pincode}
+                                        onChangeText={(text) => handleChange('pincode', text)}
+                                    /> 
 
                                     <View style={styles.pickerWrapper}>
 
@@ -257,13 +363,15 @@ const EditAgentProfile = () => {
                                             onValueChange={(itemValue) => setSelectedStateId(itemValue)}
                                             style={styles.picker}
                                         >
-                                            {states.map((s) => (
-                                            <Picker.Item key={s.stateId} label={s.name} value={s.stateId} />
+
+                                            {states.filter(s => s.stateId).map((s) => (
+                                                <Picker.Item key={s.stateId} label={s.name} value={s.stateId} />
                                             ))}
+
                                         </Picker>
 
                                     </View>
-
+ 
                                     <View style={styles.pickerWrapper}>
 
                                         <Picker
@@ -272,9 +380,11 @@ const EditAgentProfile = () => {
                                             style={styles.picker}
                                             enabled={!!selectedStateId}
                                         >
-                                            {cities.map((c) => (
-                                            <Picker.Item key={c.cityId} label={c.name} value={c.name} />
+
+                                            {cities.filter(c => c.cityId).map((c) => (
+                                                <Picker.Item key={c.cityId} label={c.name} value={c.name} />
                                             ))}
+
                                         </Picker>
 
                                     </View>
@@ -399,7 +509,7 @@ const EditAgentProfile = () => {
 
                                 <TouchableOpacity
                                     style={styles.editBtn}
-                                    onPress={handleSave()}
+                                    onPress={() => handleSave()}
                                 >
                                     <Text style={styles.btnText}>SAVE</Text> 
                                 </TouchableOpacity>
@@ -420,6 +530,12 @@ const EditAgentProfile = () => {
                 </View>
 
             </View>
+
+            {toast.visible && (
+                <View style={[styles.toast, toast.type === 'error' && styles.toastError]}>
+                    <Text style={styles.toastText}>{toast.message}</Text>
+                </View>
+            )}
         
         </DeliveryAgentLayout>
 
@@ -558,6 +674,29 @@ const styles = StyleSheet.create({
     uploadText: {
         color: '#2563EB',
         fontSize: 13,
+    },
+
+    toast: {
+        position: 'absolute',
+        bottom: 30,
+        left: '10%',
+        right: '10%',
+        backgroundColor: '#4ade80',
+        padding: 15,
+        borderRadius: 10,
+        zIndex: 1000,
+        alignItems: 'center',
+        elevation: 4,
+    },
+
+    toastError: {
+        backgroundColor: '#ef4444',
+    },
+
+    toastText: {
+        color: 'white',
+        fontWeight: '600',
+        fontSize: 16,
     },
 
 });

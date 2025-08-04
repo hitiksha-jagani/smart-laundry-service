@@ -68,7 +68,6 @@ public class AvailabilityController {
 
         boolean isAvailable = availabilityService.isCurrentlyAvailable(userId);
         return ResponseEntity.ok(isAvailable);
-//        return ResponseEntity.ok(true);
     }
 
     //@author Hitiksha Jagani

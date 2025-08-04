@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,11 +129,16 @@ public class AvailabilityService {
     }
 
     public boolean isCurrentlyAvailable(String userId) {
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
+
+        ZoneId zone = ZoneId.of("Asia/Kolkata");
+        LocalDate today = LocalDate.now(zone);
+        LocalTime now = LocalTime.now(zone);
+
         com.SmartLaundry.model.DayOfWeek todayDay =
-                com.SmartLaundry.model.DayOfWeek.valueOf(java.time.LocalDate.now().getDayOfWeek().name());
+                com.SmartLaundry.model.DayOfWeek.valueOf(today.getDayOfWeek().name());
+
         System.out.println("Day of today : " + todayDay);
+        System.out.println("Now (IST): " + now);
 
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsersUserId(userId);
 
@@ -142,12 +148,14 @@ public class AvailabilityService {
         for (DeliveryAgentAvailability availability : availabilities) {
             System.out.println("Start time : " + availability.getStartTime());
             System.out.println("End time : " + availability.getEndTime());
+            System.out.println("Holiday: " + availability.isHoliday());
 
             if (!availability.isHoliday() &&
                     !now.isBefore(availability.getStartTime()) &&
                     !now.isAfter(availability.getEndTime())) {
                 return true;
             }
+
         }
         return false;
     }

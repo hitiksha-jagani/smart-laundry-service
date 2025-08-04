@@ -153,7 +153,7 @@ const TodayDeliveryCard = ({ delivery }) => {
                 <View style={styles.summaryRow}>
 
                     <View style={styles.summaryBox}><Text>Total Items: {totalQuantity}</Text></View>
-                    <View style={styles.summaryBox}><Text>Total KM: {km}</Text></View>
+                    {/* <View style={styles.summaryBox}><Text>Total KM: {km}</Text></View> */}
                     <View style={styles.summaryBox}><Text>Earnings: ₹{deliveryEarning}</Text></View>
                 
                 </View>
