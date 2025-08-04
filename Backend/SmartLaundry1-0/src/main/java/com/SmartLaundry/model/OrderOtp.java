@@ -1,16 +1,18 @@
 package com.SmartLaundry.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
 @Entity
 @Table(name = "Order_OTP")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@ToString(exclude = {"order", "user", "agent"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OrderOtp {
 
@@ -21,6 +23,7 @@ public class OrderOtp {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Order_Id", nullable = false)
+    @JsonBackReference  // ✅ Correct use here
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,5 +49,4 @@ public class OrderOtp {
     @Enumerated(EnumType.STRING)
     @Column(name = "purpose", nullable = false)
     private OtpPurpose purpose;
-
 }

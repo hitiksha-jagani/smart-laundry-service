@@ -122,32 +122,7 @@ public class OtpOrderEmailTransitionService {
         );
     }
 
-    // 4. Final OTP verification at delivery
-//    public void verifyDeliveryOtp(String orderId, String otpInput, String verifierId) {
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-//
-//        Boolean needsAgent = order.getServiceProvider().getNeedOfDeliveryAgent();
-//
-//        if (Boolean.TRUE.equals(needsAgent)) {
-//            if (order.getDeliveryDeliveryAgent() == null ||
-//                    !order.getDeliveryDeliveryAgent().getUsers().getUserId().equals(verifierId)) {
-//                throw new IllegalArgumentException("Only assigned delivery agent can verify this OTP.");
-//            }
-//        } else {
-//            if (!order.getServiceProvider().getUser().getUserId().equals(verifierId)) {
-//                throw new IllegalArgumentException("Only assigned service provider can verify this OTP.");
-//            }
-//        }
-//
-//        if (!orderEmailOtpService.validateOtp(order, otpInput, OtpPurpose.DELIVERY_CUSTOMER)) {
-//            throw new IllegalArgumentException("Invalid or expired OTP");
-//        }
-//
-//        order.setStatus(OrderStatus.DELIVERED);
-//        orderRepository.save(order);
-//        orderStatusHistoryService.save(order, OrderStatus.DELIVERED);
-//    }
+
     public void verifyDeliveryOtp(String orderId, String otpInput, String roleId, UserRole role) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));

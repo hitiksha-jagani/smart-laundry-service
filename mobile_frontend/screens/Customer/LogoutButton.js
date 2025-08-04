@@ -1,8 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../context/AuthContext';
-
+import { useAuth } from "../../context/AuthContext";
 export default function LogoutButton() {
   const { logout } = useAuth();
   const navigation = useNavigation();

@@ -8,8 +8,9 @@ import {
   Button,
   StyleSheet,
 } from "react-native";
-import axios from "../../utils/axiosInstance";
+
 import { useRoute, useNavigation } from "@react-navigation/native";
+import axios from "../../utils/axiosInstance";
 
 export default function OrderSummary() {
   const route = useRoute();
@@ -37,14 +38,21 @@ export default function OrderSummary() {
 
     fetchSummary();
   }, [orderId]);
+const handleRazorpayPay = () => {
+  if (!summary?.invoiceNumber) {
+    Alert.alert("Error", "No bill found for this order.");
+    return;
+  }
 
-  const handlePayNow = () => {
-    setPaymentStarted(true);
-    navigation.navigate("PayPalPayment", {
-      billId: summary.invoiceNumber,
-      orderId: orderId,
-    });
-  };
+  setPaymentStarted(true);
+
+  navigation.navigate('RazorpayPaymentScreen', {
+    invoiceNumber: summary.invoiceNumber,
+    finalPrice: summary.finalAmount,
+    orderId: orderId,
+  });
+};
+
 
   if (loading) {
     return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
@@ -62,6 +70,7 @@ export default function OrderSummary() {
       <Text><Text style={styles.label}>Status:</Text> {summary.status}</Text>
       <Text><Text style={styles.label}>Service:</Text> {summary.serviceName}</Text>
       <Text><Text style={styles.label}>Sub-Service:</Text> {summary.subServiceName}</Text>
+      <Text><Text style={styles.label}>Order Status:</Text> {summary.orderStatus}</Text>
 
       <View style={styles.table}>
         {summary.items.map((item, i) => (
@@ -88,16 +97,21 @@ export default function OrderSummary() {
         </Text>
       </View>
 
+      {/* ✅ Payment Section */}
       {summary.billStatus === "PAID" ? (
         <Text style={styles.paidText}>✅ Payment already completed.</Text>
-      ) : (
-        summary.invoiceNumber && summary.finalAmount > 0 && (
-          paymentStarted ? (
-            <Text style={styles.processingText}>Processing payment...</Text>
-          ) : (
-            <Button title="Pay with PayPal" onPress={handlePayNow} />
-          )
+      ) : summary.invoiceNumber &&
+        summary.finalAmount > 0 &&
+        summary.orderStatus === "DELIVERED" ? (
+        paymentStarted ? (
+          <Text style={styles.processingText}>Processing payment...</Text>
+        ) : (
+          <Button title="Pay with Razorpay" onPress={handleRazorpayPay} />
         )
+      ) : (
+        <Text style={styles.infoText}>
+          🕒 Payment will be available after delivery.
+        </Text>
       )}
     </ScrollView>
   );
@@ -147,6 +161,11 @@ const styles = StyleSheet.create({
   },
   processingText: {
     color: "blue",
+    marginTop: 20,
+    textAlign: "center",
+  },
+  infoText: {
+    color: "orange",
     marginTop: 20,
     textAlign: "center",
   },

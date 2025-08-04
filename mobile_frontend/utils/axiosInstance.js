@@ -1,21 +1,22 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL } from '../config'; // ✅ Correct
-
+import { BASE_URL } from '../config'; 
 const instance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_URL, 
 });
 
-// ✅ Public endpoints (no auth token required)
+// ✅ Public routes (no auth token required)
 const publicEndpoints = [
   '/customer/serviceProviders',
   '/customer/serviceProviders/nearby',
   '/customer/location/resolve-pin',
-  '/customer/serviceProviders/',   // for /customer/serviceProviders/{id}
-  '/orders/user/',                 // for /orders/user/{userId}
-  '/orders/summary-from-redis'     // summary from redis
+  '/customer/serviceProviders/',  
+  '/orders/user/',                
+  '/orders/user/',                
+  //'/orders/summary-from-redis'  
 ];
 
+// Add a request interceptor
 instance.interceptors.request.use(
   async (config) => {
     const isPublic = publicEndpoints.some((url) =>
@@ -31,7 +32,9 @@ instance.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 export default instance;

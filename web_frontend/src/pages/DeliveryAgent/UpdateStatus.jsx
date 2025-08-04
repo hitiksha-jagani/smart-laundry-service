@@ -66,7 +66,7 @@ const UpdateStatus = () => {
 
     const orderId = delivery.orderId;
     const status = delivery.orderStatus;
-
+  console.log("Order status in update:", status);
     let endpoint = '';
     const payload = { orderId, otp };
 
