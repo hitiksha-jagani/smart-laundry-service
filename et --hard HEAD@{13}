@@ -1,0 +1,71 @@
+[33m225b1e47[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: commit (merge): mobile version done
+[33m0097588e[m HEAD@{1}: commit: mobile done
+[33m6c569586[m HEAD@{2}: commit (merge): Payment
+[33ma9019b86[m HEAD@{3}: commit: Payment
+[33m5e098b1e[m HEAD@{4}: commit (merge): Razorpay
+[33mc07047a3[m HEAD@{5}: commit: changes added
+[33mdfbac654[m HEAD@{6}: commit: updates
+[33mb88e7b4b[m HEAD@{7}: commit (merge): Docker
+[33mc4ed0d7f[m HEAD@{8}: commit: Docker setup
+[33mde6c7d10[m HEAD@{9}: commit (merge): Merge branch 'main' of https://github.com/hitiksha-jagani/smart-laundry-service
+[33mf61386cc[m HEAD@{10}: commit: mobile version
+[33m64dcc76e[m HEAD@{11}: commit: login in mobile version
+[33mc729d60e[m HEAD@{12}: pull --no-rebase: Merge made by the 'ort' strategy.
+[33m720604fe[m HEAD@{13}: commit: for pull
+[33mf49b5726[m HEAD@{14}: commit (merge): Merge branch 'main' of https://github.com/hitiksha-jagani/smart-laundry-service
+[33m3ad5de98[m HEAD@{15}: commit: changes
+[33m9b3cf249[m HEAD@{16}: commit (merge): changes
+[33me32508b2[m HEAD@{17}: commit: some changes
+[33md7aaf620[m HEAD@{18}: commit (merge): Merge branch 'main' of https://github.com/hitiksha-jagani/smart-laundry-service
+[33me0e952d5[m HEAD@{19}: commit: customer and service provider done
+[33m00d2bcc6[m HEAD@{20}: commit (merge): pull
+[33m09e89497[m HEAD@{21}: commit: pull
+[33m52a36fe0[m HEAD@{22}: pull --no-rebase: Merge made by the 'ort' strategy.
+[33macf0a088[m HEAD@{23}: commit: login fix
+[33ma1048ee6[m HEAD@{24}: commit: frontend of customer
+[33me61880f4[m HEAD@{25}: commit (merge): changes
+[33m1fce8505[m HEAD@{26}: commit: changes
+[33m182a305a[m HEAD@{27}: commit: changes added
+[33md667717f[m HEAD@{28}: commit (merge): changes added
+[33meeec3faa[m HEAD@{29}: commit: change in discount logic
+[33mdde490af[m HEAD@{30}: commit: some changes
+[33me1a92526[m HEAD@{31}: commit: updated
+[33mbe5c6b17[m HEAD@{32}: commit (merge): resolve conflict
+[33m42794861[m HEAD@{33}: commit: WIP: Local changes before pulling
+[33m7cc4ddbf[m HEAD@{34}: pull --rebase (finish): returning to refs/heads/main
+[33m7cc4ddbf[m HEAD@{35}: pull --rebase (pick): Update order flow and apply-promo logic
+[33m73d73d0b[m HEAD@{36}: pull --rebase (start): checkout 73d73d0bd74624fdeec99f8afc8e698cc518cb19
+[33md2160770[m HEAD@{37}: commit: Update order flow and apply-promo logic
+[33m2fbd39e8[m HEAD@{38}: commit: some changes
+[33m0523f8b1[m HEAD@{39}: commit: Add new features and controllers
+[33m852e66e6[m HEAD@{40}: pull origin main: Fast-forward
+[33m680f2db3[m HEAD@{41}: reset: moving to HEAD
+[33m680f2db3[m HEAD@{42}: reset: moving to HEAD
+[33m680f2db3[m HEAD@{43}: commit: service provider workload
+[33mcc91b9b0[m HEAD@{44}: commit: service provider profile
+[33me6ecf79e[m HEAD@{45}: commit (merge): Merge branch 'main' of https://github.com/hitiksha-jagani/smart-laundry-service
+[33m2c3784d6[m HEAD@{46}: commit: WIP: before pulling latest changes
+[33m1acdb937[m HEAD@{47}: commit (merge): Resolved merge conflicts
+[33m76572bd3[m HEAD@{48}: commit: service provider's feedback and get all orders
+[33m99cffa49[m HEAD@{49}: commit: feedback and ticket and cancel/reschedule order
+[33m0131bfa1[m HEAD@{50}: commit: service provider accept/reject order
+[33m98054346[m HEAD@{51}: commit: customer order booking
+[33m7783e1e7[m HEAD@{52}: commit: Service Provider updates
+[33mb2821bb1[m HEAD@{53}: commit (merge): Merge branch 'main' of https://github.com/hitiksha-jagani/smart-laundry-service
+[33m489f2524[m HEAD@{54}: reset: moving to HEAD
+[33m489f2524[m HEAD@{55}: pull origin main: updating HEAD
+[33m489f2524[m HEAD@{56}: commit: Stop tracking .idea folder
+[33me1f34753[m HEAD@{57}: commit: service provider api
+[33mc7fd73ef[m HEAD@{58}: commit: submit service provider's profile details
+[33mf67539cc[m HEAD@{59}: rebase (finish): returning to refs/heads/main
+[33mf67539cc[m HEAD@{60}: commit: commit
+[33m50b94f2c[m HEAD@{61}: pull --rebase origin main (start): checkout 50b94f2caf34ab96fa731b60b1b6d5138b4af047
+[33m396ad46d[m HEAD@{62}: commit: commit
+[33md95c6169[m HEAD@{63}: pull: Merge made by the 'ort' strategy.
+[33m0acef91a[m HEAD@{64}: commit: changes added
+[33meed70e01[m HEAD@{65}: commit: model added
+[33m6ba8e9f0[m HEAD@{66}: commit: .idea folder remove
+[33mcb4d7954[m HEAD@{67}: commit: redis pub/sub resolve
+[33m565c77f6[m HEAD@{68}: commit: Add OTP service via email and SMS using Twilio
+[33md7c82c05[m HEAD@{69}: commit: Add application.properties with environment variable placeholders
+[33m976fc40f[m HEAD@{70}: clone: from https://github.com/hitiksha-jagani/smart-laundry-service.git

@@ -683,13 +683,13 @@ public class DeliveriesService {
                     .orElseThrow(() -> new RuntimeException("Agent not found"));
 
             // Update order status and agent
-//            if (order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
-//                order.setPickupDeliveryAgent(agent);
-//                order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
-//            } else {
-//                order.setDeliveryDeliveryAgent(agent);
-//                order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
-//            }
+            if (order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
+                order.setPickupDeliveryAgent(agent);
+                order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
+            } else {
+                order.setDeliveryDeliveryAgent(agent);
+                //order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
+            }
 
             // Retrieve delivery data from Redis
             String deliveryRedisKey = "deliveryEarnings:" + orderId;
