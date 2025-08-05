@@ -55,15 +55,25 @@ useEffect(() => {
 
   const validateFields = () => {
     const newErrors = {};
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
     if (!formData.firstName) newErrors.firstName = "First name is required";
+
     if (!formData.phone || formData.phone.length !== 10)
       newErrors.phone = "Valid 10-digit phone is required";
-    if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
+
+    if (!passwordRegex.test(formData.password)) {
+      newErrors.password =
+        "Password must be at least 8 characters, contain 1 uppercase letter and 1 special character";
+    }
+ 
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
+
     if (!formData.addresses.cityId)
       newErrors.cityId = "City selection is required";
+
     return newErrors;
   };
 

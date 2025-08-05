@@ -13,6 +13,8 @@ import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.JWTService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -58,6 +60,8 @@ public class AuthService {
 
     @Autowired
     private EmailService emailService;
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     //@author Hitiksha Jagani
     // Logic for registration
@@ -121,11 +125,14 @@ public class AuthService {
         address.setUsers(users);
 
         // Build full address string for geocoding
-        String fullAddress = String.format("%s, %s, %s, %s",
+        String fullAddress = String.format("%s, %s, %s, %s %s",
                 addr.getName(),
                 addr.getAreaName(),
                 city.getCityName(),
+                city.getState().getStateName(),
                 addr.getPincode());
+
+        logger.info("Full address is : {}", fullAddress);
 
         // Call utility to get coordinates
         double[] latLng = geoUtils.getLatLng(fullAddress);

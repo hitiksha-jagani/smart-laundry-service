@@ -6,7 +6,6 @@ import { Alert, Platform } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import * as Location from 'expo-location';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LocationTracker = ({ isAvailable }) => {
     const intervalRef = useRef(null);
@@ -39,20 +38,11 @@ const LocationTracker = ({ isAvailable }) => {
                     },
                 }
                 );
-                console.log('Location updated:', latitude, longitude);
             } catch (err) {
                 console.error('Error updating location:', err);
             }
         };
 
-        // if (isAvailable) {
-        //     updateLocation(); 
-        //     intervalRef.current = setInterval(updateLocation, 5000);
-        // }
-
-        // return () => {
-        //     if (intervalRef.current) clearInterval(intervalRef.current);
-        // };
         const startLocationTracking = () => {
             console.log("Waiting 2 minutes to start location tracking...");
             updateLocation(); 

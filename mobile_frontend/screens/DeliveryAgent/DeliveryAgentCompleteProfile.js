@@ -6,7 +6,6 @@ import { View, Text, TextInput, Dimensions, ActivityIndicator,  Alert, StyleShee
 import * as DocumentPicker from 'expo-document-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import RNPickerSelect from 'react-native-picker-select';
-// import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
@@ -92,9 +91,9 @@ const DeliveryAgentCompleteProfile = () => {
                 setFiles((prev) => ({
                     ...prev,
                     [name]: {
-                    uri: file.uri,
-                    name: file.name,
-                    mimeType: file.mimeType || 'application/octet-stream',
+                        uri: file.uri,
+                        name: file.name,
+                        mimeType: file.mimeType || 'application/octet-stream',
                     },
                 }));
             } else if (result.type === 'success') {
@@ -102,9 +101,9 @@ const DeliveryAgentCompleteProfile = () => {
                 setFiles((prev) => ({
                     ...prev,
                     [name]: {
-                    uri: result.uri,
-                    name: result.name,
-                    mimeType: result.mimeType || 'application/octet-stream',
+                        uri: result.uri,
+                        name: result.name,
+                        mimeType: result.mimeType || 'application/octet-stream',
                     },
                 }));
             }

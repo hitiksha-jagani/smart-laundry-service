@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import DeliveryAgentHeader from './DeliveryAgentHeaderDrawer';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
@@ -37,6 +36,7 @@ const Layout = ({ children }) => {
 
         setUser(userRes.data);
         setIsAvailable(availabilitiesRes.data === true);
+        console.log("Availability", availabilitiesRes.data)
         
       } catch (err) {
         console.error('Invalid token or fetch failed:', err);
@@ -59,6 +59,9 @@ const Layout = ({ children }) => {
 
   return (
     <View style={[styles.container, deliveryAgentStyles.deliveryAgentBody]}>
+
+      <LocationTracker isAvailable={isAvailable} />
+
       <DeliveryAgentHeader agent={user} showBackButton={showBackButton}
         onBackPress={() => navigation.goBack()}/>
 
@@ -69,8 +72,6 @@ const Layout = ({ children }) => {
       >
         {children}
       </ScrollView>
-
-      <LocationTracker isAvailable={isAvailable} />
 
     </View>
   );

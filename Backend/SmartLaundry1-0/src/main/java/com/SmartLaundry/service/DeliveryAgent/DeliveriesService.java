@@ -127,7 +127,7 @@ public class DeliveriesService {
     }
 
     // Return list of pending deliveries
-@Transactional
+    @Transactional
     public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) {
 
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
@@ -135,7 +135,6 @@ public class DeliveriesService {
 
         Set<String> assignmentKeys = redisTemplate.keys("assignment:*");
         if (assignmentKeys == null || assignmentKeys.isEmpty()) {
-            System.out.println("Assignment key is null");
             return Collections.emptyList(); }
 
         List<Order> orders = new ArrayList<>();
@@ -307,6 +306,7 @@ public class DeliveriesService {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
     @Transactional
     public List<PendingDeliveriesResponseDTO> getTodayDeliveries(Users user) {
         List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
@@ -460,6 +460,7 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
+//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
             boolean isAvailable = availabilityService.isCurrentlyAvailable(agent.getUsers().getUserId());
             if (!isAvailable) {
                 logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
@@ -532,6 +533,7 @@ public class DeliveriesService {
             DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(key).orElse(null);
 
             // Check availability
+//            boolean isAvailable = availabilityRepository.isAgentAvailable(agent.getDeliveryAgentId(), LocalDate.now(), LocalTime.now());
             boolean isAvailable = availabilityService.isCurrentlyAvailable(agent.getUsers().getUserId());
             if (!isAvailable) {
                 logger.info("Agent {} is not available at {} on {}", agent.getDeliveryAgentId(), now, today);
@@ -683,13 +685,13 @@ public class DeliveriesService {
                     .orElseThrow(() -> new RuntimeException("Agent not found"));
 
             // Update order status and agent
-//            if (order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
-//                order.setPickupDeliveryAgent(agent);
-//                order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
-//            } else {
-//                order.setDeliveryDeliveryAgent(agent);
+            if (order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
+                order.setPickupDeliveryAgent(agent);
+                order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
+            } else {
+                order.setDeliveryDeliveryAgent(agent);
 //                order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
-//            }
+            }
 
             // Retrieve delivery data from Redis
             String deliveryRedisKey = "deliveryEarnings:" + orderId;

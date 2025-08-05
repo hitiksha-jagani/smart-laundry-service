@@ -68,7 +68,7 @@ const DeliveryPage = () => {
             <SummaryCard
               title="PENDING ORDERS"
               user={user}
-              count={summary?.pendingDeliveries || 0}
+              count={pending?.length || 0}
               link="PendingDeliveries"
               data={pending ?? []}
               // data={mockDeliveries}
@@ -76,7 +76,7 @@ const DeliveryPage = () => {
             <SummaryCard
               title="TODAY'S ORDERS"
               user={user}
-              count={summary?.todayDeliveries || 0}
+              count={today?.length || 0}
               link="TodayDeliveries"
               data={today ?? []}
               // data={mockDeliveries}

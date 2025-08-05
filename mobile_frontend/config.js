@@ -5,7 +5,4 @@
 // export const BASE_URL = 'http://10.200.13.187:8080'; //hostname -I
 // export const BASE_URL = 'http://localhost:8080';
 
-//Bhavika
-// export const BASE_URL = 'http://10.61.204.155:8080'; //Home
-// export const BASE_URL = "http://10.200.23.44:8080";
-export const BASE_URL ="http://192.168.29.110:8080";
+// export const BASE_URL = 'http://10.200.23.46:8080';

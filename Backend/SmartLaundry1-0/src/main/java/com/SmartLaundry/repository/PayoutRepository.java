@@ -6,6 +6,7 @@ import com.SmartLaundry.dto.Admin.ServiceProviderInsightDTO;
 import com.SmartLaundry.dto.Admin.ServiceProviderRevenueTableDTO;
 import com.SmartLaundry.model.Payment;
 import com.SmartLaundry.model.Payout;
+import com.SmartLaundry.model.UserRole;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -86,24 +87,6 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
 
-
-//    @Query("SELECT new com.SmartLaundry.dto.Admin.ServiceProviderRevenueTableDTO(" +
-//            "sp.serviceProviderId, " +
-//            "SUM(p.finalAmount), " +
-//            "SUM(p.charge), " +
-//            "MAX(p.dateTime), " +
-//            "COUNT(p)) " +
-//            "FROM Payout p " +
-//            "JOIN p.users u " +
-//            "JOIN ServiceProvider sp ON sp.user = u " +
-//            "WHERE p.dateTime BETWEEN :start AND :end " +
-//            "GROUP BY sp.serviceProviderId " +
-//            "ORDER BY SUM(p.finalAmount) DESC")
-//    List<ServiceProviderRevenueTableDTO> findAllProviderRevenuesInRange(
-//            @Param("start") LocalDateTime start,
-//            @Param("end") LocalDateTime end
-//    );
-
     @Query("SELECT new com.SmartLaundry.dto.Admin.ServiceProviderRevenueTableDTO(" +
             "sp.serviceProviderId, " +
             "SUM(p.finalAmount), " +
@@ -113,17 +96,18 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
             "FROM Payout p " +
             "JOIN p.users u " +
             "JOIN ServiceProvider sp ON sp.user = u " +
-            "WHERE p.dateTime BETWEEN :start AND :end " +
-            "AND u.role = 'SERVICE_PROVIDER' " +
+            "WHERE p.createdAt BETWEEN :start AND :end " +
+            "AND u.role = :role " +
             "GROUP BY sp.serviceProviderId " +
             "ORDER BY SUM(p.finalAmount) DESC")
     List<ServiceProviderRevenueTableDTO> findAllProviderRevenuesInRange(
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("end") LocalDateTime end,
+            @Param("role") UserRole role
     );
 
 
-    @Query("SELECT SUM(p.finalAmount) FROM Payout p WHERE p.users.userId = :userId AND p.dateTime BETWEEN :start AND :end")
+    @Query("SELECT SUM(p.finalAmount) FROM Payout p WHERE p.users.userId = :userId AND p.createdAt BETWEEN :start AND :end")
     Double getRevenueForUserInRange(@Param("userId") String userId,
                                         @Param("start") LocalDateTime start,
                                         @Param("end") LocalDateTime end);
@@ -137,7 +121,7 @@ public interface PayoutRepository extends JpaRepository<Payout, String> {
             "FROM Payout p " +
             "JOIN p.users u " +
             "JOIN DeliveryAgent da ON da.users = u " +
-            "WHERE p.dateTime BETWEEN :start AND :end " +
+            "WHERE p.createdAt BETWEEN :start AND :end " +
             "GROUP BY da.deliveryAgentId " +
             "ORDER BY SUM(p.finalAmount) DESC")
     List<DeliveryAgentRevenueTableDTO> findAllAgentRevenuesInRange(

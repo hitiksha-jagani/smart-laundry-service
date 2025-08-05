@@ -99,15 +99,35 @@ const ChangeAgentPasswordPage = () => {
         setVisible(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
-    const handleSave = () => {
-        if (!formData.oldPassword || !formData.newPassword || !formData.confirmPassword) {
+    const validateFields = () => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+        const { oldPassword, newPassword, confirmPassword } = formData;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
             showToast("Please fill all fields", "error");
-            return;
+            return false;
+        } 
+
+        if (newPassword !== confirmPassword) {
+            showToast("Password and confirm password do not match", "error");
+            return false;
         }
+
+        if (!passwordRegex.test(newPassword)) {
+            showToast("New password must be at least 8 characters long, include 1 uppercase letter and 1 special character", "error");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSave = () => {
+        if (!validateFields()) return;
 
         axiosInstance.put('/profile/detail/change-password', formData)
             .then((res) => {
-                showToast(res.data, "success");
+                showToast(res.data || "Password changed successfully!", "success");
                 setTimeout(() => {
                     navigate("/profile/detail"); 
                 }, 1500);

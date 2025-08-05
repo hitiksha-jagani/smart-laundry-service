@@ -88,15 +88,15 @@ const AdminSidebar = ({ admin }) => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/admin-profile" className="admin-sidebar-link">
-                            <img className="admin-sidebar-icon" src={profile} alt="" />
-                            <span>My Profile</span>
-                        </NavLink>
-                    </li>
-                    <li>
                         <NavLink to="/configurations/providers" className="admin-sidebar-link">
                             <img className="admin-sidebar-icon" src={configuration} alt="" />
                             <span>Configurations</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/admin-profile" className="admin-sidebar-link">
+                            <img className="admin-sidebar-icon" src={profile} alt="" />
+                            <span>My Profile</span>
                         </NavLink>
                     </li>
                 </ul>

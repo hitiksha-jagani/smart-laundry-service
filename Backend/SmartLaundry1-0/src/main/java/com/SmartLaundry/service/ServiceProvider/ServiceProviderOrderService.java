@@ -124,6 +124,7 @@ public class ServiceProviderOrderService {
                     .build();
         }).toList();
     }
+
     @Transactional
     public List<ActiveOrderGroupedDto> getActiveOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
@@ -395,7 +396,7 @@ public class ServiceProviderOrderService {
         saveOrderStatusHistory(order, OrderStatus.IN_CLEANING);
     }
 
-@Transactional
+    @Transactional
         public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
             Order order = orderRepository.findByorderId(orderId)
                     .orElseThrow(() -> new IllegalArgumentException("Order not found"));

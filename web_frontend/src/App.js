@@ -273,11 +273,6 @@ function App() {
                 <PendingPayouts />
               </RoleProtectedRoute>
             }/> 
-            <Route path="/payouts/pending" element={
-              <RoleProtectedRoute allowedRoles={["DELIVERY_AGENT"]}>
-                <PendingPayouts />
-              </RoleProtectedRoute>
-            }/>  
 
             {/* Feedback Page  */}
             <Route path="/feedback/summary" element={

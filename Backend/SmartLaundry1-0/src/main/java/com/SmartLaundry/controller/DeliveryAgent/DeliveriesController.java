@@ -48,33 +48,19 @@ public class DeliveriesController {
         // Fetch agent id
         try {
             String token = jwtService.extractTokenFromHeader(request);
-            System.out.println("Extracted token: " + token);
-
             String agentId = (String) jwtService.extractUserId(token);
-            System.out.println("Agent ID: " + agentId);
-
             Users user = roleCheckingService.checkUser(agentId);
-            System.out.println("User: " + user);
-
             roleCheckingService.isDeliveryAgent(user);
-            System.out.println("User is delivery agent");
 
             DeliverySummaryResponseDTO summary = deliveriesService.deliveriesSummary(agentId);
-            System.out.println("Summary: " + summary);
 
             return ResponseEntity.ok(summary);
         } catch (Exception ex) {
-            ex.printStackTrace();  // log full error
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to fetch summary", "message", ex.getMessage()));
         }
 
-//        String agentId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
-//        System.out.println("Extracted token: " + token);
-//        Users user = roleCheckingService.checkUser(agentId);
-//        roleCheckingService.isDeliveryAgent(user);
-//        DeliverySummaryResponseDTO deliverySummaryResponseDTO = deliveriesService.deliveriesSummary(agentId);
-//        return ResponseEntity.ok(deliverySummaryResponseDTO);
     }
 
     // @author Hitiksha Jagani
@@ -97,7 +83,6 @@ public class DeliveriesController {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(request));
         Users user = roleCheckingService.checkUser(userId);
         roleCheckingService.isDeliveryAgent(user);
-        System.out.println("Get today's deliveries");
         return ResponseEntity.ok(deliveriesService.getTodayDeliveries(user));
     }
 
