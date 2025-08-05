@@ -16,6 +16,7 @@ public class CORSConfig {
                         .allowedOrigins("http://localhost:3000","http://localhost:8081", "http://192.168.1.7:8080" , "http://10.200.23.46:8080")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
+                        .exposedHeaders("Authorization")
                         .allowCredentials(true);
             }
         };

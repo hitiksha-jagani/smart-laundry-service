@@ -1,3 +1,67 @@
+# services:
+#   backend:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile.backend 
+#     container_name: smart-laundry-backend
+#     volumes:
+#       - ../Env_Var.env:/app/Env_Var.env
+#       - ./uploads:/app/uploads
+#     ports:
+#       # - "${SPRING_PORT}:8080"
+#      - "8080:8080"
+
+#     dns:
+#       - 8.8.8.8
+#     depends_on:
+#       - postgres
+#       - redis
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=docker
+#       - CHOKIDAR_USEPOLLING=true
+#     env_file:
+#       - .env
+#     restart: always
+
+#   frontend:
+#     build:
+#       context: ./web_frontend
+#       dockerfile: Dockerfile
+#     container_name: smart-laundry-service-frontend
+#     ports:
+#       - "3000:80"
+#     depends_on:
+#       - backend
+#     environment:
+#       - CHOKIDAR_USEPOLLING=true
+#     restart: always
+
+#   postgres:
+#     image: postgres:15
+#     container_name: smart-laundry-postgres
+#     environment:
+#       POSTGRES_DB: Laundry_DB
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: Nencypatel@99
+#     ports:
+#       # - "5432:5432"
+#       - "5433:5432" 
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+#     restart: always
+
+#   redis:
+#     image: redis:alpine
+#     container_name: smart-laundry-service-redis
+#     ports:
+#       - "6379:6379"
+#     restart: always
+
+# volumes:
+#   pgdata:
+
+
+
 services:
   backend:
     build:
@@ -8,17 +72,17 @@ services:
       - ../Env_Var.env:/app/Env_Var.env
       - ./uploads:/app/uploads
     ports:
-      # - "${SPRING_PORT}:8080"
-     - "8080:8080"
-
+      - "8080:8080"
     dns:
       - 8.8.8.8
     depends_on:
       - postgres
-      - redis
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CHOKIDAR_USEPOLLING=true
+      - REDIS_HOST=redis-11883.c84.us-east-1-2.ec2.redns.redis-cloud.com
+      - REDIS_PORT=11883
+      - REDIS_PASSWORD=QZ2VhMwWY5jg1Qg1pK1gnN1UGrWuMIu5
     env_file:
       - .env
     restart: always
@@ -44,18 +108,18 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Nencypatel@99
     ports:
-      # - "5432:5432"
-      - "5433:5432" 
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
 
-  redis:
-    image: redis:alpine
-    container_name: smart-laundry-service-redis
-    ports:
-      - "6379:6379"
-    restart: always
+# 🔻 Redis container is commented out since we're using Redis Cloud
+#  redis:
+#    image: redis:alpine
+#    container_name: smart-laundry-service-redis
+#    ports:
+#      - "6379:6379"
+#    restart: always
 
 volumes:
   pgdata:
