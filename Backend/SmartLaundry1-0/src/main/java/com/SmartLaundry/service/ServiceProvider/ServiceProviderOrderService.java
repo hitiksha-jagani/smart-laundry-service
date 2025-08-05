@@ -124,6 +124,7 @@ public class ServiceProviderOrderService {
                     .build();
         }).toList();
     }
+
     @Transactional
     public List<ActiveOrderGroupedDto> getActiveOrdersForServiceProvider(String spUserId) {
         ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
@@ -395,71 +396,7 @@ public class ServiceProviderOrderService {
         saveOrderStatusHistory(order, OrderStatus.IN_CLEANING);
     }
 
-//    public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
-//        Order order = orderRepository.findByorderId(orderId)
-//                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-//
-//        ServiceProvider sp = serviceProviderRepository.findByUserUserId(spUserId)
-//                .orElseThrow(() -> new EntityNotFoundException("Service Provider not found"));
-//
-//        if (!order.getServiceProvider().getServiceProviderId().equals(sp.getServiceProviderId())) {
-//            throw new AccessDeniedException("Unauthorized to update this order");
-//        }
-//
-//        if (order.getStatus() != OrderStatus.IN_CLEANING) {
-//            throw new IllegalStateException("Order must be IN_CLEANING to mark as READY_FOR_DELIVERY");
-//        }
-//
-//        order.setStatus(OrderStatus.READY_FOR_DELIVERY);
-//        order.setDeliveryDate(LocalDate.now());
-//
-//        saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
-//        orderRepository.save(order);
-//        saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
-//        //For SMS
-////        if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
-////            // Agent will come to collect clothes from provider —> send OTP to provider
-////        deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
-////            orderOtpService.generateAndSendOtp(
-////                    order,
-////                    sp.getUser(),
-////                    null,
-////                    OtpPurpose.CONFIRM_FOR_CLOTHS,
-////                    sp.getUser().getPhoneNo()
-////
-////            );
-////        } else {
-////            // Provider will deliver directly to customer —> send delivery OTP to customer
-////            orderOtpService.generateAndSendOtp(
-////                    order,
-////                    order.getUsers(),
-////                    null,
-////                    OtpPurpose.DELIVERY_CUSTOMER,
-////                    order.getUsers().getPhoneNo()
-////            );
-////        }
-//        //For Email
-//        if (Boolean.TRUE.equals(sp.getNeedOfDeliveryAgent())) {
-//            deliveryService.assignToDeliveryAgentServiceProviderOrders(order.getOrderId());
-//            orderEmailOtpService.generateAndSendOtp(
-//                    order,
-//                    sp.getUser(), // provider user
-//                    null,
-//                    OtpPurpose.CONFIRM_FOR_CLOTHS,
-//                    sp.getUser().getEmail()
-//            );
-//        } else {
-//            // Provider will deliver directly to customer —> send delivery OTP to customer
-//            orderEmailOtpService.generateAndSendOtp(
-//                    order,
-//                    order.getUsers(),
-//                    null,
-//                    OtpPurpose.DELIVERY_CUSTOMER,
-//                    order.getUsers().getEmail()
-//            );
-//        }
-//    }
-@Transactional
+    @Transactional
         public void markOrderReadyForDelivery(String spUserId, String orderId) throws AccessDeniedException, JsonProcessingException {
             Order order = orderRepository.findByorderId(orderId)
                     .orElseThrow(() -> new IllegalArgumentException("Order not found"));

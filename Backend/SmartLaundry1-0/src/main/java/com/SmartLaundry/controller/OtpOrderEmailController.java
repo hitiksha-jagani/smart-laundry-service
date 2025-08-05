@@ -45,34 +45,6 @@ public class OtpOrderEmailController {
     private final OtpOrderEmailTransitionService otpOrderEmailTransitionService;
     private final OrderRepository orderRepository;
 
-
-
-    //    @PostMapping("/verify-pickup")
-//    public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request, HttpServletRequest token) {
-//        String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));
-//        Users user = roleCheckingService.checkUser(userId);
-//        String agentId = null;
-//
-//        if (user.getRole() == UserRole.DELIVERY_AGENT) {
-//            DeliveryAgent agent = deliveryAgentRepository.findByUsers_UserId(userId)
-//                    .orElseThrow(() -> new IllegalArgumentException("Delivery agent not found"));
-//            agentId = agent.getDeliveryAgentId();
-//        }
-//
-//        try {
-//            otpOrderEmailTransitionService.verifyPickupOtp(request.getOrderId(), request.getOtp(), agentId);
-//            return ResponseEntity.ok("OTP verified successfully.");
-//        } catch (Exception e) {
-//            log.error("❗ Error verifying pickup OTP: {}", e.getMessage(), e);
-//            return ResponseEntity.internalServerError().body("Error verifying OTP.");
-//        }
-//    }
-//    @JsonIgnoreProperties(ignoreUnknown = true)
-//    @Data
-//    public static class OtpRequest {
-//        private String orderId;
-//        private String otp;
-//    }
     @PostMapping("/verify-pickup")
     public ResponseEntity<?> verifyPickupOtp(@RequestBody OtpRequest request, HttpServletRequest token) {
         String userId = (String) jwtService.extractUserId(jwtService.extractTokenFromHeader(token));

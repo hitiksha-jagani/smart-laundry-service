@@ -690,7 +690,7 @@ public class DeliveriesService {
                 order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
             } else {
                 order.setDeliveryDeliveryAgent(agent);
-                order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
+//                order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
             }
 
             // Retrieve delivery data from Redis
