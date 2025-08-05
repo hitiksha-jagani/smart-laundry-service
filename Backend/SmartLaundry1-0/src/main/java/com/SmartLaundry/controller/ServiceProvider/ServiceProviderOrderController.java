@@ -87,27 +87,6 @@ public class ServiceProviderOrderController {
         return ResponseEntity.ok("Order marked as READY_FOR_DELIVERY");
     }
 
-//    @GetMapping("/pending-otp-verification")
-//    public ResponseEntity<List<OrderResponseDto>> getOrdersPendingOtpVerification(HttpServletRequest request) {
-//        String token = jwtService.extractTokenFromHeader(request);
-//        String userId = jwtService.extractUserId(token).toString();// use static method
-//
-//        Object userIdObj = jwtService.extractUserId(token);
-//        if (userIdObj == null) {
-//            throw new RuntimeException("User ID missing in token.");
-//        }
-//        ServiceProvider provider = serviceProviderRepository.findByUserUserId(userId)
-//                .orElseThrow(() -> new RuntimeException("No service provider found for userId: " + userId));
-//
-//        List<Order> orders = orderRepository.findAllByServiceProviderAndOtpVerificationRequired(provider);
-//
-//        List<OrderResponseDto> response = orders.stream()
-//                .map(orderMapper::toOtpVerificationDto)
-//                .toList();
-//
-//        return ResponseEntity.ok(response);
-//    }
-
     @GetMapping("/pending-otp-verification")
     public ResponseEntity<List<OrderResponseDto>> getOrdersPendingOtpVerification(HttpServletRequest request) {
         String token = jwtService.extractTokenFromHeader(request);

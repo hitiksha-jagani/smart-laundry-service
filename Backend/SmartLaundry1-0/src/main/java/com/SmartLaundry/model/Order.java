@@ -28,7 +28,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "orders")
-@ToString(exclude = "orderSchedulePlan")
+@ToString(exclude = {"statusHistory", "orderOtpList", "serviceProvider", "deliveryAgent"})
 @Schema(description = "Represents an order placed by a customer to a service provider.")
 public class Order implements Serializable {
 
@@ -146,6 +146,11 @@ public class Order implements Serializable {
     @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private Bill bill;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<OrderOtp> orderOtpList;
+
 
 //    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private List<OrderOtp> otpList;

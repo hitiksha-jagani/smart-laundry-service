@@ -10,12 +10,21 @@ export default function OtpVerificationOrders() {
 
   const toggleSidebar = () => setCollapsed(prev => !prev);
 
-  useEffect(() => {
-    axios
-      .get("/provider/orders/pending-otp-verification")
-      .then(res => setOrders(res.data))
-      .catch(console.error);
-  }, []);
+useEffect(() => {
+  axios
+    .get("/provider/orders/pending-otp-verification", {
+      headers: {
+        "Cache-Control": "no-cache"
+      }
+    })
+    .then(res => {
+      console.log("Orders (fresh):", res.data);
+      setOrders(res.data);
+    })
+    .catch(console.error);
+}, []);
+
+
 
   return (
     <div className="flex bg-orange-50 min-h-screen">
@@ -58,24 +67,26 @@ export default function OtpVerificationOrders() {
                   <span className="font-medium text-orange-600">{order.status}</span>
                 </p>
 
-                <div className="mt-3 flex gap-3">
-                  {order.status === "ACCEPTED_BY_PROVIDER" && (
-                    <button
-                      onClick={() => navigate(`/provider/otp/verify/pickup/${order.orderId}`)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm"
-                    >
-                      Verify Pickup OTP
-                    </button>
-                  )}
-                  {order.status === "READY_FOR_DELIVERY" && (
-                    <button
-                      onClick={() => navigate(`/provider/otp/verify/delivery/${order.orderId}`)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm"
-                    >
-                      Verify Delivery OTP
-                    </button>
-                  )}
-                </div>
+               <div className="mt-3 flex gap-3">
+  {order.status === "ACCEPTED_BY_PROVIDER" && (
+        <button
+          onClick={() => navigate(`/provider/otp/verify/pickup/${order.orderId}`)}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm"
+        >
+          Verify Pickup OTP
+        </button>
+      )}
+      {order.status === "READY_FOR_DELIVERY" && (
+        <button
+          onClick={() => navigate(`/provider/otp/verify/delivery/${order.orderId}`)}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm"
+        >
+          Verify Delivery OTP
+        </button>
+      )}
+
+    </div>
+
               </div>
             ))
           )}

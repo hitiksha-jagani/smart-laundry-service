@@ -101,34 +101,39 @@ export default function LoginScreen() {
           navigation.navigate("RevenueSummary");
           break;
 
-        case "SERVICE_PROVIDER":
-          try {
-            const providerRes = await fetch(
-              `${BASE_URL}/provider/orders/from-user/${userId}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${data.jwtToken}`,
-                },
-              }
-            );
+       case "SERVICE_PROVIDER":
+  try {
+    const providerRes = await fetch(
+      `${BASE_URL}/provider/orders/from-user/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${data.jwtToken}`,
+        },
+      }
+    );
 
-            if (providerRes.ok) {
-              const providerId = await providerRes.text();
-              login(data.jwtToken, data.role, userId, providerId);
-              navigation.navigate("ProviderDrawer", {
-              screen: "ProviderDashboard",
-            });
+    if (providerRes.ok) {
+      const providerId = await providerRes.text();
 
-            } else if (providerRes.status === 404) {
-              navigation.navigate("ProviderCompleteProfile");
-            } else {
-              throw new Error("Provider check failed");
-            }
-          } catch (err) {
-            console.error("Service provider error:", err);
-            setError("Unable to retrieve service provider info.");
-          }
-          break;
+      // ✅ Call login only once AFTER you have providerId
+      await login(data.jwtToken, data.role, userId, providerId);
+
+      navigation.navigate("ProviderDrawer", {
+        screen: "ProviderDashboard",
+      });
+
+    } else if (providerRes.status === 404) {
+      await login(data.jwtToken, data.role, userId); // fallback
+      navigation.navigate("ProviderCompleteProfile");
+    } else {
+      throw new Error("Provider check failed");
+    }
+  } catch (err) {
+    console.error("Service provider error:", err);
+    setError("Unable to retrieve service provider info.");
+  }
+  break;
+
 
         //   else if (data.role === 'DELIVERY_AGENT') {
         //   try {

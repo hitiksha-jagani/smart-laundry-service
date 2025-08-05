@@ -24,7 +24,9 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findAllByOrderByOrderIdAsc();
     Optional<Order> findByorderId(String orderId);
     List<Order> findByUsers_UserId(String userId);
+    List<Order> findByPickupDeliveryAgentAndPickupDate(DeliveryAgent deliveryAgent, LocalDate now);
 
+    List<Order> findByDeliveryDeliveryAgentAndDeliveryDate(DeliveryAgent deliveryAgent, LocalDate now);
     // Corrected method to find orders by service provider ID and status
     List<Order> findByServiceProvider_ServiceProviderIdAndStatus(String serviceProviderId, OrderStatus status);
     @Query("""

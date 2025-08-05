@@ -9,7 +9,7 @@ const AutoRedirectScreen = () => {
 
   useEffect(() => {
     if (user) {
-      navigation.replace('/CustomerDashboard');
+      navigation.replace('CustomerDashboard');
     } else {
       navigation.replace('Login');   
     }

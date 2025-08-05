@@ -1,17 +1,16 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext"; 
 
-export default function PrivateRoute({ children, roles = [] }) {
-  const { isLoggedIn, role } = useAuth();
 
-  // Not logged in
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
+const PrivateRoute = ({ children }) => {
+  const { isLoggedIn, loading } = useAuth();
 
-  // Logged in but role not allowed
-  if (roles.length > 0 && !roles.includes(role)) {
-    return <Navigate to="/" replace />;
-  }
+  if (loading) return <div>Loading...</div>;
+
+  if (!isLoggedIn) return <Navigate to="/login" />;
 
   return children;
-}
+};
+
+export default PrivateRoute;

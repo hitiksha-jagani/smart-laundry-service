@@ -8,7 +8,9 @@ services:
       - ../Env_Var.env:/app/Env_Var.env
       - ./uploads:/app/uploads
     ports:
-      - "${SPRING_PORT}:8080"
+      # - "${SPRING_PORT}:8080"
+     - "8080:8080"
+
     dns:
       - 8.8.8.8
     depends_on:
@@ -40,9 +42,10 @@ services:
     environment:
       POSTGRES_DB: Laundry_DB
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: honey191003
+      POSTGRES_PASSWORD: Nencypatel@99
     ports:
-      - "5432:5432"
+      # - "5432:5432"
+      - "5433:5432" 
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always

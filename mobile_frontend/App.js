@@ -8,6 +8,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import PrivateRoute from './components/PrivateRoute';
 import './i18n';
+import * as Linking from 'expo-linking';
 
 // Screens
 import AutoRedirect from './components/AutoRedirect';
@@ -36,8 +37,6 @@ import SchedulePlanScreen from './screens/Customer/SchedulePlanScreen';
 import ContactInfoScreen from './screens/Customer/ContactInfoScreen';
 import ReviewAndConfirmScreen from './screens/Customer/ReviewAndConfirmScreen';
 import FeedbackForm from './screens/Customer/FeedbackForm';
-import PayPalPaymentScreen from './screens/Customer/PayPalPaymentScreen';
-import PaymentSuccessHandler from './screens/Customer/PaymentSuccessHandler';
 import AvailablePromotionsScreen from './screens/Customer/AvailablePromotionsScreen';
 // Service Provider
 import PendingOrdersScreen from './screens/ServiceProvider/PendingOrdersScreen';
@@ -68,6 +67,7 @@ import PendingPayouts from './screens/DeliveryAgent/PendingPayouts';
 import DeliveryAgentProfile from './screens/DeliveryAgent/DeliveryAgentProfile';
 import EditAgentProfile from './screens/DeliveryAgent/EditAgentProfilePage';
 import ChangeAgentPasswordPage from './screens/DeliveryAgent/ChangeAgentPasswordPage';
+import RazorpayPaymentScreen from './components/RazorpayPaymentScreen';
 
 const Stack = createNativeStackNavigator(); 
 const Drawer = createDrawerNavigator();
@@ -101,7 +101,7 @@ const linking = {
       OrderBooking: '/order/book',
       NearbyServiceProviders: '/service-providers',
       ProviderDetail: 'provider/:providerId',
-      OrderBill: 'orders/:orderId/bill',
+      OrderBill: '/orders/:orderId/bill', // 🔥 Ensure this matches deep link
       AvailablePromotions: 'orders/:orderId/promotions',
       CustomerOrderHistory: '/customer/Orderhistory',
       OrderSummary: 'orders/:orderId/summary',
@@ -115,9 +115,6 @@ const linking = {
       UpdateProfile: '/update-profile',
       MyProfile: '/my-profile',
       Feedback: 'orders/:orderId/feedback',
-      PayPalPayment: 'payment/start',
-      PaymentSuccessHandler: 'payment/success',
-      PayPalCancel: 'payment/cancel',
       ProviderDrawer: '/provider/drawer',
       ProviderDashboard: '/provider/dashboard',
       PendingOrders: '/provider/pending-orders',
@@ -128,7 +125,7 @@ const linking = {
       VerifyPickupOtp: 'provider/otp/verify/pickup/:orderId',
       VerifyDeliveryOtp: 'provider/otp/verify/delivery/:orderId',
       OtpVerificationOrders: '/provider/orders/verify-otps',
-
+      RazorpayPaymentScreen: '/RazorpayPaymentScreen',
       DeliveryAgentCompleteProfile: '/profile/complete',
       DeliveryPage: '/delivery/summary',
       PendingDeliveries: '/deliveries/pending',
@@ -142,12 +139,12 @@ const linking = {
       DeliveryAgentProfile: '/profile/detail',
       EditAgentProfile: '/profile/detail/edit',
       ChangeAgentPasswordPage: '/profile/detail/change-password',
-
       NotAvailable: '/not-available',
       NotFound: '*',
     },
   },
 };
+
 
 // ✅ Main Navigation App
 function MainApp() {
@@ -186,9 +183,6 @@ function MainApp() {
         <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
         <Stack.Screen name="MyProfile" component={MyProfileScreen} />
         <Stack.Screen name="Feedback" component={FeedbackScreen} />
-        <Stack.Screen name="PayPalPayment" component={PayPalPaymentScreen} />
-        <Stack.Screen name="PayPalCancel" component={NotAvailableScreen} />
-        <Stack.Screen name="PaymentSuccessHandler" component={PaymentSuccessHandler} />
         <Stack.Screen name="InitialOrder" component={InitialOrderScreen} />
         <Stack.Screen name="SchedulePlan" component={SchedulePlanScreen} />
         <Stack.Screen name="ContactInfo" component={ContactInfoScreen} />
@@ -248,9 +242,7 @@ export default function App() {
           <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
           <Stack.Screen name="MyProfile" component={MyProfileScreen} />
           <Stack.Screen name="Feedback" component={FeedbackScreen} />
-          <Stack.Screen name="PayPalPayment" component={PayPalPaymentScreen} />
-          <Stack.Screen name="PayPalSuccess" component={PayPalPaymentScreen} />
-          <Stack.Screen name="PayPalCancel" component={NotAvailableScreen} />
+          <Stack.Screen name="RazorpayPaymentScreen" component={RazorpayPaymentScreen} />
 
           {/* Order Wizard */}
           <Stack.Screen name="InitialOrder" component={InitialOrderScreen} />

@@ -5,7 +5,7 @@ import axios from "../../utils/axiosInstance";
 
 export default function VerifyDeliveryOtp() {
   const { orderId } = useParams();
-  const { userId } = useAuth(); // ✅ Get userId directly
+  const { userId } = useAuth(); // ✅ Get userId from context
   const navigate = useNavigate();
 
   const [otp, setOtp] = useState("");
@@ -27,17 +27,11 @@ export default function VerifyDeliveryOtp() {
     }
 
     try {
-      await axios.post(
-        `/emailotp/verify-delivery`,
-        {}, // Empty body
-        {
-          params: {
-            orderId,
-            otp,
-            verifierId: userId,
-          },
-        }
-      );
+      await axios.post("/emailotp/verify-delivery", {
+        orderId,
+        otp,
+        verifierId: userId, // ✅ You can remove this if backend gets it from JWT
+      });
 
       setMessage("OTP verified successfully. Redirecting...");
       setTimeout(() => navigate("/provider/orders/verify-otps"), 1500);
