@@ -11,12 +11,12 @@ import com.SmartLaundry.repository.CityRepository;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserAddressRepository;
 import com.SmartLaundry.repository.UserRepository;
-import com.SmartLaundry.service.Customer.EmailService;
-import com.SmartLaundry.service.Customer.GeoUtils;
-import com.SmartLaundry.service.Customer.SMSService;
+import com.SmartLaundry.service.Customer.*;
 import com.SmartLaundry.util.UsernameUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -59,7 +59,9 @@ public class DeliveryAgentProfileService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${DELIVERY_AGENT_PROFILE_IMAGE}")
+    private static final Logger logger = LoggerFactory.getLogger(DeliveryAgentProfileService.class);
+
+    @Value("${FILE_PATH}")
     private String path;
 
     private final EmailService emailService;
@@ -138,7 +140,7 @@ public class DeliveryAgentProfileService {
             throw new FormatException("Invalid IFSC Code format.");
         }
 
-        String uploadDir = path + userId;
+        String uploadDir = path + "/" + "DeliveryAgent" + "/" + "Profile" + "/" + userId + "/";
         // Save files and get paths
         String aadharCardPath = saveFile(aadharCard, uploadDir, userId);
         String panCardPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
@@ -183,7 +185,7 @@ public class DeliveryAgentProfileService {
     public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
 
         if (file == null || file.isEmpty()) {
-            return null;
+            return "File is not exist";
         }
 
         // Create directory if not exists
@@ -191,16 +193,21 @@ public class DeliveryAgentProfileService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+        logger.info("Upload dir : {}", dir);
 
         // Use a unique filename (timestamp + original filename) to avoid collision
         String originalFilename = file.getOriginalFilename();
         String fileName = System.currentTimeMillis()+  "_" + originalFilename;
+        logger.info("Original file name : {}", originalFilename);
+        logger.info("File name : {}", fileName);
 
         // Full path
         File destination = new File(dir, fileName);
+        logger.info("Destination : {}", destination);
 
         // Save file locally
         file.transferTo(destination);
+        logger.info("File saved successfully");
 
         // Return the relative or absolute path
         return destination.getAbsolutePath();
@@ -208,7 +215,10 @@ public class DeliveryAgentProfileService {
 
     // Modify existing details
     @Transactional
-    public String editDetail(String userId, DeliveryAgentProfileDTO deliveryAgentProfileDTO) {
+    public String editDetail(String userId, DeliveryAgentProfileDTO deliveryAgentProfileDTO, MultipartFile aadharCard,
+                             MultipartFile panCard,
+                             MultipartFile drivingLicense,
+                             MultipartFile profilePhoto) throws IOException {
 
         // Validation
         if(deliveryAgentProfileDTO.getEmail() != null && !deliveryAgentProfileDTO.getEmail().isBlank()){
@@ -290,6 +300,29 @@ public class DeliveryAgentProfileService {
             userAddressRepository.save(userAddress);
         }
 
+        String aadharCardPath = null;
+        String panCardPath = null;
+        String drivingLicensePath = null;
+        String profilePhotoPath = null;
+
+        String uploadDir = path + "/" + "DeliveryAgent" + "/" + "Profile" + "/" + userId + "/";
+
+        if (aadharCard != null && !aadharCard.isEmpty()) {
+            aadharCardPath = saveFile(aadharCard, uploadDir, userId);
+        }
+
+        if (panCard != null && !panCard.isEmpty()) {
+            panCardPath = saveFile(panCard, uploadDir, userId);
+        }
+
+        if (drivingLicense != null && !drivingLicense.isEmpty()) {
+            drivingLicensePath = saveFile(drivingLicense, uploadDir, userId);
+        }
+
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            profilePhotoPath = saveFile(profilePhoto, uploadDir, userId);
+        }
+
         // Update delivery agent only for provided fields
         DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
                 .orElseThrow(() -> new RuntimeException("Delivery agent not found."));
@@ -300,10 +333,10 @@ public class DeliveryAgentProfileService {
         if (deliveryAgentProfileDTO.getAccountHolderName() != null) agent.setAccountHolderName(deliveryAgentProfileDTO.getAccountHolderName());
         if (deliveryAgentProfileDTO.getIfscCode() != null) agent.setIfscCode(deliveryAgentProfileDTO.getIfscCode());
         if (deliveryAgentProfileDTO.getGender() != null) agent.setGender(deliveryAgentProfileDTO.getGender());
-        if (deliveryAgentProfileDTO.getAadharCardPhoto() != null) agent.setAadharCardPhoto(deliveryAgentProfileDTO.getAadharCardPhoto());
-        if (deliveryAgentProfileDTO.getPanCardPhoto() != null) agent.setPanCardPhoto(deliveryAgentProfileDTO.getPanCardPhoto());
-        if (deliveryAgentProfileDTO.getDrivingLicensePhoto() != null) agent.setDrivingLicensePhoto(deliveryAgentProfileDTO.getDrivingLicensePhoto());
-        if (deliveryAgentProfileDTO.getProfilePhoto() != null) agent.setProfilePhoto(deliveryAgentProfileDTO.getProfilePhoto());
+        if (aadharCard != null) agent.setAadharCardPhoto(aadharCardPath);
+        if (panCard != null) agent.setPanCardPhoto(panCardPath);
+        if (drivingLicense != null) agent.setDrivingLicensePhoto(drivingLicensePath);
+        if (profilePhoto != null) agent.setProfilePhoto(profilePhotoPath);
 
         deliveryAgentRepository.save(agent);
 

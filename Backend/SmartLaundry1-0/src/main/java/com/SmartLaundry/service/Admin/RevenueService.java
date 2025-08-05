@@ -570,7 +570,7 @@ public class RevenueService {
         logger.info("Date range for revenue query: {} to {}", start, end);
 
         List<ServiceProviderRevenueTableDTO> serviceProviderRevenueTableDTOS = payoutRepository
-                .findAllProviderRevenuesInRange(start, end);
+                .findAllProviderRevenuesInRange(start, end, UserRole.SERVICE_PROVIDER);
 
         logger.info("Fetched {} service provider revenue records", serviceProviderRevenueTableDTOS.size());
 

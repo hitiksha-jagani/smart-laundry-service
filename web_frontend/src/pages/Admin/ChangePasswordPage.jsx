@@ -98,16 +98,36 @@ const ChangePasswordPage = () => {
     const toggleVisibility = (field) => {
         setVisible(prev => ({ ...prev, [field]: !prev[field] }));
     };
+ 
+    const validateFields = () => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+        const { oldPassword, newPassword, confirmPassword } = formData;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            showToast("Please fill all fields", "error");
+            return false;
+        } 
+
+        if (newPassword !== confirmPassword) {
+            showToast("Password and confirm password do not match", "error");
+            return false;
+        }
+
+        if (!passwordRegex.test(newPassword)) {
+            showToast("New password must be at least 8 characters long, include 1 uppercase letter and 1 special character", "error");
+            return false;
+        }
+
+        return true;
+    };
 
     const handleSave = () => {
-        if (!formData.oldPassword || !formData.newPassword || !formData.confirmPassword) {
-            showToast("Please fill all fields", "error");
-            return;
-        }
+        if (!validateFields()) return;
 
         axiosInstance.put('/admin-profile/change-password', formData)
             .then((res) => {
-                showToast(res.data, "success");
+                showToast(res.data || "Password changed successfully!", "success");
                 setTimeout(() => {
                     navigate("/admin-profile"); 
                 }, 1500);

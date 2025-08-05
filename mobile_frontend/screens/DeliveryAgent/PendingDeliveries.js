@@ -4,9 +4,7 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity,
-    Alert,
-    ScrollView,
+    TouchableOpacity, 
 } from 'react-native';
 import axios from 'axios';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -32,7 +30,7 @@ const PendingDeliveries = ({ route }) => {
     const handleAccept = async (orderId) => {
         try {
             const response = await axios.post(
-                `http://localhost:8080/deliveries/accept/${orderId}`,
+                `http://192.168.1.7:8080/deliveries/accept/${orderId}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -47,7 +45,7 @@ const PendingDeliveries = ({ route }) => {
     const handleReject = async (orderId) => {
         try {
             const response = await axios.post(
-                `http://localhost:8080/deliveries/reject/${orderId}`,
+                `http://192.168.1.7:8080/deliveries/reject/${orderId}`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
