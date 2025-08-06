@@ -18,6 +18,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
@@ -55,10 +56,12 @@ public class RedisConfig{
         config.setHostName(redisHost);
         config.setPort(redisPort);
         config.setPassword(redisPassword);
-        LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
-        factory.setValidateConnection(true);
-        factory.setUseSsl(redisSslEnabled); // ✅ Enable SSL
-        return factory;
+
+        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                .useSsl()
+                .build();
+
+        return new LettuceConnectionFactory(config, clientConfig);
     }
 
 
