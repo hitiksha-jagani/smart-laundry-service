@@ -29,16 +29,18 @@ import java.time.Duration;
 
 @Configuration
 public class RedisConfig{
-    @Value("${SPRING_REDIS_HOST}")
+    @Value("${spring.redis.host}")
     private String redisHost;
 
-    @Value("${SPRING_REDIS_PORT}")
+    @Value("${spring.redis.port}")
     private int redisPort;
-    @Value("${SPRING_REDIS_PASSWORD}")
+
+    @Value("${spring.redis.password}")
     private String redisPassword;
 
-    @Value("${SPRING_REDIS_SSL_ENABLED:true}")
+    @Value("${spring.redis.ssl.enabled:true}")
     private boolean redisSslEnabled;
+
 
     @Autowired
     private RedisMessageSubscriber messageSubscriber;
