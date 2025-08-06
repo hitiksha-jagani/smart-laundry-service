@@ -83,6 +83,7 @@ services:
       - REDIS_HOST=redis-11883.c84.us-east-1-2.ec2.redns.redis-cloud.com
       - REDIS_PORT=11883
       - REDIS_PASSWORD=QZ2VhMwWY5jg1Qg1pK1gnN1UGrWuMIu5
+      - SPRING_APPLICATION_JSON={"spring.redis.ssl.enabled":true}
     env_file:
       - .env
     restart: always
