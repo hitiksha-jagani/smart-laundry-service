@@ -7,4 +7,5 @@ public enum SchedulePlan {
     MONTHLY,
     ON_DEMAND,
     NONE,
+    PENDING
 }
