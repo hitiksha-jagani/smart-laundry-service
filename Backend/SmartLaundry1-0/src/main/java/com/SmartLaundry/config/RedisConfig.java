@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +29,11 @@ import java.time.Duration;
 
 @Configuration
 public class RedisConfig{
+    @Value("${SPRING_REDIS_HOST}")
+    private String redisHost;
 
+    @Value("${SPRING_REDIS_PORT}")
+    private int redisPort;
     @Autowired
     private RedisMessageSubscriber messageSubscriber;
 
@@ -39,8 +44,8 @@ public class RedisConfig{
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName("redis"); // Use the service name in docker-compose.yml
-        config.setPort(6379);
+        config.setHostName(redisHost);
+        config.setPort(redisPort);
         return new LettuceConnectionFactory(config);
     }
 
@@ -106,5 +111,7 @@ public class RedisConfig{
     @PostConstruct
     public void testRedisConnection() {
         System.out.println("✅ RedisConfig PostConstruct check complete");
+        System.out.println("🔍 Redis Host: " + redisHost);
+        System.out.println("🔍 Redis Port: " + redisPort);
     }
 }
