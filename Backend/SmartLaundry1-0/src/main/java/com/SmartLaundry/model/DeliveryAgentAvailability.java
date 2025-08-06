@@ -62,6 +62,7 @@ public class DeliveryAgentAvailability implements Serializable {
     @Schema(description = "End time of the day.", example = "09:00:00")
     private LocalTime endTime;
 
+    @Builder.Default
     @Column(name = "holiday", nullable = true)
     @Schema(description = "Selected day is holiday or not.", example = "True")
     private boolean holiday = false;

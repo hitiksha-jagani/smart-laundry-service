@@ -29,6 +29,7 @@ public class Ticket {
 
     private String response;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketStatus status = TicketStatus.NOT_RESPONDED;

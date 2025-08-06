@@ -43,6 +43,7 @@ public class OrderOtp {
     @Column(name = "Expires_At", nullable = false)
     private LocalDateTime expiresAt;
 
+    @Builder.Default
     @Column(name = "Is_Used", nullable = false)
     private Boolean isUsed = false;
 

@@ -113,6 +113,7 @@ public class Order implements Serializable {
     @Schema(description = "Current status of the order.", example = "PENDING")
     private OrderStatus status = OrderStatus.PENDING;
 
+    @Builder.Default
     @JsonBackReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderStatusHistory> statusHistory = new ArrayList<>();

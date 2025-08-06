@@ -48,6 +48,7 @@ public class Services implements Serializable {
     @Schema(description = "The name of the service. Must be unique.", example = "Dry Cleaning")
     private String serviceName;
 
+    @Builder.Default
     @JsonManagedReference
     @OneToMany(mappedBy = "services", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubService> subServices = new ArrayList<>();

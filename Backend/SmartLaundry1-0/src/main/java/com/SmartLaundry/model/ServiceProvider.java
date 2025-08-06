@@ -53,6 +53,7 @@ public class ServiceProvider implements Serializable {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users user;
 
+    @Builder.Default
     @ElementCollection(targetClass = SchedulePlan.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(
@@ -78,6 +79,7 @@ public class ServiceProvider implements Serializable {
     @Column(name = "Photo", nullable = true)
     private String photoImage;
 
+    @Builder.Default
     @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @ToString.Exclude
@@ -87,9 +89,11 @@ public class ServiceProvider implements Serializable {
     @JoinColumn(name = "Bank_Account_Id")
     private BankAccount bankAccount;
 
+    @Builder.Default
     @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<FeedbackProviders> feedbacks = new ArrayList<>();
+
 
     @NotNull(message = "Status is required.")
     @Enumerated(EnumType.STRING)

@@ -85,13 +85,15 @@ public class Users implements Serializable{
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserAddress address;
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Ticket> tickets = new ArrayList<>();
 
     @Column(name = "preferred_language")
     private String preferredLanguage;
-
+    
+    @Builder.Default
     @Column(name = "is_blocked")
     private boolean isBlocked = false;
 
