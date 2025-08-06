@@ -13,7 +13,8 @@ public class CORSConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000","http://localhost:8081", "http://192.168.1.7:8080" , "http://10.200.23.46:8080")
+                        .allowedOrigins("http://localhost:3000","http://localhost:8081",
+                                "https://smart-laundry-frontend.onrender.com", "http://192.168.1.7:8080" , "http://10.200.23.46:8080")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization")

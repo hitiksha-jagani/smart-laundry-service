@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "http://localhost:3000",
+                "https://smart-laundry-frontend.onrender.com"
+        },
         allowCredentials = "true"
 )
 @RestController
