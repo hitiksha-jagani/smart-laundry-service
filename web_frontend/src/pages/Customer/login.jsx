@@ -4,7 +4,7 @@ import AuthLayout from "../../components/AuthLayout";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff } from "lucide-react";
-import { BASE_URL } from "../../config";
+import { BASE_URL } from "./config";
 
 const Login = () => {
   const navigate = useNavigate();
