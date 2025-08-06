@@ -57,12 +57,22 @@ public class RedisConfig{
         config.setPort(redisPort);
         config.setPassword(redisPassword);
 
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .useSsl()
-                .build();
+        LettuceClientConfiguration clientConfig;
+
+        if (redisSslEnabled) {
+            clientConfig = LettuceClientConfiguration.builder()
+                    .useSsl()
+                    .build();
+            System.out.println("🔒 Redis SSL is ENABLED");
+        } else {
+            clientConfig = LettuceClientConfiguration.builder()
+                    .build();
+            System.out.println("🔓 Redis SSL is DISABLED");
+        }
 
         return new LettuceConnectionFactory(config, clientConfig);
     }
+
 
 
     @Bean
@@ -129,5 +139,6 @@ public class RedisConfig{
         System.out.println("🔍 Redis Host: " + redisHost);
         System.out.println("🔍 Redis Port: " + redisPort);
         System.out.println("🔍 Redis Password: " + (redisPassword != null ? "******" : "null"));
+        System.out.println("🔍 Redis SSL Enabled: " + redisSslEnabled);
     }
 }
