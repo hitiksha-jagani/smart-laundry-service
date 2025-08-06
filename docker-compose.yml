@@ -75,15 +75,9 @@ services:
       - "8080:8080"
     dns:
       - 8.8.8.8
-    depends_on:
-      - postgres
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CHOKIDAR_USEPOLLING=true
-      - REDIS_HOST=redis-11883.c84.us-east-1-2.ec2.redns.redis-cloud.com
-      - REDIS_PORT=11883
-      - REDIS_PASSWORD=QZ2VhMwWY5jg1Qg1pK1gnN1UGrWuMIu5
-      - SPRING_APPLICATION_JSON={"spring.redis.ssl.enabled":true}
     env_file:
       - .env
     restart: always
@@ -100,27 +94,6 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     restart: always
-
-  postgres:
-    image: postgres:15
-    container_name: smart-laundry-postgres
-    environment:
-      POSTGRES_DB: Laundry_DB
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Nencypatel@99
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: always
-
-# 🔻 Redis container is commented out since we're using Redis Cloud
-#  redis:
-#    image: redis:alpine
-#    container_name: smart-laundry-service-redis
-#    ports:
-#      - "6379:6379"
-#    restart: always
 
 volumes:
   pgdata:
