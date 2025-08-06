@@ -123,5 +123,6 @@ public class RedisConfig{
         System.out.println("✅ RedisConfig PostConstruct check complete");
         System.out.println("🔍 Redis Host: " + redisHost);
         System.out.println("🔍 Redis Port: " + redisPort);
+        System.out.println("🔍 Redis Password: " + (redisPassword != null ? "******" : "null"));
     }
 }
