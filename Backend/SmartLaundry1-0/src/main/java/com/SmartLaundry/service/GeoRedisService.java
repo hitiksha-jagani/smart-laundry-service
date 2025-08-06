@@ -26,7 +26,7 @@ public class GeoRedisService {
 
     @PostConstruct
     public void init() {
-        System.out.println("🔍 Redis Host: " + redisTemplate.getConnectionFactory().getConnection().getClientName());
+        System.out.println("🔍 Redis Client Info: " + redisTemplate.getConnectionFactory().getConnection().getNativeConnection());
         List<ServiceProvider> providers = serviceProviderRepository.findAll();
         loadProviderGeoData(providers);
     }

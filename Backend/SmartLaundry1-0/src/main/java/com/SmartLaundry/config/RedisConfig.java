@@ -34,6 +34,12 @@ public class RedisConfig{
 
     @Value("${SPRING_REDIS_PORT}")
     private int redisPort;
+    @Value("${SPRING_REDIS_PASSWORD}")
+    private String redisPassword;
+
+    @Value("${SPRING_REDIS_SSL_ENABLED:true}")
+    private boolean redisSslEnabled;
+
     @Autowired
     private RedisMessageSubscriber messageSubscriber;
 
@@ -46,7 +52,11 @@ public class RedisConfig{
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(redisHost);
         config.setPort(redisPort);
-        return new LettuceConnectionFactory(config);
+        config.setPassword(redisPassword);
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
+        factory.setValidateConnection(true);
+        factory.setUseSsl(redisSslEnabled); // ✅ Enable SSL
+        return factory;
     }
 
 
