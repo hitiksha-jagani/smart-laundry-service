@@ -94,7 +94,7 @@ public class ServiceProvider implements Serializable {
     @ToString.Exclude
     private List<FeedbackProviders> feedbacks = new ArrayList<>();
 
-
+    @Builder.Default
     @NotNull(message = "Status is required.")
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

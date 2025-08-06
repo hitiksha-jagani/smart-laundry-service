@@ -21,6 +21,7 @@ public class OrderSchedulePlan {
     @Column(name = "OrderPlan_Id")
     private Long OrderPlanId;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SchedulePlan schedulePlan = SchedulePlan.NONE;

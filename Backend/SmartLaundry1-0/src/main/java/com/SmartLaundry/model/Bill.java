@@ -49,6 +49,7 @@ public class Bill implements Serializable {
     @OneToMany(mappedBy = "bill")
     private List<BookingItem> bookingItems;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @Schema(description = "Status of the bill.", example = "PAID")

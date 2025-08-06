@@ -108,6 +108,7 @@ public class Order implements Serializable {
     @Schema(description = "Pickup address for the order.", example = "123 MG Road, Bengaluru")
     private String contactAddress;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @Schema(description = "Current status of the order.", example = "PENDING")

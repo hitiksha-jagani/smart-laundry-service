@@ -60,6 +60,7 @@ public class Payout implements Serializable {
     @Schema(description = "Bank transaction ID", example = "TXN98765")
     private String transactionId;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @Schema(description = "Status of the payout.", example = "PENDING")

@@ -117,6 +117,7 @@ public class DeliveryAgent implements Serializable {
     @Schema(description = "Profile photo of the delivery agent. Must be in png/jpeg format.", example = "photo.png")
     private String profilePhoto;
 
+    @Builder.Default
     @NotNull(message = "Status is required.")
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
