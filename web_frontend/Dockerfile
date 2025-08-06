@@ -6,7 +6,7 @@ COPY . .
 
 # Copy environment variables
 COPY .env.production .env
-RUN npm install && npm run build
+RUN npm install && npm run build --verbose
 
 # Remove default nginx website
 FROM nginx:alpine
