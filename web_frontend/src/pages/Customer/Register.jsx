@@ -28,11 +28,11 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 useEffect(() => {
-  axios.get("/roles")
+  axios.get("/roles", { withCredentials: true })
     .then((res) => setRoles(res.data))
     .catch((err) => console.error("Error fetching roles:", err));
 
-  axios.get("/cities")
+  axios.get("/cities", { withCredentials: true })
     .then((res) => setCities(res.data))
     .catch((err) => console.error("Error fetching cities:", err));
 }, []);
