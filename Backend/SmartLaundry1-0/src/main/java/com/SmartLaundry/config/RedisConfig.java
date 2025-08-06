@@ -60,14 +60,11 @@ public class RedisConfig{
         LettuceClientConfiguration clientConfig;
 
         if (redisSslEnabled) {
-            clientConfig = LettuceClientConfiguration.builder()
-                    .useSsl()
-                    .build();
             System.out.println("🔒 Redis SSL is ENABLED");
+            clientConfig = LettuceClientConfiguration.builder().useSsl().build();
         } else {
-            clientConfig = LettuceClientConfiguration.builder()
-                    .build();
             System.out.println("🔓 Redis SSL is DISABLED");
+            clientConfig = LettuceClientConfiguration.builder().build();
         }
 
         return new LettuceConnectionFactory(config, clientConfig);
