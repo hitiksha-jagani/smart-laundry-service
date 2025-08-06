@@ -62,14 +62,15 @@
 
 
 
+
+
 services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.backend 
+      dockerfile: Dockerfile.backend
     container_name: smart-laundry-backend
     volumes:
-      - ../Env_Var.env:/app/Env_Var.env
       - ./uploads:/app/uploads
     ports:
       - "8080:8080"
@@ -97,3 +98,4 @@ services:
 
 volumes:
   pgdata:
+
