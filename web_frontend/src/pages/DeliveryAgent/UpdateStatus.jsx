@@ -9,7 +9,7 @@ import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentD
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import '../../styles/DeliveryAgent/UpdateStatus.css';
 import axios from 'axios';
-
+import { BASE_URL } from "../../config";
 const UpdateStatus = () => {
   const [toast, setToast] = useState({ message: '', type: '', visible: false });
   const [user, setUser] = useState(null);
@@ -28,7 +28,7 @@ const UpdateStatus = () => {
   };
 
   const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: `${BASE_URL}`,
     headers: { Authorization: `Bearer ${token}` },
   });
 

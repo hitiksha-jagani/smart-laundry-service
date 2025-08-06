@@ -4,6 +4,7 @@ import AuthLayout from "../../components/AuthLayout";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff } from "lucide-react";
+import { BASE_URL } from "../../config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const Login = () => {
     setSuccessMessage("");
 
     try {
-      const res = await fetch("http://localhost:8080/login", {
+      const res = await fetch(`${BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -62,7 +63,7 @@ const Login = () => {
     setSuccessMessage("");
 
     try {
-      const url = `http://localhost:8080/verify-otp?username=${formData.username}&otp=${otp}`;
+      const url = `${BASE_URL}/verify-otp?username=${formData.username}&otp=${otp}`;
       const res = await fetch(url, { method: "POST" });
 
       const rawText = await res.text();
@@ -95,7 +96,7 @@ const Login = () => {
       if (data.role === "SERVICE_PROVIDER") {
         try {
           const providerRes = await fetch(
-            `http://localhost:8080/provider/orders/from-user/${userId}`,
+            `${BASE_URL}/provider/orders/from-user/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${data.jwtToken}`,
@@ -126,7 +127,7 @@ const Login = () => {
             Authorization: `Bearer ${data.jwtToken}`,
           };
 
-          const agentRes = await fetch(`http://localhost:8080/profile/exist/${userId}`, {
+          const agentRes = await fetch(`${BASE_URL}/profile/exist/${userId}`, {
             headers,
           });
 
@@ -141,7 +142,7 @@ const Login = () => {
             return;
           }
 
-          const res = await fetch(`http://localhost:8080/profile/status/${userId}`, {
+          const res = await fetch(`${BASE_URL}/profile/status/${userId}`, {
             headers,
           });
 
@@ -191,7 +192,7 @@ const Login = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8080/resend-otp?username=${formData.username}`,
+        `${BASE_URL}/resend-otp?username=${formData.username}`,
         { method: "POST" }
       );
 
