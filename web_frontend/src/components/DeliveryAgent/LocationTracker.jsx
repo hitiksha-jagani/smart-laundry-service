@@ -17,7 +17,7 @@ const LocationTracker = ({ isAvailable }) => {
 
           try {
             await axios.put(
-              'http://localhost:8080/delivery-agent/update-location',
+              `${BASE_URL}/delivery-agent/update-location`,
               { latitude, longitude },
               {
                 headers: {
@@ -25,7 +25,6 @@ const LocationTracker = ({ isAvailable }) => {
                 },
               }
             );
-            // console.log('Location updated:', latitude, longitude);
           } catch (err) {
             console.error('Error updating location:', err);
           }

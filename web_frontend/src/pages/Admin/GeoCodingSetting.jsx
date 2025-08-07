@@ -23,7 +23,7 @@ const GeoCodingSetting = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -91,7 +91,7 @@ const GeoCodingSetting = () => {
     }, []);
 
     useEffect(() => {
-        axiosInstance.get('http://localhost:8080/configurations/geo-api/providers')
+        axiosInstance.get('${BASE_URL}/configurations/geo-api/providers')
             .then((res) => setProviders(res.data))
             .catch((err) => console.error("Failed to load geo-coding api providers", err));
     }, []);

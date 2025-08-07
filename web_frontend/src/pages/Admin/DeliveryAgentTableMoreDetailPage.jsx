@@ -24,7 +24,7 @@ const DeliveryAgentTableMoreDetailPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -73,7 +73,7 @@ const DeliveryAgentTableMoreDetailPage = () => {
         const userId = data.userId;
 
         if (type && userId) {
-            const url = `http://localhost:8080/image/agent/${type}/${userId}`;
+            const url = `${BASE_URL}/image/agent/${type}/${userId}`;
             window.open(url, '_blank'); 
         } else {
             showToast("Invalid image type or user ID", "error");

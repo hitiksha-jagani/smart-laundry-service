@@ -10,7 +10,7 @@ const GeoCodingHistory = ({ token }) => {
   const [loading, setLoading] = useState(true);
 
   const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: `${BASE_URL}`,
     headers: { Authorization: `Bearer ${token}` },
   });
 

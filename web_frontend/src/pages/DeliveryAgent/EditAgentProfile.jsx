@@ -23,7 +23,7 @@ const EditAgentProfilePage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -79,7 +79,7 @@ const EditAgentProfilePage = () => {
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/states')
+        axios.get(`${BASE_URL}/states`)
             .then((res) => setStates(res.data))
             .catch((err) => console.error("Failed to load states", err));
     }, []);
@@ -87,7 +87,7 @@ const EditAgentProfilePage = () => {
     useEffect(() => {
         if (selectedStateId) {
             console.log("state id : ", selectedStateId);
-            axios.get(`http://localhost:8080/cities/get/${selectedStateId}`)
+            axios.get(`${BASE_URL}/cities/get/${selectedStateId}`)
             .then((res) => setCities(res.data))
             .catch((err) => console.error("Failed to load cities", err));
         } else {

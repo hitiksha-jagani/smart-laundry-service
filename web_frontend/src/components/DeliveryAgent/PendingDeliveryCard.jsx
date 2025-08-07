@@ -22,7 +22,7 @@ const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
     useEffect(() => {
         const fetchAgentLocation = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/delivery-agent/get-location', {
+                const response = await axios.get(`${BASE_URL}/delivery-agent/get-location`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },

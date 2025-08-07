@@ -66,7 +66,7 @@ import EditAgentProfilePage from "./pages/DeliveryAgent/EditAgentProfile";
 import ChangeAgentPasswordPage from "./pages/DeliveryAgent/ChnageAgentPasswordPage";
 
 // Admin
-import SetupAdmin from './pages/Admin/SetupAdmin';
+
 // Revenue Page
 import RevenueSummaryPage from "./pages/Admin/RevenueSummaryPage";
 import TotalRevenuePage from "./pages/Admin/TotalRevenuePage";
