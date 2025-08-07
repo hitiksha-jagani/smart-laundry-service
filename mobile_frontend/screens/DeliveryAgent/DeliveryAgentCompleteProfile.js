@@ -52,7 +52,7 @@ const DeliveryAgentCompleteProfile = () => {
     ];
 
     const axiosInstance = axios.create({
-        baseURL: 'http://192.168.1.7:8080',
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` }, 
     });
 
@@ -143,7 +143,7 @@ const DeliveryAgentCompleteProfile = () => {
                 }
             }
 
-            const response = await axios.post('http://192.168.1.7:8080/profile/complete', formData, {
+            const response = await axios.post(`${BASE_URL}/profile/complete`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`,

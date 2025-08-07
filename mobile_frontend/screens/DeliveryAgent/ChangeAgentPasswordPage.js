@@ -100,7 +100,7 @@ const ChangePasswordScreen = () => {
 
         try {
         const res = await axiosInstance.put(
-            'http://192.168.1.7:8080/profile/detail/change-password',
+            `${BASE_URL}/profile/detail/change-password`,
             formData
         );
 

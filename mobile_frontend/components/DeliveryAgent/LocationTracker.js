@@ -30,7 +30,7 @@ const LocationTracker = ({ isAvailable }) => {
                 const { latitude, longitude } = location.coords;
 
                 await axios.put(
-                'http://192.168.1.7:8080/delivery-agent/update-location',
+                `${BASE_URL}/delivery-agent/update-location`,
                 { latitude, longitude },
                 {
                     headers: {

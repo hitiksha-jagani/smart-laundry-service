@@ -140,7 +140,7 @@ const EditAgentProfile = () => {
 
     useEffect(() => { 
         axios
-        .get('http://192.168.1.7:8080/states')
+        .get(`${BASE_URL}/states`)
         .then((res) => setStates(res.data))
         .catch((err) => console.error('Error fetching states', err));
     }, []);
@@ -150,7 +150,7 @@ const EditAgentProfile = () => {
 
         if (selectedStateId) {
             axios
-                .get(`http://192.168.1.7:8080/cities/get/${selectedStateId}`)
+                .get(`${BASE_URL}/cities/get/${selectedStateId}`)
                 .then((res) => setCities(res.data))
                 .catch((err) => console.error('Error fetching cities', err));
         } else {
