@@ -128,7 +128,7 @@ function App() {
   return (
       <Routes>
          
-            <Route path="/" element={<Login />} />
+            {/* <Route path="/" element={<Login />} /> */}
             <Route path="/setup-admin" element={<Navigate to="/" replace />} />
             
             {/* other routes */}

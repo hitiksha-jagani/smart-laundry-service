@@ -67,14 +67,6 @@ export default function Navbar() {
 
           )}
 
-          <select
-            onChange={changeLanguage}
-            value={i18n.language}
-            className="border border-white bg-transparent text-white px-2 py-1 rounded hover:bg-white/10 transition-all duration-200"
-          >
-            <option value="en" className="text-black">English</option>
-            <option value="hi" className="text-black">हिन्दी</option>
-          </select>
         </nav>
       </div>
     </header>
