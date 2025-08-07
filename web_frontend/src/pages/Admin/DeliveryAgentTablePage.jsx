@@ -8,7 +8,7 @@ import axios from 'axios';
 import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import UserMenu from '../../components/Admin/UserMenu.jsx';
-import DeliveryAgentTableMoreDetailPage from './DeliveryAgentTableMoreDetailPage.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryAgentTablePage = () => {
     const navigate = useNavigate(); 
@@ -21,7 +21,7 @@ const DeliveryAgentTablePage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

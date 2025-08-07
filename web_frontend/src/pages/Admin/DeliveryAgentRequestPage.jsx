@@ -8,6 +8,7 @@ import axios from 'axios';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import RequestsMenu from "./RequestsMenu";
 import '../../styles/Admin/ServiceProviderRequests.css';
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryAgentRequestPage = () => {
     const [user, setUser] = useState(null);
@@ -64,7 +65,7 @@ const DeliveryAgentRequestPage = () => {
     };
    
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -129,7 +130,7 @@ const DeliveryAgentRequestPage = () => {
             const userId = currentAgent.userId;
 
             if (type && userId) {
-                const url = `http://localhost:8080/image/agent/${type}/${userId}`;
+                const url = `${BASE_URL}/image/agent/${type}/${userId}`;
                 window.open(url, '_blank'); 
             } else {
                 showToast("Invalid image type or user ID", "error");

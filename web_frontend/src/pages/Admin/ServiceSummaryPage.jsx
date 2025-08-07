@@ -7,6 +7,7 @@ import axios from 'axios';
 import AdminSummaryCard from '../../components/Admin/AdminSummaryCard.jsx';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ServiceMenu from '../../components/Admin/ServiceMenu.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const ServiceSummaryPage = () => {
     const [user, setUser] = useState(null);
@@ -17,7 +18,7 @@ const ServiceSummaryPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

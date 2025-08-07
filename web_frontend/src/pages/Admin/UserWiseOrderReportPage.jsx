@@ -10,7 +10,7 @@ import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import ReportsMenu from './ReportsMenu';
 import GraphFilter from '../../components/Admin/GraphFilter';
 import UserRoleFilter from '../../components/Admin/UserRoleFilter';
-import RevenueTrendGraph from '../../components/Admin/RevenueTrendGraph';
+import { BASE_URL } from '../../utils/config';
 
 const UserWiseOrderReportPage = () => {
     const navigate = useNavigate(); 
@@ -25,7 +25,7 @@ const UserWiseOrderReportPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
     

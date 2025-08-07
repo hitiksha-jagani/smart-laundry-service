@@ -7,6 +7,7 @@ import axios from 'axios';
 import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ConfigurationMenu from '../../components/Admin/ConfigurationMenu.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const AgentEarningConfigPage = () => {
     const [user, setUser] = useState(null);
@@ -21,7 +22,7 @@ const AgentEarningConfigPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

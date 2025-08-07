@@ -4,13 +4,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import '../../styles/Admin/GeoCodingHistory.css';
+import { BASE_URL } from '../../utils/config';
 
 const GeoCodingHistory = ({ token }) => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: `${BASE_URL}`,
     headers: { Authorization: `Bearer ${token}` },
   });
 

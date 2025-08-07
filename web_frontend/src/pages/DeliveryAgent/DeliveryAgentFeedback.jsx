@@ -10,6 +10,7 @@ import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentD
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/SummaryCard.css'; 
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryAgentFeedback = () => {
     const [filterParams, setFilterParams] = useState({ filter: "overall" });
@@ -21,7 +22,7 @@ const DeliveryAgentFeedback = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

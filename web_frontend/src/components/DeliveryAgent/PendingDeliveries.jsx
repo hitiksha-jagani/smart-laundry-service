@@ -8,6 +8,7 @@ import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentD
 import PendingDeliveryCard from './PendingDeliveryCard';
 import { MdInbox } from 'react-icons/md';
 import '../../styles/Toast.css';
+import { BASE_URL } from '../../utils/config';
 
 const PendingDeliveries = () => {
   const location = useLocation();
@@ -31,7 +32,7 @@ const PendingDeliveries = () => {
   const handleAccept = async (orderId) => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/deliveries/accept/${orderId}`,
+        `${BASE_URL}/deliveries/accept/${orderId}`,
         {},
         {
           headers: {
@@ -55,7 +56,7 @@ const PendingDeliveries = () => {
   const handleReject = async (orderId) => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/deliveries/reject/${orderId}`,
+        `${BASE_URL}/deliveries/reject/${orderId}`,
         {},
         {
           headers: {

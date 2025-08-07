@@ -134,7 +134,7 @@ const AdminProfile = () => {
                                         style={{ marginRight: '10px', width: '210px' }}
                                     >
                                         EDIT
-                                    </button>
+                                    </button> 
 
                                     <button
                                         className="reset-btn"

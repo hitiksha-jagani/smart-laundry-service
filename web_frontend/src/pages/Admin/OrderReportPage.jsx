@@ -8,6 +8,7 @@ import GraphFilter from '../../components/Admin/GraphFilter';
 import RevenueTrendGraph from '../../components/Admin/RevenueTrendGraph';
 import ReportsMenu from '../../pages/Admin/ReportsMenu';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
+import { BASE_URL } from '../../utils/config';
 
 const OrderReportPage = () => {
     const [user, setUser] = useState(null);
@@ -19,7 +20,7 @@ const OrderReportPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

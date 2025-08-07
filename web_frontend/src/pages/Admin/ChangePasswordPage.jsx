@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import { BASE_URL } from '../../utils/config';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 
 import eyeOpen from '../../assets/eye-icon.png';
@@ -32,7 +33,7 @@ const ChangePasswordPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

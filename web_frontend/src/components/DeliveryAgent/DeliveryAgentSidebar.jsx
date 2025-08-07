@@ -44,12 +44,6 @@ const DeliveryAgentSidebar = ({ agent }) => {
                             <span>Feedback</span>
                         </NavLink>
                     </li>
-                    {/* <li>
-                        <NavLink to="/orders/completed" className="sidebar-link">
-                            <img className="sidebar-icon" src={orderHistory} alt="" />
-                            <span>Order History</span>
-                        </NavLink>
-                    </li> */}
                     <li>
                         <NavLink to="/not-available" className="sidebar-link">
                             <img className="sidebar-icon" src={ticket} alt="" />

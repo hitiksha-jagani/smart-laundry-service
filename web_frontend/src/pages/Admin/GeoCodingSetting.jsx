@@ -6,8 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ConfigurationMenu from '../../components/Admin/ConfigurationMenu.jsx';
-import GeoCodingApiSavingForm from '../../components/Admin/GeoCodingApiSaveForm.jsx';
-import GeoCodingHistory from '../../components/Admin/GeoCodingHistory.jsx';
+import { BASE_URL } from '../../utils/config';
 import axios from 'axios';
 
 const GeoCodingSetting = () => {
@@ -23,7 +22,7 @@ const GeoCodingSetting = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -91,7 +90,7 @@ const GeoCodingSetting = () => {
     }, []);
 
     useEffect(() => {
-        axiosInstance.get('http://localhost:8080/configurations/geo-api/providers')
+        axiosInstance.get('${BASE_URL}/configurations/geo-api/providers')
             .then((res) => setProviders(res.data))
             .catch((err) => console.error("Failed to load geo-coding api providers", err));
     }, []);

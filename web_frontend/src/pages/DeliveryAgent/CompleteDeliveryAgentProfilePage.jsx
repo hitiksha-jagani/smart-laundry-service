@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
+import { BASE_URL } from '../../utils/config';
 
 const CompleteDeliveryAgentProfilePage = () => {
     const navigate = useNavigate();
@@ -52,7 +53,7 @@ const CompleteDeliveryAgentProfilePage = () => {
         if (files.drivingLicense) formData.append("drivingLicense", files.drivingLicense);
         if (files.profilePhoto) formData.append("profilePhoto", files.profilePhoto);
 
-        const response = await axios.post("http://localhost:8080/profile/complete", formData, {
+        const response = await axios.post(`${BASE_URL}/profile/complete`, formData, {
             headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${localStorage.getItem("token")}`,

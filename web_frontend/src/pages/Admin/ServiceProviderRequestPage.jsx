@@ -9,6 +9,7 @@ import axios from 'axios';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import RequestsMenu from "./RequestsMenu";
 import '../../styles/Admin/ServiceProviderRequests.css';
+import { BASE_URL } from '../../utils/config';
 
 const ServiceProviderRequests = () => {
     const [user, setUser] = useState(null);
@@ -67,7 +68,7 @@ const ServiceProviderRequests = () => {
     };
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -132,7 +133,7 @@ const ServiceProviderRequests = () => {
         const userId = currentProvider.userId;
 
         if (type && userId) {
-            const url = `http://localhost:8080/image/provider/${type}/${userId}`;
+            const url = `${BASE_URL}/image/provider/${type}/${userId}`;
             window.open(url, '_blank'); 
         } else {
             showToast("Invalid image type or user ID", "error");

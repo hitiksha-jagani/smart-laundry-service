@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ServiceMenu from '../../components/Admin/ServiceMenu.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const ItemPage = () => {
     const [user, setUser] = useState(null);
@@ -23,7 +24,7 @@ const ItemPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

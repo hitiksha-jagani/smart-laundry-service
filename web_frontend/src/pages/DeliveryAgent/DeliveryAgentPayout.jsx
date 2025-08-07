@@ -13,6 +13,7 @@ import AllPayouts from '../../components/DeliveryAgent/AllPayouts';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/SummaryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentPayout.css';
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryAgentPayout = () => {
     const [filterParams, setFilterParams] = useState({ filter: "overall" });
@@ -26,7 +27,7 @@ const DeliveryAgentPayout = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

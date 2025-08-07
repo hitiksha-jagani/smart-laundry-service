@@ -10,6 +10,7 @@ import RevenueTypeFilter from './RevenueTypeFilter';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import RevenueMenu from '../../components/Admin/RevenueMenu';
 import RevenueTrendGraph from '../../components/Admin/RevenueTrendGraph';
+import { BASE_URL } from '../../utils/config';
 
 const RevenueTrendsPage = () => {
     const [user, setUser] = useState(null);
@@ -20,7 +21,7 @@ const RevenueTrendsPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

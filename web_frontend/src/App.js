@@ -66,7 +66,7 @@ import EditAgentProfilePage from "./pages/DeliveryAgent/EditAgentProfile";
 import ChangeAgentPasswordPage from "./pages/DeliveryAgent/ChnageAgentPasswordPage";
 
 // Admin
-import SetupAdmin from './pages/Admin/SetupAdmin';
+
 // Revenue Page
 import RevenueSummaryPage from "./pages/Admin/RevenueSummaryPage";
 import TotalRevenuePage from "./pages/Admin/TotalRevenuePage";
@@ -127,18 +127,7 @@ function App() {
 
   return (
       <Routes>
-
-        {setupRequired ? (
-
-          <>
-            <Route path="/setup-admin" element={<SetupAdmin />} />
-            <Route path="*" element={<Navigate to="/setup-admin" replace />} />
-          </>
-
-          ) : (
-
-          <>
-          
+         
             <Route path="/" element={<Login />} />
             <Route path="/setup-admin" element={<Navigate to="/" replace />} />
             
@@ -312,7 +301,6 @@ function App() {
             <Route path="/not-available" element={<NotAvailablePage />} />
 
             {/* Admin */}
-            <Route path="/setup-admin" element={<SetupAdmin />} />
 
             {/* Revenue Page */}
             <Route path="/revenue/summary" element={
@@ -482,10 +470,6 @@ function App() {
             }/>
 
             <Route path="*" element={<h1>404 Not Found</h1>} />
-
-          </>
-        )}
-
       </Routes>
    
   );

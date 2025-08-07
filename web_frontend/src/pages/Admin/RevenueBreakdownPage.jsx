@@ -9,6 +9,7 @@ import RevenueMenu from '../../components/Admin/RevenueMenu';
 import TimeFilter from '../../components/Admin/TimeFilter.jsx';
 import RevenueBreakdownDonutChart from '../../components/Admin/RevenueBreakdownDonutChart.jsx';
 import RevenueBreakdownTable from '../../components/Admin/RevenueBreakdownTable.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const RevenueBreakdownPage = () => {
     const [user, setUser] = useState(null);
@@ -20,7 +21,7 @@ const RevenueBreakdownPage = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 

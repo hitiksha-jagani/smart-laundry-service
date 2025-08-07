@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
 import '../../styles/DeliveryAgent/DeliveryAgentProfile.css';
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryAgentProfile = () => {
 
@@ -19,7 +20,7 @@ const DeliveryAgentProfile = () => {
     const token = localStorage.getItem("token");
 
     const axiosInstance = axios.create({
-        baseURL: "http://localhost:8080",
+        baseURL: `${BASE_URL}`,
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -95,7 +96,7 @@ const DeliveryAgentProfile = () => {
             const userId = data.userId;
 
             if (type && userId) {
-                const url = `http://localhost:8080/image/agent/${type}/${userId}`;
+                const url = `${BASE_URL}/image/agent/${type}/${userId}`;
                 window.open(url, '_blank'); 
             } else {
                 showToast("Invalid image type or user ID", "error");
