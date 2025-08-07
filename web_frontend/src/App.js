@@ -127,18 +127,7 @@ function App() {
 
   return (
       <Routes>
-
-        {setupRequired ? (
-
-          <>
-            <Route path="/setup-admin" element={<SetupAdmin />} />
-            <Route path="*" element={<Navigate to="/setup-admin" replace />} />
-          </>
-
-          ) : (
-
-          <>
-          
+         
             <Route path="/" element={<Login />} />
             <Route path="/setup-admin" element={<Navigate to="/" replace />} />
             
@@ -482,10 +471,6 @@ function App() {
             }/>
 
             <Route path="*" element={<h1>404 Not Found</h1>} />
-
-          </>
-        )}
-
       </Routes>
    
   );
