@@ -8,6 +8,7 @@ import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.j
 import UserMenu from '../../components/Admin/UserMenu.jsx';
 import RevenueTrendGraph from '../../components/Admin/RevenueTrendGraph.jsx';
 import PieChartComp from '../../components/Admin/PieChartComp.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const CustomerPage = () => {
     const [user, setUser] = useState(null);

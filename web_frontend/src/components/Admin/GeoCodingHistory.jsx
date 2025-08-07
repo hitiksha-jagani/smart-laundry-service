@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import '../../styles/Admin/GeoCodingHistory.css';
+import { BASE_URL } from '../../utils/config';
 
 const GeoCodingHistory = ({ token }) => {
   const [history, setHistory] = useState([]);

@@ -10,6 +10,7 @@ import RevenueTypeFilter from './RevenueTypeFilter';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import RevenueMenu from '../../components/Admin/RevenueMenu';
 import RevenueTrendGraph from '../../components/Admin/RevenueTrendGraph';
+import { BASE_URL } from '../../utils/config';
 
 const RevenueTrendsPage = () => {
     const [user, setUser] = useState(null);

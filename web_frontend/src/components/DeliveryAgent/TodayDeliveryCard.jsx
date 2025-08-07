@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../styles/DeliveryAgent/PendingDeliveryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import { FaUser, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
+import { BASE_URL } from '../../utils/config';
 
 const TodayDeliveryCard = ({ delivery }) => {
   const [agentLocation, setAgentLocation] = useState(null);

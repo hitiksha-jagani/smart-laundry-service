@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
 import '../../styles/DeliveryAgent/DeliveryAgentProfile.css';
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryAgentProfile = () => {
 

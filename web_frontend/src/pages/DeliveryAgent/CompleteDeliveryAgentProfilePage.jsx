@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
+import { BASE_URL } from '../../utils/config';
 
 const CompleteDeliveryAgentProfilePage = () => {
     const navigate = useNavigate();

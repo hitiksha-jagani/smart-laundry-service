@@ -7,6 +7,7 @@ import axios from 'axios';
 import AdminSummaryCard from '../../components/Admin/AdminSummaryCard.jsx';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ServiceMenu from '../../components/Admin/ServiceMenu.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const ServiceSummaryPage = () => {
     const [user, setUser] = useState(null);

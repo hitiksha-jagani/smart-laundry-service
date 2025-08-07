@@ -9,7 +9,8 @@ import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentD
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import '../../styles/DeliveryAgent/UpdateStatus.css';
 import axios from 'axios';
- import { BASE_URL } from '../../utils/config';  
+ import { BASE_URL } from '../../utils/config'; 
+  
 const UpdateStatus = () => {
   const [toast, setToast] = useState({ message: '', type: '', visible: false });
   const [user, setUser] = useState(null);

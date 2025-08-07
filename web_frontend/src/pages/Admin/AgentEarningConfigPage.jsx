@@ -7,6 +7,7 @@ import axios from 'axios';
 import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ConfigurationMenu from '../../components/Admin/ConfigurationMenu.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const AgentEarningConfigPage = () => {
     const [user, setUser] = useState(null);

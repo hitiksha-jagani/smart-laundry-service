@@ -7,6 +7,7 @@ import axios from 'axios';
 import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentDashboardLayout';
 import ManageAvailability from '../../components/DeliveryAgent/ManageAvailability';
 import SavedAvailability from './SavedAvailability';
+import { BASE_URL } from '../../utils/config';
 
 const Availability = () => { 
     const [user, setUser] = useState(null);

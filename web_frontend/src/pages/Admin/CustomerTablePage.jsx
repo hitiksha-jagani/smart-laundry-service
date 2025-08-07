@@ -8,6 +8,7 @@ import axios from 'axios';
 import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import UserMenu from '../../components/Admin/UserMenu.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const CustomerTablePage = () => {
     const navigate = useNavigate(); 

@@ -7,6 +7,7 @@ import axios from 'axios';
 import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ServiceMenu from '../../components/Admin/ServiceMenu.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const ServicePage = () => {
     const [user, setUser] = useState(null);

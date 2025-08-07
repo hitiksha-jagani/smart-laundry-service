@@ -7,6 +7,7 @@ import '../../styles/DeliveryAgent/PendingDeliveryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import { FaUser, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../utils/config';
 
 const PendingDeliveryCard = ({ data, onAccept, onReject }) => {
     const [agentLocation, setAgentLocation] = useState(null);

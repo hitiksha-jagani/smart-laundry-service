@@ -9,6 +9,7 @@ import axios from 'axios';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import RequestsMenu from "./RequestsMenu";
 import '../../styles/Admin/ServiceProviderRequests.css';
+import { BASE_URL } from '../../utils/config';
 
 const ServiceProviderRequests = () => {
     const [user, setUser] = useState(null);

@@ -3,6 +3,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import axios from 'axios';
+import { BASE_URL } from '../../utils/config';
 
 const LocationTracker = ({ isAvailable }) => {
   const intervalRef = useRef(null);

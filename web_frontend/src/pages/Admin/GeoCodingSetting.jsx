@@ -6,8 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { MdInbox } from 'react-icons/md';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import ConfigurationMenu from '../../components/Admin/ConfigurationMenu.jsx';
-import GeoCodingApiSavingForm from '../../components/Admin/GeoCodingApiSaveForm.jsx';
-import GeoCodingHistory from '../../components/Admin/GeoCodingHistory.jsx';
+import { BASE_URL } from '../../utils/config';
 import axios from 'axios';
 
 const GeoCodingSetting = () => {

@@ -9,6 +9,7 @@ import GraphFilter from '../../components/Admin/GraphFilter';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import RevenueMenu from '../../components/Admin/RevenueMenu';
 import '../../styles/Admin/TotalRevenuePage.css';
+import { BASE_URL } from '../../utils/config';
 
 const AgentRevenuePage = () => {
     const [user, setUser] = useState(null);

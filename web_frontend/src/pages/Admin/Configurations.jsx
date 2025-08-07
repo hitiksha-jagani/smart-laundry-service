@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.jsx';
 import '../../styles/Admin/AdminForm.css';
+import { BASE_URL } from '../../utils/config';
 
 const Configurations = () => {
     const [user, setUser] = useState(null);

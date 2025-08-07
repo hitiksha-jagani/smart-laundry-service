@@ -9,6 +9,7 @@ import RevenueMenu from '../../components/Admin/RevenueMenu';
 import TimeFilter from '../../components/Admin/TimeFilter.jsx';
 import RevenueBreakdownDonutChart from '../../components/Admin/RevenueBreakdownDonutChart.jsx';
 import RevenueBreakdownTable from '../../components/Admin/RevenueBreakdownTable.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const RevenueBreakdownPage = () => {
     const [user, setUser] = useState(null);

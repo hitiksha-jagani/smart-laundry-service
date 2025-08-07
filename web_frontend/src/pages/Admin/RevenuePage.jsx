@@ -8,6 +8,7 @@ import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout.j
 import TimeFilter from '../../components/Admin/TimeFilter.jsx';
 import '../../styles/Admin/RevenuePage.css';
 import AdminSummaryCard from '../../components/Admin/AdminSummaryCard.jsx';
+import { BASE_URL } from '../../utils/config';
 
 const RevenuePage = () => {
     const [filterParams, setFilterParams] = useState({ filter: "overall" });

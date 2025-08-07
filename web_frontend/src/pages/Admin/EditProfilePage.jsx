@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
+import { BASE_URL } from '../../utils/config';
 
 const EditProfilePage = () => {
     const [user, setUser] = useState(null);

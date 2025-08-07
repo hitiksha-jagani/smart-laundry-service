@@ -7,7 +7,6 @@ import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import AdminDashboardLayout from '../../components/Layout/AdminDashboardLayout';
 import { BASE_URL } from '../../utils/config';
-import instance from '../../utils/axiosInstance';
 
 const AdminProfile = () => {
 

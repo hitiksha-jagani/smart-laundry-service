@@ -13,6 +13,7 @@ import AllPayouts from '../../components/DeliveryAgent/AllPayouts';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/SummaryCard.css';
 import '../../styles/DeliveryAgent/DeliveryAgentPayout.css';
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryAgentPayout = () => {
     const [filterParams, setFilterParams] = useState({ filter: "overall" });

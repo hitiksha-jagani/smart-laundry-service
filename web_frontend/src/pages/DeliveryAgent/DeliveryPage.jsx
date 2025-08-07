@@ -9,6 +9,7 @@ import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentD
 import '../../styles/DeliveryAgent/DeliveryAgentCommon.css';
 import '../../styles/DeliveryAgent/DeliveryAgentSidebar.css';
 import '../../styles/DeliveryAgent/SummaryCard.css';
+import { BASE_URL } from '../../utils/config';
 
 const DeliveryPage = () => {
   const [user, setUser] = useState(null);

@@ -8,6 +8,7 @@ import DeliveryAgentDashboardLayout from '../../components/Layout/DeliveryAgentD
 import PendingDeliveryCard from './PendingDeliveryCard';
 import { MdInbox } from 'react-icons/md';
 import '../../styles/Toast.css';
+import { BASE_URL } from '../../utils/config';
 
 const PendingDeliveries = () => {
   const location = useLocation();
