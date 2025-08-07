@@ -1,3 +1,98 @@
+//package com.SmartLaundry.service.DeliveryAgent;
+//
+//import com.SmartLaundry.dto.Customer.RaiseTicketRequestDto;
+//import com.SmartLaundry.model.*;
+//import com.SmartLaundry.repository.TicketRepository;
+//import com.SmartLaundry.repository.UserRepository;
+//import com.SmartLaundry.service.Admin.RoleCheckingService;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.data.jpa.domain.Specification;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
+//import org.springframework.stereotype.Service;
+//import org.springframework.web.multipart.MultipartFile;
+//
+//import java.io.IOException;
+//import java.nio.file.AccessDeniedException;
+//import java.util.List;
+//import java.util.stream.Collectors;
+//
+//@Service
+//public class TicketService {
+//
+//    @Autowired
+//    private UserRepository userRepository;
+//
+//    @Autowired
+//    private TicketRepository ticketRepository;
+//
+//    @Autowired
+//    private RoleCheckingService roleCheckingService;
+//
+//    @Autowired
+//    private DeliveryAgentProfileService deliveryAgentProfileService ;
+//
+//    @Value("${DELIVERY_AGENT_TICKET}")
+//    private String path;
+//
+//    public String raiseTicket(Users user, RaiseTicketRequestDto raiseTicketRequestDto, MultipartFile image) throws IOException {
+//
+//        String uploadDir = path + user.getUserId();
+//        String photo = deliveryAgentProfileService.saveFile(image, uploadDir, user.getUserId());
+//
+//        Ticket ticket = Ticket.builder()
+//                .title(raiseTicketRequestDto.getTitle())
+//                .description(raiseTicketRequestDto.getDescription())
+//                .photo(photo)
+//                .category(raiseTicketRequestDto.getCategory())
+//                .response(null)
+//                .respondedAt(null)
+//                .user(user)
+//                .status(TicketStatus.NOT_RESPONDED)
+//                .build();
+//
+//        ticketRepository.save(ticket);
+//
+//        return "Ticket raised successfully.";
+//    }
+//
+//    // Return list of raised tickets
+//    public List<RaiseTicketRequestDto> getAllTickets(String category, TicketStatus status, Users user) throws AccessDeniedException {
+//
+//        List<Ticket> tickets;
+//
+//        if(category != null && !category.isBlank()){
+//            tickets = ticketRepository.findTicketsByCategoryAndUser(category, user.getUserId());
+//        } else if(status != null) {
+//            tickets = ticketRepository.findTicketByStatusAndUser(status, user.getUserId());
+//        } else {
+//            tickets = ticketRepository.findByUser(user);
+//        }
+//
+//        return tickets.stream().map(this::mapToTicketDTO).collect(Collectors.toList());
+//
+//    }
+//
+//    private RaiseTicketRequestDto mapToTicketDTO(Ticket ticket){
+//
+//        RaiseTicketRequestDto dto = RaiseTicketRequestDto.builder()
+//                    .ticketId(ticket.getTicketId())
+//                    .title(ticket.getTitle())
+//                    .description(ticket.getDescription())
+//                    .photo(ticket.getPhoto() != null && !ticket.getPhoto().isBlank()
+//                            ? ("/complaints/image/" + ticket.getTicketId())
+//                            : null)
+//                    .category(ticket.getCategory())
+//                    .submittedAt(ticket.getSubmittedAt())
+//                    .status(ticket.getStatus())
+//                    .response(ticket.getResponse())
+//                    .respondedAt(ticket.getRespondedAt())
+//                    .build();
+//
+//        return dto;
+//    }
+//}
+
 package com.SmartLaundry.service.DeliveryAgent;
 
 import com.SmartLaundry.dto.Customer.RaiseTicketRequestDto;
@@ -5,10 +100,8 @@ import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.TicketRepository;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.Admin.RoleCheckingService;
+import com.SmartLaundry.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,20 +123,20 @@ public class TicketService {
     private RoleCheckingService roleCheckingService;
 
     @Autowired
-    private DeliveryAgentProfileService deliveryAgentProfileService ;
-
-    @Value("${DELIVERY_AGENT_TICKET}")
-    private String path;
+    private CloudinaryService cloudinaryService;
 
     public String raiseTicket(Users user, RaiseTicketRequestDto raiseTicketRequestDto, MultipartFile image) throws IOException {
 
-        String uploadDir = path + user.getUserId();
-        String photo = deliveryAgentProfileService.saveFile(image, uploadDir, user.getUserId());
+        String photoUrl = null;
+        if (image != null && !image.isEmpty()) {
+            String folder = "DeliveryAgent/Tickets/" + user.getUserId();
+            photoUrl = cloudinaryService.uploadFile(image, folder);
+        }
 
         Ticket ticket = Ticket.builder()
                 .title(raiseTicketRequestDto.getTitle())
                 .description(raiseTicketRequestDto.getDescription())
-                .photo(photo)
+                .photo(photoUrl)
                 .category(raiseTicketRequestDto.getCategory())
                 .response(null)
                 .respondedAt(null)
@@ -61,34 +154,28 @@ public class TicketService {
 
         List<Ticket> tickets;
 
-        if(category != null && !category.isBlank()){
+        if (category != null && !category.isBlank()) {
             tickets = ticketRepository.findTicketsByCategoryAndUser(category, user.getUserId());
-        } else if(status != null) {
+        } else if (status != null) {
             tickets = ticketRepository.findTicketByStatusAndUser(status, user.getUserId());
         } else {
             tickets = ticketRepository.findByUser(user);
         }
 
         return tickets.stream().map(this::mapToTicketDTO).collect(Collectors.toList());
-
     }
 
-    private RaiseTicketRequestDto mapToTicketDTO(Ticket ticket){
-
-        RaiseTicketRequestDto dto = RaiseTicketRequestDto.builder()
-                    .ticketId(ticket.getTicketId())
-                    .title(ticket.getTitle())
-                    .description(ticket.getDescription())
-                    .photo(ticket.getPhoto() != null && !ticket.getPhoto().isBlank()
-                            ? ("/complaints/image/" + ticket.getTicketId())
-                            : null)
-                    .category(ticket.getCategory())
-                    .submittedAt(ticket.getSubmittedAt())
-                    .status(ticket.getStatus())
-                    .response(ticket.getResponse())
-                    .respondedAt(ticket.getRespondedAt())
-                    .build();
-
-        return dto;
+    private RaiseTicketRequestDto mapToTicketDTO(Ticket ticket) {
+        return RaiseTicketRequestDto.builder()
+                .ticketId(ticket.getTicketId())
+                .title(ticket.getTitle())
+                .description(ticket.getDescription())
+                .photo(ticket.getPhoto())  // Direct Cloudinary URL
+                .category(ticket.getCategory())
+                .submittedAt(ticket.getSubmittedAt())
+                .status(ticket.getStatus())
+                .response(ticket.getResponse())
+                .respondedAt(ticket.getRespondedAt())
+                .build();
     }
 }
