@@ -301,7 +301,6 @@ function App() {
             <Route path="/not-available" element={<NotAvailablePage />} />
 
             {/* Admin */}
-            <Route path="/setup-admin" element={<SetupAdmin />} />
 
             {/* Revenue Page */}
             <Route path="/revenue/summary" element={
