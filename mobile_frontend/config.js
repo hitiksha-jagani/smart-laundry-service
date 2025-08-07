@@ -6,4 +6,4 @@
 // export const BASE_URL = 'http://localhost:8080';
 
 // export const BASE_URL = 'http://10.200.23.46:8080';
-export const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+export const BASE_URL = 'https://smart-laundry-frontend.onrender.com';

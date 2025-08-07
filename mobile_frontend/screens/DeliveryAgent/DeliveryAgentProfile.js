@@ -53,7 +53,7 @@ const DeliveryAgentProfile = () => {
         const fetchAllData = async () => {
 
             const axiosInstance = axios.create({
-                baseURL: 'http://192.168.1.7:8080',
+                baseURL: `${BASE_URL}`,
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -80,7 +80,7 @@ const DeliveryAgentProfile = () => {
         const userId = data.userId;
 
         if (type && userId) {
-            const url = `http://192.168.1.7:8080/image/agent/${type}/${userId}`;
+            const url = `${BASE_URL}/image/agent/${type}/${userId}`;
             Linking.openURL(url);
         } else {
             Alert.alert('Invalid image type or user ID');
