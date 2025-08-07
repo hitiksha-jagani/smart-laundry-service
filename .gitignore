@@ -1,4 +1,8 @@
 ### env file ###
 .env
 custom-properties.env
-node_modules
+node_modules/
+
+uploads/
+.expo/
+.idea/
