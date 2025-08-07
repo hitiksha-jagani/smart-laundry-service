@@ -34,3 +34,5 @@ build/
 
 ####Application.properties####
 application.properties
+
+node_modules/
