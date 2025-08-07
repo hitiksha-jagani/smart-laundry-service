@@ -54,7 +54,7 @@ const Login = () => {
       }
     } catch (err) {
       console.error(err);
-      setError("Something went wrong. Try again.");
+      setError("User Not Exist.");
     }
   };
 
