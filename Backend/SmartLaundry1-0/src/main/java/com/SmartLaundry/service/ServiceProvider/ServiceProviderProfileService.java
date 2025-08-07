@@ -5,6 +5,7 @@ import com.SmartLaundry.exception.ForbiddenAccessException;
 import com.SmartLaundry.exception.FormatException;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import com.SmartLaundry.service.CloudinaryService;
 import com.SmartLaundry.service.Customer.EmailService;
 import com.SmartLaundry.service.Customer.GeoUtils;
 import com.SmartLaundry.service.Customer.SMSService;
@@ -28,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ServiceProviderProfileService {
     @Autowired
     private UsernameUtil usernameUtil;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Autowired
     private UserRepository userRepository;
@@ -121,10 +124,14 @@ public class ServiceProviderProfileService {
                 .gstNumber(serviceProvider.getGstNumber())
                 .needOfDeliveryAgent(serviceProvider.getNeedOfDeliveryAgent())
                 .schedulePlans(serviceProvider.getSchedulePlans())
-                .photoImage("/image/profile/" + user.getUserId())
-                .AadharCardImage("/image/aadhar/" + user.getUserId())
-                .PanCardImage("/image/pan/" + user.getUserId())
-                .BusinessUtilityBillImage("/image/utility/" + user.getUserId())
+//                .photoImage("/image/profile/" + user.getUserId())
+//                .AadharCardImage("/image/aadhar/" + user.getUserId())
+                .photoImage(serviceProvider.getPhotoImage())
+                .AadharCardImage(serviceProvider.getAadharCardImage())
+                .PanCardImage(serviceProvider.getPanCardImage())
+                .BusinessUtilityBillImage(serviceProvider.getBusinessUtilityBillImage())
+//                .PanCardImage("/image/pan/" + user.getUserId())
+//                .BusinessUtilityBillImage("/image/utility/" + user.getUserId())
                 .address(addressDTO)
                 .bankAccount(bankAccountDTO)
                 .priceDTO(prices)
@@ -165,11 +172,17 @@ public class ServiceProviderProfileService {
             }
 
             // 4. Upload images
-            String uploadDir = path + "/" + "ServiceProvider" + "/" + "Profile" + "/" + userId + "/";
-            String aadharPath = saveFile(aadharCard, uploadDir, userId);
-            String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
-            String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
-            String profilePath = saveFile(profilePhoto, uploadDir, userId);
+//            String uploadDir = path + "/" + "ServiceProvider" + "/" + "Profile" + "/" + userId + "/";
+//            String aadharPath = saveFile(aadharCard, uploadDir, userId);
+//            String panPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
+//            String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
+//            String profilePath = saveFile(profilePhoto, uploadDir, userId);
+            String folder = "SmartLaundry/ServiceProvider/" + userId;
+            String aadharPath = cloudinaryService.uploadFile(aadharCard, folder + "/aadhar");
+            String panPath = panCard != null ? cloudinaryService.uploadFile(panCard, folder + "/pan") : null;
+            String utilityBillPath = cloudinaryService.uploadFile(utilityBill, folder + "/utility");
+            String profilePath = cloudinaryService.uploadFile(profilePhoto, folder + "/profile");
+
             data.setAadharCardPhoto(aadharPath);
             data.setPanCardPhoto(panPath);
             data.setBusinessUtilityBillPhoto(utilityBillPath);
@@ -244,34 +257,34 @@ public class ServiceProviderProfileService {
         }
     }
 
-    public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
-
-        if (file == null || file.isEmpty()) {
-            return "File is not exist";
-        }
-
-        // Create directory if not exists
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        logger.info("Upload dir : {}", dir);
-
-        // Use a unique filename (timestamp + original filename) to avoid collision
-        String originalFilename = file.getOriginalFilename();
-        String fileName = System.currentTimeMillis()+  "_" + originalFilename;
-        logger.info("Original file name : {}", originalFilename);
-        logger.info("File name : {}", fileName);
-
-        // Full path
-        File destination = new File(dir, fileName);
-        logger.info("Destination : {}", destination);
-
-        // Save file locally
-        file.transferTo(destination);
-        logger.info("File saved successfully");
-
-        // Return the relative or absolute path
-        return destination.getAbsolutePath();
-    }
+//    public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
+//
+//        if (file == null || file.isEmpty()) {
+//            return "File is not exist";
+//        }
+//
+//        // Create directory if not exists
+//        File dir = new File(uploadDir);
+//        if (!dir.exists()) {
+//            dir.mkdirs();
+//        }
+//        logger.info("Upload dir : {}", dir);
+//
+//        // Use a unique filename (timestamp + original filename) to avoid collision
+//        String originalFilename = file.getOriginalFilename();
+//        String fileName = System.currentTimeMillis()+  "_" + originalFilename;
+//        logger.info("Original file name : {}", originalFilename);
+//        logger.info("File name : {}", fileName);
+//
+//        // Full path
+//        File destination = new File(dir, fileName);
+//        logger.info("Destination : {}", destination);
+//
+//        // Save file locally
+//        file.transferTo(destination);
+//        logger.info("File saved successfully");
+//
+//        // Return the relative or absolute path
+//        return destination.getAbsolutePath();
+//    }
 }

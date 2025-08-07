@@ -11,6 +11,7 @@ import com.SmartLaundry.repository.CityRepository;
 import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserAddressRepository;
 import com.SmartLaundry.repository.UserRepository;
+import com.SmartLaundry.service.CloudinaryService;
 import com.SmartLaundry.service.Customer.*;
 import com.SmartLaundry.util.UsernameUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +44,9 @@ public class DeliveryAgentProfileService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Autowired
     private UserAddressRepository userAddressRepository;
@@ -102,10 +106,14 @@ public class DeliveryAgentProfileService {
         deliveryAgentProfileDTO.setDateOfBirth(deliveryAgent.getDateOfBirth());
         deliveryAgentProfileDTO.setGender(deliveryAgent.getGender());
         deliveryAgentProfileDTO.setVehicleNumber(deliveryAgent.getVehicleNumber());
-        deliveryAgentProfileDTO.setProfilePhoto("/image/agent/profile/" + user.getUserId());
-        deliveryAgentProfileDTO.setPanCardPhoto("/image/agent/pan/" + user.getUserId());
-        deliveryAgentProfileDTO.setAadharCardPhoto("/image/agent/aadhar/" + user.getUserId());
-        deliveryAgentProfileDTO.setDrivingLicensePhoto("/image/agent/license/" + user.getUserId());
+        deliveryAgentProfileDTO.setProfilePhoto(deliveryAgent.getProfilePhoto());
+        //same for profile photo
+//        deliveryAgentProfileDTO.setPanCardPhoto("/image/agent/pan/" + user.getUserId());
+        deliveryAgentProfileDTO.setPanCardPhoto(deliveryAgent.getPanCardPhoto());
+//        deliveryAgentProfileDTO.setAadharCardPhoto("/image/agent/aadhar/" + user.getUserId());
+        deliveryAgentProfileDTO.setAadharCardPhoto(deliveryAgent.getAadharCardPhoto());
+//        deliveryAgentProfileDTO.setDrivingLicensePhoto("/image/agent/license/" + user.getUserId());
+        deliveryAgentProfileDTO.setDrivingLicensePhoto(deliveryAgent.getDrivingLicensePhoto());
         deliveryAgentProfileDTO.setBankName(deliveryAgent.getBankName());
         deliveryAgentProfileDTO.setAccountHolderName(deliveryAgent.getAccountHolderName());
         deliveryAgentProfileDTO.setBankAccountNumber(deliveryAgent.getBankAccountNumber());
@@ -140,12 +148,18 @@ public class DeliveryAgentProfileService {
             throw new FormatException("Invalid IFSC Code format.");
         }
 
-        String uploadDir = path + "/" + "DeliveryAgent" + "/" + "Profile" + "/" + userId + "/";
-        // Save files and get paths
-        String aadharCardPath = saveFile(aadharCard, uploadDir, userId);
-        String panCardPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
-        String drivingLicensePath = saveFile(drivingLicense, uploadDir, userId);
-        String profilePhotoPath = saveFile(profilePhoto, uploadDir, userId);
+//        String uploadDir = path + "/" + "DeliveryAgent" + "/" + "Profile" + "/" + userId + "/";
+//        // Save files and get paths
+//        String aadharCardPath = saveFile(aadharCard, uploadDir, userId);
+//        String panCardPath = panCard != null ? saveFile(panCard, uploadDir, userId) : null;
+//        String drivingLicensePath = saveFile(drivingLicense, uploadDir, userId);
+//        String profilePhotoPath = saveFile(profilePhoto, uploadDir, userId);
+        String folder = "DeliveryAgent/Profile/" + userId;
+
+        String aadharCardPath = cloudinaryService.uploadFile(aadharCard, folder);
+        String panCardPath = panCard != null ? cloudinaryService.uploadFile(panCard, folder) : null;
+        String drivingLicensePath = cloudinaryService.uploadFile(drivingLicense, folder);
+        String profilePhotoPath = cloudinaryService.uploadFile(profilePhoto, folder);
 
         // Map final DTO
         DeliveryAgent requestProfile = DeliveryAgent.builder()
@@ -182,36 +196,36 @@ public class DeliveryAgentProfileService {
         return "Your request is sent successfully. Wait for a response.";
     }
 
-    public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
-
-        if (file == null || file.isEmpty()) {
-            return "File is not exist";
-        }
-
-        // Create directory if not exists
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        logger.info("Upload dir : {}", dir);
-
-        // Use a unique filename (timestamp + original filename) to avoid collision
-        String originalFilename = file.getOriginalFilename();
-        String fileName = System.currentTimeMillis()+  "_" + originalFilename;
-        logger.info("Original file name : {}", originalFilename);
-        logger.info("File name : {}", fileName);
-
-        // Full path
-        File destination = new File(dir, fileName);
-        logger.info("Destination : {}", destination);
-
-        // Save file locally
-        file.transferTo(destination);
-        logger.info("File saved successfully");
-
-        // Return the relative or absolute path
-        return destination.getAbsolutePath();
-    }
+//    public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
+//
+//        if (file == null || file.isEmpty()) {
+//            return "File is not exist";
+//        }
+//
+//        // Create directory if not exists
+//        File dir = new File(uploadDir);
+//        if (!dir.exists()) {
+//            dir.mkdirs();
+//        }
+//        logger.info("Upload dir : {}", dir);
+//
+//        // Use a unique filename (timestamp + original filename) to avoid collision
+//        String originalFilename = file.getOriginalFilename();
+//        String fileName = System.currentTimeMillis()+  "_" + originalFilename;
+//        logger.info("Original file name : {}", originalFilename);
+//        logger.info("File name : {}", fileName);
+//
+//        // Full path
+//        File destination = new File(dir, fileName);
+//        logger.info("Destination : {}", destination);
+//
+//        // Save file locally
+//        file.transferTo(destination);
+//        logger.info("File saved successfully");
+//
+//        // Return the relative or absolute path
+//        return destination.getAbsolutePath();
+//    }
 
     // Modify existing details
     @Transactional
@@ -305,23 +319,39 @@ public class DeliveryAgentProfileService {
         String drivingLicensePath = null;
         String profilePhotoPath = null;
 
-        String uploadDir = path + "/" + "DeliveryAgent" + "/" + "Profile" + "/" + userId + "/";
+//        String uploadDir = path + "/" + "DeliveryAgent" + "/" + "Profile" + "/" + userId + "/";
+//
+//        if (aadharCard != null && !aadharCard.isEmpty()) {
+//            aadharCardPath = saveFile(aadharCard, uploadDir, userId);
+//        }
+//
+//        if (panCard != null && !panCard.isEmpty()) {
+//            panCardPath = saveFile(panCard, uploadDir, userId);
+//        }
+//
+//        if (drivingLicense != null && !drivingLicense.isEmpty()) {
+//            drivingLicensePath = saveFile(drivingLicense, uploadDir, userId);
+//        }
+//
+//        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+//            profilePhotoPath = saveFile(profilePhoto, uploadDir, userId);
+//        }
+        String folder = "DeliveryAgent/Profile/" + userId;
 
         if (aadharCard != null && !aadharCard.isEmpty()) {
-            aadharCardPath = saveFile(aadharCard, uploadDir, userId);
+            aadharCardPath = cloudinaryService.uploadFile(aadharCard, folder);
         }
-
         if (panCard != null && !panCard.isEmpty()) {
-            panCardPath = saveFile(panCard, uploadDir, userId);
+            panCardPath = cloudinaryService.uploadFile(panCard, folder);
         }
-
         if (drivingLicense != null && !drivingLicense.isEmpty()) {
-            drivingLicensePath = saveFile(drivingLicense, uploadDir, userId);
+            drivingLicensePath = cloudinaryService.uploadFile(drivingLicense, folder);
+        }
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            profilePhotoPath = cloudinaryService.uploadFile(profilePhoto, folder);
         }
 
-        if (profilePhoto != null && !profilePhoto.isEmpty()) {
-            profilePhotoPath = saveFile(profilePhoto, uploadDir, userId);
-        }
+
 
         // Update delivery agent only for provided fields
         DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
