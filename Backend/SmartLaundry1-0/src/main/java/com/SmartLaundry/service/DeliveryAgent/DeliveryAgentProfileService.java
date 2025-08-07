@@ -373,12 +373,15 @@
 //        return "Profile is edited successfully.";
 //    }
 //}
+//
 
 
 package com.SmartLaundry.service.DeliveryAgent;
 
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentCompleteProfileRequestDTO;
 import com.SmartLaundry.dto.DeliveryAgent.DeliveryAgentProfileDTO;
+import com.SmartLaundry.dto.DeliveryAgent.RequestProfileDTO;
+import com.SmartLaundry.exception.ExceptionMsg;
 import com.SmartLaundry.exception.ForbiddenAccessException;
 import com.SmartLaundry.exception.FormatException;
 import com.SmartLaundry.model.*;
@@ -387,32 +390,59 @@ import com.SmartLaundry.repository.DeliveryAgentRepository;
 import com.SmartLaundry.repository.UserAddressRepository;
 import com.SmartLaundry.repository.UserRepository;
 import com.SmartLaundry.service.CloudinaryService;
-import com.SmartLaundry.service.Customer.EmailService;
-import com.SmartLaundry.service.Customer.GeoUtils;
-import com.SmartLaundry.service.Customer.SMSService;
+import com.SmartLaundry.service.Customer.*;
 import com.SmartLaundry.util.UsernameUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.SmartLaundry.service.Customer.EmailService;
+import com.SmartLaundry.service.Customer.SMSService;
+import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
-
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
 @Service
 public class DeliveryAgentProfileService {
 
-    @Autowired private UsernameUtil usernameUtil;
-    @Autowired private UserRepository userRepository;
-    @Autowired private CloudinaryService cloudinaryService;
-    @Autowired private UserAddressRepository userAddressRepository;
-    @Autowired private DeliveryAgentRepository deliveryAgentRepository;
-    @Autowired private CityRepository cityRepository;
-    @Autowired private GeoUtils geoUtils;
-    @Autowired private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private UsernameUtil usernameUtil;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private UserAddressRepository userAddressRepository;
+
+    @Autowired
+    private DeliveryAgentRepository deliveryAgentRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private GeoUtils geoUtils;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private static final Logger logger = LoggerFactory.getLogger(DeliveryAgentProfileService.class);
+
+    @Value("${FILE_PATH}")
+    private String path;
 
     private final EmailService emailService;
     private final SMSService smsService;
@@ -423,15 +453,52 @@ public class DeliveryAgentProfileService {
     }
 
     @Transactional
-    public String completeProfile(String userId, DeliveryAgentCompleteProfileRequestDTO data,
-                                  MultipartFile aadharCard, MultipartFile panCard,
-                                  MultipartFile drivingLicense, MultipartFile profilePhoto) throws IOException {
+    public DeliveryAgentProfileDTO getProfileDetail(String userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not exist."));
+        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
+                .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not exist."));
+        UserAddress userAddresses = userAddressRepository.findByUsers(user);
 
+        DeliveryAgentProfileDTO.AddressDTO addressDTOs = DeliveryAgentProfileDTO.AddressDTO.builder()
+                .name(userAddresses.getName())
+                .areaName(userAddresses.getAreaName())
+                .pincode(userAddresses.getPincode())
+                .cityName(userAddresses.getCity().getCityName())
+                .latitude(userAddresses.getLatitude())
+                .longitude(userAddresses.getLongitude())
+                .build();
+
+        DeliveryAgentProfileDTO deliveryAgentProfileDTO = new DeliveryAgentProfileDTO();
+        deliveryAgentProfileDTO.setUserId(userId);
+        deliveryAgentProfileDTO.setFirstName(user.getFirstName());
+        deliveryAgentProfileDTO.setLastName(user.getLastName());
+        deliveryAgentProfileDTO.setEmail(user.getEmail());
+        deliveryAgentProfileDTO.setPhone(user.getPhoneNo());
+        deliveryAgentProfileDTO.setDateOfBirth(deliveryAgent.getDateOfBirth());
+        deliveryAgentProfileDTO.setGender(deliveryAgent.getGender());
+        deliveryAgentProfileDTO.setVehicleNumber(deliveryAgent.getVehicleNumber());
+        deliveryAgentProfileDTO.setProfilePhoto(deliveryAgent.getProfilePhoto());
+        deliveryAgentProfileDTO.setPanCardPhoto(deliveryAgent.getPanCardPhoto());
+        deliveryAgentProfileDTO.setAadharCardPhoto(deliveryAgent.getAadharCardPhoto());
+        deliveryAgentProfileDTO.setDrivingLicensePhoto(deliveryAgent.getDrivingLicensePhoto());
+        deliveryAgentProfileDTO.setBankName(deliveryAgent.getBankName());
+        deliveryAgentProfileDTO.setAccountHolderName(deliveryAgent.getAccountHolderName());
+        deliveryAgentProfileDTO.setBankAccountNumber(deliveryAgent.getBankAccountNumber());
+        deliveryAgentProfileDTO.setIfscCode(deliveryAgent.getIfscCode());
+        deliveryAgentProfileDTO.setAddress(addressDTOs);
+
+        return deliveryAgentProfileDTO;
+    }
+
+    @Transactional
+    public String completeProfile(String userId, DeliveryAgentCompleteProfileRequestDTO data, MultipartFile aadharCard,
+                                  MultipartFile panCard, MultipartFile drivingLicense, MultipartFile profilePhoto) throws IOException {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
         if (deliveryAgentRepository.findByUsers(user).isPresent()) {
-            return "Your request is already sent. Please wait for a response.";
+            return "Your request is already send wait for response.";
         }
 
         if (!data.getAccountHolderName().matches("^[A-Za-z\\s]+$")) {
@@ -443,6 +510,7 @@ public class DeliveryAgentProfileService {
         }
 
         String folder = "DeliveryAgent/Profile/" + userId;
+
         String aadharCardPath = cloudinaryService.uploadFile(aadharCard, folder);
         String panCardPath = panCard != null ? cloudinaryService.uploadFile(panCard, folder) : null;
         String drivingLicensePath = cloudinaryService.uploadFile(drivingLicense, folder);
@@ -453,8 +521,8 @@ public class DeliveryAgentProfileService {
                 .dateOfBirth(data.getDateOfBirth())
                 .vehicleNumber(data.getVehicleNumber())
                 .bankName(data.getBankName())
-                .currentLatitude((user.getAddress() != null) ? user.getAddress().getLatitude() : null)
-                .currentLongitude((user.getAddress() != null) ? user.getAddress().getLongitude() : null)
+                .currentLatitude(user.getAddress() != null ? user.getAddress().getLatitude() : null)
+                .currentLongitude(user.getAddress() != null ? user.getAddress().getLongitude() : null)
                 .accountHolderName(data.getAccountHolderName())
                 .bankAccountNumber(data.getBankAccountNumber())
                 .ifscCode(data.getIfscCode())
@@ -479,6 +547,21 @@ public class DeliveryAgentProfileService {
                              MultipartFile aadharCard, MultipartFile panCard,
                              MultipartFile drivingLicense, MultipartFile profilePhoto) throws IOException {
 
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            return "Changes in email is not allowed.";
+        }
+        if (dto.getPhone() != null && !dto.getPhone().isBlank()) {
+            return "Changes in phone number is not allowed.";
+        }
+        if ((dto.getCurrentLatitude() != null && !dto.getCurrentLatitude().isNaN()) ||
+                (dto.getAddress().getLatitude() != null && !dto.getAddress().getLatitude().isNaN())) {
+            return "Changes in latitude is not allowed.";
+        }
+        if ((dto.getCurrentLongitude() != null && !dto.getCurrentLongitude().isNaN()) ||
+                (dto.getAddress().getLongitude() != null && !dto.getAddress().getLongitude().isNaN())) {
+            return "Changes in longitude is not allowed.";
+        }
+
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
@@ -486,32 +569,28 @@ public class DeliveryAgentProfileService {
             throw new ForbiddenAccessException("You are not applicable for this page.");
         }
 
-        // Block updates to restricted fields
-        if (dto.getEmail() != null || dto.getPhone() != null ||
-                dto.getCurrentLatitude() != null || dto.getCurrentLongitude() != null ||
-                (dto.getAddress() != null && (dto.getAddress().getLatitude() != null || dto.getAddress().getLongitude() != null))) {
-            return "Changes to email, phone, or location are not allowed.";
-        }
-
         if (dto.getFirstName() != null) user.setFirstName(dto.getFirstName());
         if (dto.getLastName() != null) user.setLastName(dto.getLastName());
+
         userRepository.save(user);
 
         if (dto.getAddress() != null) {
             UserAddress userAddress = userAddressRepository.findByUsers(user);
-            var addr = dto.getAddress();
+            DeliveryAgentProfileDTO.AddressDTO address = dto.getAddress();
 
-            if (addr.getName() != null) userAddress.setName(addr.getName());
-            if (addr.getAreaName() != null) userAddress.setAreaName(addr.getAreaName());
-            if (addr.getPincode() != null) userAddress.setPincode(addr.getPincode());
-
-            if (addr.getCityName() != null) {
-                City city = cityRepository.findByCityName(addr.getCityName())
-                        .orElseThrow(() -> new RuntimeException("City not available."));
+            if (address.getName() != null) userAddress.setName(address.getName());
+            if (address.getAreaName() != null) userAddress.setAreaName(address.getAreaName());
+            if (address.getPincode() != null) userAddress.setPincode(address.getPincode());
+            if (address.getCityName() != null) {
+                City city = cityRepository.findByCityName(address.getCityName())
+                        .orElseThrow(() -> new RuntimeException("City is not available."));
                 userAddress.setCity(city);
 
                 String fullAddress = String.format("%s, %s, %s, %s",
-                        addr.getName(), addr.getAreaName(), city.getCityName(), addr.getPincode());
+                        address.getName() != null ? address.getName() : userAddress.getName(),
+                        address.getAreaName() != null ? address.getAreaName() : userAddress.getAreaName(),
+                        city.getCityName(),
+                        address.getPincode() != null ? address.getPincode() : userAddress.getPincode());
 
                 double[] latLng = geoUtils.getLatLng(fullAddress);
                 if (latLng[0] != 0.0 || latLng[1] != 0.0) {
@@ -524,10 +603,10 @@ public class DeliveryAgentProfileService {
         }
 
         String folder = "DeliveryAgent/Profile/" + userId;
-        String aadharCardPath = (aadharCard != null && !aadharCard.isEmpty()) ? cloudinaryService.uploadFile(aadharCard, folder) : null;
-        String panCardPath = (panCard != null && !panCard.isEmpty()) ? cloudinaryService.uploadFile(panCard, folder) : null;
-        String drivingLicensePath = (drivingLicense != null && !drivingLicense.isEmpty()) ? cloudinaryService.uploadFile(drivingLicense, folder) : null;
-        String profilePhotoPath = (profilePhoto != null && !profilePhoto.isEmpty()) ? cloudinaryService.uploadFile(profilePhoto, folder) : null;
+        String aadharCardPath = aadharCard != null && !aadharCard.isEmpty() ? cloudinaryService.uploadFile(aadharCard, folder) : null;
+        String panCardPath = panCard != null && !panCard.isEmpty() ? cloudinaryService.uploadFile(panCard, folder) : null;
+        String drivingLicensePath = drivingLicense != null && !drivingLicense.isEmpty() ? cloudinaryService.uploadFile(drivingLicense, folder) : null;
+        String profilePhotoPath = profilePhoto != null && !profilePhoto.isEmpty() ? cloudinaryService.uploadFile(profilePhoto, folder) : null;
 
         DeliveryAgent agent = deliveryAgentRepository.findByUsers(user)
                 .orElseThrow(() -> new RuntimeException("Delivery agent not found."));
@@ -544,6 +623,7 @@ public class DeliveryAgentProfileService {
         if (profilePhotoPath != null) agent.setProfilePhoto(profilePhotoPath);
 
         deliveryAgentRepository.save(agent);
+
         return "Profile is edited successfully.";
     }
 }
