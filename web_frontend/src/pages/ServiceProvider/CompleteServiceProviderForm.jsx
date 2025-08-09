@@ -132,7 +132,7 @@ export default function ServiceProviderProfileForm({ userId: propUserId }) {
     if (fileUploads.panCard) data.append("panCard", fileUploads.panCard);
 
     try {
-      await axios.post(`/sp/complete-sp-profile/${userId}`, data, {
+      await axios.post(`${BASE_URL}/sp/complete-sp-profile/${userId}`, data, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       alert("Profile submitted successfully!");
