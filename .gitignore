@@ -6,3 +6,4 @@ node_modules/
 uploads/
 .expo/
 .idea/
+.env.production
