@@ -14,24 +14,12 @@ import ticket from '../../assets/speech-bubble-line-icon.png';
 import promotion from '../../assets/new-product-icon.png';
 import profile from '../../assets/avatar-icon.png';
 import configuration from '../../assets/working-time-icon.png';
-import ConfigurationsMenu, { configRoutes } from './ConfigurationsMenu';
-import NotAvailablePage from '../../pages/NotAvailablePage';
 import '../../styles/Admin/AdminSidebar.css';
 import '../../styles/Admin/AdminCommon.css';
 import '../../styles/Admin/ConfigurationMenu.css';  
 
 const AdminSidebar = ({ admin }) => {
     const location = useLocation();
-    const isConfigActive = configRoutes.some(path => location.pathname.startsWith(path));
-
-    const [isConfigMenuOpen, setConfigMenuOpen] = useState(false);
-    
-    const handleConfigClick = () => {
-        setConfigMenuOpen(prev => !prev);
-    };
-
-    const handleMouseEnter = () => setConfigMenuOpen(true);
-    const handleMouseLeave = () => setConfigMenuOpen(false);
 
     return (
         <div className="admin-sidebar">

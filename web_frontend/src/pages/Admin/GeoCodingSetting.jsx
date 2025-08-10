@@ -90,7 +90,7 @@ const GeoCodingSetting = () => {
     }, []);
 
     useEffect(() => {
-        axiosInstance.get('${BASE_URL}/configurations/geo-api/providers')
+        axiosInstance.get(`${BASE_URL}/configurations/geo-api/providers`)
             .then((res) => setProviders(res.data))
             .catch((err) => console.error("Failed to load geo-coding api providers", err));
     }, []);

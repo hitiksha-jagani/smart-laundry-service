@@ -6,6 +6,7 @@ import { Alert, Platform } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import * as Location from 'expo-location';
+import { BASE_URL } from '../../config';
 
 const LocationTracker = ({ isAvailable }) => {
     const intervalRef = useRef(null);

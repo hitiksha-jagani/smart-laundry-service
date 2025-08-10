@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 import LocationTracker from './LocationTracker';
+import { BASE_URL } from '../../config';
 
 const Layout = ({ children }) => {
 

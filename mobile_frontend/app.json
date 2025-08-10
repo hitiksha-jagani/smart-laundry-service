@@ -33,7 +33,10 @@
               "host": "payment"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -47,6 +50,11 @@
     ],
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d56065cf-6b7b-420b-a3a1-1753bad408ee"
+      }
+    }
   }
 }

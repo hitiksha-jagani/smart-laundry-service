@@ -20,6 +20,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useAuth } from '../../context/AuthContext';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+import { BASE_URL } from '../../config';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -79,34 +80,7 @@ const EditAgentProfile = () => {
         axiosInstance
             .get(`/user-detail/${userId}`)
             .then((res) => {
-                // const userData = res.data;
-                // const initial = {
-                //     firstName: userData.firstName || '',
-                //     lastName: userData.lastName || '',
-                //     phoneNo: userData.phoneNo || '',
-                //     email: userData.email || '',
-                //     vehicleNumber: agentData.vehicleNumber || '',
-                //     bankName: agentData.bankName || '',
-                //     accountHolderName: agentData.accountHolderName || '',
-                //     bankAccountNumber: agentData.bankAccountNumber || '',
-                //     ifscCode: agentData.ifscCode || '',
-                //     profilePhoto: agentData.profilePhoto || '',
-                //     aadharCardPhoto: agentData.aadharCardPhoto || '',
-                //     panCardPhoto: agentData.panCardPhoto || '',
-                //     drivingLicensePhoto: agentData.drivingLicensePhoto || '',
-                //     address: {
-                //         name: userData.address?.name || '',
-                //         areaName: userData.address?.areaName || '',
-                //         cityName: userData.address?.cityName || '',
-                //         cityId: data.address?.cityId || '',
-                //         stateId: data.address?.stateId || '',
-                //         pincode: userData.address?.pincode || '',
-                //     },
-                // };
-
-                // setSelectedStateId(data.address?.stateId || '');
-                // setSelectedCityId(data.address?.cityId || '');
-
+                
                 const userData = res.data;
                 setUser(userData);
                 setFormData({
