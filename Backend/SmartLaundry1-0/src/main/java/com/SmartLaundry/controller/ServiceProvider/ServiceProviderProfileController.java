@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sp")
@@ -84,7 +85,7 @@ public class ServiceProviderProfileController {
                 System.out.println("📎 PAN Card not provided.");
             }
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of("message", response));
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Invalid JSON format for profile data.");
         } catch (RuntimeException e) {
