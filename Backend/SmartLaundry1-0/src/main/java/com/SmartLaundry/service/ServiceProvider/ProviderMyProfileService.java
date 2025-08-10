@@ -4,6 +4,7 @@ import com.SmartLaundry.dto.ServiceProvider.ServiceProviderProfileDTO;
 import com.SmartLaundry.exception.ForbiddenAccessException;
 import com.SmartLaundry.model.*;
 import com.SmartLaundry.repository.*;
+import com.SmartLaundry.service.CloudinaryService;
 import com.SmartLaundry.service.Customer.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,8 @@ public class ProviderMyProfileService {
 
     @Autowired
     private GeoUtils geoUtils;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProviderMyProfileService.class);
 
@@ -96,29 +99,53 @@ public class ProviderMyProfileService {
         String uploadDir = path + "/" + "ServiceProvider" + "/" + "Profile" + "/" + userId + "/";
         logger.info("Upload files : {}", uploadDir);
 
+//        if (aadharCard != null && !aadharCard.isEmpty()) {
+//            String aadharPath = saveFile(aadharCard, uploadDir, userId);
+//            profileDTO.setAadharCardImage(aadharPath);
+//            sp.setAadharCardImage(aadharPath);
+//        }
         if (aadharCard != null && !aadharCard.isEmpty()) {
-            String aadharPath = saveFile(aadharCard, uploadDir, userId);
-            profileDTO.setAadharCardImage(aadharPath);
-            sp.setAadharCardImage(aadharPath);
+            String cloudinaryUrl = cloudinaryService.uploadFile(aadharCard, "service_providers/aadhar");
+            profileDTO.setAadharCardImage(cloudinaryUrl);
+            sp.setAadharCardImage(cloudinaryUrl);
         }
 
+
+//        if (panCard != null && !panCard.isEmpty()) {
+//            String panPath = saveFile(panCard, uploadDir, userId);
+//            profileDTO.setPanCardImage(panPath);
+//            sp.setPanCardImage(panPath);
+//        }
+//
+//        if (utilityBill != null && !utilityBill.isEmpty()) {
+//            String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
+//            profileDTO.setBusinessUtilityBillImage(utilityBillPath);
+//            sp.setBusinessUtilityBillImage(utilityBillPath);
+//        }
         if (panCard != null && !panCard.isEmpty()) {
-            String panPath = saveFile(panCard, uploadDir, userId);
-            profileDTO.setPanCardImage(panPath);
-            sp.setPanCardImage(panPath);
+            String cloudinaryUrl = cloudinaryService.uploadFile(panCard, "service_providers/pan_cards");
+            profileDTO.setPanCardImage(cloudinaryUrl);
+            sp.setPanCardImage(cloudinaryUrl);
         }
 
         if (utilityBill != null && !utilityBill.isEmpty()) {
-            String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
-            profileDTO.setBusinessUtilityBillImage(utilityBillPath);
-            sp.setBusinessUtilityBillImage(utilityBillPath);
+            String cloudinaryUrl = cloudinaryService.uploadFile(utilityBill, "service_providers/utility_bills");
+            profileDTO.setBusinessUtilityBillImage(cloudinaryUrl);
+            sp.setBusinessUtilityBillImage(cloudinaryUrl);
         }
 
+
+//        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+//            String profilePath = saveFile(profilePhoto, uploadDir, userId);
+//            profileDTO.setPhotoImage(profilePath);
+//            sp.setPhotoImage(profilePath);
+//        }
         if (profilePhoto != null && !profilePhoto.isEmpty()) {
-            String profilePath = saveFile(profilePhoto, uploadDir, userId);
-            profileDTO.setPhotoImage(profilePath);
-            sp.setPhotoImage(profilePath);
+            String cloudinaryUrl = cloudinaryService.uploadFile(profilePhoto, "service_providers");
+            profileDTO.setPhotoImage(cloudinaryUrl);
+            sp.setPhotoImage(cloudinaryUrl);
         }
+
 
         // update other fields from profileDTO
         sp.setBusinessName(profileDTO.getBusinessName());

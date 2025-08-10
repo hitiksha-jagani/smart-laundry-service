@@ -54,12 +54,7 @@ public class ServiceProviderService {
     }
 
 
-//    public CustomerServiceProviderDTO getServiceProviderById(String serviceProviderId) {
-//        Optional<ServiceProvider> spOpt = serviceProviderRepository.findByIdWithUserAddress(serviceProviderId);
-//        ServiceProvider sp = spOpt.orElseThrow(() -> new RuntimeException("Service provider not found with id: " + serviceProviderId));
-//        return convertToCustomerDTO(sp);
-//    }
-@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public CustomerServiceProviderDTO getServiceProviderById(String serviceProviderId) {
         try {
             System.out.println("Fetching provider with ID: " + serviceProviderId);
@@ -74,46 +69,6 @@ public class ServiceProviderService {
     }
 
 
-
-//    public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
-//        // Build PriceDTO list with full item info
-//        List<PriceDTO> priceDTOs = sp.getPrices().stream()
-//                .filter(p -> p.getItem() != null)
-//                .map(price -> {
-//                    Items item = price.getItem();
-//                    return PriceDTO.builder()
-//                            .price(price.getPrice())
-//                            .item(PriceDTO.ItemDTO.builder()
-//                                    .itemId(item.getItemId())
-//                                    .itemName(item.getItemName())
-//                                    .serviceName(item.getService() != null ? item.getService().getServiceName() : null)
-//                                    .subServiceName(item.getSubService() != null ? item.getSubService().getSubServiceName() : null)
-//                                    .build())
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
-//
-//        // Reviews and ratings
-//        List<FeedbackProviders> feedbacks = feedbackRepo.findByServiceProvider_ServiceProviderId(sp.getServiceProviderId());
-//        List<ReviewDTO> reviews = feedbacks.stream()
-//                .filter(fb -> fb.getReview() != null && fb.getUser() != null)
-//                .map(fb -> new ReviewDTO(buildFullName(fb.getUser()), fb.getReview()))
-//                .collect(Collectors.toList());
-//
-//        Double avg = feedbackRepo.findAverageRatingByServiceProvider(sp.getServiceProviderId());
-//        Double avgRating = avg != null ? Math.round(avg * 10.0) / 10.0 : 0.0;
-//
-//
-//        return CustomerServiceProviderDTO.builder()
-//                .serviceProviderId(sp.getServiceProviderId())
-//                .businessName(sp.getBusinessName())
-//                .photoImage(convertFilePathToPublicUrl(sp.getPhotoImage()))
-//                .address(getFirstAddress(sp.getUser()))
-//                .averageRating(avgRating)
-//                .reviews(reviews)
-//                .prices(priceDTOs)
-//                .build();
-//    }
 @Transactional(readOnly = true)
     public CustomerServiceProviderDTO convertToCustomerDTO(ServiceProvider sp) {
         // Build PriceDTO list with full item info
@@ -163,11 +118,10 @@ public class ServiceProviderService {
                 .build();
     }
 
-
 //    private String convertFilePathToPublicUrl(String absolutePath) {
 //        if (absolutePath == null || absolutePath.isEmpty()) return null;
 //
-//        String baseDir = "D:\\MSCIT\\summerinternship\\images\\";
+//        String baseDir = "/app/images/";
 //
 //        if (absolutePath.startsWith(baseDir)) {
 //            String relativePath = absolutePath.substring(baseDir.length()).replace("\\", "/");
@@ -177,20 +131,14 @@ public class ServiceProviderService {
 //        return "http://localhost:8080/images/default-provider.jpg";
 //    }
 
-    private String convertFilePathToPublicUrl(String absolutePath) {
-        if (absolutePath == null || absolutePath.isEmpty()) return null;
 
-        String baseDir = "/app/images/";
-
-        if (absolutePath.startsWith(baseDir)) {
-            String relativePath = absolutePath.substring(baseDir.length()).replace("\\", "/");
-            return "http://localhost:8080/images/" + relativePath;
+    private String convertFilePathToPublicUrl(String cloudinaryUrl) {
+        if (cloudinaryUrl == null || cloudinaryUrl.isEmpty()) {
+            // Return a default image URL from your Cloudinary account or public URL
+            return "https://res.cloudinary.com/dot327hzh/image/upload/v1691675380/default-provider.jpg";
         }
-
-        return "http://localhost:8080/images/default-provider.jpg";
+        return cloudinaryUrl;
     }
-
-
 
     private String buildFullName(Users user) {
         if (user == null) return "Anonymous";
