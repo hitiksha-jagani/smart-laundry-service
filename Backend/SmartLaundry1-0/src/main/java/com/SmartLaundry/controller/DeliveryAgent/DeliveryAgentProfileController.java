@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
-
+@CrossOrigin(origins = "https://smart-laundry-frontend.onrender.com")
 @RestController
 @RequestMapping("/profile")
 public class DeliveryAgentProfileController {

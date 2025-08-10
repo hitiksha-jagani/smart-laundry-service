@@ -404,6 +404,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 import com.SmartLaundry.service.Customer.EmailService;
 import com.SmartLaundry.service.Customer.SMSService;
@@ -412,6 +413,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Service
 public class DeliveryAgentProfileService {
 
