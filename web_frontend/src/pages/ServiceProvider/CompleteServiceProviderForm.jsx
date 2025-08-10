@@ -125,7 +125,8 @@ export default function ServiceProviderProfileForm({ userId: propUserId }) {
     if (!userId) return alert("User ID not found. Please login again.");
 
     const data = new FormData();
-    data.append("data", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+    // data.append("data", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+    data.append("data", JSON.stringify(formData));
     data.append("aadharCard", fileUploads.aadharCard);
     data.append("utilityBill", fileUploads.utilityBill);
     data.append("profilePhoto", fileUploads.profilePhoto);
