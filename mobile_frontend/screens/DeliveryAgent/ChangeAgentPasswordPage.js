@@ -17,6 +17,7 @@ import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout';
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
 import eyeOpen from '../../assets/eye-icon.png';
 import eyeClosed from '../../assets/eye-icon.png'; 
+import { BASE_URL } from '../../config';
 
 const screenWidth = Dimensions.get('window').width;
 

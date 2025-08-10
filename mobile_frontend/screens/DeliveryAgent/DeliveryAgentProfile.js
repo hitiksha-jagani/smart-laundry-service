@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+import { BASE_URL } from '../../config';
 
 const screenWidth = Dimensions.get('window').width;
 

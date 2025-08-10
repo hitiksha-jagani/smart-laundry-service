@@ -12,6 +12,7 @@ import {
 import axios from 'axios'; 
 import { useAuth } from '../../context/AuthContext';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { BASE_URL } from '../../config';
 
 const screenWidth = Dimensions.get('window').width;
 

@@ -12,6 +12,7 @@ import PendingDeliveryCard from './PendingDeliveryCard';
 import { useAuth } from '../../context/AuthContext';
 import DeliveryAgentLayout from '../../components/DeliveryAgent/Layout'; 
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+import { BASE_URL } from '../../config';
 
 const PendingDeliveries = ({ route }) => {
   const { user, data = [] } = route?.params || {};

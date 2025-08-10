@@ -10,6 +10,8 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { deliveryAgentStyles } from '../../styles/DeliveryAgent/deliveryAgentStyles';
+import { BASE_URL } from '../../config';
+import { Platform } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -101,7 +103,7 @@ const DeliveryAgentCompleteProfile = () => {
                 setFiles((prev) => ({
                     ...prev,
                     [name]: {
-                        uri: result.uri,
+                        uri: result.uri, 
                         name: result.name,
                         mimeType: result.mimeType || 'application/octet-stream',
                     },
@@ -116,6 +118,46 @@ const DeliveryAgentCompleteProfile = () => {
 
         try {
 
+            const {
+                dateOfBirth,
+                vehicleNumber,
+                bankName,
+                accountHolderName,
+                bankAccountNumber,
+                ifscCode,
+                gender,
+            } = formValues;
+
+            // Required text fields validation
+            const missingFields = [];
+            if (!dateOfBirth) missingFields.push('Date of Birth');
+            if (!vehicleNumber) missingFields.push('Vehicle Number');
+            if (!bankName) missingFields.push('Bank Name');
+            if (!accountHolderName) missingFields.push('Account Holder Name');
+            if (!bankAccountNumber) missingFields.push('Bank Account Number');
+            if (!ifscCode) missingFields.push('IFSC Code');
+
+            const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+            if (!ifscRegex.test(ifscCode)) {
+                showToast('Invalid IFSC code format', 'error');
+                return;
+            }
+
+            if (!gender) missingFields.push('Gender');
+
+            if (missingFields.length > 0) {
+                showToast(`Please fill in: ${missingFields.join(', ')}`, 'error');
+                return;
+            }
+
+            const requiredFiles = ['aadharCard', 'drivingLicense', 'profilePhoto'];
+            for (const key of requiredFiles) {
+                if (!files[key]) {
+                    showToast(`Please upload ${key} before submitting.`, 'error');
+                    return;
+                }
+            }
+
             const formData = new FormData();
 
             formData.append('data', JSON.stringify(formValues));
@@ -128,20 +170,6 @@ const DeliveryAgentCompleteProfile = () => {
                     type: files[key].mimeType || 'application/octet-stream',
                 });
             }});
-
-            const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
-            if (!ifscRegex.test(ifscCode)) {
-                showToast('Invalid IFSC code format');
-                return;
-            }
-
-            const requiredFiles = ['aadharCard', 'drivingLicense', 'profilePhoto'];
-            for (const key of requiredFiles) {
-                if (!files[key]) {
-                    showToast(`Please upload ${key} before submitting.`);
-                    return;
-                }
-            }
 
             const response = await axios.post(`${BASE_URL}/profile/complete`, formData, {
                 headers: {
@@ -172,7 +200,13 @@ const DeliveryAgentCompleteProfile = () => {
             navigation.navigate('CustomerDashboard');
 
         } catch (error) {
-            showToast('Error', error?.response?.data || 'Something went wrong.');
+            const message =
+            error?.response?.data?.message ||
+            error?.response?.data?.error ||
+            error?.message ||
+            'Something went wrong.';
+
+            showToast(message.toString(), 'error');
         }
     };
 
@@ -225,8 +259,8 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>Date Of Birth *</Text>
-                                <TouchableOpacity onPress={showDatePicker} className="border p-2 rounded bg-white">
+                                <Text>Date Of Birth <Text style={{ color: 'red' }}>*</Text></Text>
+                                {/* <TouchableOpacity onPress={showDatePicker} className="border p-2 rounded bg-white">
                                 <Text style={styles.uploadBtn}>{selectedDate || 'Select date'}</Text>
                                 </TouchableOpacity>
                                 <DateTimePickerModal
@@ -234,13 +268,36 @@ const DeliveryAgentCompleteProfile = () => {
                                     mode="date"
                                     onConfirm={handleConfirm}
                                     onCancel={hideDatePicker}
-                                />
+                                /> */}
+                                {Platform.OS === 'web' ? (
+                                    <TextInput
+                                        style={styles.uploadBtn}
+                                        placeholder="YYYY-MM-DD"
+                                        value={formValues.dateOfBirth}
+                                        onChangeText={(val) => {
+                                            setSelectedDate(val);
+                                            handleInputChange('dateOfBirth', val);
+                                        }}
+                                    />
+                                ) : (
+                                    <>
+                                        <TouchableOpacity onPress={showDatePicker} style={styles.uploadBtn}>
+                                            <Text>{selectedDate || 'Select date'}</Text>
+                                        </TouchableOpacity>
+                                        <DateTimePickerModal
+                                            isVisible={isDatePickerVisible}
+                                            mode="date"
+                                            onConfirm={handleConfirm}
+                                            onCancel={hideDatePicker}
+                                        />
+                                    </>
+                                )}
 
                             </View>
 
                             <View className="agentField">
 
-                                <Text>Vehicle Number *</Text>
+                                <Text>Vehicle Number <Text style={{ color: 'red' }}>*</Text></Text>
                                 <TextInput
                                     className="agent-input-field"
                                     value={formValues.vehicleNumber}
@@ -252,7 +309,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>Bank Name *</Text>
+                                <Text>Bank Name <Text style={{ color: 'red' }}>*</Text></Text>
                                 <TextInput
                                     className="agent-input-field"
                                     value={formValues.bankName}
@@ -264,7 +321,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>Account Holder Name *</Text>
+                                <Text>Account Holder Name <Text style={{ color: 'red' }}>*</Text></Text>
                                 <TextInput
                                     className="agent-input-field"
                                     value={formValues.accountHolderName}
@@ -276,7 +333,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>Bank Account Number *</Text>
+                                <Text>Bank Account Number <Text style={{ color: 'red' }}>*</Text></Text>
                                 <TextInput
                                     className="agent-input-field"
                                     value={formValues.bankAccountNumber}
@@ -289,7 +346,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>IFSC Code *</Text>
+                                <Text>IFSC Code <Text style={{ color: 'red' }}>*</Text></Text>
                                 <TextInput
                                     className="agent-input-field"
                                     value={formValues.ifscCode}
@@ -301,7 +358,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
                                 
-                                <Text>Gender *</Text>
+                                <Text>Gender <Text style={{ color: 'red' }}>*</Text></Text>
                                 <View style={{
                                     backgroundColor: '#E8F5E9',
                                     borderWidth: 1,
@@ -325,7 +382,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>Aadhar Card *</Text>
+                                <Text>Aadhar Card <Text style={{ color: 'red' }}>*</Text></Text>
                                 <Pressable onPress={() => pickFile('aadharCard', ['image/*', 'application/pdf'])}>
                                     <Text style={styles.uploadBtn}>
                                         {files.aadharCard ? files.aadharCard.name : 'Choose File'}
@@ -347,7 +404,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>Driving License *</Text>
+                                <Text>Driving License <Text style={{ color: 'red' }}>*</Text></Text>
                                 <Pressable onPress={() => pickFile('drivingLicense', ['image/*', 'application/pdf'])}>
                                     <Text style={styles.uploadBtn}>
                                         {files.drivingLicense ? files.drivingLicense.name : 'Choose File'}
@@ -358,7 +415,7 @@ const DeliveryAgentCompleteProfile = () => {
 
                             <View className="agentField">
 
-                                <Text>Profile Photo *</Text>
+                                <Text>Profile Photo <Text style={{ color: 'red' }}>*</Text></Text>
                                 <Pressable onPress={() => pickFile('profilePhoto', ['image/*'])}>
                                     <Text style={styles.uploadBtn}>
                                         {files.profilePhoto ? files.profilePhoto.name : 'Choose File'}
@@ -488,6 +545,28 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         textAlign: 'center'
+    },
+    toast: {
+        position: 'absolute',
+        bottom: 30,
+        left: '10%',
+        right: '10%',
+        backgroundColor: '#4ade80',
+        padding: 15,
+        borderRadius: 10,
+        zIndex: 1000,
+        alignItems: 'center',
+        elevation: 4,
+    },
+
+    toastError: {
+        backgroundColor: '#ef4444',
+    },
+
+    toastText: {
+        color: 'white',
+        fontWeight: '600',
+        fontSize: 16,
     },
 
 });

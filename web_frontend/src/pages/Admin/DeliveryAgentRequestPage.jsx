@@ -151,7 +151,7 @@ const DeliveryAgentRequestPage = () => {
 
             <div style={{ display: 'flex' }}>
 
-                <div style={{ flex: 1, paddingRight: '260px' }}>
+                <div style={{ flex: 1, paddingRight: '260px' }}> 
 
                     <h1 className="heading-admin h1-admin">REQUEST DASHBOARD</h1>
 

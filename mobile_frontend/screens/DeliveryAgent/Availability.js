@@ -3,8 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
+import { BASE_URL } from '../../config';
 import axios from 'axios';
 
 import { useAuth } from '../../context/AuthContext';
