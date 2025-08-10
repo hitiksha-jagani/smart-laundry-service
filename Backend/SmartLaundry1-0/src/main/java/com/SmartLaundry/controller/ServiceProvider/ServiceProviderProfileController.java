@@ -73,6 +73,17 @@ public class ServiceProviderProfileController {
             checkIfBlocked(userId);
             ServiceProviderRequestDTO dto = objectMapper.readValue(data, ServiceProviderRequestDTO.class);
             String response = serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto);
+            System.out.println("📦 Raw JSON string from 'data': " + data);
+            System.out.println("📎 Aadhar file name: " + aadharCard.getOriginalFilename() + " | size: " + aadharCard.getSize());
+            System.out.println("📎 Utility Bill file name: " + utilityBill.getOriginalFilename() + " | size: " + utilityBill.getSize());
+            System.out.println("📎 Profile Photo file name: " + profilePhoto.getOriginalFilename() + " | size: " + profilePhoto.getSize());
+
+            if (panCard != null) {
+                System.out.println("📎 PAN Card file name: " + panCard.getOriginalFilename() + " | size: " + panCard.getSize());
+            } else {
+                System.out.println("📎 PAN Card not provided.");
+            }
+
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Invalid JSON format for profile data.");
