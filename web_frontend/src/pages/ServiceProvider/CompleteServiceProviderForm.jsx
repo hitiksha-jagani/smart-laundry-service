@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../utils/axiosInstance";
 import { jwtDecode } from "jwt-decode";
-
+ import { BASE_URL } from '../../utils/config';
 export default function ServiceProviderProfileForm({ userId: propUserId }) {
   const [userId, setUserId] = useState(propUserId || "");
   const [loading, setLoading] = useState(true);

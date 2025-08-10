@@ -47,19 +47,42 @@ public class ServiceProviderProfileController {
 
     // http://localhost:8080/sp/complete-sp-profile/{userId}
     // Render a form for service provider to submit their profile.
+//    @PostMapping(value ="/complete-sp-profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<String> completeServiceProviderProfile(
+//            @PathVariable String userId,
+//            @RequestPart("data") @Valid String data,
+//            @RequestPart("aadharCard") MultipartFile aadharCard,
+//            @RequestPart(value = "panCard", required = false) MultipartFile panCard,
+//            @RequestPart("utilityBill") MultipartFile utilityBill,
+//            @RequestPart("profilePhoto") MultipartFile profilePhoto
+//    ) throws IOException {
+//        checkIfBlocked(userId);
+//        ServiceProviderRequestDTO dto = objectMapper.readValue(data, ServiceProviderRequestDTO.class);
+//        return ResponseEntity.ok(serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto));
+//    }
     @PostMapping(value ="/complete-sp-profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> completeServiceProviderProfile(
+    public ResponseEntity<?> completeServiceProviderProfile(
             @PathVariable String userId,
-            @RequestPart("data") @Valid String data,
+            @RequestPart("data") String data,
             @RequestPart("aadharCard") MultipartFile aadharCard,
             @RequestPart(value = "panCard", required = false) MultipartFile panCard,
             @RequestPart("utilityBill") MultipartFile utilityBill,
             @RequestPart("profilePhoto") MultipartFile profilePhoto
-    ) throws IOException {
-        checkIfBlocked(userId);
-        ServiceProviderRequestDTO dto = objectMapper.readValue(data, ServiceProviderRequestDTO.class);
-        return ResponseEntity.ok(serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto));
+    ) {
+        try {
+            checkIfBlocked(userId);
+            ServiceProviderRequestDTO dto = objectMapper.readValue(data, ServiceProviderRequestDTO.class);
+            String response = serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Invalid JSON format for profile data.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Unexpected error occurred.");
+        }
     }
+
 
     // http://localhost:8080/sp-profile/change-password
     // Change password for service provider
