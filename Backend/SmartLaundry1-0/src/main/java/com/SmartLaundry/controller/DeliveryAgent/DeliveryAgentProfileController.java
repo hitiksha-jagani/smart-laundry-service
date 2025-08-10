@@ -88,7 +88,7 @@ public class DeliveryAgentProfileController {
     @PostMapping(value = "/complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> completeDeliveryAgentProfile(
             HttpServletRequest request,
-            @RequestPart("data") @Valid String  data,
+            @RequestPart("data")  String  data,
             @RequestPart("aadharCard") MultipartFile aadharCard,
             @RequestPart(value = "panCard", required = false) MultipartFile panCard,
             @RequestPart("drivingLicense") MultipartFile drivingLicense,
