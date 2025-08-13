@@ -129,15 +129,12 @@ const ServiceProviderRequests = () => {
         
     }, []);
 
-    const handleFileClick = (type) => {
-        const userId = currentProvider.userId;
-
-        if (type && userId) {
-            const url = `${BASE_URL}/image/provider/${type}/${userId}`;
-            window.open(url, '_blank'); 
+    const handleFileClick = (fileUrl) => {
+        if (fileUrl) {
+            window.open(fileUrl, "_blank", "noopener,noreferrer");
         } else {
-            showToast("Invalid image type or user ID", "error");
-        }
+            showToast("Image not available", "error");
+        } 
     };
             
     if (loading) return <p className="text-center">Loading...</p>;
@@ -228,7 +225,7 @@ const ServiceProviderRequests = () => {
                                     <div className="field"><label>IFSC Code</label><span>{currentProvider.bankAccount.ifscCode}</span></div>
                                     <div className="field">
                                         <label>PAN Card</label>
-                                        <button onClick={() => handleFileClick('pan')} className="link-btn">
+                                        <button onClick={() => handleFileClick(currentProvider.panCardPhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>
@@ -237,13 +234,13 @@ const ServiceProviderRequests = () => {
                                 <div className="grid-row">
                                     <div className="field">
                                         <label>Aadhaar Card</label>
-                                        <button onClick={() => handleFileClick('aadhar')} className="link-btn">
+                                        <button onClick={() => handleFileClick(currentProvider.aadharCardPhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>
                                     <div className="field">
                                         <label>Business Utility Bill / Rent Agreement</label>
-                                        <button onClick={() => handleFileClick('utilitybill')} className="link-btn">
+                                        <button onClick={() => handleFileClick(currentProvider.businessUtilityBillPhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>
@@ -253,7 +250,7 @@ const ServiceProviderRequests = () => {
                                     
                                     <div className="field">
                                         <label>Profile</label>
-                                        <button onClick={() => handleFileClick('profile')} className="link-btn">
+                                        <button onClick={() => handleFileClick(currentProvider.profilePhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>

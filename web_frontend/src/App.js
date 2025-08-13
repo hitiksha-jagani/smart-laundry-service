@@ -111,28 +111,9 @@ import CustomerTableMoreDetailPage from "./pages/Admin/CustomerTableMoreDetailPa
 
 function App() {
 
-  const [setupRequired, setSetupRequired] = useState(null);
-
-  useEffect(() => {
-    fetch('/setup-admin')
-      .then(res => res.json())
-      .then(setup => setSetupRequired(setup))
-      .catch(err => {
-        console.error("Setup check failed", err);
-        setSetupRequired(false); 
-      });
-  }, []);
-
-  if (setupRequired === null) return <div>Loading...</div>;
-
   return (
       <Routes>
-         
-            {/* <Route path="/" element={<Login />} /> */}
-            <Route path="/setup-admin" element={<Navigate to="/" replace />} />
-            
-            {/* other routes */}
-
+               
             {/* Common */}
             <Route path="/" element={<AutoRedirect />} />
             <Route path="*" element={<h2>404 - Page Not Found</h2>} />

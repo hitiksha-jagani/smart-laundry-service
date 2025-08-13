@@ -244,7 +244,7 @@ public class ServiceProviderProfileService {
             String message = "Congratulations! Your request to become a Service Provider has been submitted for review.";
             String subject = "Service Provider Profile Submission";
 
-            smsService.sendSms(user.getPhoneNo(), message);
+            // smsService.sendSms(user.getPhoneNo(), message);
             emailService.sendMail(user.getEmail(), subject, message);
 
             log.info("Notification sent to user {} via SMS and email", userId);

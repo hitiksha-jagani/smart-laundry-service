@@ -110,6 +110,11 @@ const ChangePasswordPage = () => {
             return false;
         } 
 
+        if(oldPassword == newPassword) {
+            showToast("New password must be different from old.", "error");
+            return false;
+        }
+
         if (newPassword !== confirmPassword) {
             showToast("Password and confirm password do not match", "error");
             return false;

@@ -53,9 +53,10 @@ public class SettingService {
             geo.setActiveAt(LocalDateTime.now());
         }
 
-        geo.setActiveStatus(geocodingConfig.isActiveStatus());
+        geo.setActiveStatus(activeStatus);
         geo.setApiProvider(geocodingConfig.getApiProvider());
         geo.setApiKey(geocodingConfig.getApiKey());
+        geo.setActiveAt(LocalDateTime.now());
         geo.setUsers(user);
 
         configRepository.save(geo);
