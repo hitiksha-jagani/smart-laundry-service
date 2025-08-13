@@ -1,0 +1,514 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.anonymous.mobile_frontend"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+11-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:7:3-75
+11-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:7:20-73
+12    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+12-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:2:3-78
+12-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:2:20-76
+13    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+13-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:3:3-76
+13-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:3:20-74
+14    <uses-permission android:name="android.permission.INTERNET" />
+14-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:4:3-64
+14-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:4:20-62
+15    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+15-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:5:3-77
+15-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:5:20-75
+16    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+16-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:6:3-68
+16-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:6:20-66
+17    <uses-permission android:name="android.permission.VIBRATE" />
+17-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:8:3-63
+17-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:8:20-61
+18    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+18-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:9:3-78
+18-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:9:20-76
+19
+20    <queries>
+20-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:10:3-16:13
+21        <intent>
+21-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:11:5-15:14
+22            <action android:name="android.intent.action.VIEW" />
+22-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:7-58
+22-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:15-56
+23
+24            <category android:name="android.intent.category.BROWSABLE" />
+24-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:7-67
+24-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:17-65
+25
+26            <data android:scheme="https" />
+26-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+26-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:13-35
+27        </intent>
+28
+29        <package android:name="host.exp.exponent" />
+29-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-53
+29-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:18-50
+30
+31        <intent>
+31-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:15:9-19:18
+32
+33            <!-- Required for picking images from the camera roll if targeting API 30 -->
+34            <action android:name="android.media.action.IMAGE_CAPTURE" />
+34-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:18:13-73
+34-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:18:21-70
+35        </intent>
+36        <intent>
+36-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:20:9-24:18
+37
+38            <!-- Required for picking images from the camera if targeting API 30 -->
+39            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
+39-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:23:13-80
+39-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:23:21-77
+40        </intent>
+41        <intent>
+41-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:8:9-14:18
+42            <action android:name="android.intent.action.GET_CONTENT" />
+42-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:9:13-72
+42-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:9:21-69
+43
+44            <category android:name="android.intent.category.OPENABLE" />
+44-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:11:13-73
+44-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:11:23-70
+45
+46            <data android:mimeType="*/*" />
+46-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+47        </intent> <!-- Query open documents -->
+48        <intent>
+48-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:15:9-17:18
+49            <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+49-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:16:13-79
+49-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:16:21-76
+50        </intent> <!-- Query open documents -->
+51        <intent>
+51-->[host.exp.exponent:expo.modules.documentpicker:13.1.6] C:\Users\nencypatel\.gradle\caches\8.13\transforms\288dc8593dd4586da98a0d2f352fda09\transformed\expo.modules.documentpicker-13.1.6\AndroidManifest.xml:10:9-17:18
+52            <action android:name="android.intent.action.OPEN_DOCUMENT" />
+52-->[host.exp.exponent:expo.modules.documentpicker:13.1.6] C:\Users\nencypatel\.gradle\caches\8.13\transforms\288dc8593dd4586da98a0d2f352fda09\transformed\expo.modules.documentpicker-13.1.6\AndroidManifest.xml:11:13-74
+52-->[host.exp.exponent:expo.modules.documentpicker:13.1.6] C:\Users\nencypatel\.gradle\caches\8.13\transforms\288dc8593dd4586da98a0d2f352fda09\transformed\expo.modules.documentpicker-13.1.6\AndroidManifest.xml:11:21-71
+53
+54            <category android:name="android.intent.category.DEFAULT" />
+54-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:9-67
+54-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:19-65
+55            <category android:name="android.intent.category.OPENABLE" />
+55-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:11:13-73
+55-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:11:23-70
+56
+57            <data android:mimeType="*/*" />
+57-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+58        </intent>
+59    </queries> <!-- Required for picking images from camera directly -->
+60    <uses-permission android:name="android.permission.CAMERA" />
+60-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:8:5-65
+60-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:8:22-62
+61
+62    <permission
+62-->[androidx.core:core:1.13.1] C:\Users\nencypatel\.gradle\caches\8.13\transforms\2eafbfcd37e5312020438d485ffc72b9\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+63        android:name="com.anonymous.mobile_frontend.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+63-->[androidx.core:core:1.13.1] C:\Users\nencypatel\.gradle\caches\8.13\transforms\2eafbfcd37e5312020438d485ffc72b9\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+64        android:protectionLevel="signature" />
+64-->[androidx.core:core:1.13.1] C:\Users\nencypatel\.gradle\caches\8.13\transforms\2eafbfcd37e5312020438d485ffc72b9\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+65
+66    <uses-permission android:name="com.anonymous.mobile_frontend.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+66-->[androidx.core:core:1.13.1] C:\Users\nencypatel\.gradle\caches\8.13\transforms\2eafbfcd37e5312020438d485ffc72b9\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+66-->[androidx.core:core:1.13.1] C:\Users\nencypatel\.gradle\caches\8.13\transforms\2eafbfcd37e5312020438d485ffc72b9\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+67
+68    <application
+68-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:3-41:17
+69        android:name="com.anonymous.mobile_frontend.MainApplication"
+69-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:16-47
+70        android:allowBackup="true"
+70-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:162-188
+71        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+71-->[androidx.core:core:1.13.1] C:\Users\nencypatel\.gradle\caches\8.13\transforms\2eafbfcd37e5312020438d485ffc72b9\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+72        android:debuggable="true"
+73        android:extractNativeLibs="false"
+74        android:icon="@mipmap/ic_launcher"
+74-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:81-115
+75        android:label="@string/app_name"
+75-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:48-80
+76        android:roundIcon="@mipmap/ic_launcher_round"
+76-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:116-161
+77        android:supportsRtl="true"
+77-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:221-247
+78        android:theme="@style/AppTheme"
+78-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:17:189-220
+79        android:usesCleartextTraffic="true" >
+79-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\debug\AndroidManifest.xml:6:18-53
+80        <meta-data
+80-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:18:5-83
+81            android:name="expo.modules.updates.ENABLED"
+81-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:18:16-59
+82            android:value="false" />
+82-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:18:60-81
+83        <meta-data
+83-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:19:5-105
+84            android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH"
+84-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:19:16-80
+85            android:value="ALWAYS" />
+85-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:19:81-103
+86        <meta-data
+86-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:20:5-99
+87            android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS"
+87-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:20:16-79
+88            android:value="0" />
+88-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:20:80-97
+89
+90        <activity
+90-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:5-40:16
+91            android:name="com.anonymous.mobile_frontend.MainActivity"
+91-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:15-43
+92            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+92-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:44-134
+93            android:exported="true"
+93-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:256-279
+94            android:launchMode="singleTask"
+94-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:135-166
+95            android:screenOrientation="portrait"
+95-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:280-316
+96            android:theme="@style/Theme.App.SplashScreen"
+96-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:210-255
+97            android:windowSoftInputMode="adjustResize" >
+97-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:21:167-209
+98            <intent-filter>
+98-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:22:7-25:23
+99                <action android:name="android.intent.action.MAIN" />
+99-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:23:9-60
+99-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:23:17-58
+100
+101                <category android:name="android.intent.category.LAUNCHER" />
+101-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:24:9-68
+101-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:24:19-66
+102            </intent-filter>
+103            <intent-filter>
+103-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:26:7-32:23
+104                <action android:name="android.intent.action.VIEW" />
+104-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:7-58
+104-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:15-56
+105
+106                <category android:name="android.intent.category.DEFAULT" />
+106-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:9-67
+106-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:19-65
+107                <category android:name="android.intent.category.BROWSABLE" />
+107-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:7-67
+107-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:17-65
+108
+109                <data android:scheme="smartlaundry" />
+109-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+109-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:13-35
+110                <data android:scheme="exp+mobilefrontend" />
+110-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+110-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:13-35
+111            </intent-filter>
+112            <intent-filter data-generated="true" >
+112-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:33:7-39:23
+112-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:33:22-43
+113                <action android:name="android.intent.action.VIEW" />
+113-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:7-58
+113-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:15-56
+114
+115                <data
+115-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+116                    android:host="payment"
+117                    android:scheme="smartlaundry" />
+117-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:13-35
+118                <data android:scheme="exp+mobilefrontend" />
+118-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+118-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:13-35
+119
+120                <category android:name="android.intent.category.BROWSABLE" />
+120-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:7-67
+120-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:17-65
+121                <category android:name="android.intent.category.DEFAULT" />
+121-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:9-67
+121-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:19-65
+122            </intent-filter>
+123        </activity>
+124
+125        <provider
+125-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-16:20
+126            android:name="com.reactnativecommunity.webview.RNCWebViewFileProvider"
+126-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-83
+127            android:authorities="com.anonymous.mobile_frontend.fileprovider"
+127-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-64
+128            android:exported="false"
+128-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-37
+129            android:grantUriPermissions="true" >
+129-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-47
+130            <meta-data
+130-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+131                android:name="android.support.FILE_PROVIDER_PATHS"
+131-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+132                android:resource="@xml/file_provider_paths" />
+132-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+133        </provider>
+134
+135        <activity
+135-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:9-25:20
+136            android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
+136-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-81
+137            android:exported="true"
+137-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-36
+138            android:launchMode="singleTask"
+138-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:13-44
+139            android:theme="@style/Theme.DevLauncher.LauncherActivity" >
+139-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-70
+140            <intent-filter>
+140-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:17:13-24:29
+141                <action android:name="android.intent.action.VIEW" />
+141-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:7-58
+141-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:15-56
+142
+143                <category android:name="android.intent.category.DEFAULT" />
+143-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:9-67
+143-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:19-65
+144                <category android:name="android.intent.category.BROWSABLE" />
+144-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:7-67
+144-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:17-65
+145
+146                <data android:scheme="expo-dev-launcher" />
+146-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+146-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:13-35
+147            </intent-filter>
+148        </activity>
+149        <activity
+149-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:26:9-29:70
+150            android:name="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity"
+150-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:27:13-93
+151            android:screenOrientation="portrait"
+151-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:28:13-49
+152            android:theme="@style/Theme.DevLauncher.ErrorActivity" />
+152-->[:expo-dev-launcher] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:29:13-67
+153        <activity
+153-->[:expo-dev-menu] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-21:20
+154            android:name="expo.modules.devmenu.DevMenuActivity"
+154-->[:expo-dev-menu] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-64
+155            android:exported="true"
+155-->[:expo-dev-menu] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-36
+156            android:launchMode="singleTask"
+156-->[:expo-dev-menu] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-44
+157            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" >
+157-->[:expo-dev-menu] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-75
+158            <intent-filter>
+158-->[:expo-dev-menu] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-20:29
+159                <action android:name="android.intent.action.VIEW" />
+159-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:7-58
+159-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:12:15-56
+160
+161                <category android:name="android.intent.category.DEFAULT" />
+161-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:9-67
+161-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:28:19-65
+162                <category android:name="android.intent.category.BROWSABLE" />
+162-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:7-67
+162-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:13:17-65
+163
+164                <data android:scheme="expo-dev-menu" />
+164-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:7-37
+164-->D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\android\app\src\main\AndroidManifest.xml:14:13-35
+165            </intent-filter>
+166        </activity>
+167
+168        <meta-data
+168-->[:expo-modules-core] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:9-11:89
+169            android:name="org.unimodules.core.AppLoader#react-native-headless"
+169-->[:expo-modules-core] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-79
+170            android:value="expo.modules.adapters.react.apploader.RNHeadlessAppLoader" />
+170-->[:expo-modules-core] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-86
+171        <meta-data
+171-->[:expo-modules-core] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:9-15:45
+172            android:name="com.facebook.soloader.enabled"
+172-->[:expo-modules-core] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-57
+173            android:value="true" />
+173-->[:expo-modules-core] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-33
+174
+175        <activity
+175-->[com.facebook.react:react-android:0.79.5] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d644ee9b842757375fb9cebdd915ee04\transformed\react-android-0.79.5-debug\AndroidManifest.xml:19:9-21:40
+176            android:name="com.facebook.react.devsupport.DevSettingsActivity"
+176-->[com.facebook.react:react-android:0.79.5] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d644ee9b842757375fb9cebdd915ee04\transformed\react-android-0.79.5-debug\AndroidManifest.xml:20:13-77
+177            android:exported="false" />
+177-->[com.facebook.react:react-android:0.79.5] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d644ee9b842757375fb9cebdd915ee04\transformed\react-android-0.79.5-debug\AndroidManifest.xml:21:13-37
+178
+179        <service
+179-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:28:9-40:19
+180            android:name="com.google.android.gms.metadata.ModuleDependencies"
+180-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:29:13-78
+181            android:enabled="false"
+181-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:30:13-36
+182            android:exported="false" >
+182-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:31:13-37
+183            <intent-filter>
+183-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:33:13-35:29
+184                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+184-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:34:17-94
+184-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:34:25-91
+185            </intent-filter>
+186
+187            <meta-data
+187-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:37:13-39:36
+188                android:name="photopicker_activity:0:required"
+188-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:38:17-63
+189                android:value="" />
+189-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:39:17-33
+190        </service>
+191
+192        <activity
+192-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:42:9-44:59
+193            android:name="com.canhub.cropper.CropImageActivity"
+193-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:43:13-64
+194            android:exported="true"
+194-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:33:13-36
+195            android:theme="@style/Base.Theme.AppCompat" /> <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
+195-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:44:13-56
+196        <provider
+196-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:46:9-54:20
+197            android:name="expo.modules.imagepicker.fileprovider.ImagePickerFileProvider"
+197-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:47:13-89
+198            android:authorities="com.anonymous.mobile_frontend.ImagePickerFileProvider"
+198-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:48:13-75
+199            android:exported="false"
+199-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:49:13-37
+200            android:grantUriPermissions="true" >
+200-->[host.exp.exponent:expo.modules.imagepicker:16.1.4] C:\Users\nencypatel\.gradle\caches\8.13\transforms\d6d1a9aa7b559bffeebd431b87b239ac\transformed\expo.modules.imagepicker-16.1.4\AndroidManifest.xml:50:13-47
+201            <meta-data
+201-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+202                android:name="android.support.FILE_PROVIDER_PATHS"
+202-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+203                android:resource="@xml/image_picker_provider_paths" />
+203-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+204        </provider>
+205        <provider
+205-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:21:9-29:20
+206            android:name="com.canhub.cropper.CropFileProvider"
+206-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:22:13-63
+207            android:authorities="com.anonymous.mobile_frontend.cropper.fileprovider"
+207-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:23:13-72
+208            android:exported="false"
+208-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:24:13-37
+209            android:grantUriPermissions="true" >
+209-->[com.vanniktech:android-image-cropper:4.6.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\35a00de50ceac9bdbb8fc43812824536\transformed\android-image-cropper-4.6.0\AndroidManifest.xml:25:13-47
+210            <meta-data
+210-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+211                android:name="android.support.FILE_PROVIDER_PATHS"
+211-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+212                android:resource="@xml/library_file_paths" />
+212-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+213        </provider>
+214        <provider
+214-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:21:9-30:20
+215            android:name="expo.modules.filesystem.FileSystemFileProvider"
+215-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:22:13-74
+216            android:authorities="com.anonymous.mobile_frontend.FileSystemFileProvider"
+216-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:23:13-74
+217            android:exported="false"
+217-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:24:13-37
+218            android:grantUriPermissions="true" >
+218-->[host.exp.exponent:expo.modules.filesystem:18.1.11] C:\Users\nencypatel\.gradle\caches\8.13\transforms\8b4cf25cb545af971136b0f929fcdac0\transformed\expo.modules.filesystem-18.1.11\AndroidManifest.xml:25:13-47
+219            <meta-data
+219-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+220                android:name="android.support.FILE_PROVIDER_PATHS"
+220-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+221                android:resource="@xml/file_system_provider_paths" />
+221-->[:react-native-webview] D:\MSCIT\summerinternship\smart-laundry-service\mobile_frontend\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+222        </provider>
+223
+224        <service
+224-->[host.exp.exponent:expo.modules.location:18.1.6] C:\Users\nencypatel\.gradle\caches\8.13\transforms\4c5ca8463323586cb345100497b452b6\transformed\expo.modules.location-18.1.6\AndroidManifest.xml:11:9-14:56
+225            android:name="expo.modules.location.services.LocationTaskService"
+225-->[host.exp.exponent:expo.modules.location:18.1.6] C:\Users\nencypatel\.gradle\caches\8.13\transforms\4c5ca8463323586cb345100497b452b6\transformed\expo.modules.location-18.1.6\AndroidManifest.xml:12:13-78
+226            android:exported="false"
+226-->[host.exp.exponent:expo.modules.location:18.1.6] C:\Users\nencypatel\.gradle\caches\8.13\transforms\4c5ca8463323586cb345100497b452b6\transformed\expo.modules.location-18.1.6\AndroidManifest.xml:13:13-37
+227            android:foregroundServiceType="location" />
+227-->[host.exp.exponent:expo.modules.location:18.1.6] C:\Users\nencypatel\.gradle\caches\8.13\transforms\4c5ca8463323586cb345100497b452b6\transformed\expo.modules.location-18.1.6\AndroidManifest.xml:14:13-53
+228
+229        <activity
+229-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\962ce58a92e31b97c141ac06310bb23c\transformed\play-services-base-18.1.0\AndroidManifest.xml:20:9-22:45
+230            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+230-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\962ce58a92e31b97c141ac06310bb23c\transformed\play-services-base-18.1.0\AndroidManifest.xml:20:19-85
+231            android:exported="false"
+231-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\962ce58a92e31b97c141ac06310bb23c\transformed\play-services-base-18.1.0\AndroidManifest.xml:22:19-43
+232            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+232-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\962ce58a92e31b97c141ac06310bb23c\transformed\play-services-base-18.1.0\AndroidManifest.xml:21:19-78
+233
+234        <meta-data
+234-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\107af08ab037182b56f33201f0856ef3\transformed\play-services-basement-18.1.0\AndroidManifest.xml:21:9-23:69
+235            android:name="com.google.android.gms.version"
+235-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\107af08ab037182b56f33201f0856ef3\transformed\play-services-basement-18.1.0\AndroidManifest.xml:22:13-58
+236            android:value="@integer/google_play_services_version" />
+236-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\107af08ab037182b56f33201f0856ef3\transformed\play-services-basement-18.1.0\AndroidManifest.xml:23:13-66
+237
+238        <provider
+238-->[androidx.emoji2:emoji2:1.3.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\6a06dd8db20fe48f1d4dcd15ee18fe12\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+239            android:name="androidx.startup.InitializationProvider"
+239-->[androidx.emoji2:emoji2:1.3.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\6a06dd8db20fe48f1d4dcd15ee18fe12\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+240            android:authorities="com.anonymous.mobile_frontend.androidx-startup"
+240-->[androidx.emoji2:emoji2:1.3.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\6a06dd8db20fe48f1d4dcd15ee18fe12\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+241            android:exported="false" >
+241-->[androidx.emoji2:emoji2:1.3.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\6a06dd8db20fe48f1d4dcd15ee18fe12\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+242            <meta-data
+242-->[androidx.emoji2:emoji2:1.3.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\6a06dd8db20fe48f1d4dcd15ee18fe12\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+243                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+243-->[androidx.emoji2:emoji2:1.3.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\6a06dd8db20fe48f1d4dcd15ee18fe12\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+244                android:value="androidx.startup" />
+244-->[androidx.emoji2:emoji2:1.3.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\6a06dd8db20fe48f1d4dcd15ee18fe12\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+245            <meta-data
+245-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\nencypatel\.gradle\caches\8.13\transforms\b59c4c4f9e32b429eb79d019301b76c8\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+246                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+246-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\nencypatel\.gradle\caches\8.13\transforms\b59c4c4f9e32b429eb79d019301b76c8\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+247                android:value="androidx.startup" />
+247-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\nencypatel\.gradle\caches\8.13\transforms\b59c4c4f9e32b429eb79d019301b76c8\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+248            <meta-data
+248-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+249                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+249-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+250                android:value="androidx.startup" />
+250-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+251        </provider>
+252
+253        <receiver
+253-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+254            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+254-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+255            android:directBootAware="false"
+255-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+256            android:enabled="true"
+256-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+257            android:exported="true"
+257-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+258            android:permission="android.permission.DUMP" >
+258-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+259            <intent-filter>
+259-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+260                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+260-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+260-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+261            </intent-filter>
+262            <intent-filter>
+262-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+263                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+263-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+263-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+264            </intent-filter>
+265            <intent-filter>
+265-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+266                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+266-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+266-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+267            </intent-filter>
+268            <intent-filter>
+268-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+269                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+269-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+269-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\nencypatel\.gradle\caches\8.13\transforms\12c79ce362966d6e50c33af90f7764f4\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+270            </intent-filter>
+271        </receiver>
+272    </application>
+273
+274</manifest>

@@ -1,0 +1,184 @@
+[
+  {
+    "level_": 0,
+    "message_": "Start JSON generation. Platform version: 24 min SDK version: arm64-v8a",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "rebuilding JSON D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\android\\app\\.cxx\\Debug\\3f6e6w1o\\arm64-v8a\\android_gradle_build.json due to:",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "- no fingerprint file, will remove stale configuration folder",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "@echo off\n\"C:\\\\Program Files\\\\Java\\\\jdk-21\\\\bin\\\\java\" ^\n  --class-path ^\n  \"C:\\\\Users\\\\nencypatel\\\\.gradle\\\\caches\\\\modules-2\\\\files-2.1\\\\com.google.prefab\\\\cli\\\\2.1.0\\\\aa32fec809c44fa531f01dcfb739b5b3304d3050\\\\cli-2.1.0-all.jar\" ^\n  com.google.prefab.cli.AppKt ^\n  --build-system ^\n  cmake ^\n  --platform ^\n  android ^\n  --abi ^\n  arm64-v8a ^\n  --os-version ^\n  24 ^\n  --stl ^\n  c++_shared ^\n  --ndk-version ^\n  27 ^\n  --output ^\n  \"C:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Temp\\\\agp-prefab-staging9531296665432047487\\\\staged-cli-output\" ^\n  \"C:\\\\Users\\\\nencypatel\\\\.gradle\\\\caches\\\\8.13\\\\transforms\\\\d644ee9b842757375fb9cebdd915ee04\\\\transformed\\\\react-android-0.79.5-debug\\\\prefab\" ^\n  \"D:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\build\\\\intermediates\\\\cxx\\\\refs\\\\react-native-reanimated\\\\262x4w40\" ^\n  \"C:\\\\Users\\\\nencypatel\\\\.gradle\\\\caches\\\\8.13\\\\transforms\\\\fa03d1ffcf2d88d54ed6c7d80f87d2da\\\\transformed\\\\hermes-android-0.79.5-debug\\\\prefab\" ^\n  \"C:\\\\Users\\\\nencypatel\\\\.gradle\\\\caches\\\\8.13\\\\transforms\\\\e80cc6deab05b24bdfe1060903f43f89\\\\transformed\\\\fbjni-0.7.0\\\\prefab\"\n",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "Received process result: 0",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "removing stale contents from \u0027D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\android\\app\\.cxx\\Debug\\3f6e6w1o\\arm64-v8a\u0027",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "created folder \u0027D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\android\\app\\.cxx\\Debug\\3f6e6w1o\\arm64-v8a\u0027",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "executing cmake @echo off\n\"C:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\cmake.exe\" ^\n  \"-HD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\node_modules\\\\react-native\\\\ReactAndroid\\\\cmake-utils\\\\default-app-setup\" ^\n  \"-DCMAKE_SYSTEM_NAME\u003dAndroid\" ^\n  \"-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\" ^\n  \"-DCMAKE_SYSTEM_VERSION\u003d24\" ^\n  \"-DANDROID_PLATFORM\u003dandroid-24\" ^\n  \"-DANDROID_ABI\u003darm64-v8a\" ^\n  \"-DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a\" ^\n  \"-DANDROID_NDK\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.1.12297006\" ^\n  \"-DCMAKE_ANDROID_NDK\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.1.12297006\" ^\n  \"-DCMAKE_TOOLCHAIN_FILE\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.1.12297006\\\\build\\\\cmake\\\\android.toolchain.cmake\" ^\n  \"-DCMAKE_MAKE_PROGRAM\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\ninja.exe\" ^\n  \"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Debug\\\\3f6e6w1o\\\\obj\\\\arm64-v8a\" ^\n  \"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Debug\\\\3f6e6w1o\\\\obj\\\\arm64-v8a\" ^\n  \"-DCMAKE_BUILD_TYPE\u003dDebug\" ^\n  \"-DCMAKE_FIND_ROOT_PATH\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\.cxx\\\\Debug\\\\3f6e6w1o\\\\prefab\\\\arm64-v8a\\\\prefab\" ^\n  \"-BD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\.cxx\\\\Debug\\\\3f6e6w1o\\\\arm64-v8a\" ^\n  -GNinja ^\n  \"-DPROJECT_BUILD_DIR\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\build\" ^\n  \"-DPROJECT_ROOT_DIR\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\" ^\n  \"-DREACT_ANDROID_DIR\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\node_modules\\\\react-native\\\\ReactAndroid\" ^\n  \"-DANDROID_STL\u003dc++_shared\" ^\n  \"-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES\u003dON\"\n",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "@echo off\n\"C:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\cmake.exe\" ^\n  \"-HD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\node_modules\\\\react-native\\\\ReactAndroid\\\\cmake-utils\\\\default-app-setup\" ^\n  \"-DCMAKE_SYSTEM_NAME\u003dAndroid\" ^\n  \"-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\" ^\n  \"-DCMAKE_SYSTEM_VERSION\u003d24\" ^\n  \"-DANDROID_PLATFORM\u003dandroid-24\" ^\n  \"-DANDROID_ABI\u003darm64-v8a\" ^\n  \"-DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a\" ^\n  \"-DANDROID_NDK\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.1.12297006\" ^\n  \"-DCMAKE_ANDROID_NDK\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.1.12297006\" ^\n  \"-DCMAKE_TOOLCHAIN_FILE\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.1.12297006\\\\build\\\\cmake\\\\android.toolchain.cmake\" ^\n  \"-DCMAKE_MAKE_PROGRAM\u003dC:\\\\Users\\\\nencypatel\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmake\\\\3.22.1\\\\bin\\\\ninja.exe\" ^\n  \"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Debug\\\\3f6e6w1o\\\\obj\\\\arm64-v8a\" ^\n  \"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\build\\\\intermediates\\\\cxx\\\\Debug\\\\3f6e6w1o\\\\obj\\\\arm64-v8a\" ^\n  \"-DCMAKE_BUILD_TYPE\u003dDebug\" ^\n  \"-DCMAKE_FIND_ROOT_PATH\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\.cxx\\\\Debug\\\\3f6e6w1o\\\\prefab\\\\arm64-v8a\\\\prefab\" ^\n  \"-BD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\.cxx\\\\Debug\\\\3f6e6w1o\\\\arm64-v8a\" ^\n  -GNinja ^\n  \"-DPROJECT_BUILD_DIR\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\\\\app\\\\build\" ^\n  \"-DPROJECT_ROOT_DIR\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\android\" ^\n  \"-DREACT_ANDROID_DIR\u003dD:\\\\MSCIT\\\\summerinternship\\\\smart-laundry-service\\\\mobile_frontend\\\\node_modules\\\\react-native\\\\ReactAndroid\" ^\n  \"-DANDROID_STL\u003dc++_shared\" ^\n  \"-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES\u003dON\"\n",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "Received process result: 0",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "Exiting generation of D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\android\\app\\.cxx\\Debug\\3f6e6w1o\\arm64-v8a\\compile_commands.json.bin normally",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "done executing cmake",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "hard linked D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\android\\app\\.cxx\\Debug\\3f6e6w1o\\arm64-v8a\\compile_commands.json to D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\android\\app\\.cxx\\tools\\debug\\arm64-v8a\\compile_commands.json",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "JSON generation completed without problems",
+    "file_": "D:\\MSCIT\\summerinternship\\smart-laundry-service\\mobile_frontend\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  }
+]

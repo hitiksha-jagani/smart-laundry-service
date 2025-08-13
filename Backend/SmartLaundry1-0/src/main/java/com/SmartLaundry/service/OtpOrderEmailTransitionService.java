@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -158,12 +160,14 @@ public class OtpOrderEmailTransitionService {
             throw new IllegalArgumentException("Only service provider or delivery agent can verify delivery.");
         }
 
-        // OTP check
+
         if (!orderEmailOtpService.validateOtp(order, otpInput, OtpPurpose.DELIVERY_CUSTOMER)) {
             throw new IllegalArgumentException("Invalid or expired OTP");
         }
 
         order.setStatus(OrderStatus.DELIVERED);
+        order.setDeliveryDate(LocalDate.now());
+        order.setDeliveryTime(LocalTime.now());
         orderRepository.save(order);
         orderStatusHistoryService.save(order, OrderStatus.DELIVERED);
     }

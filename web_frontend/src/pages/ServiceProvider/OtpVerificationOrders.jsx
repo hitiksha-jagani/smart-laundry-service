@@ -33,8 +33,6 @@ useEffect(() => {
         <ProviderSidebar collapsed={collapsed} toggleSidebar={toggleSidebar} />
       </div>
 
-      {/* Main Content wrapper with left margin to account for fixed sidebar */}
-     
         <div
           className={`flex-1 transition-all duration-300 ${
             collapsed ? "ml-20" : "ml-64"
