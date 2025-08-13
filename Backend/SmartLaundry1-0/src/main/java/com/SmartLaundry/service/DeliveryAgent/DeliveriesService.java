@@ -142,13 +142,6 @@ public class DeliveriesService {
 
         for (String key : assignmentKeys) {
 
-            String[] parts = key.split(":");
-            if (parts.length < 2) continue;
-
-            String orderId = parts[1];
-
-            logger.info("order ID : {}", orderId);
-
             Object value = redisTemplate.opsForValue().get(key);
             if (value == null) continue;
 
@@ -167,14 +160,21 @@ public class DeliveriesService {
                 continue;
             }
 
-            logger.info("user id : {}", deliveryAgent.getUsers().getUserId());
-
-            logger.info("Comparing Redis agentId = {} with userId= {}", assignment.getAgentId() ,deliveryAgent.getUsers().getUserId());
-
             if (assignment != null && !assignment.getAgentId().equals(deliveryAgent.getUsers().getUserId())){
                 logger.info("Assignment is not matched.");
                 continue;
             }
+
+            String[] parts = key.split(":");
+            if (parts.length < 2) continue;
+
+            String orderId = parts[1];
+
+            logger.info("order ID : {}", orderId);
+
+            logger.info("user id : {}", deliveryAgent.getUsers().getUserId());
+
+            logger.info("Comparing Redis agentId = {} with userId= {}", assignment.getAgentId() ,deliveryAgent.getUsers().getUserId());
 
 //            Optional<Order> optionalOrder = orderRepository.findById(orderId);
 //            System.out.println("Order ID : " + optionalOrder.get().getOrderId());
