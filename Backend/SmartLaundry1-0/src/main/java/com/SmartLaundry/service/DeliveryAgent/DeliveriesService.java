@@ -128,13 +128,14 @@ public class DeliveriesService {
 
     // Return list of pending deliveries
     @Transactional
-    public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) {
+    public List<PendingDeliveriesResponseDTO> pendingDeliveries(Users user) throws JsonProcessingException {
 
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
                 .orElseThrow(() -> new UsernameNotFoundException("Delivery agent not exist."));
 
         Set<String> assignmentKeys = redisTemplate.keys("assignment:*");
         if (assignmentKeys == null || assignmentKeys.isEmpty()) {
+            System.out.println("*Assignment key is null.");
             return Collections.emptyList(); }
 
         List<Order> orders = new ArrayList<>();
@@ -155,16 +156,26 @@ public class DeliveriesService {
             try {
                 if (value instanceof String json) {
                     assignment = objectMapper.readValue(json, OrderAssignmentDTO.class);
+                    System.out.println("Assignment val : " + assignment);
                     System.out.println("value : " + assignment.getAgentId());
                 } else {
                     assignment = objectMapper.convertValue(value, OrderAssignmentDTO.class);
+                    System.out.println("value : " + assignment.getAgentId());
+                    System.out.println("Assignment val : " + assignment);
                 }
             } catch (Exception e) {
                 continue;
             }
 
             System.out.println("user id : " + deliveryAgent.getUsers().getUserId());
-            if (assignment != null && !assignment.getAgentId().equals(deliveryAgent.getUsers().getUserId())) continue;
+
+            System.out.println("Comparing Redis agentId=" + assignment.getAgentId() +
+                    " with userId=" + deliveryAgent.getUsers().getUserId());
+
+            if (assignment != null && !assignment.getAgentId().equals(deliveryAgent.getUsers().getUserId())){
+                System.out.println("Assignment is not matched.");
+                continue;
+            }
 
 //            Optional<Order> optionalOrder = orderRepository.findById(orderId);
 //            System.out.println("Order ID : " + optionalOrder.get().getOrderId());
@@ -195,24 +206,18 @@ public class DeliveriesService {
             customerLat = order.getLatitude();
             customerLon = order.getLongitude();
 
-            String locationKey = "deliveryAgentLocation:" + user.getUserId();
-
-            @SuppressWarnings("unchecked")
-            Map<String, Double> loc = (Map<String, Double>) redisTemplate.opsForValue().get(locationKey);
-
-            if (loc != null && loc.get("latitude") != null && loc.get("longitude") != null) {
-                agentLat = loc.get("latitude");
-                agentLon = loc.get("longitude");
-            } else {
-                continue;
-            }
-
             Double totalKm;
 
+            System.out.println("**DB Order Status: " + order.getStatus());
+
             if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
+                System.out.println("Calculate total km.");
                 totalKm = haversine(customerLat, customerLon, providerLat, providerLon);
+                System.out.println("Total km : " + totalKm);
             } else {
+                System.out.println("Calculate total km.");
                 totalKm = haversine(providerLat, providerLon, customerLat, customerLon);
+                System.out.println("Total km : " + totalKm);
             }
 
             if(totalKm > deliveryAgentEarnings.getBaseKm()){
@@ -225,6 +230,7 @@ public class DeliveriesService {
 
             //  Store earning and km in Redis for later use in bill generation
             Map<String, Object> deliveryInfo = new HashMap<>();
+            System.out.println("Delivery earnings : " + deliveryInfo);
             deliveryInfo.put("earning", round(earning, 2));
             deliveryInfo.put("totalKm", round(totalKm, 2));
             redisTemplate.opsForHash().putAll("deliveryEarnings:" + order.getOrderId(), deliveryInfo);
