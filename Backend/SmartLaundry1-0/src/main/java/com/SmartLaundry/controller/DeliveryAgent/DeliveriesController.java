@@ -20,7 +20,7 @@ import java.nio.file.AccessDeniedException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-
+@CrossOrigin(origins = "https://smart-laundry-frontend.onrender.com")
 @RestController
 @RequestMapping("/deliveries")
 public class DeliveriesController {
@@ -135,7 +135,11 @@ public class DeliveriesController {
         redisTemplate.delete("assignment:" + orderId);
 
         // Logic to assign to next agent
-        deliveriesService.assignToDeliveryAgentCustomerOrders(orderId);
+        if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)) {
+            deliveriesService.assignToDeliveryAgentCustomerOrders(orderId);
+        } else {
+            deliveriesService.assignToDeliveryAgentServiceProviderOrders(orderId);
+        }
 
         return ResponseEntity.ok("Order rejected successfully.");
     }
