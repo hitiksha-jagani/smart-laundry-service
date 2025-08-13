@@ -97,14 +97,14 @@ const AdminSidebar = ({ admin }) => {
 
                 <div className="user-name">
                     <img className="admin-sidebar-icon" src={profile} alt="" />
-                    <p>{admin?.firstName} {admin?.lastName}</p>
+                    <p style={{color: 'black', fontWeight: '400'}}>{admin?.firstName} {admin?.lastName}</p>
                 </div>
 
                 <hr className="hr-admin"/>
 
                 <div className="contact-info">
                     <p>{admin?.phoneNo || 'Loading...'}</p>
-                    <p>{admin?.email || 'Loading...'}</p>
+                    <p style={{fontSize: '13px'}}>{admin?.email || 'Loading...'}</p>
                 </div>
 
             </div>

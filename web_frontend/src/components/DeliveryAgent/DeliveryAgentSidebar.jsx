@@ -66,14 +66,14 @@ const DeliveryAgentSidebar = ({ agent }) => {
 
                 <div className="user-name">
                     <img className="sidebar-icon" src={profile} alt="" />
-                    <p>{agent?.firstName} {agent?.lastName}</p>
+                    <p style={{color: 'black', fontWeight: '400'}}>{agent?.firstName} {agent?.lastName}</p>
                 </div>
 
                 <hr className="hr-agent" />
 
                 <div className="contact-info">
                     <p>{agent?.phoneNo || 'Loading...'}</p>
-                    <p>{agent?.email || 'Loading...'}</p>
+                    <p style={{fontSize: '13px'}}>{agent?.email || 'Loading...'}</p>
                 </div>
 
             </div>
