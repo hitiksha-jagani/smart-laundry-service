@@ -48,19 +48,6 @@ public class ServiceProviderProfileController {
 
     // http://localhost:8080/sp/complete-sp-profile/{userId}
     // Render a form for service provider to submit their profile.
-//    @PostMapping(value ="/complete-sp-profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<String> completeServiceProviderProfile(
-//            @PathVariable String userId,
-//            @RequestPart("data") @Valid String data,
-//            @RequestPart("aadharCard") MultipartFile aadharCard,
-//            @RequestPart(value = "panCard", required = false) MultipartFile panCard,
-//            @RequestPart("utilityBill") MultipartFile utilityBill,
-//            @RequestPart("profilePhoto") MultipartFile profilePhoto
-//    ) throws IOException {
-//        checkIfBlocked(userId);
-//        ServiceProviderRequestDTO dto = objectMapper.readValue(data, ServiceProviderRequestDTO.class);
-//        return ResponseEntity.ok(serviceProviderProfileService.completeServiceProviderProfile(userId, dto, aadharCard, panCard, utilityBill, profilePhoto));
-//    }
     @PostMapping(value ="/complete-sp-profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> completeServiceProviderProfile(
             @PathVariable String userId,

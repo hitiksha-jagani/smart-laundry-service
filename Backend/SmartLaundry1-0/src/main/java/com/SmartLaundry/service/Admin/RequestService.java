@@ -147,10 +147,6 @@ public class RequestService {
                     .panCardPhoto(provider.getPanCardImage())
                     .profilePhoto(provider.getPhotoImage())
                     .businessUtilityBillPhoto(provider.getBusinessUtilityBillImage())
-//                    .aadharCardPhoto("/image/provider/aadhar/" + user.getUserId())
-//                    .profilePhoto("/image/provider/profile/" + user.getUserId())
-//                    .panCardPhoto("/image/provider/pan/" + user.getUserId())
-//                    .businessUtilityBillPhoto("/image/provider/utilitybill/" + user.getUserId())
                     .needOfDeliveryAgent(provider.getNeedOfDeliveryAgent())
                     .priceDTO(priceDTOList)
                     .build();
@@ -273,10 +269,6 @@ public class RequestService {
                     .ifscCode(agent.getIfscCode())
                     .gender(agent.getGender())
                     .addresses(addressDTO)
-//                    .aadharCardPhoto("/image/agent/aadhar/" + user.getUserId())
-//                    .profilePhoto("/image/agent/profile/" + user.getUserId())
-//                    .panCardPhoto("/image/agent/pan/" + user.getUserId())
-//                    .drivingLicensePhoto("/image/agent/license/" + user.getUserId())
                     .aadharCardPhoto(agent.getAadharCardPhoto())
                     .panCardPhoto(agent.getPanCardPhoto())
                     .profilePhoto(agent.getProfilePhoto())
@@ -332,13 +324,13 @@ public class RequestService {
         DeliveryAgent deliveryAgent = deliveryAgentRepository.findByUsers(user)
                 .orElseThrow(() -> new RuntimeException("Delivery agent is not found."));
 
-            if(deliveryAgent.getStatus() != Status.PENDING){
-                return "Request for delivery agent profile already accepted/rejected.";
-            } else if(deliveryAgent.getStatus() == Status.REJECTED){
-                return "Delivery agent is already rejected.";
-            } else {
-                deliveryAgent.setStatus(Status.REJECTED);
-            }
+        if(deliveryAgent.getStatus() != Status.PENDING){
+            return "Request for delivery agent profile already accepted/rejected.";
+        } else if(deliveryAgent.getStatus() == Status.REJECTED){
+            return "Delivery agent is already rejected.";
+        } else {
+            deliveryAgent.setStatus(Status.REJECTED);
+        }
 
         // Send SMS + Email notification
         String message = "We're sorry! Your request to become a Delivery agent has been rejected.";
@@ -347,7 +339,7 @@ public class RequestService {
 //        smsService.sendOrderStatusNotification(phone, message);
 //        emailService.sendOrderStatusNotification(email, subject, message);
 
-            return "Delivery Agent profile rejected.";
+        return "Delivery Agent profile rejected.";
     }
 
 

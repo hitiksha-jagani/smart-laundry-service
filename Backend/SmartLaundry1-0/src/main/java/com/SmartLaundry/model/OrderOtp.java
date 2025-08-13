@@ -23,7 +23,7 @@ public class OrderOtp {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Order_Id", nullable = false)
-    @JsonBackReference  // ✅ Correct use here
+    @JsonBackReference
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)

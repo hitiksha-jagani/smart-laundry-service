@@ -135,7 +135,7 @@ public class DeliveriesService {
 
         Set<String> assignmentKeys = redisTemplate.keys("assignment:*");
         if (assignmentKeys == null || assignmentKeys.isEmpty()) {
-            System.out.println("*Assignment key is null.");
+            System.out.println("*****Assignment key is null.");
             return Collections.emptyList(); }
 
         List<Order> orders = new ArrayList<>();
@@ -208,7 +208,7 @@ public class DeliveriesService {
 
             Double totalKm;
 
-            System.out.println("**DB Order Status: " + order.getStatus());
+            System.out.println("****DB Order Status: " + order.getStatus());
 
             if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
                 System.out.println("Calculate total km.");
@@ -655,7 +655,7 @@ public class DeliveriesService {
                 }
             }
 //        }, Instant.now().plus(5, ChronoUnit.SECONDS));
-        }, Instant.now().plus(5, ChronoUnit.MINUTES)); // trigger after 5 min
+        }, Instant.now().plus(5, ChronoUnit.MINUTES));
     }
 
     // Logic for accept order
@@ -696,7 +696,6 @@ public class DeliveriesService {
                 order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
             } else {
                 order.setDeliveryDeliveryAgent(agent);
-//                order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
             }
 
             // Retrieve delivery data from Redis

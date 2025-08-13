@@ -40,9 +40,6 @@ public class ProviderMyProfileService {
     @Value("${FILE_PATH}")
     private String path;
 
-//    @Autowired
-//    private ServiceProviderRepository serviceProviderRepository;
-
     @Autowired
     private CityRepository cityRepository;
 
@@ -99,29 +96,12 @@ public class ProviderMyProfileService {
         String uploadDir = path + "/" + "ServiceProvider" + "/" + "Profile" + "/" + userId + "/";
         logger.info("Upload files : {}", uploadDir);
 
-//        if (aadharCard != null && !aadharCard.isEmpty()) {
-//            String aadharPath = saveFile(aadharCard, uploadDir, userId);
-//            profileDTO.setAadharCardImage(aadharPath);
-//            sp.setAadharCardImage(aadharPath);
-//        }
         if (aadharCard != null && !aadharCard.isEmpty()) {
             String cloudinaryUrl = cloudinaryService.uploadFile(aadharCard, "service_providers/aadhar");
             profileDTO.setAadharCardImage(cloudinaryUrl);
             sp.setAadharCardImage(cloudinaryUrl);
         }
 
-
-//        if (panCard != null && !panCard.isEmpty()) {
-//            String panPath = saveFile(panCard, uploadDir, userId);
-//            profileDTO.setPanCardImage(panPath);
-//            sp.setPanCardImage(panPath);
-//        }
-//
-//        if (utilityBill != null && !utilityBill.isEmpty()) {
-//            String utilityBillPath = saveFile(utilityBill, uploadDir, userId);
-//            profileDTO.setBusinessUtilityBillImage(utilityBillPath);
-//            sp.setBusinessUtilityBillImage(utilityBillPath);
-//        }
         if (panCard != null && !panCard.isEmpty()) {
             String cloudinaryUrl = cloudinaryService.uploadFile(panCard, "service_providers/pan_cards");
             profileDTO.setPanCardImage(cloudinaryUrl);
@@ -134,12 +114,6 @@ public class ProviderMyProfileService {
             sp.setBusinessUtilityBillImage(cloudinaryUrl);
         }
 
-
-//        if (profilePhoto != null && !profilePhoto.isEmpty()) {
-//            String profilePath = saveFile(profilePhoto, uploadDir, userId);
-//            profileDTO.setPhotoImage(profilePath);
-//            sp.setPhotoImage(profilePath);
-//        }
         if (profilePhoto != null && !profilePhoto.isEmpty()) {
             String cloudinaryUrl = cloudinaryService.uploadFile(profilePhoto, "service_providers");
             profileDTO.setPhotoImage(cloudinaryUrl);
@@ -170,36 +144,5 @@ public class ProviderMyProfileService {
         return "Service provider profile has been updated successfully.";
     }
 
-
-    public String saveFile(MultipartFile file, String uploadDir, String userId) throws IOException {
-
-        if (file == null || file.isEmpty()) {
-            return "File is not exist";
-        }
-
-        // Create directory if not exists
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        logger.info("Upload dir : {}", dir);
-
-        // Use a unique filename (timestamp + original filename) to avoid collision
-        String originalFilename = file.getOriginalFilename();
-        String fileName = System.currentTimeMillis()+  "_" + originalFilename;
-        logger.info("Original file name : {}", originalFilename);
-        logger.info("File name : {}", fileName);
-
-        // Full path
-        File destination = new File(dir, fileName);
-        logger.info("Destination : {}", destination);
-
-        // Save file locally
-        file.transferTo(destination);
-        logger.info("File saved successfully");
-
-        // Return the relative or absolute path
-        return destination.getAbsolutePath();
-    }
 }
 

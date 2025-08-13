@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.nio.file.AccessDeniedException;
@@ -59,6 +60,7 @@ public class ServiceListingService {
 
 
     // Add item data
+    @Transactional
     public String addItemDetails(String userId, ManageServiceListingRequestDTO manageServiceListingRequestDTO) throws AccessDeniedException {
 
         Users user = userRepository.findById(userId)
@@ -89,6 +91,11 @@ public class ServiceListingService {
             e.getConstraintViolations().forEach(v -> {
                 System.out.println("Validation failed: " + v.getPropertyPath() + " - " + v.getMessage());
             });
+            throw e;
+        } catch (Exception e) {
+            System.err.println("****Add item failed: " + e.getClass().getName());
+            System.err.println("****Message: " + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
 
