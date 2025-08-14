@@ -10,6 +10,7 @@ import { BASE_URL } from '../../utils/config';
 const CompleteDeliveryAgentProfilePage = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
+    const [toast, setToast] = useState({ message: '', type: '', visible: false });
 
     const [formValues, setFormValues] = useState({
         dateOfBirth: "",
@@ -28,6 +29,13 @@ const CompleteDeliveryAgentProfilePage = () => {
         profilePhoto: null,
     });
 
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type, visible: true });
+        setTimeout(() => {
+            setToast({ message: '', type: '', visible: false });
+        }, 3000);
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -42,43 +50,84 @@ const CompleteDeliveryAgentProfilePage = () => {
         e.preventDefault();
 
         try {
-        const formData = new FormData();
 
-        // JSON part
-        formData.append("data", JSON.stringify(formValues));
+            const {
+                dateOfBirth,
+                vehicleNumber,
+                bankName,
+                accountHolderName,
+                bankAccountNumber,
+                ifscCode,
+                gender,
+            } = formValues;
 
-        // File parts
-        if (files.aadharCard) formData.append("aadharCard", files.aadharCard);
-        if (files.panCard) formData.append("panCard", files.panCard);
-        if (files.drivingLicense) formData.append("drivingLicense", files.drivingLicense);
-        if (files.profilePhoto) formData.append("profilePhoto", files.profilePhoto);
+            // Required text fields validation
+            const missingFields = [];
+            if (!dateOfBirth) missingFields.push('Date of Birth');
+            if (!vehicleNumber) missingFields.push('Vehicle Number');
+            if (!bankName) missingFields.push('Bank Name');
+            if (!accountHolderName) missingFields.push('Account Holder Name');
+            if (!bankAccountNumber) missingFields.push('Bank Account Number');
+            if (!ifscCode) missingFields.push('IFSC Code');
 
-        const response = await axios.post(`${BASE_URL}/profile/complete`, formData, {
-            headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        });
+            const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+            if (!ifscRegex.test(ifscCode)) {
+                showToast('Invalid IFSC code format', 'error');
+                return;
+            }
 
-        alert(response.data);
-        setFormValues({
-            dateOfBirth: "",
-            vehicleNumber: "",
-            bankName: "",
-            accountHolderName: "",
-            bankAccountNumber: "",
-            ifscCode: "",
-            gender: "",
-        });
-        setFiles({
-            aadharCard: null,
-            panCard: null,
-            drivingLicense: null,
-            profilePhoto: null,
-        });
+            if (!gender) missingFields.push('Gender');
 
-        logout();
-        navigate("/customer/dashboard");
+            if (missingFields.length > 0) {
+                showToast(`Please fill in: ${missingFields.join(', ')}`, 'error');
+                return;
+            }
+
+            const requiredFiles = ['aadharCard', 'drivingLicense', 'profilePhoto'];
+            for (const key of requiredFiles) {
+                if (!files[key]) {
+                    showToast(`Please upload ${key} before submitting.`, 'error');
+                    return;
+                }
+            }
+
+            const formData = new FormData();
+
+            // JSON part
+            formData.append("data", JSON.stringify(formValues));
+
+            // File parts
+            if (files.aadharCard) formData.append("aadharCard", files.aadharCard);
+            if (files.panCard) formData.append("panCard", files.panCard);
+            if (files.drivingLicense) formData.append("drivingLicense", files.drivingLicense);
+            if (files.profilePhoto) formData.append("profilePhoto", files.profilePhoto);
+
+            const response = await axios.post(`${BASE_URL}/profile/complete`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            alert(response.data);
+            setFormValues({
+                dateOfBirth: "",
+                vehicleNumber: "",
+                bankName: "",
+                accountHolderName: "",
+                bankAccountNumber: "",
+                ifscCode: "",
+                gender: "",
+            });
+            setFiles({
+                aadharCard: null,
+                panCard: null,
+                drivingLicense: null,
+                profilePhoto: null,
+            });
+
+            logout();
+            navigate("/customer/dashboard");
 
         } catch (error) {
             console.error("Submit error:", error);
@@ -186,6 +235,8 @@ const CompleteDeliveryAgentProfilePage = () => {
                 </form>
 
             </div>
+
+            {toast.visible && <div className={`custom-toast ${toast.type}`}>{toast.message}</div>}
 
         </div>
 

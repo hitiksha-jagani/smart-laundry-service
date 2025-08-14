@@ -121,7 +121,7 @@ const ItemPage = () => {
             subServiceName: formData.subServiceName || null,
         };
 
-        axiosInstance.post('/service/add-items', formData)
+        axiosInstance.post('/service/add-items', cleanedFormData)
             .then((res) => {
                 showToast(res.data, "success");
                 handleResetAll();

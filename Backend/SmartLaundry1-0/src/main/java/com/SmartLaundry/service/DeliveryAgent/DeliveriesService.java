@@ -135,19 +135,12 @@ public class DeliveriesService {
 
         Set<String> assignmentKeys = redisTemplate.keys("assignment:*");
         if (assignmentKeys == null || assignmentKeys.isEmpty()) {
-            System.out.println("*Assignment key is null.");
+            logger.info("*****Assignment key is null.");
             return Collections.emptyList(); }
 
         List<Order> orders = new ArrayList<>();
 
         for (String key : assignmentKeys) {
-
-            String[] parts = key.split(":");
-            if (parts.length < 2) continue;
-
-            String orderId = parts[1];
-
-            System.out.println("order ID : " + orderId);
 
             Object value = redisTemplate.opsForValue().get(key);
             if (value == null) continue;
@@ -156,26 +149,32 @@ public class DeliveriesService {
             try {
                 if (value instanceof String json) {
                     assignment = objectMapper.readValue(json, OrderAssignmentDTO.class);
-                    System.out.println("Assignment val : " + assignment);
-                    System.out.println("value : " + assignment.getAgentId());
+                    logger.info("Assignment val : {}", assignment);
+                    logger.info("value : {}", assignment.getAgentId());
                 } else {
                     assignment = objectMapper.convertValue(value, OrderAssignmentDTO.class);
-                    System.out.println("value : " + assignment.getAgentId());
-                    System.out.println("Assignment val : " + assignment);
+                    logger.info("value : {}", assignment.getAgentId());
+                    logger.info("Assignment val : {}", assignment);
                 }
             } catch (Exception e) {
                 continue;
             }
 
-            System.out.println("user id : " + deliveryAgent.getUsers().getUserId());
-
-            System.out.println("Comparing Redis agentId=" + assignment.getAgentId() +
-                    " with userId=" + deliveryAgent.getUsers().getUserId());
-
             if (assignment != null && !assignment.getAgentId().equals(deliveryAgent.getUsers().getUserId())){
-                System.out.println("Assignment is not matched.");
+                logger.info("Assignment is not matched.");
                 continue;
             }
+
+            String[] parts = key.split(":");
+            if (parts.length < 2) continue;
+
+            String orderId = parts[1];
+
+            logger.info("order ID : {}", orderId);
+
+            logger.info("user id : {}", deliveryAgent.getUsers().getUserId());
+
+            logger.info("Comparing Redis agentId = {} with userId= {}", assignment.getAgentId() ,deliveryAgent.getUsers().getUserId());
 
 //            Optional<Order> optionalOrder = orderRepository.findById(orderId);
 //            System.out.println("Order ID : " + optionalOrder.get().getOrderId());
@@ -183,17 +182,17 @@ public class DeliveriesService {
             Optional<Order> optionalOrder = orderRepository.findById(orderId);
             if (optionalOrder.isPresent()) {
                 Order o = optionalOrder.get();
-                System.out.println("Order ID : " + o.getOrderId());
+                logger.info("Order ID : {}", o.getOrderId());
                 orders.add(o);
             } else {
-                System.out.println("Order ID not found in DB: " + orderId);
+                logger.info("Order ID not found in DB: {}", orderId);
             }
 
         }
 
         List<PendingDeliveriesResponseDTO> pendingDeliveriesResponseDTOList = new ArrayList<>();
 
-        Double agentLat, agentLon, providerLat, providerLon, customerLat, customerLon, earning;
+        Double providerLat, providerLon, customerLat, customerLon, earning;
 
         DeliveryAgentEarnings deliveryAgentEarnings = deliveryAgentEarningsRepository.findByCurrentStatus(CurrentStatus.ACTIVE);
         if (deliveryAgentEarnings == null) {
@@ -208,16 +207,16 @@ public class DeliveriesService {
 
             Double totalKm;
 
-            System.out.println("**DB Order Status: " + order.getStatus());
+            logger.info("****DB Order Status: {}", order.getStatus());
 
             if(order.getStatus().equals(OrderStatus.ACCEPTED_BY_PROVIDER)){
-                System.out.println("Calculate total km.");
+                logger.info("Calculate total km.");
                 totalKm = haversine(customerLat, customerLon, providerLat, providerLon);
-                System.out.println("Total km : " + totalKm);
+                logger.info("Total km : {}" , totalKm);
             } else {
-                System.out.println("Calculate total km.");
+                logger.info("Calculate total km.");
                 totalKm = haversine(providerLat, providerLon, customerLat, customerLon);
-                System.out.println("Total km : " + totalKm);
+                logger.info("Total km : {}" ,totalKm);
             }
 
             if(totalKm > deliveryAgentEarnings.getBaseKm()){
@@ -230,7 +229,7 @@ public class DeliveriesService {
 
             //  Store earning and km in Redis for later use in bill generation
             Map<String, Object> deliveryInfo = new HashMap<>();
-            System.out.println("Delivery earnings : " + deliveryInfo);
+            logger.info("Delivery earnings : {}" ,deliveryInfo);
             deliveryInfo.put("earning", round(earning, 2));
             deliveryInfo.put("totalKm", round(totalKm, 2));
             redisTemplate.opsForHash().putAll("deliveryEarnings:" + order.getOrderId(), deliveryInfo);
@@ -655,7 +654,7 @@ public class DeliveriesService {
                 }
             }
 //        }, Instant.now().plus(5, ChronoUnit.SECONDS));
-        }, Instant.now().plus(5, ChronoUnit.MINUTES)); // trigger after 5 min
+        }, Instant.now().plus(5, ChronoUnit.MINUTES));
     }
 
     // Logic for accept order
@@ -696,7 +695,6 @@ public class DeliveriesService {
                 order.setStatus(OrderStatus.ACCEPTED_BY_AGENT);
             } else {
                 order.setDeliveryDeliveryAgent(agent);
-//                order.setStatus(OrderStatus.OUT_FOR_DELIVERY);
             }
 
             // Retrieve delivery data from Redis

@@ -95,3 +95,12 @@
     font-weight: bold;
     margin-bottom: 20px;
 }
+
+span {
+    color: black;
+    font-weight: 400;
+}
+
+p{
+    font-weight: 200;
+}

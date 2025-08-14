@@ -41,19 +41,6 @@ public class OrderEmailOtpService {
         emailService.sendOtp(recipientEmail, otp);
     }
 
-//    public boolean validateOtp(Order order, String inputOtp, OtpPurpose purpose) {
-//        Optional<OrderOtp> validOtp = orderOtpRepository.findTopByOrderAndPurposeAndIsUsedFalseOrderByGeneratedAtDesc(order, purpose);
-//
-//        if (validOtp.isEmpty()) return false;
-//
-//        OrderOtp otp = validOtp.get();
-//
-//        if (otp.getExpiresAt().isBefore(LocalDateTime.now()) || !otp.getOtpCode().equals(inputOtp)) return false;
-//
-//        otp.setIsUsed(true);
-//        orderOtpRepository.save(otp);
-//        return true;
-//    }
     @Transactional
     public boolean validateOtp(Order order, String inputOtp, OtpPurpose purpose) {
         Optional<OrderOtp> validOtp = orderOtpRepository.findTopByOrderAndPurposeAndIsUsedFalseOrderByGeneratedAtDesc(order, purpose);

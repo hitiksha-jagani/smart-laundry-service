@@ -92,15 +92,12 @@ const DeliveryAgentProfile = () => {
         
         }, []);
                   
-        const handleFileClick = (type) => {
-            const userId = data.userId;
-
-            if (type && userId) {
-                const url = `${BASE_URL}/image/agent/${type}/${userId}`;
-                window.open(url, '_blank'); 
+        const handleFileClick = (fileUrl) => {
+            if (fileUrl) {
+                window.open(fileUrl, "_blank", "noopener,noreferrer");
             } else {
-                showToast("Invalid image type or user ID", "error");
-            }
+                showToast("Image not available", "error");
+            } 
         };
 
         if (loading) return <p className="text-center">Loading...</p>;
@@ -155,7 +152,7 @@ const DeliveryAgentProfile = () => {
                                     <div className="agent-field"><label>IFSC Code</label><span>{data.ifscCode}</span></div>
                                     <div className="agent-field">
                                         <label>PAN Card</label>
-                                        <button onClick={() => handleFileClick('pan')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.panCardPhoto)} className="link-btn">
                                             {data.panCardPhoto != null ? "Click here..." : "N/A"}
                                         </button>
                                     </div>
@@ -164,13 +161,13 @@ const DeliveryAgentProfile = () => {
                                 <div className="agent-grid-row">
                                     <div className="agent-field">
                                         <label>Aadhaar Card</label>
-                                        <button onClick={() => handleFileClick('aadhar')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.aadharCardPhoto)} className="link-btn">
                                             {data.aadharCardPhoto != null ? "Click here..." : "N/A"}
                                         </button>
                                     </div>
                                     <div className="agent-field">
                                         <label>Driving License</label>
-                                        <button onClick={() => handleFileClick('license')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.drivingLicensePhoto)} className="link-btn">
                                             {data.drivingLicensePhoto != null ? "Click here..." : "N/A"}
                                         </button>
                                     </div>
@@ -180,7 +177,7 @@ const DeliveryAgentProfile = () => {
                                     
                                     <div className="agent-field">
                                         <label>Profile</label>
-                                        <button onClick={() => handleFileClick('profile')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.profilePhoto)} className="link-btn">
                                             {data.profilePhoto != null ? "Click here..." : "N/A"}
                                         </button>
                                     </div>

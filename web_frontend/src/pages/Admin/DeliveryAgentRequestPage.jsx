@@ -126,15 +126,12 @@ const DeliveryAgentRequestPage = () => {
         
         }, []);
             
-        const handleFileClick = (type) => {
-            const userId = currentAgent.userId;
-
-            if (type && userId) {
-                const url = `${BASE_URL}/image/agent/${type}/${userId}`;
-                window.open(url, '_blank'); 
+        const handleFileClick = (fileUrl) => {
+            if (fileUrl) {
+                window.open(fileUrl, "_blank", "noopener,noreferrer");
             } else {
-                showToast("Invalid image type or user ID", "error");
-            }
+                showToast("Image not available", "error");
+            } 
         };
 
                 
@@ -226,7 +223,7 @@ const DeliveryAgentRequestPage = () => {
                                     <div className="field"><label>IFSC Code</label><span>{currentAgent.ifscCode}</span></div>
                                     <div className="field">
                                         <label>PAN Card</label>
-                                        <button onClick={() => handleFileClick('pan')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.panCardPhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>
@@ -235,13 +232,13 @@ const DeliveryAgentRequestPage = () => {
                                 <div className="grid-row">
                                     <div className="field">
                                         <label>Aadhaar Card</label>
-                                        <button onClick={() => handleFileClick('aadhar')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.aadharCardPhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>
                                     <div className="field">
                                         <label>Driving License</label>
-                                        <button onClick={() => handleFileClick('license')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.drivingLicensePhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>
@@ -251,7 +248,7 @@ const DeliveryAgentRequestPage = () => {
                                     
                                     <div className="field">
                                         <label>Profile</label>
-                                        <button onClick={() => handleFileClick('profile')} className="link-btn">
+                                        <button onClick={() => handleFileClick(data.profilePhoto)} className="link-btn">
                                             Click here...
                                         </button>
                                     </div>

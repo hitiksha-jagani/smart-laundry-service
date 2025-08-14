@@ -153,11 +153,6 @@ public class Order implements Serializable {
     @JsonManagedReference
     private List<OrderOtp> orderOtpList;
 
-
-//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<OrderOtp> otpList;
-
-
     public Users getUser() {
         return users;
     }
