@@ -43,37 +43,76 @@ public class RazorPaymentController {
         return ResponseEntity.ok(Map.of("orderId", orderId, "amount", bill.getFinalPrice() * 100));
     }
 
-    @PostMapping("/success")
-    @Transactional
-    public ResponseEntity<?> paymentSuccess(@RequestBody RazorpaySuccessDTO dto) {
-        System.out.println("Received Razorpay success payload: " + dto);
+//    @PostMapping("/success")
+//    @Transactional
+//    public ResponseEntity<?> paymentSuccess(@RequestBody RazorpaySuccessDTO dto) {
+//        System.out.println("Received Razorpay success payload: " + dto);
+//
+//        if (dto.getInvoiceNumber() == null || dto.getPaymentId() == null || dto.getMethod() == null) {
+//            return ResponseEntity.badRequest().body("Missing required payment data");
+//        }
+//
+//        Bill bill = billRepository.findById(dto.getInvoiceNumber())
+//                .orElseThrow(() -> new RuntimeException("Bill not found: " + dto.getInvoiceNumber()));
+//
+//        // Save payment
+//        Payment payment = Payment.builder()
+//                .bill(bill)
+//                .transactionId(dto.getPaymentId())
+//                .method(dto.getMethod())
+//                .dateTime(LocalDateTime.now())
+//                .status(PaymentStatus.PAID)
+//                .build();
+//
+//        bill.setStatus(BillStatus.PAID);
+//        bill.setPayment(payment);
+//
+//        billRepository.save(bill);
+//
+//        // Trigger payouts
+//        payoutAssignmentService.addPayouts(payment);
+//
+//        return ResponseEntity.ok("Payment recorded and payouts added");
+//    }
+@PostMapping("/success")
+@Transactional
+public ResponseEntity<?> paymentSuccess(@RequestBody RazorpaySuccessDTO dto) {
+    System.out.println("Received Razorpay success payload: " + dto);
 
-        if (dto.getInvoiceNumber() == null || dto.getPaymentId() == null || dto.getMethod() == null) {
-            return ResponseEntity.badRequest().body("Missing required payment data");
-        }
-
-        Bill bill = billRepository.findById(dto.getInvoiceNumber())
-                .orElseThrow(() -> new RuntimeException("Bill not found: " + dto.getInvoiceNumber()));
-
-        // Save payment
-        Payment payment = Payment.builder()
-                .bill(bill)
-                .transactionId(dto.getPaymentId())
-                .method(dto.getMethod())
-                .dateTime(LocalDateTime.now())
-                .status(PaymentStatus.PAID)
-                .build();
-
-        bill.setStatus(BillStatus.PAID);
-        bill.setPayment(payment);
-
-        billRepository.save(bill);
-
-        // Trigger payouts
-        payoutAssignmentService.addPayouts(payment);
-
-        return ResponseEntity.ok("Payment recorded and payouts added");
+    if (dto.getInvoiceNumber() == null || dto.getPaymentId() == null || dto.getMethod() == null) {
+        return ResponseEntity.badRequest().body("Missing required payment data");
     }
+
+    Bill bill = billRepository.findById(dto.getInvoiceNumber())
+            .orElseThrow(() -> new RuntimeException("Bill not found: " + dto.getInvoiceNumber()));
+
+    // Create and save Payment first
+    Payment payment = Payment.builder()
+            .bill(bill)
+            .transactionId(dto.getPaymentId())
+            .method(dto.getMethod())
+            .dateTime(LocalDateTime.now())
+            .status(PaymentStatus.PAID)
+            .build();
+
+    paymentRepository.save(payment);
+
+    // Update bill status
+    bill.setStatus(BillStatus.PAID);
+    bill.setPayment(payment);
+    billRepository.save(bill);
+
+    try {
+        // Trigger payouts safely
+        payoutAssignmentService.addPayouts(payment);
+    } catch (Exception e) {
+        // Log and continue — don't rollback the payment
+        e.printStackTrace();
+        return ResponseEntity.ok("Payment recorded but payout assignment failed: " + e.getMessage());
+    }
+
+    return ResponseEntity.ok("Payment recorded and payouts added");
+}
 
 
 }
