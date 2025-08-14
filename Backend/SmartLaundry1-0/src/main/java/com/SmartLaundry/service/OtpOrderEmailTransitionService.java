@@ -166,7 +166,7 @@ public class OtpOrderEmailTransitionService {
         }
 
         order.setStatus(OrderStatus.DELIVERED);
-        order.setDeliveryDate(LocalDate.now());
+
         order.setDeliveryTime(LocalTime.now());
         orderRepository.save(order);
         orderStatusHistoryService.save(order, OrderStatus.DELIVERED);

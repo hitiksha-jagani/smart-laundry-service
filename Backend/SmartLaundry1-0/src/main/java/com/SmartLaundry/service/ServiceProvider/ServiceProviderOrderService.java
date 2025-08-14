@@ -414,7 +414,7 @@ public class ServiceProviderOrderService {
 
             order.setStatus(OrderStatus.READY_FOR_DELIVERY);
 
-
+            order.setDeliveryDate(LocalDate.now());
             saveOrderStatusHistory(order, OrderStatus.READY_FOR_DELIVERY);
             orderRepository.save(order);
 
