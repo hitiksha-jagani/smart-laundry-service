@@ -25,7 +25,7 @@ import java.util.Map;
         allowCredentials = "true"
 )
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/payments")
 @RequiredArgsConstructor
 public class RazorPaymentController {
 

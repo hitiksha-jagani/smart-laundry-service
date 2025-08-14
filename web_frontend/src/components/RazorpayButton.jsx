@@ -16,11 +16,8 @@ const RazorpayButton = ({ invoiceNumber, finalPrice, orderId }) => {
     }
 
     try {
-      // ✅ Step 1: Create Razorpay Order
-      
-      // const res = await axios.post(`/payments/create/${invoiceNumber}`);
       const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}/payments/create/${invoiceNumber}`);
+      `${process.env.REACT_APP_BACKEND_URL}/payments/create/${invoiceNumber}`);
       console.log("Invoice Number:",invoiceNumber);
       const { orderId: razorpayOrderId, amount } = res.data;
       const key = process.env.REACT_APP_RAZORPAY_KEY;
@@ -40,7 +37,7 @@ const RazorpayButton = ({ invoiceNumber, finalPrice, orderId }) => {
           };
 
           try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/payments/success`, payload);
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/payments/success`, payload);
             alert("✅ Payment successful! Redirecting to your bill...");
 
             // Wait 2 seconds then redirect to bill page
