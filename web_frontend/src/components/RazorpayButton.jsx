@@ -16,9 +16,6 @@ const RazorpayButton = ({ invoiceNumber, finalPrice, orderId }) => {
     }
 
     try {
-      // ✅ Step 1: Create Razorpay Order
-      
-      // const res = await axios.post(`/payments/create/${invoiceNumber}`);
       const res = await axios.post(
       `${process.env.REACT_APP_API_URL}/payments/create/${invoiceNumber}`);
       console.log("Invoice Number:",invoiceNumber);
