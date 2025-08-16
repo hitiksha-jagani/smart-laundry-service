@@ -24,7 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
-
+@CrossOrigin(origins = "https://smart-laundry-frontend.onrender.com")
 @RestController
 @RequestMapping("")
 public class AuthController {
