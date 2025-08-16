@@ -196,6 +196,7 @@ public class DeliveriesService {
 
         DeliveryAgentEarnings deliveryAgentEarnings = deliveryAgentEarningsRepository.findByCurrentStatus(CurrentStatus.ACTIVE);
         if (deliveryAgentEarnings == null) {
+            logger.info("No active earnings settings found.");
             throw new IllegalStateException("No active earnings settings found.");
         }
 

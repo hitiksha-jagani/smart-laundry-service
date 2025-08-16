@@ -51,9 +51,11 @@ public class AvailabilityService {
         for(AvailabilityDTO availabilityDTO : dtoList){
             LocalDate targetDate = getDateForCurrentWeek(availabilityDTO.getDayOfWeek());
 
-            System.out.println("Agent : " + agent);
-            System.out.println("Date : " + targetDate);
-            System.out.println("Saving: " + availabilityDTO.getDayOfWeek());
+            log.info("Agent : {}", agent);
+            log.info("Date : {}", targetDate);
+            log.info("Saving: {}", availabilityDTO.getDayOfWeek());
+            log.info("Start time : {}", availabilityDTO.getStartTime());
+            log.info("End time : {}", availabilityDTO.getEndTime());
 
             DeliveryAgentAvailability deliveryAgentAvailability = DeliveryAgentAvailability.builder()
                             .deliveryAgent(agent)
